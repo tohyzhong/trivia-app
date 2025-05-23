@@ -82,6 +82,7 @@ const SignupPage: React.FC = () => {
             required
           />
         </div>
+        <p className='register-message'>Have an account? <a href='/login'>Log in here!</a></p>
         <div className='buttons-container'>
           <ReturnButton />
           <button type="submit" className='register-button'>Register</button>
