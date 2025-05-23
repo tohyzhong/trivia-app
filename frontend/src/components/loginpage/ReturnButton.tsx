@@ -8,6 +8,6 @@ export const ReturnButton: React.FC = () => {
   }
 
   return (
-    <button className='back-button' onClick={handleBack}>Back</button>
+    <a className='back-button' onClick={handleBack}>Back</a>
   )
 }

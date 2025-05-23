@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import LogoutButton from '../loginpage/LogoutButton'
+import LogoutButton from './LogoutButton'
 import "../../styles/loginbar.css"
 
 export const LoginBar = () => {
@@ -11,11 +11,15 @@ export const LoginBar = () => {
   }
 
   const isLoggedIn = !!localStorage.getItem('token');
+  const username = "testuser"; // TODO: Replace with actual username retrieval logic
 
   return (
     <div className="login-bar">
       {isLoggedIn ? (
-        <LogoutButton />
+        <div className="logged-in-bar">
+          <p>Welcome, {username}</p>
+          <LogoutButton />
+        </div>
       ) : (
         <div>
           <button className='login-button' onClick={onClick}>Login</button>
@@ -26,4 +30,4 @@ export const LoginBar = () => {
   )
 }
 
-export default LoginBar
+export default LoginBar;

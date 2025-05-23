@@ -34,3 +34,37 @@ button:focus {
 button:active {
   background-color: #222;
 }
+
+.logged-in-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+}
+
+.logged-in-bar p {
+  margin: 0;
+  font-size: 16px;
+  color: #fff;
+}
+
+.login-button {
+  background-color: #4caf50;
+}
+
+.login-button:hover {
+  background-color: #45a049;
+}
+
+.login-button:active {
+  background-color: #388e3c;
+}
+
+.logout-button {
+  background-color: #ff4d4d;
+}
+
+.logout-button:hover {
+  background-color: #e53935;
+}

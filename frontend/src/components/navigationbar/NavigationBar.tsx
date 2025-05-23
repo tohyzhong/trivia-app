@@ -1,17 +1,38 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import LoginBar from './LoginBar';
 import "../../styles/navbar.css"
 import { useLocation } from 'react-router-dom';
 
 export const NavigationBar = () => {
-  const navBar = [
+  const isLoggedIn = !!localStorage.getItem('token');
+
+  const [navBar, updateNavBar] = useState([
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
     { name: 'Play', path: '/play' },
     { name: 'Leaderboard', path: '/leaderboard' },
-    { name: 'Settings', path: '/settings' },
-    { name: 'Profile', path: '/profile' },
-  ]
+  ])
+
+  // TODO: Find a cleaner way to do this?
+  useEffect(() => {
+    if (isLoggedIn) {
+      updateNavBar([
+        { name: 'Home', path: '/' },
+        { name: 'About', path: '/about' },
+        { name: 'Play', path: '/play' },
+        { name: 'Leaderboard', path: '/leaderboard' },
+        { name: 'Profile', path: '/profile' },
+        { name: 'Settings', path: '/settings' },
+      ])
+    } else {
+      updateNavBar([
+        { name: 'Home', path: '/' },
+        { name: 'About', path: '/about' },
+        { name: 'Leaderboard', path: '/leaderboard' },
+      ])
+    }
+  }, [isLoggedIn])
+
 
   const location = useLocation();
   useEffect(() => {
