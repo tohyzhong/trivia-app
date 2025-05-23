@@ -32,7 +32,7 @@
   border-color: #4caf50;
 }
 
-.signup-form-container form button {
+.signup-form-container form .register-button {
   width: 100%;
   padding: 12px;
   background-color: #4caf50;
@@ -44,11 +44,11 @@
   transition: background-color 0.3s ease;
 }
 
-.signup-form-container form button:hover {
+.signup-form-container form .register-button:hover {
   background-color: #45a049;
 }
 
-.signup-form-container form button:active {
+.signup-form-container form .register-button:active {
   background-color: #388e3c;
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/loginpage.css';
+import { ReturnButton } from './ReturnButton';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -51,7 +52,10 @@ const LoginPage: React.FC = () => {
             placeholder="Password"
             required
           />
-          <button type="submit">Login</button>
+          <div className='buttons-container'>
+            <ReturnButton />
+            <button type="submit" className='submit-button'>Login</button>
+          </div>
         </form>
       </div>
     </div>

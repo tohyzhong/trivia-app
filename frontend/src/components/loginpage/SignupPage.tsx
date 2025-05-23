@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../styles/signuppage.css';
+import { ReturnButton } from './ReturnButton';
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -81,7 +82,10 @@ const SignupPage: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        <div className='buttons-container'>
+          <ReturnButton />
+          <button type="submit" className='register-button'>Register</button>
+        </div>
       </form>
     </div>
   );
