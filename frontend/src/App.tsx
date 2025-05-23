@@ -10,11 +10,8 @@ import AboutPage from './components/about/AboutPage'
 import HomePage from './components/homepage/HomePage'
 import LoginPage from './components/loginpage/LoginPage'
 import SignupPage from "./components/loginpage/SignupPage"
-import React from 'react';
 
 function App() {
-  const isLoggedIn = !!localStorage.getItem('token');
-
   const Components = [
     { component: HomePage, path: '/' },
     { component: GameMainpage, path: '/play' },

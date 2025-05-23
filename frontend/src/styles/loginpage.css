@@ -34,7 +34,6 @@
 
 .login-page .submit-button {
   width: 100%;
-  padding: 12px;
   background-color: #4caf50;
   color: white;
   border: none;
@@ -42,6 +41,8 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-align: center;
+  padding: 10px 20px;
 }
 
 .login-page .submit-button:hover {
