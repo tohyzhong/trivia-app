@@ -1,9 +1,13 @@
 .login-bar {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 24px;
   align-items: center;
   justify-content: flex-end;
+}
+
+.login-bar-button {
+  margin: 0 4px;
 }
 
 button {

@@ -44,7 +44,7 @@ export const NavigationBar = () => {
         item.classList.remove('active');
       }
     });
-  }, [location.pathname])
+  }, [location.pathname, navBar])
 
   const onAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 

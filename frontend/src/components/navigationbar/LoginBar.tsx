@@ -22,8 +22,8 @@ export const LoginBar = () => {
         </div>
       ) : (
         <div>
-          <button className='login-button' onClick={onClick}>Login</button>
-          <button className='signup-button' onClick={onClick}>Sign Up</button>
+          <button className='login-button login-bar-button' onClick={onClick}>Login</button>
+          <button className='signup-button login-bar-button' onClick={onClick}>Sign Up</button>
         </div>
       )}
     </div>
