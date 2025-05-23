@@ -1,18 +1,15 @@
 .navbar {
   display: flex;
   justify-content: space-between;
-  /* Space between nav items and login bar */
   align-items: center;
-  /* Align vertically in the center */
   background-color: rgba(0, 0, 0, 0.7);
-  /* Dark background */
+
   padding: 10px 20px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
-  /* Keeps the navbar above other content */
 }
 
 .nav-list {
@@ -24,7 +21,6 @@
 
 .nav-item {
   margin-right: 15px;
-  /* Space between each nav item */
 }
 
 .nav-item a {
@@ -35,12 +31,18 @@
   font-size: 16px;
   display: block;
   height: 40px;
+  border-radius: 15px;
 }
 
 .nav-item a:hover {
-  background-color: #444;
+  background-color: #333;
+  transition: background-color 0.3s ease;
 }
 
-.nav-item a:clicked {
+.nav-item a:active {
+  background-color: #222;
+}
+
+.nav-item a.active {
   background-color: #222;
 }

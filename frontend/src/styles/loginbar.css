@@ -11,9 +11,11 @@ button {
   text-align: center;
   padding: 10px 16px;
   font-size: 16px;
+  font-family: inherit;
   display: block;
   height: 40px;
   border: none;
+  border-radius: 15px;
   background-color: transparent;
   cursor: pointer;
   text-decoration: none;
@@ -21,7 +23,7 @@ button {
 }
 
 button:hover {
-  background-color: #444;
+  background-color: #333;
   transition: background-color 0.3s ease;
 }
 

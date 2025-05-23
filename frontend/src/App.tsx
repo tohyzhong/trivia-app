@@ -16,7 +16,7 @@ function App() {
   const isLoggedIn = !!localStorage.getItem('token');
 
   const Components = [
-    { component: isLoggedIn ? HomePage : LoginPage, path: '/' },
+    { component: HomePage, path: '/' },
     { component: GameMainpage, path: '/play' },
     { component: Leaderboard, path: '/leaderboard' },
     { component: Settings, path: '/settings' },
