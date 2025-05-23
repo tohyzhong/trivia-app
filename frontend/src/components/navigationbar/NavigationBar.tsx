@@ -14,7 +14,7 @@ export const NavigationBar = () => {
   return (
     <nav className='navbar'>
       <ul className='nav-list'>
-        {navBar.map((item) => 
+        {navBar.map((item) =>
           <li key={item.name.toLowerCase() + "-button"} className='nav-item'>
             <a href={item.path}>{item.name}</a>
           </li>
@@ -24,4 +24,4 @@ export const NavigationBar = () => {
   )
 }
 
-
+export default NavigationBar
