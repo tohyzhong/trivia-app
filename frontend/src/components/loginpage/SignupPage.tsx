@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../../styles/signuppage.css';
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -11,7 +12,7 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
 
     if (password !== passwordConfirmation) {
-      alert('Passwords do not match');
+      setErrors(['Passwords do not match']);
       return;
     }
 
@@ -37,54 +38,52 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <div>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-        />
-      </div>
-      <div>
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-          required
-        />
-      </div>
-      <div>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          required
-        />
-      </div>
-      <div>
-        <input
-          type="password"
-          value={passwordConfirmation}
-          onChange={(e) => setPasswordConfirmation(e.target.value)}
-          placeholder="Confirm Password"
-          required
-        />
-      </div>
-
-      {errors.length > 0 && (
+    <div className="signup-form-container">
+      <form onSubmit={handleRegister}>
+        {errors.length > 0 && (
+          <div className="error-message">
+            {errors.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
         <div>
-          {errors.map((error, index) => (
-            <p key={index} style={{ color: 'red' }}>
-              {error}
-            </p>
-          ))}
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
         </div>
-      )}
-
-      <button type="submit">Register</button>
-    </form>
+        <div>
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            required
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            placeholder="Confirm Password"
+            required
+          />
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </div>
   );
 };
 

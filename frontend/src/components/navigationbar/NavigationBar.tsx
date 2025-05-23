@@ -1,4 +1,5 @@
 import React from 'react'
+import LoginBar from './LoginBar';
 import "../../styles/navbar.css"
 
 export const NavigationBar = () => {
@@ -20,6 +21,7 @@ export const NavigationBar = () => {
           </li>
         )}
       </ul>
+      <LoginBar />
     </nav>
   )
 }

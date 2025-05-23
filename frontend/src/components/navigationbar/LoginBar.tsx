@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import LogoutButton from '../loginpage/LogoutButton'
+import "../../styles/loginbar.css"
 
 export const LoginBar = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export const LoginBar = () => {
   const isLoggedIn = !!localStorage.getItem('token');
 
   return (
-    <div>
+    <div className="login-bar">
       {isLoggedIn ? (
         <LogoutButton />
       ) : (

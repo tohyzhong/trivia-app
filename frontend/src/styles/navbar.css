@@ -1,20 +1,46 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  /* Space between nav items and login bar */
+  align-items: center;
+  /* Align vertically in the center */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Dark background */
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  /* Keeps the navbar above other content */
+}
+
 .nav-list {
+  display: flex;
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
 .nav-item {
-  display: inline;
+  margin-right: 15px;
+  /* Space between each nav item */
 }
 
 .nav-item a {
   color: white;
   text-align: center;
-  padding: 14px 16px;
+  padding: 10px 16px;
   text-decoration: none;
+  font-size: 16px;
+  display: block;
+  height: 40px;
 }
 
 .nav-item a:hover {
-  background-color: #111;
+  background-color: #444;
+}
+
+.nav-item a:clicked {
+  background-color: #222;
 }

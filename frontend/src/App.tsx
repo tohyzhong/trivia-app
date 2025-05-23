@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './styles/App.css'
 import NavigationBar from './components/navigationbar/NavigationBar'
-import LoginBar from './components/navigationbar/LoginBar'
 
 import GameMainpage from './components/game/GameMainpage'
 import Leaderboard from './components/leaderboard/Leaderboard'
@@ -30,7 +29,6 @@ function App() {
   return (
     <BrowserRouter>
       <NavigationBar />
-      <LoginBar />
       <Routes>
         {Components.map((comp) => {
           const ComponentName = comp.component;
