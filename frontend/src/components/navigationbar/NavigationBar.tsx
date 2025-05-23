@@ -25,7 +25,9 @@ export const NavigationBar = () => {
     });
   }, [location.pathname])
 
-  return (
+  const onAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+
+  return !onAuthPage ? (
     <nav className='navbar'>
       <ul className='nav-list'>
         {navBar.map((item) =>
@@ -36,7 +38,7 @@ export const NavigationBar = () => {
       </ul>
       <LoginBar />
     </nav>
-  )
+  ) : (<></>)
 }
 
 export default NavigationBar
