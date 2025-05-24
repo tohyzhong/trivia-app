@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
+import Profile from '../models/Profile.js';
 import authenticate from './authMiddleware.js';
 
 const router = express.Router();
@@ -49,6 +50,18 @@ router.post('/register', [
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, username, password: hashedPassword, verified: false });
     await user.save();
+
+    const profile = new Profile({
+      username,
+      profilePicture: '',
+      winRate: 0,
+      correctRate: 0,
+      correctNumber: 0,
+      friends: [],
+      currency: 0
+    });
+    await profile.save();
+
     res.status(201).json({ message: 'User registered' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -64,6 +77,21 @@ router.post('/login', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: 'Wrong Password' });
+
+    let profile = await Profile.findOne({ username });
+
+    if (!profile) {
+      profile = new Profile({
+        username,
+        profilePicture: '',
+        winRate: 0,
+        correctRate: 0,
+        correctNumber: 0,
+        friends: [],
+        currency: 0
+      });
+      await profile.save();
+    }
 
     const token = jwt.sign({
       id: user._id,
