@@ -54,9 +54,59 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     navigate(`/profile/${user.username}/friends`);
   }
 
-  if (loading) {
-    return null;
-  }
+  const isFriend = user?.friends?.includes(usernameFromRedux) || false;
+
+  const handleAddFriend = async () => {
+    try {
+      const response = await fetch(`/api/profile/${usernameFromRedux}/friends/add`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          friendUsername: user.username,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+      } else {
+        alert('Failed to add friend: ' + (data.message || 'Unknown error.'));
+      }
+    } catch (error) {
+      console.error('Error adding friend:', error);
+      alert('An error occurred while adding the friend.');
+    }
+    window.location.reload();
+  };
+
+  const handleDeleteFriend = async () => {
+    try {
+      const response = await fetch(`/api/profile/${usernameFromRedux}/friends/remove`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          friendUsername: user.username,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+      } else {
+        alert('Failed to remove friend: ' + (data.message || 'Unknown error.'));
+      }
+    } catch (error) {
+      console.error('Error removing friend:', error);
+      alert('An error occurred while removing the friend.');
+    }
+    window.location.reload();
+  };
 
   if (!user || user.message === "Profile not found") {
     return <div className="not-found">Profile not found</div>;
@@ -93,6 +143,21 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           </ul>
         </div>
 
+        {user.username !== usernameFromRedux && (
+          <>
+            {!isFriend && (
+              <button className="add-friend-button" onClick={handleAddFriend}>
+                Add Friend
+              </button>
+            )}
+
+            {isFriend && (
+              <button className="remove-friend-button" onClick={handleDeleteFriend}>
+                Remove Friend
+              </button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

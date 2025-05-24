@@ -6,7 +6,6 @@ import defaultAvatar from '../../assets/default-avatar.jpg';
 import '../../styles/friendslist.css';
 
 interface Friend {
-  id: number;
   username: string;
   profilePicture: string;
 }
