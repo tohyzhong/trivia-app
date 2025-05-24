@@ -25,7 +25,6 @@ const FriendsList: React.FC = () => {
         if (!response.ok) throw new Error('Failed to fetch friends');
 
         const data = await response.json();
-        console.log('Fetched friends:', data);
         setFriends(data);
       } catch (err) {
         setError('Could not fetch friends');
@@ -37,7 +36,7 @@ const FriendsList: React.FC = () => {
     fetchFriends();
   }, [username]);
 
-  if (error) return <div>{error}</div>;
+  if (error) return <div className="not-found">{error}</div>;
 
   const columnDefs: ColDef[] = [
     {
@@ -66,7 +65,7 @@ const FriendsList: React.FC = () => {
 
   return (
     <div className="friendslist-container">
-      <h2>{username}'s Friends</h2>
+      < h2 > {username}'s Friends</h2>
 
       {
         friends.length === 0 ? (
@@ -82,8 +81,9 @@ const FriendsList: React.FC = () => {
               domLayout="autoHeight"
             />
           </div>
-        )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
