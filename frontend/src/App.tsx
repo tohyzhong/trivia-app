@@ -10,6 +10,7 @@ import AboutPage from './components/about/AboutPage'
 import HomePage from './components/homepage/HomePage'
 import LoginPage from './components/loginpage/LoginPage'
 import SignupPage from "./components/loginpage/SignupPage"
+import PasswordReset from "./components/loginpage/PasswordReset";
 
 function App() {
   const Components = [
@@ -21,6 +22,7 @@ function App() {
     { component: AboutPage, path: '/about' },
     { component: LoginPage, path: '/login' },
     { component: SignupPage, path: '/signup' },
+    { component: PasswordReset, path: '/forgotpassword' },
   ]
 
   return (

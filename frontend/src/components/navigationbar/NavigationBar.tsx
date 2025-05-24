@@ -47,7 +47,7 @@ export const NavigationBar = () => {
     });
   }, [location.pathname, navBar])
 
-  const onAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  const onAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/forgotpassword';
 
   return !onAuthPage ? (
     <nav className='navbar'>

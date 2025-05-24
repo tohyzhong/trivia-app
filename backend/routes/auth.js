@@ -93,4 +93,32 @@ router.post('/logout', (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 });
 
+// Forgot Password
+router.post('/forgotpassword', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'No user found with that email address.' });
+    } else {
+      return res.status(200).json({ message: 'Password reset link sent to your email.' });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+})
+
+// Reset Password
+router.post('/resetpassword', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
+    return res.status(200).json({ message: 'Password reset successfully.' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+})
+
 export default router;
