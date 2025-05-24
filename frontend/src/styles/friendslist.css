@@ -49,6 +49,13 @@ h2 {
   justify-content: center;
 }
 
+.ag-center-cols-container,
+.ag-viewport,
+.ag-center-cols-viewport {
+  margin-bottom: 0px;
+  min-height: 0px !important;
+}
+
 .friendslist-container .ag-theme-alpine {
   height: auto;
   width: 100%;
@@ -114,7 +121,7 @@ h2 {
 .ag-paging-panel {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 0px;
   color: white;
   background-color: rgba(0, 0, 0, 0.55);
 }
