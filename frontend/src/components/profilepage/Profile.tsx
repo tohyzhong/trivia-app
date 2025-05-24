@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { RootState } from '../../redux/store';
+import { useSelector } from "react-redux";
 
 interface UserProfile {
   username: string;
@@ -10,10 +12,12 @@ interface UserProfile {
 }
 
 interface ProfileProps {
-  username?: string;
+  user1?: string;
 }
 
-const Profile: React.FC<ProfileProps> = ({ username }) => {
+const Profile: React.FC<ProfileProps> = ({ user1 }) => {
+  const user2 = useSelector((state: RootState) => state.user.username);
+  const username = user1 || user2;
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 

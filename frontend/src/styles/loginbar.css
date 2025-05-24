@@ -72,3 +72,23 @@ button:active {
 .logout-button:hover {
   background-color: #e53935;
 }
+
+.welcome-text {
+  display: flex;
+  align-items: center;
+}
+
+.welcome-text p {
+  margin: 0;
+  color: white;
+}
+
+.username {
+  margin-left: 5px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.username:hover {
+  color: #0073e6;
+}

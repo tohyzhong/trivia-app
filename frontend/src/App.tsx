@@ -10,11 +10,8 @@ import AboutPage from './components/about/AboutPage'
 import HomePage from './components/homepage/HomePage'
 import LoginPage from './components/loginpage/LoginPage'
 import SignupPage from "./components/loginpage/SignupPage"
-import { RootState } from './redux/store';
-import { useSelector } from "react-redux";
 
 function App() {
-  const username = useSelector((state: RootState) => state.user.username);
   const Components = [
     { component: HomePage, path: '/' },
     { component: GameMainpage, path: '/play' },
@@ -32,10 +29,7 @@ function App() {
       <Routes>
         {Components.map((comp) => {
           const ComponentName = comp.component;
-
-          return comp.path === '/profile'
-            ? <Route path={comp.path} element={<ComponentName username={username || ''} />} />
-            : <Route path={comp.path} element={<ComponentName />} />
+          return <Route path={comp.path} element={<ComponentName />} />
         })}
       </Routes>
     </BrowserRouter>

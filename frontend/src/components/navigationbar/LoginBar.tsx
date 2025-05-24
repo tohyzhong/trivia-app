@@ -12,6 +12,12 @@ export const LoginBar = () => {
     navigate(`/${page}`);
   }
 
+  const handleUsernameClick = () => {
+    if (username) {
+      navigate(`/profile`);
+    }
+  }
+
   const username = useSelector((state: RootState) => state.user.username);
 
   const isLoggedIn = useAuth();
@@ -23,7 +29,10 @@ export const LoginBar = () => {
     <div className="login-bar">
       {isLoggedIn ? (
         <div className="logged-in-bar">
-          <p>Welcome, {username}</p>
+          <div className="welcome-text">
+            <p>Welcome,&nbsp;</p>
+            <p onClick={handleUsernameClick} className='username'>{username}</p>
+          </div>
           <LogoutButton />
         </div>
       ) : (
