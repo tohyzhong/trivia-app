@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ColDef } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import defaultAvatar from '../../assets/default-avatar.jpg';
 import '../../styles/friendslist.css';
 
@@ -16,6 +16,7 @@ const FriendsList: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -44,6 +45,7 @@ const FriendsList: React.FC = () => {
       field: 'profilePicture',
       width: 200,
       autoHeight: true,
+      sortable: false,
       cellRenderer: (params: any) => {
         const profilePic = params.value || defaultAvatar;
         return (
@@ -51,7 +53,8 @@ const FriendsList: React.FC = () => {
             src={profilePic}
             alt={username}
             onError={e => (e.currentTarget.src = defaultAvatar)}
-            style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+            style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
+            onClick={() => navigate(`/profile/${params.data.username}`)}
           />
         )
       }
@@ -59,7 +62,17 @@ const FriendsList: React.FC = () => {
     {
       headerName: 'Username',
       field: 'username',
-      flex: 1
+      flex: 1,
+      cellRenderer: (params: any) => {
+        return (
+          <span
+            className="username-link"
+            onClick={() => navigate(`/profile/${params.data.username}`)}  // Navigate on click
+          >
+            {params.value}
+          </span>
+        );
+      },
     }
   ];
 
