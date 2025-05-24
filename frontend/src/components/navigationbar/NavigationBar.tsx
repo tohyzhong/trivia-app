@@ -52,11 +52,12 @@ export const NavigationBar = () => {
 
   // Search Bar
   const handleSearch = (e) => {
+    setSearchQuery('');
+    setMatchingProfiles([]);
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/profile/${searchQuery}`);
-      setSearchQuery('');
-      setMatchingProfiles([]);
+      window.location.reload();
     }
   };
 
