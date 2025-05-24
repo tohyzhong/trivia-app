@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { RootState } from '../../redux/store';
 import { useSelector } from "react-redux";
+import { useParams } from 'react-router-dom';
+import defaultAvatar from '../../assets/default-avatar.jpg';
+import '../../styles/Profile.css';
 
 interface UserProfile {
   username: string;
@@ -9,6 +12,7 @@ interface UserProfile {
   correctNumber: number;
   friends: string[];
   currency: number;
+  profilePicture: string;
 }
 
 interface ProfileProps {
@@ -16,8 +20,9 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ user1 }) => {
-  const user2 = useSelector((state: RootState) => state.user.username);
-  const username = user1 || user2;
+  const { username: paramUsername } = useParams<{ username: string }>();
+  const usernameFromRedux = useSelector((state: RootState) => state.user.username);
+  const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -40,7 +45,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   }, [username]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   if (!user) {
@@ -48,13 +53,34 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   }
 
   return (
-    <div>
-      <h1>{user.username}'s Profile</h1>
-      <p>Win Rate: {user.winRate}%</p>
-      <p>Correct Rate: {user.correctRate}%</p>
-      <p>Correct Answers: {user.correctNumber}</p>
-      <p>Friends: {user.friends.join(', ')}</p>
-      <p>Currency: {user.currency}</p>
+    <div className="profile-container">
+      <div className="profile-header">
+        <h1>{user.username}'s Profile</h1>
+        <img
+          src={user.profilePicture || defaultAvatar}
+          alt={`${user.username}'s profile`}
+          className="profile-image"
+        />
+      </div>
+
+      <div className="profile-details">
+        <p><strong>Win Rate:</strong> {user.winRate}%</p>
+        <p><strong>Correct Rate:</strong> {user.correctRate}%</p>
+        <p><strong>Correct Answers:</strong> {user.correctNumber}</p>
+        <p><strong>Currency:</strong> {user.currency}</p>
+
+        <div className="friends-list">
+          <h3>Friends:</h3>
+          <ul>
+            {user.friends.map((friend, index) => (
+              <li key={friend}>
+                <span>{index + 1}. </span>
+                {friend}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 };
