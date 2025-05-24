@@ -5,12 +5,14 @@ import NavigationBar from './components/navigationbar/NavigationBar'
 import GameMainpage from './components/game/GameMainpage'
 import Leaderboard from './components/leaderboard/Leaderboard'
 import Settings from './components/settingspage/Settings'
-import Profile from './components/profilepage/Profile'
 import AboutPage from './components/about/AboutPage'
 import HomePage from './components/homepage/HomePage'
 import LoginPage from './components/loginpage/LoginPage'
 import SignupPage from "./components/loginpage/SignupPage"
 import PasswordReset from "./components/loginpage/PasswordReset";
+
+import ProfileRoutes from './components/profilepage/ProfileRoutes';
+import React from "react";
 
 function App() {
   const Components = [
@@ -18,7 +20,6 @@ function App() {
     { component: GameMainpage, path: '/play' },
     { component: Leaderboard, path: '/leaderboard' },
     { component: Settings, path: '/settings' },
-    { component: Profile, path: '/profile' },
     { component: AboutPage, path: '/about' },
     { component: LoginPage, path: '/login' },
     { component: SignupPage, path: '/signup' },
@@ -33,6 +34,7 @@ function App() {
           const ComponentName = comp.component;
           return <Route path={comp.path} element={<ComponentName />} />
         })}
+        <Route path="/profile/*" element={<ProfileRoutes />} />
       </Routes>
     </BrowserRouter>
   )
