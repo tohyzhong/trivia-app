@@ -5,6 +5,26 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
+// Get users from query
+router.get('/search-profiles', authenticate, async (req, res) => {
+  const query = req.query.query?.toLowerCase() || '';
+
+  try {
+    if (!query) {
+      return res.json([]);
+    }
+
+    const matchingUsers = await User.find({
+      username: { $regex: query, $options: 'i' },
+    }).select('username').limit(20);
+
+    res.json(matchingUsers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get profile
 router.get('/:username', authenticate, async (req, res) => {
   const { username } = req.params;

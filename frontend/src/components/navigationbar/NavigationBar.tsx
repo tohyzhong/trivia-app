@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import LoginBar from './LoginBar';
 import "../../styles/navbar.css"
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
 export const NavigationBar = () => {
   const isLoggedIn = useAuth();
+  const navigate = useNavigate();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [matchingProfiles, setMatchingProfiles] = useState([]);
 
   const [navBar, updateNavBar] = useState([
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
-    { name: 'Play', path: '/play' },
     { name: 'Leaderboard', path: '/leaderboard' },
   ])
 
@@ -47,17 +50,82 @@ export const NavigationBar = () => {
     });
   }, [location.pathname, navBar])
 
+  // Search Bar
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/profile/${searchQuery}`);
+      setSearchQuery('');
+      setMatchingProfiles([]);
+    }
+  };
+
+  const filterProfiles = async (query) => {
+    if (!query) {
+      setMatchingProfiles([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/profile/search-profiles?query=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('Failed to fetch profiles');
+      const data = await response.json();
+      setMatchingProfiles(data);
+    } catch (err) {
+      setMatchingProfiles([]);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    filterProfiles(query);
+  };
+
   const onAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/forgotpassword';
 
   return !onAuthPage ? (
     <nav className='navbar'>
-      <ul className='nav-list'>
-        {navBar.map((item) =>
-          <li key={item.name.toLowerCase() + "-button"} className='nav-item'>
-            <a href={item.path}>{item.name}</a>
-          </li>
-        )}
-      </ul>
+      <div className='nav-search'>
+        <ul className='nav-list'>
+          {navBar.map((item) =>
+            <li key={item.name.toLowerCase() + "-button"} className='nav-item'>
+              <a href={item.path}>{item.name}</a>
+            </li>
+          )}
+        </ul>
+
+        <div className='search-bar'>
+          <form onSubmit={handleSearch} className="search-form">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleInputChange}
+              placeholder="Search for a profile"
+            />
+            <button type="submit">Search</button>
+          </form>
+
+          {matchingProfiles.length > 0 && (
+            <div className="profile-dropdown">
+              <ul>
+                {matchingProfiles.map((profile) => (
+                  <li key={profile.username} onClick={
+                    () => {
+                      navigate(`/profile/${profile.username}`)
+                      setSearchQuery('');
+                      setMatchingProfiles([]);
+                    }
+                  }>
+                    {profile.username}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
       <LoginBar />
     </nav>
   ) : (<></>)

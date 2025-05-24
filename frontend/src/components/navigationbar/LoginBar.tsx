@@ -4,6 +4,7 @@ import "../../styles/loginbar.css"
 import useAuth from '../../hooks/useAuth';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import React from 'react';
 
 export const LoginBar = () => {
   const navigate = useNavigate();
