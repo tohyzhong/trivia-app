@@ -1,7 +1,9 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import LogoutButton from './LogoutButton'
 import "../../styles/loginbar.css"
+import useAuth from '../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 export const LoginBar = () => {
   const navigate = useNavigate();
@@ -10,8 +12,12 @@ export const LoginBar = () => {
     navigate(`/${page}`);
   }
 
-  const isLoggedIn = !!localStorage.getItem('token');
-  const username = "testuser"; // TODO: Replace with actual username retrieval logic
+  const username = useSelector((state: RootState) => state.user.username);
+
+  const isLoggedIn = useAuth();
+  if (isLoggedIn === null) {
+    return null;
+  }
 
   return (
     <div className="login-bar">

@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/loginpage.css';
 import { ReturnButton } from './ReturnButton';
+import useAuth from '../../hooks/useAuth';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const isLoggedIn = !!localStorage.getItem('token');
-  if (isLoggedIn) {
-    navigate('/');
-  }
+  const isLoggedIn = useAuth();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +33,8 @@ const LoginPage: React.FC = () => {
     const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem('token', data.token);
+      window.location.reload();
+      dispatch(setUser({ username: username, email: data.email, verified: data.verified }));
       navigate('/');
     } else {
       setError(data.error || 'Login failed');

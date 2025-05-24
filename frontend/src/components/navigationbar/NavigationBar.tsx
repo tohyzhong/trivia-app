@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import LoginBar from './LoginBar';
 import "../../styles/navbar.css"
 import { useLocation } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 export const NavigationBar = () => {
-  const isLoggedIn = !!localStorage.getItem('token');
+  const isLoggedIn = useAuth();
 
   const [navBar, updateNavBar] = useState([
     { name: 'Home', path: '/' },
