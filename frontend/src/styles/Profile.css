@@ -83,6 +83,11 @@
   margin-left: 20px;
 }
 
+.friends-list h3:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .friends-list ul {
   list-style-type: none;
   padding-left: 0;
