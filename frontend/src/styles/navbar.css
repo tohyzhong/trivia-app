@@ -111,6 +111,14 @@
   cursor: pointer;
 }
 
+.profile-dropdown li:first-child {
+  background-color: #f0f0f0;
+}
+
+.profile-dropdown ul:hover li:not(:hover):first-child {
+  background-color: white;
+}
+
 .profile-dropdown li:hover {
   background-color: #f0f0f0;
 }

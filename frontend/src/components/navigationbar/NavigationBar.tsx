@@ -52,11 +52,13 @@ export const NavigationBar = () => {
 
   // Search Bar
   const handleSearch = (e) => {
+    e.preventDefault();
+    const topProfile = matchingProfiles[0].username ?? searchQuery.trim();
     setSearchQuery('');
     setMatchingProfiles([]);
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/profile/${searchQuery}`);
+
+    if (topProfile) {
+      navigate(`/profile/${topProfile}`);
       window.location.reload();
     }
   };
