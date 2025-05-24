@@ -4,7 +4,7 @@ import { setUser } from '../redux/userSlice';
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const dispatch = useDispatch();  // Hook to dispatch Redux actions
+  const dispatch = useDispatch();
 
   const checkAuth = async () => {
     try {

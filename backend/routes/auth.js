@@ -66,8 +66,9 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ error: 'Wrong Password' });
 
     const token = jwt.sign({
-      id: user._id, username: user.username,  // Add the username
-      email: user.email,        // Add the email
+      id: user._id,
+      username: user.username,
+      email: user.email,
       verified: user.verified
     }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token, {
