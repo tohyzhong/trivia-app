@@ -95,35 +95,38 @@ export const NavigationBar = () => {
           )}
         </ul>
 
-        <div className='search-bar'>
-          <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleInputChange}
-              placeholder="Search for a profile"
-            />
-            <button type="submit">Search</button>
-          </form>
+        {isLoggedIn ? (
+          <div className='search-bar'>
+            <form onSubmit={handleSearch} className="search-form">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleInputChange}
+                placeholder="Search for a profile"
+              />
+              <button type="submit">Search</button>
+            </form>
 
-          {matchingProfiles.length > 0 && (
-            <div className="profile-dropdown">
-              <ul>
-                {matchingProfiles.map((profile) => (
-                  <li key={profile.username} onClick={
-                    () => {
-                      navigate(`/profile/${profile.username}`)
-                      setSearchQuery('');
-                      setMatchingProfiles([]);
-                    }
-                  }>
-                    {profile.username}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+            {matchingProfiles.length > 0 && (
+              <div className="profile-dropdown">
+                <ul>
+                  {matchingProfiles.map((profile) => (
+                    <li key={profile.username} onClick={
+                      () => {
+                        navigate(`/profile/${profile.username}`)
+                        setSearchQuery('');
+                        setMatchingProfiles([]);
+                      }
+                    }>
+                      {profile.username}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : null
+        }
       </div>
 
       <LoginBar />
