@@ -34,13 +34,6 @@
   margin-top: 100px;
 }
 
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
 .profile-image {
   border-radius: 50%;
   border: 3px solid #4caf50;
@@ -51,6 +44,7 @@
 }
 
 .profile-details-container {
+  position: relative;
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -105,4 +99,67 @@
 
 .profile-header h1 {
   color: black !important;
+  margin-top: 20px;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.profile-header-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.friend-buttons-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
+.add-friend-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.add-friend-button:hover {
+  background-color: #45a049;
+}
+
+.remove-friend-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.remove-friend-button:hover {
+  background-color: #e53935;
 }

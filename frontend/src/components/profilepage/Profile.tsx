@@ -114,13 +114,35 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h1>{user.username}'s Profile</h1>
-        <img
-          src={user.profilePicture || defaultAvatar}
-          alt={`${user.username}'s profile`}
-          className="profile-image"
-        />
+      <div className="header-buttons">
+        <div className="profile-header-container">
+          <div className="profile-header">
+            <h1>{user.username}'s Profile</h1>
+            <img
+              src={user.profilePicture || defaultAvatar}
+              alt={`${user.username}'s profile`}
+              className="profile-image"
+            />
+          </div>
+        </div>
+
+        <div className="friend-buttons-container">
+          {user.username !== usernameFromRedux && (
+            <>
+              {!isFriend && (
+                <button className="add-friend-button" onClick={handleAddFriend}>
+                  Add Friend
+                </button>
+              )}
+
+              {isFriend && (
+                <button className="remove-friend-button" onClick={handleDeleteFriend}>
+                  Remove Friend
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <div className="profile-details-container">
@@ -142,22 +164,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
             ))}
           </ul>
         </div>
-
-        {user.username !== usernameFromRedux && (
-          <>
-            {!isFriend && (
-              <button className="add-friend-button" onClick={handleAddFriend}>
-                Add Friend
-              </button>
-            )}
-
-            {isFriend && (
-              <button className="remove-friend-button" onClick={handleDeleteFriend}>
-                Remove Friend
-              </button>
-            )}
-          </>
-        )}
       </div>
     </div>
   );
