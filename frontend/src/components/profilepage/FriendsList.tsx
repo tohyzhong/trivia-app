@@ -66,7 +66,7 @@ const FriendsList: React.FC = () => {
         return (
           <span
             className="username-link"
-            onClick={() => navigate(`/profile/${params.data.username}`)}  // Navigate on click
+            onClick={() => navigate(`/profile/${params.data.username}`)}
           >
             {params.value}
           </span>

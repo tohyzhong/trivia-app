@@ -111,8 +111,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     return <div className="not-found">Profile not found</div>;
   }
 
-  console.log("User profile data:", user);
-
   return (
     <div className="profile-container">
       <div className="header-buttons">
