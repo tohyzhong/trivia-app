@@ -23,7 +23,7 @@ function App() {
   useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { verified } = useSelector((state: RootState) => state.user);
+  const verified = useSelector((state: RootState) => state.user.verified);
 
   const authFreeRoutes = ['/settings', '/login', '/signup', '/forgotpassword', '/about', '/', '/leaderboard'];
 

@@ -10,8 +10,8 @@ interface UserState {
 const initialState: UserState = {
   email: '',
   username: '',
-  verified: false,
-  isAuthenticated: false,
+  verified: undefined,
+  isAuthenticated: undefined,
 };
 
 const userSlice = createSlice({
@@ -27,8 +27,8 @@ const userSlice = createSlice({
     logout: (state) => {
       state.username = '';
       state.email = '';
-      state.verified = false;
-      state.isAuthenticated = false;
+      state.verified = undefined;
+      state.isAuthenticated = undefined;
     },
   },
 });
