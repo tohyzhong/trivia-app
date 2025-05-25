@@ -25,36 +25,66 @@ router.get('/search-profiles', authenticate, async (req, res) => {
   }
 });
 
-// Get profile
 router.get('/:username', authenticate, async (req, res) => {
   const { username } = req.params;
 
   try {
-    const userProfile = await Profile.findOne({ username });
+    const results = await Profile.aggregate([
+      { $match: { username } },
 
-    if (!userProfile) {
+      {
+        $lookup: {
+          from: 'profiles',
+          localField: 'friends',
+          foreignField: '_id',
+          as: 'friendProfiles'
+        }
+      },
+
+      {
+        $addFields: {
+          mutualFriends: {
+            $slice: [
+              {
+                $map: {
+                  input: {
+                    $filter: {
+                      input: '$friendProfiles',
+                      as: 'friend',
+                      cond: {
+                        $in: ['$_id', '$$friend.friends']
+                      }
+                    }
+                  },
+                  as: 'mutual',
+                  in: '$$mutual.username'
+                }
+              },
+              10
+            ]
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          winRate: 1,
+          correctRate: 1,
+          correctNumber: 1,
+          currency: 1,
+          profilePicture: 1,
+          friends: '$mutualFriends'
+        }
+      }
+    ]);
+
+    if (results.length === 0) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    const friends = userProfile.friends;
-
-    const friendProfiles = await Profile.find({
-      _id: { $in: friends }
-    });
-
-    const mutualFriends = friendProfiles
-      .filter(profile => profile.friends.some(id => id.equals(userProfile._id)))
-      .map(profile => profile.username)
-      .slice(0, 10);
-
-    const mutualFriendsFiltered = mutualFriends.filter(friend => friend !== null);
-
-    const profileResponse = {
-      ...userProfile.toObject(),
-      friends: mutualFriendsFiltered,
-    };
-
-    res.json(profileResponse);
+    res.json(results[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -66,24 +96,54 @@ router.get('/:username/friends', authenticate, async (req, res) => {
   const { username } = req.params;
 
   try {
-    const userProfile = await Profile.findOne({ username }).select('friends');
+    const results = await Profile.aggregate([
+      { $match: { username } },
 
-    if (!userProfile) {
+      {
+        $lookup: {
+          from: 'profiles',
+          localField: 'friends',
+          foreignField: '_id',
+          as: 'friendProfiles'
+        }
+      },
+
+      {
+        $addFields: {
+          mutualFriends: {
+            $filter: {
+              input: '$friendProfiles',
+              as: 'friend',
+              cond: {
+                $in: ['$_id', '$$friend.friends']
+              }
+            }
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0,
+          mutualFriends: {
+            $map: {
+              input: '$mutualFriends',
+              as: 'friend',
+              in: {
+                username: '$$friend.username',
+                profilePicture: '$$friend.profilePicture'
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    if (results.length === 0) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    const friends = userProfile.friends;
-    const friendProfiles = await Profile.find({
-      _id: { $in: friends }
-    });
-
-    const mutualFriends = friendProfiles
-      .filter(profile => profile.friends.some(id => id.equals(userProfile._id)))
-      .map(profile => { return { username: profile.username, profilePicture: profile.profilePicture } });
-
-    const validMutualFriends = mutualFriends.filter(friend => friend !== null);
-
-    res.json(validMutualFriends);
+    res.json(results[0].mutualFriends);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -95,34 +155,38 @@ router.put('/:username/friends/add', authenticate, async (req, res) => {
   const { username } = req.params;
   const { friendUsername } = req.body;
 
+  if (username === friendUsername) {
+    return res.status(400).json({ message: 'You cannot add yourself as a friend.' });
+  }
+
   try {
-    const userProfile = await Profile.findOne({ username });
-    const friendProfile = await Profile.findOne({ username: friendUsername }).select('friends _id');
+    const [userProfile, friendProfile] = await Promise.all([
+      Profile.findOne({ username }).select('_id'),
+      Profile.findOne({ username: friendUsername }).select('_id friends')
+    ]);
 
     if (!userProfile || !friendProfile) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    const friendId = friendProfile._id;
     const userId = userProfile._id;
+    const friendId = friendProfile._id;
 
-    if (!userProfile.friends.some(id => id.equals(friendId))) {
-      userProfile.friends.push(friendId);
-      await userProfile.save();
+    await Profile.updateOne(
+      { _id: userId },
+      { $addToSet: { friends: friendId } }
+    );
 
-      if (friendProfile.friends.some(id => id.equals(userId))) {
-        return res.json({ message: 'You are now friends!' });
-      } else {
-        return res.json({ message: 'Friend request sent. Waiting for the other user to add you back.' });
-      }
-    } else if (friendProfile.friends.some(id => id.equals(userId))) {
-      return res.status(400).json({ message: 'You are already friends.' });
-    } else {
-      return res.status(400).json({ message: 'You have already sent a friend request.' });
-    }
+    const isMutual = friendProfile.friends.some(id => id.equals(userId));
+
+    res.json({
+      message: isMutual
+        ? 'You are now friends!'
+        : 'Friend request sent. Waiting for the other user to add you back.'
+    });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -132,25 +196,29 @@ router.put('/:username/friends/remove', authenticate, async (req, res) => {
   const { friendUsername } = req.body;
 
   try {
-    const userProfile = await Profile.findOne({ username });
-    const friendProfile = await Profile.findOne({ username: friendUsername });
+    const [userProfile, friendProfile] = await Promise.all([
+      Profile.findOne({ username }).select('_id'),
+      Profile.findOne({ username: friendUsername }).select('_id')
+    ]);
 
-    if (!userProfile) {
+    if (!userProfile || !friendProfile) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    const friendId = friendProfile?._id;
     const userId = userProfile._id;
+    const friendId = friendProfile._id;
 
-    if (userProfile.friends.some(id => id.equals(friendId))) {
-      userProfile.friends = userProfile.friends.filter(id => !id.equals(friendId));
-      await userProfile.save();
-    }
+    await Promise.all([
+      Profile.updateOne(
+        { _id: userId },
+        { $pull: { friends: friendId } }
+      ),
+      Profile.updateOne(
+        { _id: friendId },
+        { $pull: { friends: userId } }
+      )
+    ]);
 
-    if (friendProfile && friendProfile.friends.some(id => id.equals(userId))) {
-      friendProfile.friends = friendProfile.friends.filter(id => !id.equals(userId));
-      await friendProfile.save();
-    }
     res.json({ message: 'Friend removed successfully.' });
   } catch (error) {
     console.error(error);
