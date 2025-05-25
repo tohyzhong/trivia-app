@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import LoginBar from './LoginBar';
 import "../../styles/navbar.css"
 import { useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 export const NavigationBar = () => {
-  const isLoggedIn = useAuth();
+  const isLoggedIn = useSelector((state: RootState) => state.user.isAuthenticated);
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');

@@ -4,12 +4,14 @@ interface UserState {
   email: string;
   username: string;
   verified: boolean;
+  isAuthenticated?: boolean;
 }
 
 const initialState: UserState = {
   email: '',
   username: '',
   verified: false,
+  isAuthenticated: false,
 };
 
 const userSlice = createSlice({
@@ -20,11 +22,13 @@ const userSlice = createSlice({
       state.username = action.payload.username;
       state.email = action.payload.email;
       state.verified = action.payload.verified;
+      state.isAuthenticated = true;
     },
     logout: (state) => {
       state.username = '';
       state.email = '';
       state.verified = false;
+      state.isAuthenticated = false;
     },
   },
 });

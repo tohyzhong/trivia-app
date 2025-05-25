@@ -4,7 +4,7 @@ import { Middleware } from 'redux';
 
 const loadUserState = () => {
   const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : { username: '', email: '', verified: false };
+  return user ? JSON.parse(user) : { username: '', email: '', verified: false, isAuthenticated: false };
 };
 
 const saveUserState: Middleware = (storeAPI) => (next) => (action) => {

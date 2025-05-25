@@ -4,7 +4,7 @@ import { setUser } from '../../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/loginpage.css';
 import { ReturnButton } from './ReturnButton';
-import useAuth from '../../hooks/useAuth';
+import { RootState } from '../../redux/store';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const isLoggedIn = useAuth();
+  const isLoggedIn = useSelector((state: RootState) => state.user.isAuthenticated);
 
   useEffect(() => {
     if (isLoggedIn) {

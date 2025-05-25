@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import LogoutButton from './LogoutButton'
 import "../../styles/loginbar.css"
-import useAuth from '../../hooks/useAuth';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import React from 'react';
@@ -21,7 +20,8 @@ export const LoginBar = () => {
 
   const username = useSelector((state: RootState) => state.user.username);
 
-  const isLoggedIn = useAuth();
+  const isLoggedIn = useSelector((state: RootState) => state.user.isAuthenticated);
+
   if (isLoggedIn === null) {
     return null;
   }

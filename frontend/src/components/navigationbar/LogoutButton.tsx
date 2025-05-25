@@ -1,8 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../../redux/userSlice';
+import { useDispatch } from 'react-redux';
 
 const LogoutButton: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleLogout = async () => {
     try {
       const res = await fetch('/api/auth/logout', {
@@ -11,6 +14,7 @@ const LogoutButton: React.FC = () => {
       });
 
       if (res.ok) {
+        dispatch(logout());
         window.location.reload();
         navigate('/');
       } else {

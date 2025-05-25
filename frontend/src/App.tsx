@@ -1,5 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import React from "react";
 import './styles/App.css'
+
+import useAuth from './hooks/useAuth';
+
 import NavigationBar from './components/navigationbar/NavigationBar'
 
 import GameMainpage from './components/game/GameMainpage'
@@ -12,9 +16,9 @@ import SignupPage from "./components/loginpage/SignupPage"
 import PasswordReset from "./components/loginpage/PasswordReset";
 
 import ProfileRoutes from './components/profilepage/ProfileRoutes';
-import React from "react";
 
 function App() {
+  useAuth();
   const Components = [
     { component: HomePage, path: '/' },
     { component: GameMainpage, path: '/play' },
@@ -27,16 +31,15 @@ function App() {
   ]
 
   return (
-    <BrowserRouter>
-      <NavigationBar />
-      <Routes>
+    <>
+      <NavigationBar /><Routes>
         {Components.map((comp) => {
           const ComponentName = comp.component;
-          return <Route path={comp.path} element={<ComponentName />} />
+          return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;
         })}
         <Route path="/profile/*" element={<ProfileRoutes />} />
       </Routes>
-    </BrowserRouter>
+    </>
   )
 }
 

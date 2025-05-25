@@ -1,41 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../redux/userSlice';
+import { setUser, logout } from '../redux/userSlice';
+import { useLocation } from 'react-router-dom';
 
 const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const dispatch = useDispatch();
-
-  const checkAuth = async () => {
-    try {
-      const res = await fetch('/api/auth/verify-token', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-
-        dispatch(setUser({
-          username: data.username,
-          email: data.email,
-          verified: data.verified,
-        }));
-
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch (err) {
-      console.error('Error checking authentication:', err);
-      setIsAuthenticated(false);
-    }
-  };
+  const location = useLocation();
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/verify-token', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          dispatch(setUser({
+            username: data.username,
+            email: data.email,
+            verified: data.verified,
+          }));
+        } else {
+          dispatch(logout());
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
+        dispatch(logout());
+      }
+    };
+
     checkAuth();
-  }, []);
-  return isAuthenticated;
+  }, [location.pathname, dispatch]);
 };
 
 export default useAuth;
