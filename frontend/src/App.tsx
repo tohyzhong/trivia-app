@@ -1,5 +1,5 @@
-import { Routes, Route } from "react-router-dom";
-import React from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import './styles/App.css'
 
 import useAuth from './hooks/useAuth';
@@ -16,9 +16,23 @@ import SignupPage from "./components/loginpage/SignupPage"
 import PasswordReset from "./components/loginpage/PasswordReset";
 
 import ProfileRoutes from './components/profilepage/ProfileRoutes';
+import { useSelector } from "react-redux";
+import { RootState } from "./redux/store";
 
 function App() {
   useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { verified } = useSelector((state: RootState) => state.user);
+
+  const authFreeRoutes = ['/settings', '/login', '/signup', '/forgotpassword', '/about', '/', '/leaderboard'];
+
+  useEffect(() => {
+    if (verified === false && !authFreeRoutes.includes(location.pathname)) {
+      navigate('/settings', { replace: true });
+    }
+  }, [verified, location.pathname, navigate]);
+
   const Components = [
     { component: HomePage, path: '/' },
     { component: GameMainpage, path: '/play' },
@@ -32,7 +46,8 @@ function App() {
 
   return (
     <>
-      <NavigationBar /><Routes>
+      <NavigationBar />
+      <Routes>
         {Components.map((comp) => {
           const ComponentName = comp.component;
           return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;

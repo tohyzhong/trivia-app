@@ -54,7 +54,7 @@ export const NavigationBar = () => {
   // Search Bar
   const handleSearch = (e) => {
     e.preventDefault();
-    const topProfile = matchingProfiles[0].username ?? searchQuery.trim();
+    const topProfile = matchingProfiles[0]?.username ?? searchQuery.trim();
     setSearchQuery('');
     setMatchingProfiles([]);
 
