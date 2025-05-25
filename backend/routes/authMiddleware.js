@@ -15,7 +15,7 @@ const authenticate = (req, res, next) => {
       username: decoded.username,
       email: decoded.email,
       verified: decoded.verified,
-    }, process.env.JWT_SECRET, { expiresIn: '10m' });
+    }, process.env.JWT_SECRET, { expiresIn: '30m' });
 
     res.cookie('token', newToken, {
       httpOnly: true,

@@ -37,21 +37,10 @@ router.post('/register', [
 
   const { email, username, password } = req.body;
   try {
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      return res.status(400).json({ errors: [{ msg: 'Email is already in use.' }] });
-    }
-
-    const existingUsername = await User.findOne({ username });
-    if (existingUsername) {
-      return res.status(400).json({ errors: [{ msg: 'Username is already in use.' }] });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, username, password: hashedPassword, verified: false });
-    await user.save();
+    await User.create({ email, username, password: hashedPassword, verified: false });
 
-    const profile = new Profile({
+    await Profile.create({
       username,
       profilePicture: '',
       winRate: 0,
@@ -60,10 +49,15 @@ router.post('/register', [
       friends: [],
       currency: 0
     });
-    await profile.save();
 
     res.status(201).json({ message: 'User registered' });
   } catch (err) {
+    // MongoDB error 11000 is for duplicate keys
+    if (err.code === 11000) {
+      const dupField = Object.keys(err.keyPattern)[0];
+      return res.status(400).json({ errors: [{ msg: `${dupField.charAt(0).toUpperCase() + dupField.slice(1)} is already in use.` }] });
+    }
+
     res.status(500).json({ error: err.message });
   }
 });
@@ -78,27 +72,70 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: 'Wrong Password' });
 
-    let profile = await Profile.findOne({ username });
+    await Profile.updateOne(
+      { username },
+      {
+        $setOnInsert: {
+          username,
+          profilePicture: '',
+          winRate: 0,
+          correctRate: 0,
+          correctNumber: 0,
+          friends: [],
+          currency: 0
+        }
+      },
+      { upsert: true }
+    );
 
-    if (!profile) {
-      profile = new Profile({
-        username,
-        profilePicture: '',
-        winRate: 0,
-        correctRate: 0,
-        correctNumber: 0,
-        friends: [],
-        currency: 0
-      });
-      await profile.save();
-    }
+    await Profile.updateOne(
+      { username },
+      [
+        {
+          $set: {
+            profilePicture: {
+              $cond: [{ $eq: [{ $ifNull: ["$profilePicture", null] }, null] }, "", "$profilePicture"]
+            },
+            winRate: {
+              $cond: [{ $eq: [{ $ifNull: ["$winRate", null] }, null] }, 0, "$winRate"]
+            },
+            correctRate: {
+              $cond: [{ $eq: [{ $ifNull: ["$correctRate", null] }, null] }, 0, "$correctRate"]
+            },
+            correctNumber: {
+              $cond: [{ $eq: [{ $ifNull: ["$correctNumber", null] }, null] }, 0, "$correctNumber"]
+            },
+            friends: {
+              $cond: [{ $eq: [{ $ifNull: ["$friends", null] }, null] }, [], "$friends"]
+            },
+            currency: {
+              $cond: [{ $eq: [{ $ifNull: ["$currency", null] }, null] }, 0, "$currency"]
+            }
+          }
+        }
+      ]
+    );
+
+
+    await User.updateOne(
+      { username },
+      [
+        {
+          $set: {
+            verified: {
+              $cond: [{ $eq: [{ $ifNull: ["$currency", null] }, null] }, false, "$verified"]
+            }
+          }
+        }
+      ]
+    );
 
     const token = jwt.sign({
       id: user._id,
       username: user.username,
       email: user.email,
       verified: user.verified
-    }, process.env.JWT_SECRET, { expiresIn: '10m' });
+    }, process.env.JWT_SECRET, { expiresIn: '30m' });
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
