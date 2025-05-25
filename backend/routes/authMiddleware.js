@@ -15,13 +15,13 @@ const authenticate = (req, res, next) => {
       username: decoded.username,
       email: decoded.email,
       verified: decoded.verified,
-    }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     res.cookie('token', newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict',
-      expires: new Date(Date.now() + 30 * 60 * 1000),
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
     req.user = decoded;

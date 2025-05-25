@@ -135,12 +135,12 @@ router.post('/login', async (req, res) => {
       username: user.username,
       email: user.email,
       verified: user.verified
-    }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict',
-      expires: new Date(Date.now() + 1 * 30 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
     });
 
     res.json({
