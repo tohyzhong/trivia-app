@@ -37,7 +37,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching profile data", error);
-        setLoading(false);
       }
     };
 
@@ -108,9 +107,11 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     window.location.reload();
   };
 
-  if (!user || user.message === "Profile not found") {
+  if (!user || user.message === "Profile not found" || user.message === "Not authenticated") {
     return <div className="not-found">Profile not found</div>;
   }
+
+  console.log("User profile data:", user);
 
   return (
     <div className="profile-container">
