@@ -7,8 +7,6 @@ const UserSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false }
 });
 
-UserSchema.index({ username: 1 });
-
 const User = mongoose.model('User', UserSchema);
 
 export default User;

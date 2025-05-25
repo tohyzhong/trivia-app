@@ -13,8 +13,6 @@ const profileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-profileSchema.index({ username: 1 });
-
 const Profile = mongoose.model('Profile', profileSchema);
 
 export default Profile;
