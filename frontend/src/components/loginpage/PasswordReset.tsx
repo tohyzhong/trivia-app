@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
 
   // For OTP input and verification
   const [OTPInput, setOTPInput] = React.useState(new Array(6).fill(''));
-  const [OTP, setOTP] = React.useState(new Array(6).fill(''));
+  const [OTP, setOTP] = React.useState(123456); // Placeholder
 
   // Post-verification
   const [verified, setVerified] = React.useState(false);
@@ -45,14 +45,6 @@ const LoginPage: React.FC = () => {
     }
   }
 
-  const createNewOTP = () => {
-    const newOTP = new Array(6).fill('');
-    for (let i = 0; i < newOTP.length; i++) {
-      newOTP[i] = Math.floor(Math.random() * 10).toString();
-    }
-    setOTP(newOTP);
-  }
-
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -65,25 +57,28 @@ const LoginPage: React.FC = () => {
     const data = await res.json();
 
     if (res.ok) {
-      // createNewOTP(); // Creates a new random OTP
-      setOTP(['1', '2', '3', '4', '5', '6']); // For testing purposes, set a static OTP
-      // TODO: send OTP to the user's email
+      console.log(data.otp)
+      setOTP(data.otp);
       setOTPSent(true);
     } else {
       alert(data.error || 'Failed to send OTP');
     }
   }
 
+  // Debugging
+  useEffect(() => {
+    console.log('OTPInput:', OTPInput);
+  }, [OTPInput]);
+
   const verifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const enteredOTP = OTPInput.join('');
-    const actualOTP = OTP.join('');
-    if (enteredOTP !== actualOTP) {
+    if (enteredOTP !== OTP.toString()) {
       alert('Invalid OTP. Please try again.');
       return;
     } else {
-      alert('Successfully verified OTP');
+      alert('Successfully verified OTP.');
       setVerified(true);
     }
   }
@@ -109,7 +104,7 @@ const LoginPage: React.FC = () => {
     const data = await res.json();
 
     if (res.ok) {
-      alert('Password reset successfully');
+      alert('Password reset successfully. Redirecting to Login Page...');
       navigate('/login');
     } else {
       alert(data.error || 'Failed to reset password');

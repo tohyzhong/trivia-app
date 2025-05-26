@@ -1,5 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
@@ -166,7 +167,38 @@ router.post('/forgotpassword', async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: 'No user found with that email address.' });
     } else {
-      return res.status(200).json({ message: 'Password reset link sent to your email.' });
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      })
+
+      // Verify (debugging purposes)
+      await transporter.verify();
+      console.log('Email server is ready to send messages.');
+
+      // Generate OTP
+      const OTP = Math.floor(100000 + Math.random() * 900000);
+
+      (async () => {
+        try {
+          console.log('Sending email...');
+          const info = await transporter.sendMail({
+            from: '"The Rizz Quiz" <therizzquiz@gmail.com>',
+            to: email,
+            subject: 'Password Reset Request',
+            text: 'You have requested a password reset.\nYour OTP is: ' + OTP,
+          })
+        } catch (err) {
+          console.error('Error sending email:', err);
+        }
+      })();
+
+      return res.status(200).json({ message: 'Password reset link sent to your email.', otp: OTP });
     }
   } catch (err) {
     return res.status(500).json({ error: err.message });
