@@ -6,6 +6,7 @@ import cors from 'cors';
 
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
+import settingsRoutes from './routes/settings.js';
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use('/api/auth', authRoutes);
 
 // User Profile for Profile Page
 app.use('/api/profile', profileRoutes);
+
+// Settings Page (Change Profile Picture, Change Email, Change Password, Delete Account)
+app.use('/api/settings', settingsRoutes);
 
 app.listen(5000, () => {
     console.log("Server is running on port 5000");
