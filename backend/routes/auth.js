@@ -123,7 +123,7 @@ router.post('/login', async (req, res) => {
         {
           $set: {
             verified: {
-              $cond: [{ $eq: [{ $ifNull: ["$currency", null] }, null] }, false, "$verified"]
+              $cond: [{ $eq: [{ $ifNull: ["$verified", null] }, null] }, false, "$verified"]
             }
           }
         }
