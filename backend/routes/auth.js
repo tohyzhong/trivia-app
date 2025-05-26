@@ -39,7 +39,12 @@ router.post('/register', [
   const { email, username, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ email, username, password: hashedPassword, verified: false });
+    await User.create({ 
+      email, 
+      username, 
+      password: hashedPassword, 
+      previousPasswords: [hashedPassword],
+      verified: false });
 
     await Profile.create({
       username,
@@ -166,6 +171,8 @@ router.post('/forgotpassword', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: 'No user found with that email address.' });
+    } else if (!user.verified) {
+      return res.status(400).json({ error: 'User is not verified. Please verify your account before resetting the password.' });
     } else {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -210,25 +217,50 @@ router.post('/forgotpassword', async (req, res) => {
 // Verify Password Reset Token
 router.post('/verifyreset', async (req, res) => {
   const { token } = req.body;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
   try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email, purpose } = decoded;
     if (purpose !== 'passwordReset') {
-      return res.status(400).json({ error: 'Invalid token purpose.' });
+      return res.status(400).json({ error: 'Invalid token purpose' });
     } else {
       return res.status(200).json({ email });
     }
   } catch (err) {
-    return res.status(400).json({ error: 'Invalid or expired token.' });
+    return res.status(400).json({ error: 'Invalid or expired token' });
   }
 })
 
-// Reset Password
-router.post('/resetpassword', async (req, res) => {
+// Reset password
+router.post('/resetpassword', [
+  body('email').isEmail().withMessage('Please provide a valid email address.'),
+  body('password')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter.')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number.')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    user.password = await bcrypt.hash(password, 10);
+
+    // Check if assword has been used before
+    for (const prevPassword of user.previousPasswords) {
+      const isMatch = await bcrypt.compare(password, prevPassword);
+      if (isMatch) return res.status(400).json({ errors: [{msg: 'Your new password cannot be the same as your last 3 passwords.'}] });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.previousPasswords.push(hashedPassword);
+    if (user.previousPasswords.length > 3) {
+      user.previousPasswords.shift(); 
+    }
+
     await user.save();
     return res.status(200).json({ message: 'Password reset successfully.' });
   } catch (err) {

@@ -2,7 +2,7 @@ import React, { FormEvent, useEffect } from 'react';
 import '../../../styles/forgotpassword.css';
 import { ReturnButton } from './ReturnButton';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import ErrorMessage from './ErrorMessage';
+import ErrorPopup from './ErrorPopup';
 
 const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +14,8 @@ const PasswordReset: React.FC = () => {
   const [countdown, setCountdown] = React.useState(30);
 
   // Post-verification
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [errorPopupMessage, setErrorPopupMessage] = React.useState('');
+  const [errorMessages, setErrorMessages] = React.useState<string[]>([]);
   const [verified, setVerified] = React.useState(false);
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -34,7 +35,7 @@ const PasswordReset: React.FC = () => {
         setVerified(true);
         setEmail(data.email);
       } else {
-        setErrorMessage(data.error || 'Invalid or expired token');
+        setErrorPopupMessage(data.error || 'Invalid or expired token');
       }
     }
   }
@@ -113,6 +114,9 @@ const PasswordReset: React.FC = () => {
       navigate('/auth/login');
     } else {
       alert(data.error || 'Failed to reset password');
+      const errorMessages = data.errors.map((error: { msg: string }) => error.msg);
+      setErrorMessages(errorMessages);
+      console.log(errorMessages);
     }
   }
 
@@ -132,6 +136,13 @@ const PasswordReset: React.FC = () => {
             placeholder="Confirm New Password"
             required
           />
+          {errorMessages.length > 0 && (
+            <div className='error-message'>
+              {errorMessages.map((error, index) => (
+                <p key={index}>{error}</p>
+              ))}
+            </div>
+          )}
           <div className='buttons-container'>
             <ReturnButton />
             <button type="submit" className='submit-button'>Reset Password</button>
@@ -141,7 +152,7 @@ const PasswordReset: React.FC = () => {
     </div>
   ) : (
     <>
-      {errorMessage !== '' && <ErrorMessage message={errorMessage}/>}
+      {errorPopupMessage !== '' && <ErrorPopup message={errorPopupMessage}/>}
       <div className="password-reset-page">
         <div className="form-container">
           <form onSubmit={handleSendEmail}>
