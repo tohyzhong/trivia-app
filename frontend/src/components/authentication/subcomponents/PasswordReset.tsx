@@ -1,9 +1,9 @@
 import React, { FormEvent, useEffect } from 'react';
-import '../../styles/forgotpassword.css';
+import '../../../styles/forgotpassword.css';
 import { ReturnButton } from './ReturnButton';
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
+const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = React.useState('');
 
@@ -105,7 +105,7 @@ const LoginPage: React.FC = () => {
 
     if (res.ok) {
       alert('Password reset successfully. Redirecting to Login Page...');
-      navigate('/login');
+      navigate('/auth/login');
     } else {
       alert(data.error || 'Failed to reset password');
     }
@@ -182,4 +182,4 @@ const LoginPage: React.FC = () => {
   )
 };
 
-export default LoginPage;
+export default PasswordReset;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../styles/signuppage.css';
+import '../../../styles/signuppage.css';
 import { ReturnButton } from './ReturnButton';
 
 const SignupPage: React.FC = () => {
@@ -27,7 +27,7 @@ const SignupPage: React.FC = () => {
 
     if (res.ok) {
       alert('Registered successfully. Redirecting...');
-      window.location.href = '/login';
+      window.location.href = '/auth/login';
     } else {
       if (data.errors) {
         const errorMessages = data.errors.map((error: { msg: string }) => error.msg);
@@ -82,7 +82,7 @@ const SignupPage: React.FC = () => {
             required
           />
         </div>
-        <p className='register-message'>Have an account? <a href='/login'>Log in here!</a></p>
+        <p className='register-message'>Have an account? <a href='/auth/login'>Log in here!</a></p>
         <div className='buttons-container'>
           <ReturnButton />
           <button type="submit" className='register-button'>Register</button>

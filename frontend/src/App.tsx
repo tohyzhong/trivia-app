@@ -11,9 +11,7 @@ import Leaderboard from './components/leaderboard/Leaderboard'
 import Settings from './components/settingspage/Settings'
 import AboutPage from './components/about/AboutPage'
 import HomePage from './components/homepage/HomePage'
-import LoginPage from './components/loginpage/LoginPage'
-import SignupPage from "./components/loginpage/SignupPage"
-import PasswordReset from "./components/loginpage/PasswordReset";
+import Authentication from "./components/authentication/Authentication";
 
 import ProfileRoutes from './components/profilepage/ProfileRoutes';
 import { useSelector } from "react-redux";
@@ -25,7 +23,7 @@ function App() {
   const navigate = useNavigate();
   const verified = useSelector((state: RootState) => state.user.verified);
 
-  const authFreeRoutes = ['/settings', '/login', '/signup', '/forgotpassword', '/about', '/', '/leaderboard'];
+  const authFreeRoutes = ['/settings', '/auth/login', '/auth/signup', '/auth/forgotpassword', '/about', '/', '/leaderboard'];
 
   useEffect(() => {
     if (verified === false && !authFreeRoutes.includes(location.pathname)) {
@@ -39,9 +37,7 @@ function App() {
     { component: Leaderboard, path: '/leaderboard' },
     { component: Settings, path: '/settings' },
     { component: AboutPage, path: '/about' },
-    { component: LoginPage, path: '/login' },
-    { component: SignupPage, path: '/signup' },
-    { component: PasswordReset, path: '/forgotpassword' },
+    { component: Authentication, path: '/auth/*' }
   ]
 
   return (

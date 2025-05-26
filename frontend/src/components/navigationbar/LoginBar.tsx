@@ -9,7 +9,7 @@ export const LoginBar = () => {
   const navigate = useNavigate();
   const onClick = (e) => {
     const page = e.target.className.slice(0, e.target.className.indexOf('-button'));
-    navigate(`/${page}`);
+    navigate(`/auth/${page}`);
   }
 
   const handleUsernameClick = () => {

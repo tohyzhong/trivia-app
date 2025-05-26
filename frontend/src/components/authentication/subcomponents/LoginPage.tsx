@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from '../../redux/userSlice';
+import { setUser } from '../../../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
-import '../../styles/loginpage.css';
+import '../../../styles/loginpage.css';
 import { ReturnButton } from './ReturnButton';
-import { RootState } from '../../redux/store';
+import { RootState } from '../../../redux/store';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -60,12 +60,12 @@ const LoginPage: React.FC = () => {
             placeholder="Password"
             required
           />
-          <a className='forgot-password' href='/forgotpassword'>Forgot Password?</a>
+          <a className='forgot-password' href='/auth/forgotpassword'>Forgot Password?</a>
           <div className='buttons-container'>
             <ReturnButton />
             <button type="submit" className='submit-button'>Login</button>
           </div>
-          <p className='register-message'>Don't have an account? <a href='/signup'>Sign up here!</a></p>
+          <p className='register-message'>Don't have an account? <a href='/auth/signup'>Sign up here!</a></p>
         </form>
       </div>
     </div>
