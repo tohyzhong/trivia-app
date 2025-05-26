@@ -6,6 +6,7 @@ import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import Profile from '../models/Profile.js';
 import authenticate from './authMiddleware.js';
+import sendEmail from '../utils/email.js';
 
 const router = express.Router();
 
@@ -39,12 +40,13 @@ router.post('/register', [
   const { email, username, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ 
-      email, 
-      username, 
-      password: hashedPassword, 
+    await User.create({
+      email,
+      username,
+      password: hashedPassword,
       previousPasswords: [hashedPassword],
-      verified: false });
+      verified: false
+    });
 
     await Profile.create({
       username,
@@ -55,6 +57,8 @@ router.post('/register', [
       friends: [],
       currency: 0
     });
+
+    emailVerificationToken(username, req, res);
 
     res.status(201).json({ message: 'User registered' });
   } catch (err) {
@@ -174,38 +178,20 @@ router.post('/forgotpassword', async (req, res) => {
     } else if (!user.verified) {
       return res.status(400).json({ error: 'User is not verified. Please verify your account before resetting the password.' });
     } else {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
-      })
-
-      // Verify (debugging purposes)
-      await transporter.verify();
-
-      // Generate Token
       const token = jwt.sign({
         email: email,
         purpose: 'passwordReset',
       }, process.env.JWT_SECRET, { expiresIn: '10m' });
       const link = `${process.env.FRONTEND_URL}/auth/forgotpassword?token=${token}`;
 
-      (async () => {
-        try {
-          const info = await transporter.sendMail({
-            from: '"The Rizz Quiz" <therizzquiz@gmail.com>',
-            to: email,
-            subject: 'Password Reset Request',
-            text: 'You have requested a password reset.\nClick the link below to reset your password:\n\n' + link
-          })
-        } catch (err) {
-          console.error('Error sending email:', err);
-        }
-      })();
+      const emailContent = `
+        <p>Hello ${user.username},</p>
+        <p>To reset your password, click the link below:</p>
+        <p><a href="${link}">Reset Password</a></p>
+        <p>This link will expire in 10 minutes.</p>
+      `;
+
+      await sendEmail(email, 'Password Reset Request', '', emailContent);
 
       return res.status(200).json({ message: 'Password reset link sent to your email.' });
     }
@@ -251,14 +237,14 @@ router.post('/resetpassword', [
     // Check if assword has been used before
     for (const prevPassword of user.previousPasswords) {
       const isMatch = await bcrypt.compare(password, prevPassword);
-      if (isMatch) return res.status(400).json({ errors: [{msg: 'Your new password cannot be the same as your last 3 passwords.'}] });
+      if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
     user.previousPasswords.push(hashedPassword);
     if (user.previousPasswords.length > 3) {
-      user.previousPasswords.shift(); 
+      user.previousPasswords.shift();
     }
 
     await user.save();
@@ -267,5 +253,86 @@ router.post('/resetpassword', [
     return res.status(500).json({ error: err.message });
   }
 })
+
+// Request Verification Email
+router.post('/send-verification-email', async (req, res) => {
+  const { username } = req.body;
+
+  emailVerificationToken(username, req, res);
+});
+
+// Email Verification API
+router.get('/verify', async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    const { userId } = decodedToken;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.verified = true;
+    await user.save();
+
+    const newToken = jwt.sign({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      verified: true,
+    }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    res.cookie('token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    res.status(200).json({ message: 'User verified successfully!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error verifying token', error: err.message });
+  }
+});
+
+// Helper function to send email verification token
+const emailVerificationToken = async (username, req, res) => {
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'User is already verified' });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const verificationUrl = `${process.env.FRONTEND_URL}/settings/verify-action?action=verify&token=${token}`;
+    const emailContent = `
+      <p>Hello ${user.username},</p>
+      <p>To verify your email address, click the link below:</p>
+      <p><a href="${verificationUrl}">Verify Email</a></p>
+      <p>This link will expire in 1 hour.</p>
+    `;
+
+    await sendEmail(user.email, 'Please verify your email address', '', emailContent);
+
+    res.status(200).json({ message: 'Verification email sent successfully' });
+
+  } catch (err) {
+    console.error('Error sending verification email:', err);
+    res.status(500).json({ message: 'Error sending verification email', error: err.message });
+  }
+};
 
 export default router;
