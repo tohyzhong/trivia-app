@@ -2,9 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import { body, validationResult } from 'express-validator';
-import Token from '../models/Token.js';
 import User from '../models/User.js';
 import Profile from '../models/Profile.js';
 import authenticate from './authMiddleware.js';
@@ -183,9 +181,11 @@ router.post('/forgotpassword', async (req, res) => {
       await transporter.verify();
 
       // Generate Token
-      const token = uuidv4();
+      const token = jwt.sign({
+        email: email,
+        purpose: 'passwordReset',
+      }, process.env.JWT_SECRET, { expiresIn: '10m' });
       const link = `${process.env.FRONTEND_URL}/auth/forgotpassword?token=${token}`;
-      console.log(link);
 
       (async () => {
         try {
@@ -200,16 +200,6 @@ router.post('/forgotpassword', async (req, res) => {
         }
       })();
 
-      // Push onto Tokens collection
-      const expiryDate = new Date();
-      expiryDate.setMinutes(expiryDate.getMinutes() + 10); // 10 minutes expiry
-      await Token.create({
-        purpose: 'passwordReset',
-        email: email,
-        token: token,
-        expiresAt: expiryDate
-      })
-
       return res.status(200).json({ message: 'Password reset link sent to your email.' });
     }
   } catch (err) {
@@ -220,18 +210,16 @@ router.post('/forgotpassword', async (req, res) => {
 // Verify Password Reset Token
 router.post('/verifyreset', async (req, res) => {
   const { token } = req.body;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
   try {
-    const tokenDocument = await Token.findOne({token: token, purpose: 'passwordReset', expiresAt: { $gt: new Date() } });
-    if (!tokenDocument) {
-      return res.status(400).json({ error: 'Invalid or expired token.' });
+    const { email, purpose } = decoded;
+    if (purpose !== 'passwordReset') {
+      return res.status(400).json({ error: 'Invalid token purpose.' });
     } else {
-      const email = tokenDocument.email;
-      // Delete document (no longer needed)
-      await Token.deleteOne({token: token, purpose: 'passwordReset'})
-      return res.status(200).json({ message: 'Token is valid.', email: email });
+      return res.status(200).json({ email });
     }
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(400).json({ error: 'Invalid or expired token.' });
   }
 })
 

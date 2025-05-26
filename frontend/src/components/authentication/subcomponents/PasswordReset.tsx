@@ -57,7 +57,7 @@ const PasswordReset: React.FC = () => {
 
     if (res.ok) {
       setEmailSent(true);
-      setCountdown(5);
+      setCountdown(60);
     } else {
       alert(data.error || 'Failed to send OTP');
     }
@@ -120,7 +120,7 @@ const PasswordReset: React.FC = () => {
     <div className="password-reset-page">
       <div className="form-container">
         <form onSubmit={handlePasswordReset}>
-          <h3>Password Reset</h3>
+          <h3>Password Reset ({email})</h3>
           <p>Request verified successfully!</p>
           <input
             type="password"
@@ -153,7 +153,7 @@ const PasswordReset: React.FC = () => {
           {emailSent && (
             <div className='email-sent-container'>
               <p className='email-sent-message'>An email containing the password reset request has been sent to {messageEmail}</p>
-              {countdown > 0 && (<p className='email-resend-message'>Didn't receive it? <a className='email-resend-button'>Send again</a>in {countdown} seconds</p>)}
+              {countdown > 0 && (<p className='email-resend-message'>Didn't receive it? <a className='email-resend-button'>Send again </a>in {countdown} seconds</p>)}
             </div>
           )}
           <div className='buttons-container'>
