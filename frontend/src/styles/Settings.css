@@ -1,0 +1,84 @@
+.settings-container {
+  margin-top: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 600px;
+  font-size: 18px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.settings-actions {
+  margin-top: 30px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.settings-actions input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.settings-actions button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.settings-actions button:hover {
+  background-color: #45a049;
+}
+
+.profile-picture-change,
+.email-change,
+.password-reset,
+.delete-account {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.delete-account button {
+  background-color: #f44336;
+}
+
+.delete-account button:hover {
+  background-color: #d32f2f;
+}
+
+.verification-status {
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.verification-status.verified {
+  color: rgb(18, 221, 18);
+}
+
+.verification-status.not-verified {
+  color: red;
+}
+
+.verification-email button {
+  background-color: #007bff;
+  color: white;
+}
+
+.verification-email button:hover {
+  background-color: #0056b3;
+}

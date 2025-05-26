@@ -1,0 +1,103 @@
+.settings-actions-container {
+  margin-top: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f4f7fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.settings-actions-container h1 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.settings-actions-container p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+  margin-top: 15px;
+}
+
+.settings-actions-container p.success {
+  color: #28a745;
+}
+
+.settings-actions-container p.error {
+  color: #dc3545;
+}
+
+.settings-actions-container p.warning {
+  color: #ffc107;
+}
+
+.password-change-form {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+/* Heading for the password change form */
+.password-change-form h3 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Label for inputs */
+.password-change-form label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+/* Input fields for new password and confirmation */
+.password-change-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+/* Input focus styles */
+.password-change-form input:focus {
+  border-color: #45a049;
+  outline: none;
+}
+
+/* Button for submitting the new password */
+.password-change-form button {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #4caf50;
+  /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.password-change-form button:hover {
+  background-color: #45a049;
+}
+
+/* Button active state (when clicked) */
+.password-change-form button:active {
+  background-color: #388e3c;
+}
