@@ -2,8 +2,7 @@ import React, { FormEvent, useEffect } from 'react';
 import '../../../styles/forgotpassword.css';
 import { ReturnButton } from './ReturnButton';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-
+import ErrorMessage from './ErrorMessage';
 
 const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +14,7 @@ const PasswordReset: React.FC = () => {
   const [countdown, setCountdown] = React.useState(30);
 
   // Post-verification
+  const [errorMessage, setErrorMessage] = React.useState('');
   const [verified, setVerified] = React.useState(false);
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -34,7 +34,7 @@ const PasswordReset: React.FC = () => {
         setVerified(true);
         setEmail(data.email);
       } else {
-        // Invalid token page
+        setErrorMessage(data.error || 'Invalid or expired token');
       }
     }
   }
@@ -140,29 +140,32 @@ const PasswordReset: React.FC = () => {
       </div>
     </div>
   ) : (
-    <div className="password-reset-page">
-      <div className="form-container">
-        <form onSubmit={handleSendEmail}>
-          <input
-            type="text"
-            value={messageEmail}
-            onChange={(e) => setMessageEmail(e.target.value)}
-            placeholder="Email"
-            required
-          />
-          {emailSent && (
-            <div className='email-sent-container'>
-              <p className='email-sent-message'>An email containing the password reset request has been sent to {messageEmail}</p>
-              {countdown > 0 && (<p className='email-resend-message'>Didn't receive it? <a className='email-resend-button'>Send again </a>in {countdown} seconds</p>)}
+    <>
+      {errorMessage !== '' && <ErrorMessage message={errorMessage}/>}
+      <div className="password-reset-page">
+        <div className="form-container">
+          <form onSubmit={handleSendEmail}>
+            <input
+              type="text"
+              value={messageEmail}
+              onChange={(e) => setMessageEmail(e.target.value)}
+              placeholder="Email"
+              required
+            />
+            {emailSent && (
+              <div className='email-sent-container'>
+                <p className='email-sent-message'>An email containing the password reset request has been sent to {messageEmail}</p>
+                {countdown > 0 && (<p className='email-resend-message'>Didn't receive it? <a className='email-resend-button'>Send again </a>in {countdown} seconds</p>)}
+              </div>
+            )}
+            <div className='buttons-container'>
+              <ReturnButton />
+              <button type="submit" className='submit-button send-email-button'>Send Email</button>
             </div>
-          )}
-          <div className='buttons-container'>
-            <ReturnButton />
-            <button type="submit" className='submit-button send-email-button'>Send Email</button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   )
 };
 
