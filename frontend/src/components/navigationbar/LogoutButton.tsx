@@ -15,8 +15,8 @@ const LogoutButton: React.FC = () => {
 
       if (res.ok) {
         dispatch(logout());
-        window.location.reload();
         navigate('/');
+        window.location.reload();
       } else {
         const data = await res.json();
         console.error('Logout failed:', data.message || 'An error occurred');
