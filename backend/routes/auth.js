@@ -2,7 +2,9 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import { body, validationResult } from 'express-validator';
+import Token from '../models/Token.js';
 import User from '../models/User.js';
 import Profile from '../models/Profile.js';
 import authenticate from './authMiddleware.js';
@@ -179,26 +181,54 @@ router.post('/forgotpassword', async (req, res) => {
 
       // Verify (debugging purposes)
       await transporter.verify();
-      console.log('Email server is ready to send messages.');
 
-      // Generate OTP
-      const OTP = Math.floor(100000 + Math.random() * 900000);
+      // Generate Token
+      const token = uuidv4();
+      const link = `${process.env.FRONTEND_URL}/auth/forgotpassword?token=${token}`;
+      console.log(link);
 
       (async () => {
         try {
-          console.log('Sending email...');
           const info = await transporter.sendMail({
             from: '"The Rizz Quiz" <therizzquiz@gmail.com>',
             to: email,
             subject: 'Password Reset Request',
-            text: 'You have requested a password reset.\nYour OTP is: ' + OTP,
+            text: 'You have requested a password reset.\nClick the link below to reset your password:\n\n' + link
           })
         } catch (err) {
           console.error('Error sending email:', err);
         }
       })();
 
-      return res.status(200).json({ message: 'Password reset link sent to your email.', otp: OTP });
+      // Push onto Tokens collection
+      const expiryDate = new Date();
+      expiryDate.setMinutes(expiryDate.getMinutes() + 10); // 10 minutes expiry
+      await Token.create({
+        purpose: 'passwordReset',
+        email: email,
+        token: token,
+        expiresAt: expiryDate
+      })
+
+      return res.status(200).json({ message: 'Password reset link sent to your email.' });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+})
+
+// Verify Password Reset Token
+router.post('/verifyreset', async (req, res) => {
+  const { token } = req.body;
+  try {
+    const tokenDocument = await Token.findOne({token: token, purpose: 'passwordReset', expiresAt: { $gt: new Date() } });
+    if (!tokenDocument) {
+      return res.status(400).json({ error: 'Invalid or expired token.' });
+    } else {
+      const email = tokenDocument.email;
+      // Delete document (no longer needed)
+      await Token.deleteOne({token: token, purpose: 'passwordReset'})
+      return res.status(200).json({ message: 'Token is valid.', email: email });
     }
   } catch (err) {
     return res.status(500).json({ error: err.message });

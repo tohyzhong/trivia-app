@@ -1,88 +1,93 @@
 import React, { FormEvent, useEffect } from 'react';
 import '../../../styles/forgotpassword.css';
 import { ReturnButton } from './ReturnButton';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+
 
 const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = React.useState('');
+  const [messageEmail, setMessageEmail] = React.useState('');
 
-  // Check if OTP has been sent
-  const [OTPSent, setOTPSent] = React.useState(false);
-
-  // For OTP input and verification
-  const [OTPInput, setOTPInput] = React.useState(new Array(6).fill(''));
-  const [OTP, setOTP] = React.useState(123456); // Placeholder
+  // Check if password request email has been sent
+  const [emailSent, setEmailSent] = React.useState(false);
+  const [countdown, setCountdown] = React.useState(30);
 
   // Post-verification
   const [verified, setVerified] = React.useState(false);
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
 
-  const handleOTPChange = (index, value) => {
-    const newOTPInput = [...OTPInput];
-    newOTPInput[index] = value;
-    setOTPInput(newOTPInput);
+  // Verification of unique token
+  const verifyToken = async (token) => {
+    if (token) {
+      const res = await fetch('/api/auth/verifyreset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
 
-    if (value && index < OTPInput.length - 1) {
-      const nextInput = document.querySelector(`input:nth-child(${index + 2})`);
-      if (nextInput) {
-        (nextInput as HTMLInputElement).focus();
+      const data = await res.json();
+
+      if (res.ok) {
+        setVerified(true);
+        setEmail(data.email);
+      } else {
+        // Invalid token page
       }
     }
   }
 
-  // For debugging purposes
   useEffect(() => {
-    console.log('OTPInput:', OTPInput);
-  }, [OTPInput]);
+    verifyToken(token);
+  }, [token])
 
-  const handleOTPKeyDown = (e, index) => {
-    if (e.key !== 'Backspace' && e.key !== 'Delete') return;
-    if (e.target.value === '' && index > 0) {
-      const prevInput = document.querySelector(`input:nth-child(${index})`);
-      if (prevInput) {
-        (prevInput as HTMLInputElement).focus();
-      }
-    }
-  }
-
-  const handleSendOTP = async (e: React.FormEvent) => {
+  // Email sending handler
+  const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const res = await fetch('/api/auth/forgotpassword', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: messageEmail }),
     })
 
     const data = await res.json();
 
     if (res.ok) {
-      console.log(data.otp)
-      setOTP(data.otp);
-      setOTPSent(true);
+      setEmailSent(true);
+      setCountdown(5);
     } else {
       alert(data.error || 'Failed to send OTP');
     }
   }
 
-  // Debugging
+  // Handle countdown for resending email
   useEffect(() => {
-    console.log('OTPInput:', OTPInput);
-  }, [OTPInput]);
-
-  const verifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const enteredOTP = OTPInput.join('');
-    if (enteredOTP !== OTP.toString()) {
-      alert('Invalid OTP. Please try again.');
-      return;
-    } else {
-      alert('Successfully verified OTP.');
-      setVerified(true);
+    if (countdown > 0) {
+      const timer = setInterval(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
     }
-  }
+  }, [countdown]);
 
+  // Disable button if countdown is active
+  useEffect(() => {
+    if (emailSent) {
+      const button = document.querySelector('.send-email-button');
+      button.textContent = 'Resend Email';
+      if (countdown <= 0) {
+        button.classList.remove('disabled-button');
+      } else {
+        button.classList.add('disabled-button');
+        button.textContent = `Resend Email (${countdown})`;
+      }
+    }
+  }, [countdown, emailSent]);
+
+  // Password reset handler
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -116,7 +121,7 @@ const PasswordReset: React.FC = () => {
       <div className="form-container">
         <form onSubmit={handlePasswordReset}>
           <h3>Password Reset</h3>
-          <p>OTP verified successfully!</p>
+          <p>Request verified successfully!</p>
           <input
             type="password"
             placeholder="New Password"
@@ -134,47 +139,26 @@ const PasswordReset: React.FC = () => {
         </form>
       </div>
     </div>
-  ) : !OTPSent ? (
-    <div className="password-reset-page">
-      <div className="form-container">
-        <form onSubmit={handleSendOTP}>
-          <input
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-          />
-          <div className='buttons-container'>
-            <ReturnButton />
-            <button type="submit" className='submit-button'>Send OTP</button>
-          </div>
-        </form>
-      </div>
-    </div>
   ) : (
     <div className="password-reset-page">
       <div className="form-container">
-        <form onSubmit={verifyOTP}>
-          <h3>Email Verification</h3>
-          <p>A 6-digit OTP has been sent to your email</p>
-          <div className='otp-input'>
-            {OTPInput.map((digit, index) => (
-              <input
-                key={index}
-                className='otp-input-box'
-                type="text"
-                value={digit}
-                onChange={(e) => handleOTPChange(index, e.target.value)}
-                onKeyDown={(e) => handleOTPKeyDown(e, index)}
-                maxLength={1}
-                required
-              />
-            ))}
-          </div>
+        <form onSubmit={handleSendEmail}>
+          <input
+            type="text"
+            value={messageEmail}
+            onChange={(e) => setMessageEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
+          {emailSent && (
+            <div className='email-sent-container'>
+              <p className='email-sent-message'>An email containing the password reset request has been sent to {messageEmail}</p>
+              {countdown > 0 && (<p className='email-resend-message'>Didn't receive it? <a className='email-resend-button'>Send again</a>in {countdown} seconds</p>)}
+            </div>
+          )}
           <div className='buttons-container'>
             <ReturnButton />
-            <button type="submit" className='submit-button'>Submit OTP</button>
+            <button type="submit" className='submit-button send-email-button'>Send Email</button>
           </div>
         </form>
       </div>

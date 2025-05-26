@@ -86,7 +86,7 @@ export const NavigationBar = () => {
     filterProfiles(query);
   };
 
-  const onAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/forgotpassword';
+  const onAuthPage = location.pathname.startsWith('/auth');
 
   return !onAuthPage ? (
     <nav className='navbar'>
