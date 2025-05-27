@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
+import UsedToken from '../models/UsedToken.js';
 import Profile from '../models/Profile.js';
 import authenticate from './authMiddleware.js';
 import sendEmail from '../utils/email.js';
@@ -204,12 +205,25 @@ router.post('/forgotpassword', async (req, res) => {
 // Verify Password Reset Token
 router.post('/verifyreset', async (req, res) => {
   const { token } = req.body;
+
+  // Check if token has been used before
+  const usedToken = await UsedToken.findOne({ token });
+  if (usedToken) {
+    return res.status(400).json({ message: 'This token has already been used.' });
+  }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email, purpose } = decoded;
     if (purpose !== 'passwordReset') {
       return res.status(400).json({ error: 'Invalid token purpose' });
     } else {
+      // Save used token to prevent reuse
+      await UsedToken.create({
+        token,
+        usedAt: Date.now()
+      })
+
       return res.status(200).json({ email });
     }
   } catch (err) {
@@ -235,7 +249,7 @@ router.post('/resetpassword', [
   try {
     const user = await User.findOne({ email });
 
-    // Check if assword has been used before
+    // Check if password has been used before
     for (const prevPassword of user.previousPasswords) {
       const isMatch = await bcrypt.compare(password, prevPassword);
       if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
@@ -272,6 +286,12 @@ router.post('/send-verification-email', async (req, res) => {
 router.get('/verify', async (req, res) => {
   const { token } = req.query;
 
+  // Check if token has been used before
+  const usedToken = await UsedToken.findOne({ token });
+  if (usedToken) {
+    return res.status(400).json({ message: 'This token has already been used.' });
+  }
+
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -284,6 +304,12 @@ router.get('/verify', async (req, res) => {
 
     user.verified = true;
     await user.save();
+
+    // Save used token to prevent reuse
+    await UsedToken.create({
+      token,
+      usedAt: Date.now()
+    })
 
     const newToken = jwt.sign({
       id: user._id,
