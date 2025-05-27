@@ -23,6 +23,7 @@
     "mongoose": "^8.15.0",
     "mongoose-execution-time": "^1.1.1",
     "morgan": "^1.10.0",
+    "node-cron": "^4.0.7",
     "nodemailer": "^7.0.3",
     "response-time": "^2.3.3",
     "uuid": "^11.1.0"

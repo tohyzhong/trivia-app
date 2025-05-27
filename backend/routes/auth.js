@@ -221,7 +221,7 @@ router.post('/verifyreset', async (req, res) => {
       // Save used token to prevent reuse
       await UsedToken.create({
         token,
-        usedAt: Date.now()
+        usedAt: new Date()
       })
 
       return res.status(200).json({ email });
@@ -308,7 +308,7 @@ router.get('/verify', async (req, res) => {
     // Save used token to prevent reuse
     await UsedToken.create({
       token,
-      usedAt: Date.now()
+      usedAt: new Date()
     })
 
     const newToken = jwt.sign({

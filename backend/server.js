@@ -9,6 +9,7 @@ import profileRoutes from './routes/profile.js';
 import settingsRoutes from './routes/settings.js';
 
 import morgan from 'morgan';
+import runSchedulers from './utils/tasks.js';
 
 dotenv.config();
 
@@ -57,5 +58,7 @@ app.use('/api/settings', settingsRoutes);
 app.listen(5000, () => {  // uncomment for local production testing
     console.log("Server is running on port 5000");
 });
+
+runSchedulers();
 
 export default app;
