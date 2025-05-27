@@ -57,7 +57,7 @@ router.post('/register', [
       currency: 0
     });
 
-    emailVerificationToken(username, req, res);
+    await emailVerificationToken(username, req, res);
 
     res.status(201).json({ message: 'User registered' });
   } catch (err) {
@@ -260,7 +260,7 @@ router.post('/send-verification-email', async (req, res) => {
   const { username } = req.body;
 
   try {
-    emailVerificationToken(username, req, res);
+    await emailVerificationToken(username, req, res);
     res.status(200).json({ message: 'Verification email sent successfully' });
   } catch (err) {
     console.error('Error sending verification email:', err);
@@ -310,11 +310,11 @@ const emailVerificationToken = async (username, req, res) => {
   const user = await User.findOne({ username });
 
   if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+    throw new Error('User not found');
   }
 
-  if (user.isVerified) {
-    return res.status(400).json({ message: 'User is already verified' });
+  if (user.verified) {
+    throw new Error('User is already verified');
   }
 
   const token = jwt.sign(
