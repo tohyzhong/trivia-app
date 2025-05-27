@@ -29,7 +29,7 @@ const connectMongo = async () => {
     }
 
     try {
-        await mongoose.connect(process.env.CONNECTION_STRING, {
+        await mongoose.connect(process.env.CONNECTION_STRING + process.env.NODE_ENV, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
