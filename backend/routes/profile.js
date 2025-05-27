@@ -16,7 +16,7 @@ router.get('/search-profiles', authenticate, async (req, res) => {
 
     const matchingUsers = await User.find({
       username: { $regex: query, $options: 'i' },
-    }).select('username').limit(20);
+    }).select('username').lean().limit(10);
 
     res.json(matchingUsers);
   } catch (error) {
@@ -98,6 +98,8 @@ router.get('/:username/friends', authenticate, async (req, res) => {
   try {
     const results = await Profile.aggregate([
       { $match: { username } },
+
+      { $limit: 1 },
 
       {
         $lookup: {
