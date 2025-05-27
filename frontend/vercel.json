@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
@@ -9,7 +9,7 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/(.*)\\.(js|css|png|jpg|jpeg|svg|webp)",
+      "source": "/:path*\\.(js|css|png|jpg|jpeg|svg|webp)",
       "headers": [
         {
           "key": "Cache-Control",
