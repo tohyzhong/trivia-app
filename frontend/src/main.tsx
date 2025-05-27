@@ -11,12 +11,12 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const root = document.getElementById('root') as HTMLElement
 if (root !== null) {
   createRoot(root).render(
-    <StrictMode>
-      <Provider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </Provider>,
-    </StrictMode>,
+    // <StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>,
+    /* </StrictMode>, */
   )
 }
