@@ -140,12 +140,6 @@ router.post('/login', async (req, res) => {
     //   ]
     // );
 
-    console.log('Setting token cookie with options:', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    });
     const token = jwt.sign({
       id: user._id,
       username: user.username,
