@@ -89,7 +89,7 @@ const Settings: React.FC = () => {
   // Handle email change request
   const handleEmailChangeRequest = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings//change-email`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/change-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
