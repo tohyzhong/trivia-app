@@ -99,7 +99,6 @@ export const NavigationBar = () => {
         <ul className='nav-list'>
           {navBar.map((item) =>
             <li key={item.name.toLowerCase() + "-button"} className='nav-item'>
-              {/* <a href={item.path}>{item.name}</a> */}
               <Link to={item.path}>{item.name}</Link>
             </li>
           )}

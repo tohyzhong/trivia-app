@@ -59,7 +59,7 @@ function App() {
     <>
       <>
         <NavigationBar />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<></>}>
           <Routes>
             {Components.map((comp) => {
               const ComponentName = comp.component;
