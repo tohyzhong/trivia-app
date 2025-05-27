@@ -8,6 +8,8 @@ import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import settingsRoutes from './routes/settings.js';
 
+import morgan from 'morgan';
+
 dotenv.config();
 
 const app = express();
@@ -29,6 +31,8 @@ mongoose.connect(process.env.CONNECTION_STRING, {
         console.error('MongoDB connection error:', err);
         process.exit(1);
     });
+
+app.use(morgan(':method :url :status :response-time ms'));
 
 // User Authentication for Login Page
 app.use('/api/auth', authRoutes);

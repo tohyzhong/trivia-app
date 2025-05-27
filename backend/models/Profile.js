@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+import { logExecutionTime } from 'mongoose-execution-time';
+// mongoose.plugin(logExecutionTime, {
+//   loggerLevel: 'info'
+// });
 
 const profileSchema = new mongoose.Schema(
   {
