@@ -20,17 +20,28 @@ app.use(cors({
     credentials: true,
 }));
 
-mongoose.connect(process.env.CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => {
+let isConnected = false;
+
+const connectMongo = async () => {
+    if (isConnected) {
+        console.log('MongoDB already connected');
+        return;
+    }
+
+    try {
+        await mongoose.connect(process.env.CONNECTION_STRING, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        isConnected = true;
         console.log('MongoDB connected');
-    })
-    .catch((err) => {
+    } catch (err) {
         console.error('MongoDB connection error:', err);
         process.exit(1);
-    });
+    }
+};
+
+connectMongo();
 
 app.use(morgan(':method :url :status :response-time ms'));
 
@@ -43,6 +54,8 @@ app.use('/api/profile', profileRoutes);
 // Settings Page (Change Profile Picture, Change Email, Change Password, Delete Account)
 app.use('/api/settings', settingsRoutes);
 
-app.listen(5000, () => {
-    console.log("Server is running on port 5000");
-});
+export default app; // comment out for local production testing
+
+// app.listen(5000, () => {
+//     console.log("Server is running on port 5000");
+// });
