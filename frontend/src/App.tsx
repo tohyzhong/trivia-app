@@ -17,6 +17,8 @@ import ProfileRoutes from './components/profilepage/ProfileRoutes';
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 
+import { SpeedInsights } from '@vercel/speed-insights/react';
+
 function App() {
   const isAuthChecked = useAuth();
 
@@ -55,14 +57,17 @@ function App() {
 
   return (
     <>
-      <NavigationBar />
-      <Routes>
-        {Components.map((comp) => {
-          const ComponentName = comp.component;
-          return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;
-        })}
-        <Route path="/profile/*" element={<ProfileRoutes />} />
-      </Routes>
+      <>
+        <NavigationBar />
+        <Routes>
+          {Components.map((comp) => {
+            const ComponentName = comp.component;
+            return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;
+          })}
+          <Route path="/profile/*" element={<ProfileRoutes />} />
+        </Routes>
+      </>
+      <SpeedInsights />
     </>
   )
 }
