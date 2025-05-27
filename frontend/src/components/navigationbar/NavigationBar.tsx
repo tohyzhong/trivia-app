@@ -71,7 +71,12 @@ export const NavigationBar = () => {
     }
 
     try {
-      const response = await fetch(`/api/profile/search-profiles?query=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/profile/search-profiles?query=${encodeURIComponent(query)}`,
+        {
+          credentials: 'include',
+        }
+      );
       if (!response.ok) throw new Error('Failed to fetch profiles');
       const data = await response.json();
       setMatchingProfiles(data);

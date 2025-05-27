@@ -24,18 +24,19 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ username, password }),
     });
 
     const data = await res.json();
 
     if (res.ok) {
-      window.location.reload();
+      // window.location.reload();
       dispatch(setUser({ username: username, email: data.email, verified: data.verified }));
-      navigate('/');
+      // navigate('/');
     } else {
       setError(data.error || 'Login failed');
     }

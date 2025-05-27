@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
     "esModuleInterop": true,
-    "lib": ["dom", "es2015"]
+    "lib": [
+      "dom",
+      "es2015"
+    ]
   },
   "include": [
     "src/**/*"

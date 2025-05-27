@@ -21,7 +21,10 @@ const FriendsList: React.FC = () => {
     const fetchFriends = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/profile/${username}/friends`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${username}/friends`,
+          {
+            credentials: 'include',
+          });
         if (!response.ok) throw new Error('Failed to fetch friends');
 
         const data = await response.json();

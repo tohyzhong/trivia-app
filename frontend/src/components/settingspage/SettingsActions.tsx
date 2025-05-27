@@ -26,7 +26,9 @@ const SettingsActions: React.FC = () => {
       apiCalled.current = true;
       const verifyAction = async () => {
         try {
-          const response = await fetch(`/api/settings/verify-action?token=${token}`);
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/verify-action?token=${token}`, {
+            credentials: 'include',
+          });
 
           const result = await response.json();
           setMessage(result.message || result.error || result.errors.map(error => error.msg).join('\n'));
@@ -36,7 +38,7 @@ const SettingsActions: React.FC = () => {
 
           if (action === 'delete-account') {
             try {
-              const res = await fetch('/api/auth/logout', {
+              const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
                 method: 'POST',
                 credentials: 'include',
               });
@@ -70,11 +72,12 @@ const SettingsActions: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/settings/verify-action?token=${token}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/verify-action?token=${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ newPassword }),
       });
 
@@ -84,7 +87,7 @@ const SettingsActions: React.FC = () => {
         setMessage('Password changed successfully');
         error.current = false;
         try {
-          const res = await fetch('/api/auth/logout', {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
             method: 'POST',
             credentials: 'include',
           });
@@ -120,7 +123,9 @@ const SettingsActions: React.FC = () => {
 
     const verifyAction = async () => {
       try {
-        const response = await fetch(`/api/auth/verify?token=${token}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/verify?token=${token}`, {
+          credentials: 'include',
+        });
 
         const result = await response.json();
         setMessage(result.message || result.error);

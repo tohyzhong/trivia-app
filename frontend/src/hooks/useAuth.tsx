@@ -11,7 +11,7 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/auth/verify-token', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/verify-token`, {
           method: 'GET',
           credentials: 'include',
         });

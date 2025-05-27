@@ -23,9 +23,10 @@ const PasswordReset: React.FC = () => {
   // Verification of unique token
   const verifyToken = async (token) => {
     if (token) {
-      const res = await fetch('/api/auth/verifyreset', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/verifyreset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ token }),
       })
 
@@ -48,9 +49,10 @@ const PasswordReset: React.FC = () => {
   const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch('/api/auth/forgotpassword', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/forgotpassword`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email: messageEmail }),
     })
 
@@ -101,9 +103,10 @@ const PasswordReset: React.FC = () => {
       return;
     }
 
-    const res = await fetch('/api/auth/resetpassword', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/resetpassword`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password: newPassword }),
     });
 

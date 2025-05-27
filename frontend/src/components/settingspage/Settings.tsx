@@ -21,7 +21,10 @@ const Settings: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`/api/profile/${username}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${username}`,
+          {
+            credentials: 'include',
+          });
         const data: UserProfile = await response.json();
         setUser(data);
       } catch (error) {
@@ -40,11 +43,12 @@ const Settings: React.FC = () => {
   // Handle profile picture change
   const handleProfilePictureChange = async () => {
     try {
-      const response = await fetch('/api/settings/update-profile-picture', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/update-profile-picture`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username, profilePictureUrl: newProfilePictureUrl }),
       });
 
@@ -63,11 +67,12 @@ const Settings: React.FC = () => {
   // Handle password reset request
   const handlePasswordResetRequest = async () => {
     try {
-      const response = await fetch('/api/settings//change-password', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings//change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username }),
       });
 
@@ -84,11 +89,12 @@ const Settings: React.FC = () => {
   // Handle email change request
   const handleEmailChangeRequest = async () => {
     try {
-      const response = await fetch('/api/settings//change-email', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings//change-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username, newEmail }),
       });
 
@@ -105,11 +111,12 @@ const Settings: React.FC = () => {
   // Handle account deletion
   const handleAccountDeletion = async () => {
     try {
-      const response = await fetch('/api/settings/delete-account', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/delete-account`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username }),
       });
 
@@ -124,11 +131,12 @@ const Settings: React.FC = () => {
   // Handle send verification email
   const handleVerificationEmail = async () => {
     try {
-      const response = await fetch('/api/auth/send-verification-email', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/send-verification-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username }),
       });
 

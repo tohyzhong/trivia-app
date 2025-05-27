@@ -31,7 +31,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`/api/profile/${username}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${username}`,
+          {
+            credentials: 'include',
+          });
         const data: UserProfile = await response.json();
         setUser(data);
         setLoading(false);
@@ -57,11 +60,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   const handleAddFriend = async () => {
     try {
-      const response = await fetch(`/api/profile/${usernameFromRedux}/friends/add`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${usernameFromRedux}/friends/add`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           friendUsername: user.username,
         }),
@@ -83,11 +87,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   const handleDeleteFriend = async () => {
     try {
-      const response = await fetch(`/api/profile/${usernameFromRedux}/friends/remove`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${usernameFromRedux}/friends/remove`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           friendUsername: user.username,
         }),
