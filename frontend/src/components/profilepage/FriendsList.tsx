@@ -55,7 +55,7 @@ const FriendsList: React.FC = () => {
             src={profilePic}
             alt={username}
             onError={e => (e.currentTarget.src = defaultAvatar)}
-            style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
+            style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
             onClick={() => navigate(`/profile/${params.data.username}`)}
           />
         )
