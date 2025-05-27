@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import LoginBar from './LoginBar';
 import "../../styles/navbar.css"
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 
@@ -99,7 +99,8 @@ export const NavigationBar = () => {
         <ul className='nav-list'>
           {navBar.map((item) =>
             <li key={item.name.toLowerCase() + "-button"} className='nav-item'>
-              <a href={item.path}>{item.name}</a>
+              {/* <a href={item.path}>{item.name}</a> */}
+              <Link to={item.path}>{item.name}</Link>
             </li>
           )}
         </ul>
