@@ -29,7 +29,6 @@ const SettingsActions: React.FC = () => {
           const response = await fetch(`/api/settings/verify-action?token=${token}`);
 
           const result = await response.json();
-          console.log('Action verification result:', result);
           setMessage(result.message || result.error || result.errors.map(error => error.msg).join('\n'));
           if (result.error || result.errors) {
             error.current = true;
@@ -124,7 +123,6 @@ const SettingsActions: React.FC = () => {
         const response = await fetch(`/api/auth/verify?token=${token}`);
 
         const result = await response.json();
-        console.log('Action verification result:', result);
         setMessage(result.message || result.error);
       } catch (err) {
         setMessage(err.message || 'Error verifying action');

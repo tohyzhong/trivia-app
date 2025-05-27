@@ -116,7 +116,6 @@ const PasswordReset: React.FC = () => {
       alert(data.error || 'Failed to reset password');
       const errorMessages = data.errors.map((error: { msg: string }) => error.msg);
       setErrorMessages(errorMessages);
-      console.log(errorMessages);
     }
   }
 
@@ -152,7 +151,7 @@ const PasswordReset: React.FC = () => {
     </div>
   ) : (
     <>
-      {errorPopupMessage !== '' && <ErrorPopup message={errorPopupMessage}/>}
+      {errorPopupMessage !== '' && <ErrorPopup message={errorPopupMessage} />}
       <div className="password-reset-page">
         <div className="form-container">
           <form onSubmit={handleSendEmail}>

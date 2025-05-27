@@ -53,8 +53,6 @@ function App() {
     return null;
   }
 
-  console.log('username: ', username);
-
   return (
     <>
       <NavigationBar />
