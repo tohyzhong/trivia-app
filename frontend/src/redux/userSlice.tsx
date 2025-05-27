@@ -25,8 +25,8 @@ const userSlice = createSlice({
       state.isAuthenticated = true;
     },
     logout: (state) => {
-      state.username = '';
-      state.email = '';
+      state.username = undefined;
+      state.email = undefined;
       state.verified = undefined;
       state.isAuthenticated = undefined;
     },

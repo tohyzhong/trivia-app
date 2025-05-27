@@ -23,14 +23,22 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const verified = useSelector((state: RootState) => state.user.verified);
+  const username = useSelector((state: RootState) => state.user.username);
 
-  const authFreeRoutes = ['/settings', '/auth/login', '/auth/signup', '/auth/forgotpassword', '/about', '/leaderboard'];
+  const authFreeRoutes = ['/auth', '/about', '/leaderboard', '/settings/verify-action'];
+  const verifiedFreeRoutes = authFreeRoutes.concat(['/settings']);
 
   useEffect(() => {
-    if (verified === false && !authFreeRoutes.some(route => location.pathname.startsWith(route)) && location.pathname !== '/') {
+    if (verified === false && !verifiedFreeRoutes.some(route => location.pathname.startsWith(route)) && location.pathname !== '/') {
       navigate('/settings', { replace: true });
     }
   }, [verified, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (username === undefined && !authFreeRoutes.some(route => location.pathname.startsWith(route)) && location.pathname !== '/') {
+      navigate('/', { replace: true });
+    }
+  }, [username, location.pathname, navigate]);
 
   const Components = [
     { component: HomePage, path: '/' },
@@ -44,6 +52,8 @@ function App() {
   if (!isAuthChecked) {
     return null;
   }
+
+  console.log('username: ', username);
 
   return (
     <>
