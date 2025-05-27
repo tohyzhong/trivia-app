@@ -140,6 +140,13 @@ router.post('/login', async (req, res) => {
     //   ]
     // );
 
+    console.log(process.env.NODE_ENV === 'production');
+    console.log('Setting token cookie with options:', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      samesite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    });
     const token = jwt.sign({
       id: user._id,
       username: user.username,
@@ -152,9 +159,6 @@ router.post('/login', async (req, res) => {
       samesite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
     });
-
-    console.log("token", token);
-    console.log("user", user);
 
     res.json({
       email: user.email,
