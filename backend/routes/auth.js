@@ -82,63 +82,63 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: 'Wrong Password' });
 
-    await Profile.updateOne(
-      { username },
-      {
-        $setOnInsert: {
-          username,
-          profilePicture: '',
-          winRate: 0,
-          correctRate: 0,
-          correctNumber: 0,
-          friends: [],
-          currency: 0
-        }
-      },
-      { upsert: true }
-    );
+    // await Profile.updateOne(
+    //   { username },
+    //   {
+    //     $setOnInsert: {
+    //       username,
+    //       profilePicture: '',
+    //       winRate: 0,
+    //       correctRate: 0,
+    //       correctNumber: 0,
+    //       friends: [],
+    //       currency: 0
+    //     }
+    //   },
+    //   { upsert: true }
+    // );
 
-    await Profile.updateOne(
-      { username },
-      [
-        {
-          $set: {
-            profilePicture: {
-              $cond: [{ $eq: [{ $ifNull: ["$profilePicture", null] }, null] }, "", "$profilePicture"]
-            },
-            winRate: {
-              $cond: [{ $eq: [{ $ifNull: ["$winRate", null] }, null] }, 0, "$winRate"]
-            },
-            correctRate: {
-              $cond: [{ $eq: [{ $ifNull: ["$correctRate", null] }, null] }, 0, "$correctRate"]
-            },
-            correctNumber: {
-              $cond: [{ $eq: [{ $ifNull: ["$correctNumber", null] }, null] }, 0, "$correctNumber"]
-            },
-            friends: {
-              $cond: [{ $eq: [{ $ifNull: ["$friends", null] }, null] }, [], "$friends"]
-            },
-            currency: {
-              $cond: [{ $eq: [{ $ifNull: ["$currency", null] }, null] }, 0, "$currency"]
-            }
-          }
-        }
-      ]
-    );
+    // await Profile.updateOne(
+    //   { username },
+    //   [
+    //     {
+    //       $set: {
+    //         profilePicture: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$profilePicture", null] }, null] }, "", "$profilePicture"]
+    //         },
+    //         winRate: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$winRate", null] }, null] }, 0, "$winRate"]
+    //         },
+    //         correctRate: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$correctRate", null] }, null] }, 0, "$correctRate"]
+    //         },
+    //         correctNumber: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$correctNumber", null] }, null] }, 0, "$correctNumber"]
+    //         },
+    //         friends: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$friends", null] }, null] }, [], "$friends"]
+    //         },
+    //         currency: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$currency", null] }, null] }, 0, "$currency"]
+    //         }
+    //       }
+    //     }
+    //   ]
+    // );
 
 
-    await User.updateOne(
-      { username },
-      [
-        {
-          $set: {
-            verified: {
-              $cond: [{ $eq: [{ $ifNull: ["$verified", null] }, null] }, false, "$verified"]
-            }
-          }
-        }
-      ]
-    );
+    // await User.updateOne(
+    //   { username },
+    //   [
+    //     {
+    //       $set: {
+    //         verified: {
+    //           $cond: [{ $eq: [{ $ifNull: ["$verified", null] }, null] }, false, "$verified"]
+    //         }
+    //       }
+    //     }
+    //   ]
+    // );
 
     const token = jwt.sign({
       id: user._id,
@@ -152,6 +152,9 @@ router.post('/login', async (req, res) => {
       samesite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
     });
+
+    console.log("token", token);
+    console.log("user", user);
 
     res.json({
       email: user.email,
