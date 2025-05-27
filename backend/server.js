@@ -54,8 +54,8 @@ app.use('/api/profile', profileRoutes);
 // Settings Page (Change Profile Picture, Change Email, Change Password, Delete Account)
 app.use('/api/settings', settingsRoutes);
 
-export default app; // comment out for local production testing
-
-// app.listen(5000, () => {
+// app.listen(5000, () => {  // uncomment for local production testing
 //     console.log("Server is running on port 5000");
 // });
+
+export default app;
