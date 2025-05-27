@@ -260,7 +260,13 @@ router.post('/resetpassword', [
 router.post('/send-verification-email', async (req, res) => {
   const { username } = req.body;
 
-  emailVerificationToken(username, req, res);
+  try {
+    emailVerificationToken(username, req, res);
+    res.status(200).json({ message: 'Verification email sent successfully' });
+  } catch (err) {
+    console.error('Error sending verification email:', err);
+    res.status(500).json({ message: 'Error sending verification email', error: err.message });
+  }
 });
 
 // Email Verification API
@@ -302,39 +308,31 @@ router.get('/verify', async (req, res) => {
 
 // Helper function to send email verification token
 const emailVerificationToken = async (username, req, res) => {
-  try {
-    const user = await User.findOne({ username });
+  const user = await User.findOne({ username });
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    if (user.isVerified) {
-      return res.status(400).json({ message: 'User is already verified' });
-    }
-
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    const verificationUrl = `${process.env.FRONTEND_URL}/settings/verify-action?action=verify&token=${token}`;
-    const emailContent = `
-      <p>Hello ${user.username},</p>
-      <p>To verify your email address, click the link below:</p>
-      <p><a href="${verificationUrl}">Verify Email</a></p>
-      <p>This link will expire in 1 hour.</p>
-    `;
-
-    await sendEmail(user.email, 'Please verify your email address', '', emailContent);
-
-    res.status(200).json({ message: 'Verification email sent successfully' });
-
-  } catch (err) {
-    console.error('Error sending verification email:', err);
-    res.status(500).json({ message: 'Error sending verification email', error: err.message });
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
   }
+
+  if (user.isVerified) {
+    return res.status(400).json({ message: 'User is already verified' });
+  }
+
+  const token = jwt.sign(
+    { userId: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+
+  const verificationUrl = `${process.env.FRONTEND_URL}/settings/verify-action?action=verify&token=${token}`;
+  const emailContent = `
+    <p>Hello ${user.username},</p>
+    <p>To verify your email address, click the link below:</p>
+    <p><a href="${verificationUrl}">Verify Email</a></p>
+    <p>This link will expire in 1 hour.</p>
+  `;
+
+  await sendEmail(user.email, 'Please verify your email address', '', emailContent);
 };
 
 export default router;
