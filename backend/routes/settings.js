@@ -174,7 +174,7 @@ router.get('/verify-action',
           res.cookie('token', newToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            samesite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
+            samesite: 'None',
             expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
           });
 
