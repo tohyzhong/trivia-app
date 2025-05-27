@@ -140,11 +140,10 @@ router.post('/login', async (req, res) => {
     //   ]
     // );
 
-    console.log(process.env.NODE_ENV === 'production');
     console.log('Setting token cookie with options:', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      samesite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     });
     const token = jwt.sign({
@@ -156,7 +155,7 @@ router.post('/login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      samesite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
     });
 
@@ -172,7 +171,7 @@ router.post('/login', async (req, res) => {
 // Logout
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production', samesite: 'none',
+    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   });
   res.status(200).json({ message: 'Logged out successfully' });
 });
@@ -297,7 +296,7 @@ router.get('/verify', async (req, res) => {
     res.cookie('token', newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      samesite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 

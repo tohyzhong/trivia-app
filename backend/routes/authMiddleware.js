@@ -20,7 +20,7 @@ const authenticate = (req, res, next) => {
     res.cookie('token', newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      samesite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
