@@ -1,5 +1,5 @@
 body {
-  background-image: url('../assets/meme_background.jpg');
+  background-image: url('/meme_background.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -16,7 +16,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: url('../../public/assets/meme_background.jpg');
+  background-image: url('/meme_background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

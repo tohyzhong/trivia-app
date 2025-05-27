@@ -1,23 +1,23 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect, lazy, Suspense } from "react";
 import './styles/App.css'
 
 import useAuth from './hooks/useAuth';
 
 import NavigationBar from './components/navigationbar/NavigationBar'
 
-import GameMainpage from './components/game/GameMainpage'
-import Leaderboard from './components/leaderboard/Leaderboard'
-import SettingsRoutes from './components/settingspage/SettingsRoutes'
-import AboutPage from './components/about/AboutPage'
-import HomePage from './components/homepage/HomePage'
-import Authentication from "./components/authentication/Authentication";
-
-import ProfileRoutes from './components/profilepage/ProfileRoutes';
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 
 import { SpeedInsights } from '@vercel/speed-insights/react';
+
+const HomePage = lazy(() => import('./components/homepage/HomePage'));
+const GameMainpage = lazy(() => import('./components/game/GameMainpage'));
+const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'));
+const SettingsRoutes = lazy(() => import('./components/settingspage/SettingsRoutes'));
+const AboutPage = lazy(() => import('./components/about/AboutPage'));
+const Authentication = lazy(() => import('./components/authentication/Authentication'));
+const ProfileRoutes = lazy(() => import('./components/profilepage/ProfileRoutes'));
 
 function App() {
   const isAuthChecked = useAuth();
@@ -59,13 +59,15 @@ function App() {
     <>
       <>
         <NavigationBar />
-        <Routes>
-          {Components.map((comp) => {
-            const ComponentName = comp.component;
-            return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;
-          })}
-          <Route path="/profile/*" element={<ProfileRoutes />} />
-        </Routes>
+        <Suspense fallback={<></>}>
+          <Routes>
+            {Components.map((comp) => {
+              const ComponentName = comp.component;
+              return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;
+            })}
+            <Route path="/profile/*" element={<ProfileRoutes />} />
+          </Routes>
+        </Suspense>
       </>
       <SpeedInsights />
     </>
