@@ -18,6 +18,7 @@ const SettingsRoutes = lazy(() => import('./components/settingspage/SettingsRout
 const AboutPage = lazy(() => import('./components/about/AboutPage'));
 const Authentication = lazy(() => import('./components/authentication/Authentication'));
 const ProfileRoutes = lazy(() => import('./components/profilepage/ProfileRoutes'));
+const NoAccess = lazy(() => import('./components/noaccess/NoAccess'));
 
 function App() {
   const isAuthChecked = useAuth();
@@ -48,7 +49,8 @@ function App() {
     { component: Leaderboard, path: '/leaderboard' },
     { component: SettingsRoutes, path: '/settings/*' },
     { component: AboutPage, path: '/about' },
-    { component: Authentication, path: '/auth/*' }
+    { component: Authentication, path: '/auth/*' },
+    { component: NoAccess, path: '/noaccess' }
   ]
 
   if (!isAuthChecked) {

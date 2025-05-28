@@ -91,7 +91,7 @@ export const NavigationBar = () => {
     filterProfiles(query);
   };
 
-  const onAuthPage = location.pathname.startsWith('/auth');
+  const onAuthPage = location.pathname.startsWith('/auth') || location.pathname === '/noaccess';
 
   return !onAuthPage ? (
     <nav className='navbar'>
