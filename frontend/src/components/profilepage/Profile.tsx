@@ -10,10 +10,14 @@ interface UserProfile {
   winRate: number;
   correctRate: number;
   correctNumber: number;
-  friends: string[];
   currency: number;
   profilePicture: string;
   message?: string;
+}
+
+interface Friend {
+  username: string;
+  profilePicture: string;
 }
 
 interface ProfileProps {
@@ -25,26 +29,43 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const usernameFromRedux = useSelector((state: RootState) => state.user.username);
   const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${username}`,
-          {
-            credentials: 'include',
-          });
-        const data: UserProfile = await response.json();
-        setUser(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching profile data", error);
-      }
-    };
+  // Retrieve profile details
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${username}`,
+        {
+          credentials: 'include',
+        });
+      const data: UserProfile = await response.json();
+      setUser(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching profile data", error);
+    }
+  };
 
+  // Retrieve friend details
+  const fetchFriends = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/mutual`,
+        {
+          credentials: 'include'
+        });
+      const data = await response.json();
+      setFriends(data);
+    } catch (error) {
+      console.error("Error fetching profile data", error);
+    }
+  }
+
+  useEffect(() => {
     if (username) {
       fetchProfile();
+      fetchFriends();
     }
   }, [username]);
 
@@ -56,11 +77,11 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     navigate(`/profile/${user.username}/friends`);
   }
 
-  const isFriend = user?.friends?.includes(usernameFromRedux) || false;
+  const isFriend = (friends?.map(friend => friend.username)).includes(usernameFromRedux) || false;
 
   const handleAddFriend = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${usernameFromRedux}/friends/add`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${usernameFromRedux}/add`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +108,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   const handleDeleteFriend = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${usernameFromRedux}/friends/remove`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${usernameFromRedux}/remove`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -160,10 +181,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         <div className="friends-list">
           <h3 onClick={() => handleFriendsClick()}>Friends:</h3>
           <ul>
-            {user.friends.map((friend, index) => (
-              <li key={friend} onClick={() => handleFriendClick(friend)}>
+            {friends.map((friend, index) => (
+              <li key={friend.username} onClick={() => handleFriendClick(friend.username)}>
                 <span>{index + 1}. </span>
-                {friend}
+                {friend.username}
               </li>
             ))}
           </ul>

@@ -91,6 +91,7 @@ router.get('/:username', authenticate, async (req, res) => {
   }
 });
 
+/*
 // Get all friends
 router.get('/:username/friends', authenticate, async (req, res) => {
   const { username } = req.params;
@@ -151,7 +152,9 @@ router.get('/:username/friends', authenticate, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+*/
 
+/*
 // Add friend
 router.put('/:username/friends/add', authenticate, async (req, res) => {
   const { username } = req.params;
@@ -227,5 +230,6 @@ router.put('/:username/friends/remove', authenticate, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+*/
 
 export default router;

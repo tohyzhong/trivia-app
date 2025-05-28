@@ -7,7 +7,8 @@ const ProfileRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/:username" element={<Profile />} />
-      <Route path="/:username/friends" element={<FriendsList />} />
+      <Route path="/:username/friends" element={<FriendsList incoming={false} />} />
+      <Route path="/:username/friendrequests" element={<FriendsList incoming={true} />} />
       <Route path="/" element={<Profile />} />
     </Routes>
   );

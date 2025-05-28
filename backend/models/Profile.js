@@ -10,7 +10,6 @@ const profileSchema = new mongoose.Schema(
     winRate: { type: Number, default: 0 },
     correctRate: { type: Number, default: 0 },
     correctNumber: { type: Number, default: 0 },
-    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Profile' }],
     currency: { type: Number, default: 0 },
     profilePicture: { type: String, default: '' },
   },

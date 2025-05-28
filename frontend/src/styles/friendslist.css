@@ -167,3 +167,14 @@ h2 {
 .username-link:hover {
   text-decoration: underline;
 }
+
+.incoming-friend-requests-button {
+  background-color: rgba(0, 255, 0, 0.25);
+  color: white;
+  padding: 10px 20px;
+  margin: 20px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
