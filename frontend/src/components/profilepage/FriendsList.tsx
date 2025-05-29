@@ -6,22 +6,25 @@ import defaultAvatar from '../../assets/default-avatar.jpg';
 import '../../styles/friendslist.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import ToggleButton from './ToggleButton';
 
 interface Friend {
   username: string;
   profilePicture: string;
 }
 
-interface Props {
-  incoming: boolean; // Conditionally render incoming friend requests instead
-}
+const FriendsList: React.FC = () => {
+  const [ renderIncoming, setRenderIncoming ] = useState<boolean>(false);
 
-const FriendsList: React.FC<Props> = (props) => {
-  const renderIncoming = props.incoming;
+  // Relevent usernames
   const { username } = useParams<{ username: string }>();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
+
+  // List data
   const [friends, setFriends] = useState<Friend[]>([]);
   const [incomingFriends, setIncomingFriends] = useState<Friend[]>([]);
+
+  // Loading and error utils
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
@@ -74,11 +77,9 @@ const FriendsList: React.FC<Props> = (props) => {
   if (error) return <div className="not-found">{error}</div>;
 
   const handleButtonClick = () => {
-    if (renderIncoming) navigate(`/profile/${username}/friends`);
-    else navigate(`/profile/${username}/friendrequests`);
+    setRenderIncoming(!renderIncoming);
   }
 
-  // TODO: Accept/Decline button for incoming friends
   const addFriend = async (friendUsername: string) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${loggedInUser}/add`, {
@@ -99,7 +100,7 @@ const FriendsList: React.FC<Props> = (props) => {
     } finally {
       setLoading(false);
     }
-    window.location.reload();
+    fetchIncomingFriends(); // Reset
   }
 
   const declineFriend = async (friendUsername: string) => {
@@ -123,7 +124,7 @@ const FriendsList: React.FC<Props> = (props) => {
     } finally {
       setLoading(false);
     }
-    window.location.reload();
+    fetchIncomingFriends(); // Reset
   }
 
   const handleAccept = (friendUsername: string) => {
@@ -133,8 +134,10 @@ const FriendsList: React.FC<Props> = (props) => {
   const handleDecline = (friendUsername: string) => {
     declineFriend(friendUsername);
   }
-  // TODO: Deny access to view other people's friends list
-  // TODO: Separate button into a different component, render conditionally (viewing own friends vs. other people's friends)
+
+  useEffect(() => {
+    console.log(renderIncoming);
+  }, [renderIncoming])
 
   const columnDefs: ColDef[] = [
     {
@@ -190,13 +193,7 @@ const FriendsList: React.FC<Props> = (props) => {
   return (
     <div className="friendslist-container">
       <h2> {username}'s Friends</h2>
-      { 
-        loggedInUser == username ? (
-        <a className='incoming-friend-requests-button' onClick={handleButtonClick}>
-          {renderIncoming ? "Back to Friends List" : `Incoming Friend Requests (${incomingFriends.length})`}
-        </a>
-        ) : <></> 
-      }
+      {loggedInUser === username && <ToggleButton onClick={handleButtonClick} incoming={renderIncoming} numFriends={incomingFriends.length}/> }
 
       {
         (renderIncoming ? incomingFriends : friends).length === 0 ? (
