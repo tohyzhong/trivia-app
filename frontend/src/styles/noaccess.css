@@ -4,8 +4,11 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-width: 100vw;
   background-color: white;
   background-image: none;
+  position: fixed;
+  z-index: 1001;
 }
 
 .no-access-container h1 {
@@ -18,4 +21,8 @@
   font-size: 18px;
   color: #000000;
   text-align: center;
+}
+
+.contact-support {
+  color:blue;
 }

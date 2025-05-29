@@ -39,7 +39,7 @@ function App() {
 
   useEffect(() => {
     if (username === undefined && !authFreeRoutes.some(route => location.pathname.startsWith(route)) && location.pathname !== '/') {
-      navigate('/', { replace: true });
+      navigate('/noaccess', { replace: true });
     }
   }, [username, location.pathname, navigate]);
 
@@ -50,7 +50,9 @@ function App() {
     { component: SettingsRoutes, path: '/settings/*' },
     { component: AboutPage, path: '/about' },
     { component: Authentication, path: '/auth/*' },
-    { component: NoAccess, path: '/noaccess' }
+    { component: ProfileRoutes, path: '/profile/*'},
+    { component: NoAccess, path: '/noaccess' },
+    { component: NoAccess, path: '*' }
   ]
 
   if (!isAuthChecked) {
@@ -67,7 +69,6 @@ function App() {
               const ComponentName = comp.component;
               return <Route key={comp.path} path={comp.path} element={<ComponentName />} />;
             })}
-            <Route path="/profile/*" element={<ProfileRoutes />} />
           </Routes>
         </Suspense>
       </>
