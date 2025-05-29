@@ -178,3 +178,21 @@ h2 {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
+.actions-button-container .accept-button {
+  background-color: green;
+  margin: 0 10px;
+}
+
+.actions-button-container .accept-button:hover {
+  background-color: rgb(0, 100, 0);
+}
+
+.actions-button-container .decline-button {
+  background-color: red;
+  margin: 0 10px;
+}
+
+.actions-button-container .decline-button:hover {
+  background-color: rgb(205, 0, 0);
+}
