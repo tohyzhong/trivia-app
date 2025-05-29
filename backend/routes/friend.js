@@ -5,59 +5,6 @@ import Profile from '../models/Profile.js';
 
 const router = express.Router();
 
-router.get('/:username/mutual', authenticate, async (req, res) => {
-  const { username } = req.params;
-
-  try {
-    // Fetch involved friend connections
-    const outgoingFriends = 
-      (await Friend.find({ from: username }))
-      .map((doc) => doc.to); // Retrieve outgoing
-
-    const mutualFriends = 
-      (await Friend.find({ to: username }))
-      .map((doc) => doc.from) // Retrieve incoming
-      .filter((friend) => outgoingFriends.includes(friend)); // Keep mutuals
-
-    // Retrieve profiles of mutual friends
-    const profiles = 
-      (await Profile.find({ username: { $in: mutualFriends }}))
-      .map((doc) => ({ profilePicture: doc.profilePicture, username: doc.username }));
-
-    res.status(200).json(profiles)
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Fetch incoming friend requests
-router.get('/:username/incoming', authenticate, async (req, res) => {
-  const { username } = req.params;
-
-  try {
-    // Fetch involved friend connections
-    const outgoingFriends = 
-      (await Friend.find({ from: username }))
-      .map((doc) => doc.to); // Retrieve outgoing
-
-    const incomingFriends = 
-      (await Friend.find({ to: username }))
-      .map((doc) => doc.from) // Retrieve incoming
-      .filter((friend) => !outgoingFriends.includes(friend)); // Filter out mutual connections
-
-    // Retrieve profiles of incoming friends
-    const profiles = 
-      (await Profile.find({ username: { $in: incomingFriends }}))
-      .map((doc) => ({ profilePicture: doc.profilePicture, username: doc.username }));
-
-    res.status(200).json(profiles)
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 // Retrieve friends info
 router.post('/:username/all', authenticate, async (req, res) => {
   const { username } = req.params;

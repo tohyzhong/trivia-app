@@ -119,10 +119,6 @@ const FriendsList: React.FC = () => {
     declineFriend(friendUsername);
   }
 
-  useEffect(() => {
-    console.log(renderIncoming);
-  }, [renderIncoming])
-
   const columnDefs: ColDef[] = [
     {
       headerName: 'Avatar',
