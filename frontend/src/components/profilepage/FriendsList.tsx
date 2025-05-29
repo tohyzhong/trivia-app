@@ -4,6 +4,8 @@ import { AgGridReact } from 'ag-grid-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import defaultAvatar from '../../assets/default-avatar.jpg';
 import '../../styles/friendslist.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface Friend {
   username: string;
@@ -17,6 +19,7 @@ interface Props {
 const FriendsList: React.FC<Props> = (props) => {
   const renderIncoming = props.incoming;
   const { username } = useParams<{ username: string }>();
+  const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [incomingFriends, setIncomingFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -62,10 +65,11 @@ const FriendsList: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
-    if (!username) return; // Not loaded in
+    if (!username || !loggedInUser) return; // Not loaded in
+    if (renderIncoming && (loggedInUser !== username)) navigate('/noaccess'); // Deny access to view other people's incoming friend requests
     fetchIncomingFriends();
     fetchFriends();
-  }, [username]);
+  }, [username, loggedInUser, renderIncoming]);
 
   if (error) return <div className="not-found">{error}</div>;
 
@@ -120,7 +124,7 @@ const FriendsList: React.FC<Props> = (props) => {
       <h2> {username}'s Friends</h2>
       
       <a className='incoming-friend-requests-button' onClick={handleButtonClick}>
-        {renderIncoming ? "Back to Friends List" : "Incoming Friend Requests"}
+        {renderIncoming ? "Back to Friends List" : `Incoming Friend Requests (${incomingFriends.length})`}
       </a>
       {
         (renderIncoming ? incomingFriends : friends).length === 0 ? (
