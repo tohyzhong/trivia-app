@@ -29,37 +29,22 @@ const FriendsList: React.FC = () => {
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
 
-  // Fetching mutual friends
+  // Fetching friends information
   const fetchFriends = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/mutual`,
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/all`,
         {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
+          body: JSON.stringify({ mutual: true, incoming: true }),
         });
       if (!response.ok) throw new Error('Failed to fetch friends');
 
       const data = await response.json();
-      setFriends(data);
-    } catch (err) {
-      setError('Could not fetch friends');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetching incoming friends
-  const fetchIncomingFriends = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/incoming`,
-        {
-          credentials: 'include',
-        });
-      if (!response.ok) throw new Error('Failed to fetch friends');
-
-      const data = await response.json();
-      setIncomingFriends(data);
+      setFriends(data.mutual);
+      setIncomingFriends(data.incoming)
     } catch (err) {
       setError('Could not fetch friends');
     } finally {
@@ -70,7 +55,6 @@ const FriendsList: React.FC = () => {
   useEffect(() => {
     if (!username || !loggedInUser) return; // Not loaded in
     if (renderIncoming && (loggedInUser !== username)) navigate('/noaccess'); // Deny access to view other people's incoming friend requests
-    fetchIncomingFriends();
     fetchFriends();
   }, [username, loggedInUser, renderIncoming]);
 
@@ -100,7 +84,7 @@ const FriendsList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-    fetchIncomingFriends(); // Reset
+    fetchFriends(); // Reset friends info
   }
 
   const declineFriend = async (friendUsername: string) => {
@@ -124,7 +108,7 @@ const FriendsList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-    fetchIncomingFriends(); // Reset
+    fetchFriends(); // Reset friends info
   }
 
   const handleAccept = (friendUsername: string) => {
@@ -209,7 +193,8 @@ const FriendsList: React.FC = () => {
               domLayout="autoHeight"
             />
           </div>
-        )      }
+        )
+      }
     </div>
   );
 };

@@ -58,6 +58,46 @@ router.get('/:username/incoming', authenticate, async (req, res) => {
   }
 });
 
+// Retrieve friends info
+router.post('/:username/all', authenticate, async (req, res) => {
+  const { username } = req.params;
+  const { mutual, incoming } = req.body; // mutual: boolean, incoming: boolean
+  try {
+    // Fetch involved friend connections
+    const outgoingFriends = 
+      (await Friend.find({ from: username }))
+      .map((doc) => doc.to)
+
+    const incomingFriends = 
+      (await Friend.find({ to: username }))
+      .map((doc) => doc.from)
+
+    const mutualFriends = 
+      mutual
+      ? incomingFriends.filter(friend => outgoingFriends.includes(friend))
+      : null // Avoid sending unnecessary data later
+
+    const incomingRequests = 
+      incoming
+      ? incomingFriends.filter(friend => !outgoingFriends.includes(friend))
+      : null
+
+    // Retrieve profiles
+    const mutualProfiles = 
+      (await Profile.find({ username: { $in : mutualFriends } }))
+      .map(profile => ({ profilePicture: profile.profilePicture, username: profile.username }))
+
+    const incomingProfiles = 
+      (await Profile.find({ username: { $in : incomingRequests } }))
+      .map(profile => ({ profilePicture: profile.profilePicture, username: profile.username }))
+
+    res.status(200).json({ mutual: mutualProfiles, incoming: incomingProfiles, message: "Friends fetched." })  
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Add friend
 router.put('/:username/add', authenticate, async (req, res) => {
   const { username } = req.params;

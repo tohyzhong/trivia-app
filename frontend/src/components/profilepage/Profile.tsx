@@ -51,12 +51,17 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   // Retrieve friend details
   const fetchFriends = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/mutual`,
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/all`,
         {
-          credentials: 'include'
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ mutual: true, incoming: false }),
         });
+      if (!response.ok) throw new Error('Failed to fetch friends');
+
       const data = await response.json();
-      setFriends(data);
+      setFriends(data.mutual);
     } catch (error) {
       console.error("Error fetching profile data", error);
     }
