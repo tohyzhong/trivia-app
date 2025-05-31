@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Profile from '../models/Profile.js';
+import UsedToken from '../models/UsedToken.js';
 import sendEmail from '../utils/email.js';
 import authenticate from './authMiddleware.js';
 
@@ -121,9 +122,9 @@ router.post('/delete-account', authenticate, async (req, res) => {
 });
 
 // Action Verification (Handling the verification links)
-router.get('/verify-action',
+router.post('/verify-action',
   async (req, res) => {
-    const { token } = req.query;
+    const { token } = req.body;
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -131,116 +132,87 @@ router.get('/verify-action',
       const user = await User.findById(decoded.userId);
       if (!user) return res.status(404).json({ error: 'User not found' });
 
-      switch (decoded.action) {
-        case 'change-password':
-          await body('newPassword')
-            .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
-            .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
-            .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter.')
-            .matches(/[0-9]/).withMessage('Password must contain at least one number.')
-            .run(req);
+      if (decoded.action === 'change-password') {
+        const { newPassword } = req.body;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
 
-          const errors = validationResult(req);
-          if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-          }
+        for (const prevPassword of user.previousPasswords) {
+          const isMatch = await bcrypt.compare(newPassword, prevPassword);
+          if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
+        }
 
-          const { newPassword } = req.body;
+        const alreadyUsed = await UsedToken.findOne({ token });
+        if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
+        // Save used token to prevent reuse
+        await UsedToken.create({
+          token,
+          usedAt: new Date()
+        })
 
-          const hashedPassword = await bcrypt.hash(newPassword, 10);
-          user.password = hashedPassword;
-          await user.save();
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
 
-          res.json({ message: 'Password changed successfully' });
-          break;
-        case 'change-email':
-          const newEmail = decoded.newEmail;
+        user.previousPasswords.push(hashedPassword);
+        if (user.previousPasswords.length > 3) {
+          user.previousPasswords.shift();
+        }
 
-          const emailExists = await User.findOne({ email: newEmail });
-          if (emailExists) {
-            return res.status(400).json({ error: 'Email is already in use' });
-          }
+        await user.save();
 
-          user.email = newEmail;
-          await user.save();
+        res.json({ message: 'Password changed successfully' });
+      } else {
+        const alreadyUsed = await UsedToken.findOne({ token });
+        if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
+        // Save used token to prevent reuse
+        await UsedToken.create({
+          token,
+          usedAt: new Date()
+        })
 
-          const newToken = jwt.sign({
-            id: user._id,
-            username: user.username,
-            email: newEmail,
-            verified: user.verified,
-          }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        switch (decoded.action) {
+          case 'change-email':
+            const newEmail = decoded.newEmail;
 
-          res.cookie('token', newToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          });
+            const emailExists = await User.findOne({ email: newEmail });
+            if (emailExists) {
+              return res.status(400).json({ error: 'Email is already in use' });
+            }
 
-          res.json({ message: 'Email changed successfully' });
-          break;
-        case 'delete-account':
-          await User.findByIdAndDelete(decoded.userId);
-          await Profile.findOneAndDelete({ username: user.username });
+            user.email = newEmail;
+            await user.save();
 
-          res.json({ message: 'Account deleted successfully' });
-          break;
-        default:
-          return res.status(400).json({ error: 'Invalid action' });
+            const newToken = jwt.sign({
+              id: user._id,
+              username: user.username,
+              email: newEmail,
+              verified: user.verified,
+            }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+            res.cookie('token', newToken, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+              expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            });
+
+            res.json({ message: 'Email changed successfully' });
+            break;
+          case 'delete-account':
+            await User.findByIdAndDelete(decoded.userId);
+            await Profile.findOneAndDelete({ username: user.username });
+
+            res.json({ message: 'Account deleted successfully' });
+            break;
+          default:
+            return res.status(400).json({ error: 'Invalid action' });
+        }
       }
     } catch (err) {
       res.status(400).json({ error: 'Invalid or expired token' });
     }
   });
-
-// Handle POST requests for verification actions (Password Reset)
-router.post('/verify-action', [
-  body('newPassword')
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
-    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
-    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter.')
-    .matches(/[0-9]/).withMessage('Password must contain at least one number.')
-], async (req, res) => {
-  const { token } = req.query;
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findById(decoded.userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
-    if (decoded.action === 'change-password') {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-      const { newPassword } = req.body;
-
-      for (const prevPassword of user.previousPasswords) {
-        const isMatch = await bcrypt.compare(newPassword, prevPassword);
-        if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
-      }
-
-
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
-
-      user.previousPasswords.push(hashedPassword);
-      if (user.previousPasswords.length > 3) {
-        user.previousPasswords.shift();
-      }
-
-      await user.save();
-
-      res.json({ message: 'Password changed successfully' });
-    } else {
-      res.status(400).json({ error: 'Invalid action for POST request' });
-    }
-  } catch (err) {
-    res.status(400).json({ error: 'Invalid or expired token' });
-  }
-});
 
 export default router;

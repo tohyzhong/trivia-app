@@ -26,8 +26,13 @@ const SettingsActions: React.FC = () => {
       apiCalled.current = true;
       const verifyAction = async () => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/verify-action?token=${token}`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/verify-action`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             credentials: 'include',
+            body: JSON.stringify({ token }),
           });
 
           const result = await response.json();
@@ -72,13 +77,13 @@ const SettingsActions: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/verify-action?token=${token}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/verify-action`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ token, newPassword }),
       });
 
       const data = await response.json();
@@ -108,7 +113,7 @@ const SettingsActions: React.FC = () => {
           setMessage(errorMessages);
           error.current = true;
         } else {
-          setMessage('Password change failed');
+          setMessage(data.error || 'Password change failed');
           error.current = true;
         }
       }
