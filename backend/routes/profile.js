@@ -34,35 +34,61 @@ router.get('/:username', authenticate, async (req, res) => {
 
       {
         $lookup: {
-          from: 'profiles',
-          localField: 'friends',
-          foreignField: '_id',
-          as: 'friendProfiles'
+          from: 'friends',
+          localField: 'username',
+          foreignField: 'from',
+          as: 'outgoingFriends'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'friends',
+          localField: 'username',
+          foreignField: 'to',
+          as: 'incomingFriends'
         }
       },
 
       {
         $addFields: {
-          mutualFriends: {
-            $slice: [
-              {
-                $map: {
-                  input: {
-                    $filter: {
-                      input: '$friendProfiles',
-                      as: 'friend',
-                      cond: {
-                        $in: ['$_id', '$$friend.friends']
-                      }
-                    }
-                  },
-                  as: 'mutual',
-                  in: '$$mutual.username'
-                }
-              },
-              10
-            ]
+          outgoingUsernames: {
+            $map: {
+              input: '$outgoingFriends',
+              as: 'of',
+              in: '$$of.to'
+            }
+          },
+          incomingUsernames: {
+            $map: {
+              input: '$incomingFriends',
+              as: 'inf',
+              in: '$$inf.from'
+            }
           }
+        }
+      },
+
+      // Mutual friend logic
+      {
+        $addFields: {
+          mutualUsernames: {
+            $setIntersection: ['$incomingUsernames', '$outgoingUsernames']
+          }
+        }
+      },
+
+      // Obtain username and profile picture of mutual friends
+      {
+        $lookup: {
+          from: 'profiles',
+          let: { mutuals: '$mutualUsernames' },
+          pipeline: [
+            { $match: { $expr: { $in: ['$username', '$$mutuals'] } } },
+            { $project: { username: 1, profilePicture: 1 } },
+            { $limit: 10 }
+          ],
+          as: 'mutualProfiles'
         }
       },
 
@@ -75,18 +101,19 @@ router.get('/:username', authenticate, async (req, res) => {
           correctNumber: 1,
           currency: 1,
           profilePicture: 1,
-          friends: '$mutualFriends'
+          friends: '$mutualProfiles'
         }
       }
     ]);
 
-    if (results.length === 0) {
+    if (!results.length) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
     res.json(results[0]);
-  } catch (error) {
-    console.error(error);
+
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 });

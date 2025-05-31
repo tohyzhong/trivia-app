@@ -5,6 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import defaultAvatar from '../../assets/default-avatar.jpg';
 import '../../styles/Profile.css';
 
+interface Friend {
+  username: string;
+  profilePicture: string;
+}
+
 interface UserProfile {
   username: string;
   winRate: number;
@@ -12,12 +17,8 @@ interface UserProfile {
   correctNumber: number;
   currency: number;
   profilePicture: string;
+  friends: Friend[];
   message?: string;
-}
-
-interface Friend {
-  username: string;
-  profilePicture: string;
 }
 
 interface ProfileProps {
@@ -42,35 +43,16 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         });
       const data: UserProfile = await response.json();
       setUser(data);
+      setFriends(data.friends || []);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching profile data", error);
     }
   };
 
-  // Retrieve friend details
-  const fetchFriends = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${username}/all`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ mutual: true, incoming: false }),
-        });
-      if (!response.ok) throw new Error('Failed to fetch friends');
-
-      const data = await response.json();
-      setFriends(data.mutual);
-    } catch (error) {
-      console.error("Error fetching profile data", error);
-    }
-  }
-
   useEffect(() => {
     if (username) {
       fetchProfile();
-      fetchFriends();
     }
   }, [username]);
 
