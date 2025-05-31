@@ -107,7 +107,7 @@ const PasswordReset: React.FC = () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ email, password: newPassword }),
+      body: JSON.stringify({ token, password: newPassword }),
     });
 
     const data = await res.json();

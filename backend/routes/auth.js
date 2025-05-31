@@ -216,12 +216,6 @@ router.post('/verifyreset', async (req, res) => {
     if (purpose !== 'passwordReset') {
       return res.status(400).json({ error: 'Invalid token purpose' });
     } else {
-      // Save used token to prevent reuse
-      await UsedToken.create({
-        token,
-        usedAt: new Date()
-      })
-
       return res.status(200).json({ email });
     }
   } catch (err) {
@@ -231,7 +225,6 @@ router.post('/verifyreset', async (req, res) => {
 
 // Reset password
 router.post('/resetpassword', [
-  body('email').isEmail().withMessage('Please provide a valid email address.'),
   body('password')
     .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
     .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
@@ -243,9 +236,22 @@ router.post('/resetpassword', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
+  const { token, password } = req.body;
+  const alreadyUsed = await UsedToken.findOne({ token });
+  if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
+  // Save used token to prevent reuse
+  await UsedToken.create({
+    token,
+    usedAt: new Date()
+  })
+
   try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { email, purpose } = decoded;
+    if (purpose !== 'passwordReset') return res.status(400).json({ error: 'Invalid token purpose.' });
+
     const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'User not found.' });
 
     // Check if password has been used before
     for (const prevPassword of user.previousPasswords) {
@@ -263,7 +269,7 @@ router.post('/resetpassword', [
     await user.save();
     return res.status(200).json({ message: 'Password reset successfully.' });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(400).json({ error: 'Invalid or expired token.' });
   }
 })
 
