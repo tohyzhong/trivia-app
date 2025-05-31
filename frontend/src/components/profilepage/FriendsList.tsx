@@ -14,7 +14,7 @@ interface Friend {
 }
 
 const FriendsList: React.FC = () => {
-  const [ renderIncoming, setRenderIncoming ] = useState<boolean>(false);
+  const [renderIncoming, setRenderIncoming] = useState<boolean>(false);
 
   // Relevent usernames
   const { username } = useParams<{ username: string }>();
@@ -38,7 +38,7 @@ const FriendsList: React.FC = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ mutual: true, incoming: true }),
+          body: JSON.stringify({ mutual: true, incoming: loggedInUser === username }),
         });
       if (!response.ok) throw new Error('Failed to fetch friends');
 
@@ -56,7 +56,7 @@ const FriendsList: React.FC = () => {
     if (!username || !loggedInUser) return; // Not loaded in
     if (renderIncoming && (loggedInUser !== username)) navigate('/noaccess'); // Deny access to view other people's incoming friend requests
     fetchFriends();
-  }, [username, loggedInUser, renderIncoming]);
+  }, [username, loggedInUser]);
 
   if (error) return <div className="not-found">{error}</div>;
 
@@ -76,7 +76,7 @@ const FriendsList: React.FC = () => {
           friendUsername
         }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to accept incoming friend request');
       else alert(`You are now friends with ${friendUsername}`)
     } catch (error) {
@@ -173,7 +173,7 @@ const FriendsList: React.FC = () => {
   return (
     <div className="friendslist-container">
       <h2> {username}'s Friends</h2>
-      {loggedInUser === username && <ToggleButton onClick={handleButtonClick} incoming={renderIncoming} numFriends={incomingFriends.length}/> }
+      {loggedInUser === username && <ToggleButton onClick={handleButtonClick} incoming={renderIncoming} numFriends={incomingFriends.length} />}
 
       {
         (renderIncoming ? incomingFriends : friends).length === 0 ? (
