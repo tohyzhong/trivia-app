@@ -177,8 +177,6 @@ router.post('/forgotpassword', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: 'No user found with that email address.' });
-    } else if (!user.verified) {
-      return res.status(400).json({ error: 'User is not verified. Please verify your account before resetting the password.' });
     } else {
       const token = jwt.sign({
         email: email,
