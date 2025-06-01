@@ -237,10 +237,11 @@ router.post('/resetpassword', [
   }
 
   const { token, password } = req.body;
-  const alreadyUsed = await UsedToken.findOne({ token });
-  if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
 
   try {
+    const alreadyUsed = await UsedToken.findOne({ token });
+    if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email, purpose } = decoded;
     if (purpose !== 'passwordReset') return res.status(400).json({ error: 'Invalid token purpose.' });

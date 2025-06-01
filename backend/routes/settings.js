@@ -127,6 +127,9 @@ router.post('/verify-action',
     const { token } = req.body;
 
     try {
+      const alreadyUsed = await UsedToken.findOne({ token });
+      if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       const user = await User.findById(decoded.userId);
@@ -144,8 +147,6 @@ router.post('/verify-action',
           if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
         }
 
-        const alreadyUsed = await UsedToken.findOne({ token });
-        if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
         // Save used token to prevent reuse
         await UsedToken.create({
           token,
