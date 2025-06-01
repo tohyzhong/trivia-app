@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Profile from '../models/Profile.js';
+import Friend from '../models/Friend.js';
 import UsedToken from '../models/UsedToken.js';
 import sendEmail from '../utils/email.js';
 import authenticate from './authMiddleware.js';
@@ -200,8 +201,11 @@ router.post('/verify-action',
             res.json({ message: 'Email changed successfully' });
             break;
           case 'delete-account':
-            await User.findByIdAndDelete(decoded.userId);
-            await Profile.findOneAndDelete({ username: user.username });
+            await Promise.all([
+              User.findByIdAndDelete(decoded.userId),
+              Profile.findOneAndDelete({ username: user.username }),
+              Friend.deleteMany({ $or: [{ from: user.username }, { to: user.username }] })
+            ]);
 
             res.json({ message: 'Account deleted successfully' });
             break;

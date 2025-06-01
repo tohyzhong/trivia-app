@@ -123,25 +123,30 @@ const SettingsActions: React.FC = () => {
     }
   };
 
-  if (action === "verify") {
-    apiCalled.current = true;
+  useEffect(() => {
+    if (action === 'verify' && token && !apiCalled.current) {
+      apiCalled.current = true;
 
-    const verifyAction = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/verify?token=${token}`, {
-          credentials: 'include',
-        });
+      const verifyAction = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/verify?token=${token}`, {
+            credentials: 'include',
+          });
 
-        const result = await response.json();
-        setMessage(result.message || result.error);
-      } catch (err) {
-        setMessage(err.message || 'Error verifying action');
-        error.current = true;
-      }
-    };
+          const result = await response.json();
+          setMessage(result.message || result.error);
+          if (!response.ok) {
+            error.current = true;
+          }
+        } catch (err) {
+          setMessage(err.message || 'Error verifying action');
+          error.current = true;
+        }
+      };
 
-    verifyAction();
-  }
+      verifyAction();
+    }
+  }, [action, token]);
 
   return (
     <div className="settings-actions-container">
