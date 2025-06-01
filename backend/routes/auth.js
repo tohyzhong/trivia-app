@@ -239,11 +239,6 @@ router.post('/resetpassword', [
   const { token, password } = req.body;
   const alreadyUsed = await UsedToken.findOne({ token });
   if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
-  // Save used token to prevent reuse
-  await UsedToken.create({
-    token,
-    usedAt: new Date()
-  })
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -258,6 +253,12 @@ router.post('/resetpassword', [
       const isMatch = await bcrypt.compare(password, prevPassword);
       if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
     }
+
+    // Save used token to prevent reuse
+    await UsedToken.create({
+      token,
+      usedAt: new Date()
+    })
 
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
