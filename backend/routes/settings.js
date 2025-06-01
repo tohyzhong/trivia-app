@@ -165,8 +165,6 @@ router.post('/verify-action',
 
         res.json({ message: 'Password changed successfully' });
       } else {
-        const alreadyUsed = await UsedToken.findOne({ token });
-        if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
         // Save used token to prevent reuse
         await UsedToken.create({
           token,
