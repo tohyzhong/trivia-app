@@ -122,3 +122,9 @@
 .profile-dropdown li:hover {
   background-color: #f0f0f0;
 }
+
+.play-button {
+  background-color: rgb(11, 139, 122);
+  color: rgb(255, 255, 255);
+  margin-right: 20px;
+}

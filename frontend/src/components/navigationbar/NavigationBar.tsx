@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import LoginBar from './LoginBar';
+import PlayButton from './PlayButton';
 import "../../styles/navbar.css"
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -24,16 +25,13 @@ export const NavigationBar = () => {
       updateNavBar([
         { name: 'Home', path: '/' },
         { name: 'About', path: '/about' },
-        { name: 'Play', path: '/play' },
-        { name: 'Leaderboard', path: '/leaderboard' },
         { name: 'Profile', path: '/profile' },
         { name: 'Settings', path: '/settings' },
       ])
     } else {
       updateNavBar([
         { name: 'Home', path: '/' },
-        { name: 'About', path: '/about' },
-        { name: 'Leaderboard', path: '/leaderboard' },
+        { name: 'About', path: '/about' }
       ])
     }
   }, [isLoggedIn])
@@ -95,6 +93,8 @@ export const NavigationBar = () => {
 
   return !onAuthPage ? (
     <nav className='navbar'>
+      <PlayButton />
+
       <div className='nav-search'>
         <ul className='nav-list'>
           {navBar.map((item) =>
@@ -103,7 +103,6 @@ export const NavigationBar = () => {
             </li>
           )}
         </ul>
-
         {isLoggedIn ? (
           <div className='search-bar'>
             <form onSubmit={handleSearch} className="search-form">
@@ -134,8 +133,7 @@ export const NavigationBar = () => {
               </div>
             )}
           </div>
-        ) : null
-        }
+        ) : null }
       </div>
 
       <LoginBar />
