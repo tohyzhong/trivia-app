@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "setup": "npm install --legacy-peer-deps --prefix frontend && npm install --prefix backend",
+    "setup": "npm i && cd frontend && npm i --legacy-peer-deps && cd ../backend && npm i",
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
     "test": "npm run test --prefix frontend",
     "test:ui": "npm run test:ui --prefix frontend"
