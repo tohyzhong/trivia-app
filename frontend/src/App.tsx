@@ -28,7 +28,7 @@ function App() {
   const verified = useSelector((state: RootState) => state.user.verified);
   const username = useSelector((state: RootState) => state.user.username);
 
-  const authFreeRoutes = ['/auth', '/about', '/leaderboard', '/settings/verify-action'];
+  const authFreeRoutes = ['/auth', '/about', '/settings/verify-action'];
   const verifiedFreeRoutes = authFreeRoutes.concat(['/settings']);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ function App() {
 
   useEffect(() => {
     if (username === undefined && !authFreeRoutes.some(route => location.pathname.startsWith(route)) && location.pathname !== '/') {
-      navigate('/noaccess', { replace: true });
+      navigate('/auth/login?error=login_required', { replace: true });
     }
   }, [username, location.pathname, navigate]);
 

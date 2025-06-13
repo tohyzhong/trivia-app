@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const errorPopupParam = searchParams.get('error') || '';
   const ErrorPopupMessages = {
-    'login_required': 'You must be logged in to play.',
+    'login_required': 'You must be logged in to view this page.',
   }
   const [ errorPopup, setErrorPopup ] = useState<string>(ErrorPopupMessages[errorPopupParam] || '');
 
