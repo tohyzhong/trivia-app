@@ -18,19 +18,22 @@ export const GameMainpage: React.FC = () => {
       name: 'Solo Mode',
       description: 'Play alone and test your meme knowledge!',
       logo: SoloModeLogo,
-      link: '/solo'
+      link: '/solo',
+      buttonText: 'Play Solo!',
     },
     {
       name: 'Multiplayer Mode',
       description: 'Compete with friends or players worldwide!',
       logo: MultiplayerModeLogo,
-      link: '/multiplayer'
+      link: '/multiplayer',
+      buttonText: 'Play Multiplayer!',
     },
     {
       name: 'Leaderboard',
       description: 'Check out the top memers and their scores!',
       logo: LeaderboardLogo,
-      link: '/leaderboard'
+      link: '/leaderboard',
+      buttonText: 'View',
     }
   ]
 
@@ -79,7 +82,6 @@ export const GameMainpage: React.FC = () => {
         <ModeSelect 
           mode={popupMode} 
           submodes={popupMode === 'Solo Mode' ? soloSubmodes : multiplayerSubmodes}
-          active={isPopupOpen}
           setActive={setIsPopupOpen}
         />
       }
@@ -94,7 +96,7 @@ export const GameMainpage: React.FC = () => {
               <img src={mode.logo} alt={`${mode.name} logo`} className='mode-logo' />
               <h2 className='mode-name'>{mode.name}</h2>
               <p className='mode-description'>{mode.description}</p>
-              <button className='mode-play-button' onClick={() => handleModeClick(mode.name)}>Play Now!</button>
+              <button className='mode-play-button' onClick={() => handleModeClick(mode.name)}>{mode.buttonText}</button>
             </div>
           ))
         }

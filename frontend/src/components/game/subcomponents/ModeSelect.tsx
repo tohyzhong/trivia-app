@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { motion } from 'motion/react';
 import '../../../styles/modeselect.css';
 import { IoClose } from "react-icons/io5";
 
@@ -11,13 +12,31 @@ interface SubMode {
 interface ModeSelectProps {
   mode: string;
   submodes: SubMode[];
-  active: boolean;
   setActive: (active: boolean) => void;
 }
 
 const submodeSelect: React.FC<ModeSelectProps> = (props) => {
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.closest('.submode-select-container-full') && !target.closest('.submode-select-container')) {
+        props.setActive(false);
+      }
+    } 
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+  }, []);
+
   return (
-    <div className='submode-select-container-full'>
+    <motion.div 
+      className='submode-select-container-full'
+      initial={{ opacity: 0, y: '-20%' }}
+      animate={{ opacity: 1, y: '0%', transition: { duration: 0.3 } }}
+    >
       <div className='submode-select-container'>
         <div className='submode-select-header'>
           <h3>{props.mode}</h3>
@@ -32,7 +51,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
