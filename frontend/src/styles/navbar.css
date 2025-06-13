@@ -128,3 +128,8 @@
   color: rgb(255, 255, 255);
   margin-right: 20px;
 }
+
+.play-button:hover {
+  background-color: rgb(9, 116, 100);
+  transition: background-color 0.3s ease;
+}

@@ -1,0 +1,85 @@
+.submode-select-container-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(85, 64, 64, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 2;
+}
+
+.submode-select-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  max-height: 800px;
+  max-width: 1200px;
+  position: relative;
+}
+
+.submode-select-header {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  color: white;
+  font-size: 1.1rem;
+  width: 100%;
+}
+
+.submode-select-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.submode-select-close:hover {
+  color: red;
+  transform: scale(1.1);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.submode-select-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
+  background-color: #2b2b2b;
+}
+
+.submode-select-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 200px;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.submode-select-item:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  border: 0;
+  cursor: pointer;
+}
+
+.submode-select-item .submode-item-header {
+  color: white;
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+.submode-select-item .submode-select-image {
+  object-fit: scale-down;
+  margin-bottom: 10px;
+  width: 100%;
+  height: 40%;
+}

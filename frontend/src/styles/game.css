@@ -5,6 +5,7 @@
   justify-content: center;
   height: 100vh;
   background-color: #554040;
+  max-height: 1200px;
 }
 
 .welcome-message {
@@ -30,8 +31,9 @@
   align-items: center;
   margin: 10px;
   padding: 20px;    
-  max-width: 30vw;
-  max-height: 50vh;
+  max-width: 30vw;  
+  height: 50vh;
+  max-height: 900px;
   position: relative;
   border: 2px solid black;
 }
@@ -62,6 +64,20 @@
   transform: scale(1.05);
   transition: transform 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.mode-card .mode-play-button {
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mode-card .mode-play-button:hover {
+  background-color: #e64a19;
 }
 
 .misc-tools {

@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/game.css';
+import ModeSelect from './subcomponents/ModeSelect';
 import SoloModeLogo from '../../assets/solo_mode.png';
 import MultiplayerModeLogo from '../../assets/multiplayer_mode.png';
 import LeaderboardLogo from '../../assets/leaderboard_logo.png';
+
+interface SubModes {
+  name: string;
+  description: string;
+  image: string;
+}
 
 export const GameMainpage: React.FC = () => {
   const modes = [
@@ -26,8 +34,55 @@ export const GameMainpage: React.FC = () => {
     }
   ]
 
+  const soloSubmodes: SubModes[] = [
+    {
+      name: 'Classic',
+      description: 'Answer multiple-choice questions about memes in a timed format.',
+      image: SoloModeLogo,
+    },
+    {
+      name: 'Knowledge',
+      description: 'Test your knowledge with open-ended questions.',
+      image: SoloModeLogo,
+    },
+    {
+      name: 'Coming Soon...',
+      description: '',
+      image: SoloModeLogo,
+    }
+  ]
+
+  const multiplayerSubmodes: SubModes[] = [
+    {
+      name: 'Coming Soon...',
+      description: '',
+      image: SoloModeLogo,
+    }
+  ]
+
+  const [popupMode, setPopupMode] = useState<string>('');
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+  const handleModeClick = (mode) => {
+    if (mode === 'Leaderboard') {
+      navigate('/leaderboard');
+    } else {
+      setPopupMode(mode);
+      setIsPopupOpen(true);
+    }
+  }
+
   return (
     <div className='game-mainpage'>
+      {isPopupOpen && 
+        <ModeSelect 
+          mode={popupMode} 
+          submodes={popupMode === 'Solo Mode' ? soloSubmodes : multiplayerSubmodes}
+          active={isPopupOpen}
+          setActive={setIsPopupOpen}
+        />
+      }
       <div className='welcome-message'>
         <h1>Welcome to The Rizz Quiz</h1>
         <p>Select a game mode below</p>
@@ -39,7 +94,7 @@ export const GameMainpage: React.FC = () => {
               <img src={mode.logo} alt={`${mode.name} logo`} className='mode-logo' />
               <h2 className='mode-name'>{mode.name}</h2>
               <p className='mode-description'>{mode.description}</p>
-              <button className='mode-button'>Play Now!</button>
+              <button className='mode-play-button' onClick={() => handleModeClick(mode.name)}>Play Now!</button>
             </div>
           ))
         }

@@ -26,16 +26,16 @@ button {
   display: inline-flex;
 }
 
-button:hover {
+.signup-button:hover {
   background-color: #333;
   transition: background-color 0.3s ease;
 }
 
-button:focus {
+.signup-button:focus {
   outline: none;
 }
 
-button:active {
+.signup-button:active {
   background-color: #222;
 }
 
