@@ -7,7 +7,7 @@ const PlayButton = () => {
   const username = useSelector((state: RootState) => state.user.username);
   const navigate = useNavigate();
   const handleClick = () => {
-    username ? navigate('/play') : navigate('/auth/login');
+    username ? navigate('/play') : navigate('/auth/login?error=login_required');
   }
 
   return (

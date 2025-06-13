@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect } from 'react';
 import '../../../styles/forgotpassword.css';
-import { ReturnButton } from './ReturnButton';
+import ReturnButton from './ReturnButton';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ErrorPopup from './ErrorPopup';
 

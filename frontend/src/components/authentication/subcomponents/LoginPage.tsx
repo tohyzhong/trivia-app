@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../../../redux/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../../../styles/loginpage.css';
-import { ReturnButton } from './ReturnButton';
+import ReturnButton from './ReturnButton';
+import ErrorPopup from './ErrorPopup';
 import { RootState } from '../../../redux/store';
 
 const LoginPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const errorPopupParam = searchParams.get('error') || '';
+  const ErrorPopupMessages = {
+    'login_required': 'You must be logged in to play.',
+  }
+  const [ errorPopup, setErrorPopup ] = useState<string>(ErrorPopupMessages[errorPopupParam] || '');
+
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -45,6 +53,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="login-page">
+      {errorPopup && <ErrorPopup message={errorPopup} />}
       <div className="form-container">
         <form onSubmit={handleLogin}>
           {error && <div className="error">{error}</div>}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../../../styles/signuppage.css';
-import { ReturnButton } from './ReturnButton';
+import ReturnButton from './ReturnButton';
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');

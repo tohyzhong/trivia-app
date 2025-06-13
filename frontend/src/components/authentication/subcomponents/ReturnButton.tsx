@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
-export const ReturnButton: React.FC = () => {
+const ReturnButton: React.FC = () => {
   const navigate = useNavigate();
   const handleBack = () => {
     navigate('/');
@@ -11,3 +11,5 @@ export const ReturnButton: React.FC = () => {
     <a className='back-button' onClick={handleBack}>Back</a>
   )
 }
+
+export default ReturnButton
