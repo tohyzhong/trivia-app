@@ -4,7 +4,6 @@ import { motion } from 'motion/react';
 import '../../../styles/gamelobby.css'
 
 const GameLoading = () => {
-  console.log('loading')
   return (
     <div className="loader-full">
       <motion.div 

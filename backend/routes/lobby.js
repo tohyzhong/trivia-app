@@ -69,7 +69,6 @@ router.post('/solo/create', async (req, res) => {
         }
       }}
     ]);
-    console.log(existingLobby);
 
     if (existingLobby[0].lobbyExists) {
       return res.status(400).json({ message: 'Lobby ID already exists.' })
