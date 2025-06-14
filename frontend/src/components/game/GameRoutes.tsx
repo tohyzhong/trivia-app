@@ -7,7 +7,7 @@ const GameRoutes = () => {
   return (
     <Routes>
       <Route path='/' element={<GameMainpage />} />
-      <Route path='/:id' element={<SoloGameRouteHandler />} />
+      <Route path='/:lobbyId' element={<SoloGameRouteHandler />} />
     </Routes>
   )
 }

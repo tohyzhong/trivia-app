@@ -1,0 +1,33 @@
+/* Game Loading Screen */
+.loader-full {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.loading-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  color: white;
+  font-size: 3rem;
+}
+
+/* Game Lobby */
+.game-lobby-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+  z-index: 100;
+}

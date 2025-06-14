@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
 import { RootState } from '../../../redux/store';
+import GameLoading from '../gamelobby/GameLoading';
+import GameLobby from '../gamelobby/GameLobby';
 
 const SoloGameRouteHandler = () => {
+  // Loading state
+  const [ loading, setLoading ] = useState<boolean>(true);
+
+  // Access check variables
   const { lobbyId } = useParams();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
@@ -22,6 +28,7 @@ const SoloGameRouteHandler = () => {
 
       if (response.ok) {
         console.log(data);
+        setLoading(false);
       } else {
         navigate('/',{ state: { errorMessage: data.message || '' } });
       }
@@ -38,9 +45,7 @@ const SoloGameRouteHandler = () => {
     }
   }, [lobbyId, loggedInUser])
 
-  return (
-    <div>SoloGameRouteHandler</div>
-  )
+  return (loading ? (<GameLoading />) : (<GameLobby />))
 }
 
 export default SoloGameRouteHandler
