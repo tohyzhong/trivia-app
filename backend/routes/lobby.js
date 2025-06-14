@@ -11,6 +11,10 @@ router.post('/solo/create', async (req, res) => {
     const { gameType, player } = req.body;
     const id = crypto.randomUUID();
     const playerDoc = await User.collection.findOne({ username: player })
+    
+    if (!playerDoc) {
+      return res.status(404).json({ message: 'Player not found.' });
+    }
 
     const existingLobby = await User.aggregate([
       // Retrieve player information
