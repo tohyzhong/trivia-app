@@ -2,6 +2,9 @@ import React, { useEffect } from 'react'
 import { motion } from 'motion/react';
 import '../../../styles/modeselect.css';
 import { IoClose } from "react-icons/io5";
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
 
 interface SubMode {
   name: string;
@@ -10,7 +13,7 @@ interface SubMode {
 }
 
 interface ModeSelectProps {
-  mode: string;
+  mode: string; // 'Solo Mode', 'Multiplayer Mode'
   submodes: SubMode[];
   setActive: (active: boolean) => void;
 }
@@ -31,6 +34,36 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     }
   }, []);
 
+  const navigate = useNavigate();
+  const loggedInUser = useSelector((state: RootState) => state.user.username);
+  const handleSubmodeClick = async (submode: string) => {
+    if (submode === 'Coming Soon...') return; // No effect for clicking on coming soon tab
+    const mainMode = props.mode === 'Solo Mode' ? 'solo' : 'multi';
+    const subMode = submode.toLowerCase()
+    const lobbyMode = mainMode + '-' + subMode;
+    console.log(lobbyMode);
+
+    // Create a lobby
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/create`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ gameType: lobbyMode, player: loggedInUser }),
+        });
+      console.log(response);
+      if (!response.ok) throw new Error('Failed to create lobby');
+      const data = await response.json();
+
+      navigate(`/play/${data.lobbyId}`)
+      
+    } catch (error) {
+      // Error popup for lobby creation failure
+      console.log(error);
+    }
+  }
+
   return (
     <motion.div 
       className='submode-select-container-full'
@@ -44,7 +77,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
         </div>
         <div className='submode-select-content'>
           {props.submodes.map((submode, index) => (
-            <div key={index} className='submode-select-item'>
+            <div key={index} className='submode-select-item' onClick={() => handleSubmodeClick(submode.name)}>
               <h4 className='submode-item-header'>{submode.name}</h4>
               <img src={submode.image} alt={`${submode.name} logo`} className='submode-select-image' />
             </div>

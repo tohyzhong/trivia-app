@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import settingsRoutes from './routes/settings.js';
 import friendRoutes from './routes/friend.js';
+import lobbyRoutes from './routes/lobby.js';
 
 import morgan from 'morgan';
 import runSchedulers from './utils/tasks.js';
@@ -59,8 +60,11 @@ app.use('/api/settings', settingsRoutes);
 // Friends 
 app.use('/api/friends', friendRoutes);
 
-app.listen(5000, () => {  // uncomment for local production testing
-    console.log("Server is running on port 5000");
+// Lobby
+app.use('/api/lobby', lobbyRoutes);
+
+app.listen(8080, () => {  // uncomment for local production testing
+    console.log("Server is running on port 8080");
 });
 
 runSchedulers();

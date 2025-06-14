@@ -12,7 +12,7 @@ import { RootState } from "./redux/store";
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const HomePage = lazy(() => import('./components/homepage/HomePage'));
-const GameMainpage = lazy(() => import('./components/game/GameMainpage'));
+const GameRoutes = lazy(() => import('./components/game/GameRoutes'));
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'));
 const SettingsRoutes = lazy(() => import('./components/settingspage/SettingsRoutes'));
 const AboutPage = lazy(() => import('./components/about/AboutPage'));
@@ -45,7 +45,7 @@ function App() {
 
   const Components = [
     { component: HomePage, path: '/' },
-    { component: GameMainpage, path: '/play' },
+    { component: GameRoutes, path: '/play/*' },
     { component: Leaderboard, path: '/leaderboard' },
     { component: SettingsRoutes, path: '/settings/*' },
     { component: AboutPage, path: '/about' },
