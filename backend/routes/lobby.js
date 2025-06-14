@@ -11,7 +11,7 @@ router.post('/solo/create', async (req, res) => {
     const { gameType, player } = req.body;
     const id = crypto.randomUUID();
     const playerDoc = await User.collection.findOne({ username: player })
-    
+
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
     }
@@ -88,6 +88,33 @@ router.post('/solo/create', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating lobby' });
+  }
+});
+
+// Get a Solo lobby by ID and check if the player has access
+router.post('/solo/:lobbyId', async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { player } = req.body;
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+
+    if (!lobby) {
+      return res.status(404).json({ message: 'Lobby not found.' });
+    }
+
+    const players = await User.collection.find({ _id: { $in: lobby.players } }).toArray();;
+    if (!players.map(p => p.username).includes(player)) {
+      return res.status(403).json({ message: 'Player does not have access to this lobby.' });
+    }
+
+    return res.status(200).json({
+      lobbyId: lobby.lobbyId,
+      players: players,
+      gameType: lobby.gameType
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error retrieving lobby' });
   }
 });
 
