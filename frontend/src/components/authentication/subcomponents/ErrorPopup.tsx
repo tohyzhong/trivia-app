@@ -1,15 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'motion/react';
 import { IoIosInformationCircle } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
+import '../../../styles/errorpopup.css';
 
 interface Props {
   message: string;
+  setMessage: (message: string) => void; // Optional setter for message
 }
 
 const ErrorPopup: React.FC<Props> = (props) => {
-  const [message, setMessage] = React.useState(props.message);
-  if (!message) {
+  if (!props.message) {
     return null;
   } else return (
     <motion.div 
@@ -18,8 +19,8 @@ const ErrorPopup: React.FC<Props> = (props) => {
       animate={{ opacity: 1, y: '0%', x: '-50%', transition: { duration: 0.3 }}}
     >
       <IoIosInformationCircle className='information-icon' />
-      <p>{message}</p>
-      <RxCross2 type='button' className='close-icon' onClick={() => setMessage('')} />
+      <p>{props.message}</p>
+      <RxCross2 type='button' className='close-icon' onClick={() => props.setMessage('')} />
     </motion.div>
   )
 }

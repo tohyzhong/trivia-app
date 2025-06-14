@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'motion/react';
 import '../../../styles/modeselect.css';
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
+import ErrorPopup from '../../authentication/subcomponents/ErrorPopup';
 
 interface SubMode {
   name: string;
@@ -34,6 +35,10 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     }
   }, []);
 
+  // For error popup
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showError, setShowError] = useState<boolean>(false);
+
   const navigate = useNavigate();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const handleSubmodeClick = async (submode: string) => {
@@ -41,7 +46,6 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     const mainMode = props.mode === 'Solo Mode' ? 'solo' : 'multi';
     const subMode = submode.toLowerCase()
     const lobbyMode = mainMode + '-' + subMode;
-    console.log(lobbyMode);
 
     // Create a lobby
     try {
@@ -52,39 +56,44 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
           credentials: 'include',
           body: JSON.stringify({ gameType: lobbyMode, player: loggedInUser }),
         });
-      console.log(response);
-      if (!response.ok) throw new Error('Failed to create lobby');
       const data = await response.json();
 
-      navigate(`/play/${data.lobbyId}`)
-      
+      if (response.ok) {
+        navigate(`/play/${data.lobbyId}`);
+      } else {
+        setErrorMessage(data.message || 'Failed to create lobby');
+        setShowError(true);
+      }
     } catch (error) {
-      // Error popup for lobby creation failure
-      console.log(error);
+      setErrorMessage('An error occurred while creating the lobby');
+      setShowError(true);
     }
   }
 
   return (
-    <motion.div 
-      className='submode-select-container-full'
-      initial={{ opacity: 0, y: '-20%' }}
-      animate={{ opacity: 1, y: '0%', transition: { duration: 0.3 } }}
-    >
-      <div className='submode-select-container'>
-        <div className='submode-select-header'>
-          <h3>{props.mode}</h3>
-          <IoClose className='submode-select-close' onClick={() => props.setActive(false)}/>
+    <>
+      {showError && <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />}
+      <motion.div 
+        className='submode-select-container-full'
+        initial={{ opacity: 0, y: '-20%' }}
+        animate={{ opacity: 1, y: '0%', transition: { duration: 0.3 } }}
+      >
+        <div className='submode-select-container'>
+          <div className='submode-select-header'>
+            <h3>{props.mode}</h3>
+            <IoClose className='submode-select-close' onClick={() => props.setActive(false)}/>
+          </div>
+          <div className='submode-select-content'>
+            {props.submodes.map((submode, index) => (
+              <div key={index} className='submode-select-item' onClick={() => handleSubmodeClick(submode.name)}>
+                <h4 className='submode-item-header'>{submode.name}</h4>
+                <img src={submode.image} alt={`${submode.name} logo`} className='submode-select-image' />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className='submode-select-content'>
-          {props.submodes.map((submode, index) => (
-            <div key={index} className='submode-select-item' onClick={() => handleSubmodeClick(submode.name)}>
-              <h4 className='submode-item-header'>{submode.name}</h4>
-              <img src={submode.image} alt={`${submode.name} logo`} className='submode-select-image' />
-            </div>
-          ))}
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   )
 }
 

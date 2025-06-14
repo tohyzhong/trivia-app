@@ -53,7 +53,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="login-page">
-      {errorPopup && <ErrorPopup message={errorPopup} />}
+      {errorPopup && <ErrorPopup message={errorPopup} setMessage={setErrorPopup}/>}
       <div className="form-container">
         <form onSubmit={handleLogin}>
           {error && <div className="error">{error}</div>}
