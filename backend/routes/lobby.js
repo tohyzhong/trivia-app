@@ -81,6 +81,12 @@ router.post('/solo/create', async (req, res) => {
       lobbyId: id,
       players: [playerDoc._id],
       gameType: `${gameType}`,
+      gameSettings: {
+        numQuestions: 10,
+        timePerQuestion: 30,
+        difficulty: 3, // 1-5 scale
+        categories: [],
+      },
       chatMessages: [{
         sender: 'System',
         message: `${player} has created the lobby.`,
@@ -117,6 +123,7 @@ router.post('/solo/connect/:lobbyId', async (req, res) => {
     const newChatMessage = {
       sender: 'System',
       message: `${player} has connected.`,
+      timestamp: new Date(),
     }
 
     const chatMessages = [...lobby.chatMessages || [], newChatMessage];
@@ -159,6 +166,7 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
     const newChatMessage = {
       sender: 'System',
       message: `${player} has disconnected.`,
+      timestamp: new Date(),
     }
     const chatMessages = [...lobby.chatMessages || [], newChatMessage];
 
@@ -197,6 +205,7 @@ router.post('/solo/chat/:lobbyId', async (req, res) => {
     const newChatMessage = {
       sender: player,
       message,
+      timestamp: new Date(),
     };
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId },

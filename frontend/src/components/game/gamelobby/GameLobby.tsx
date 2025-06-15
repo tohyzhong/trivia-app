@@ -11,6 +11,13 @@ import { useNavigate } from 'react-router-dom';
 
 const socket = io(import.meta.env.VITE_API_URL)
 
+interface GameSetting {
+  numQuestions: number,
+  timePerQuestion: number,
+  difficulty: number, 
+  categories: string[],
+}
+
 interface LobbyDetails {
   lobbyId: string;
   players: string[];
@@ -36,6 +43,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   const [ lobbyState, setLobbyState ] = useState(props.lobbyState);
 
   useEffect(() => {
+    console.log('lobbystate:', lobbyState)
     if (lobbyState) setLoading(false);
   }, [lobbyState])
 
@@ -71,9 +79,9 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   return loading ? <></> : (
     <div className='game-lobby-full'>
       <div className='game-lobby-container'>
-        <GameSettings />
+        <GameSettings gameSettings={lobbyState.gameSettings as GameSetting}/>
         <GameUsers />
-        <GameChat lobbyId={lobbyId} chatMessages={lobbyState ? lobbyState.chatMessages : []}/>
+        <GameChat lobbyId={lobbyId} chatMessages={lobbyState.chatMessages}/>
       </div>
     </div>
   )
