@@ -17,7 +17,7 @@ const SoloGameRouteHandler = () => {
   const navigate = useNavigate();
   const checkAccess = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/${lobbyId}`,
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/connect/${lobbyId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

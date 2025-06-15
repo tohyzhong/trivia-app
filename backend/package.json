@@ -26,6 +26,7 @@
     "node-cron": "^4.0.7",
     "nodemailer": "^7.0.3",
     "response-time": "^2.3.3",
+    "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

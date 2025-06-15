@@ -2,6 +2,7 @@ import express from 'express';
 import * as crypto from 'node:crypto';
 import Lobby from '../models/lobby.js';
 import User from '../models/User.js';
+import { getSocketIO } from '../socket.js';
 
 const router = express.Router();
 
@@ -90,8 +91,8 @@ router.post('/solo/create', async (req, res) => {
   }
 });
 
-// Get a Solo lobby by ID and check if the player has access
-router.post('/solo/:lobbyId', async (req, res) => {
+// Connect a player to a Solo lobby (DIFFERENT FROM JOINING A LOBBY)
+router.post('/solo/connect/:lobbyId', async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player } = req.body;
@@ -106,15 +107,111 @@ router.post('/solo/:lobbyId', async (req, res) => {
       return res.status(403).json({ message: 'Player does not have access to this lobby.' });
     }
 
-    return res.status(200).json({
-      lobbyId: lobby.lobbyId,
-      players: players,
-      gameType: lobby.gameType
-    });
+    // Update chat messages
+    const socketIO = getSocketIO();
+    const newChatMessage = {
+      sender: 'System',
+      message: `${player} has connected.`,
+    }
+
+    const chatMessages = [...lobby.chatMessages || [], newChatMessage];
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      { $set: { chatMessages } },
+      { returnDocument: 'after' }
+    );
+    if (!updatedLobby) {
+      return res.status(404).json({ message: 'Failed to update lobby' });
+    }
+
+    // Notify all players in the lobby
+    socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
+
+    return res.status(200).json({ message: 'Player connected successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving lobby' });
   }
 });
+
+// Disconnect a player from a Solo lobby (DIFFERENT FROM LEAVING A LOBBY)
+router.post('/solo/disconnect/:lobbyId', async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { player } = req.body;
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+
+    if (!lobby) {
+      return res.status(404).json({ message: 'Lobby not found.' });
+    }
+    const playerDoc = await User.collection.findOne({ username: player });
+    if (!playerDoc) {
+      return res.status(404).json({ message: 'Player not found.' });
+    }
+    if (!lobby.players.includes(playerDoc._id)) {
+      return res.status(403).json({ message: 'Player not in this lobby.' });
+    }
+
+    // Update chat messages
+    const socketIO = getSocketIO();
+    const newChatMessage = {
+      sender: 'System',
+      message: `${player} has disconnected.`,
+    }
+    const chatMessages = [...lobby.chatMessages || [], newChatMessage];
+
+    // Emit chat message
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      { $set: { chatMessages } },
+      { returnDocument: 'after' }
+    );
+    if (!updatedLobby) {
+      return res.status(404).json({ message: 'Failed to update lobby' });
+    }
+
+    return res.status(200).json({ message: 'Player disconnected successfully' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error leaving lobby' });
+  }
+});
+
+router.post('/solo/chat/:lobbyId', async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { player, message } = req.body;
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+    if (!lobby) {
+      return res.status(404).json({ message: 'Lobby not found.' });
+    }
+    const playerDoc = await User.collection.findOne({ username: player });
+    if (!playerDoc) {
+      return res.status(404).json({ message: 'Player not found.' });
+    }
+    
+    const newChatMessage = {
+      sender: player,
+      message,
+    };
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      { $push: { chatMessages: newChatMessage } },
+      { returnDocument: 'after' }
+    );
+    if (!updatedLobby) {
+      return res.status(404).json({ message: 'Failed to update lobby' });
+    }
+    // Notify all players in the lobby
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
+    return res.status(200).json({ message: 'Chat message sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error sending chat message' });
+  }
+});
+
 
 export default router;

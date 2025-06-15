@@ -3,6 +3,8 @@ import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import http from 'http';
+import { initSocket } from './socket.js';
 
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
@@ -22,6 +24,9 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
 }));
+
+const server = http.createServer(app);
+initSocket(server);
 
 let isConnected = false;
 
@@ -63,10 +68,12 @@ app.use('/api/friends', friendRoutes);
 // Lobby
 app.use('/api/lobby', lobbyRoutes);
 
-app.listen(8080, () => {  // uncomment for local production testing
+// Connection
+server.listen(8080, () => {  // uncomment for local production testing
     console.log("Server is running on port 8080");
 });
 
+// Run scheduled tasks
 runSchedulers();
 
 export default app;
