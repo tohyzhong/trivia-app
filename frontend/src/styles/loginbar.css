@@ -73,6 +73,10 @@ button {
   background-color: #e53935;
 }
 
+.logout-button:active {
+  background-color: #b13937;
+}
+
 .welcome-text {
   display: flex;
   align-items: center;

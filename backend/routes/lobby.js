@@ -1,7 +1,7 @@
 import express from 'express';
 import * as crypto from 'node:crypto';
-import Lobby from '../models/lobby.js';
-import User from '../models/User.js';
+import Lobby from '../models/Lobby.js';
+import Profile from '../models/Profile.js';
 import { getSocketIO } from '../socket.js';
 
 const router = express.Router();
@@ -11,13 +11,13 @@ router.post('/solo/create', async (req, res) => {
   try {
     const { gameType, player } = req.body;
     const id = crypto.randomUUID();
-    const playerDoc = await User.collection.findOne({ username: player })
+    const playerDoc = await Profile.collection.findOne({ username: player })
 
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
     }
 
-    const existingLobby = await User.aggregate([
+    const existingLobby = await Profile.aggregate([
       // Retrieve player information
       { $match: { username: player } },
 
@@ -113,7 +113,7 @@ router.post('/solo/connect/:lobbyId', async (req, res) => {
       return res.status(404).json({ message: 'Lobby not found.' });
     }
 
-    const players = await User.collection.find({ _id: { $in: lobby.players } }).toArray();;
+    const players = await Profile.collection.find({ _id: { $in: lobby.players } }).toArray();;
     if (!players.map(p => p.username).includes(player)) {
       return res.status(403).json({ message: 'Player does not have access to this lobby.' });
     }
@@ -156,7 +156,7 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
     if (!lobby) {
       return res.status(404).json({ message: 'Lobby not found.' });
     }
-    const playerDoc = await User.collection.findOne({ username: player });
+    const playerDoc = await Profile.collection.findOne({ username: player });
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
     }
@@ -197,7 +197,7 @@ router.post('/solo/chat/:lobbyId', async (req, res) => {
     if (!lobby) {
       return res.status(404).json({ message: 'Lobby not found.' });
     }
-    const playerDoc = await User.collection.findOne({ username: player });
+    const playerDoc = await Profile.collection.findOne({ username: player });
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
     }

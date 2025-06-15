@@ -80,7 +80,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     <div className='game-lobby-full'>
       <div className='game-lobby-container'>
         <GameSettings gameSettings={lobbyState.gameSettings as GameSetting}/>
-        <GameUsers />
+        <GameUsers userIds={lobbyState.players}/>
         <GameChat lobbyId={lobbyId} chatMessages={lobbyState.chatMessages}/>
       </div>
     </div>

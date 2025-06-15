@@ -29,7 +29,7 @@ const GameSettings: React.FC<GameSettingsProps> = (props) => {
           <span>{gameSettings.numQuestions}</span>
         </div>
         <div className='game-lobby-settings-item'>
-          <label>Time per Question:</label>
+          <label>Time Limit:</label>
           <span>{gameSettings.timePerQuestion} seconds</span>
         </div>
         <div className='game-lobby-settings-item'>
@@ -38,7 +38,7 @@ const GameSettings: React.FC<GameSettingsProps> = (props) => {
         </div>
         <div className='game-lobby-settings-item'>
           <label>Categories:</label>
-          <span>{gameSettings.categories.join(', ')}</span>
+          <span>{gameSettings.categories.join(', ')}Standard</span>
         </div>
       </div>
       <div className='game-lobby-settings-footer'>

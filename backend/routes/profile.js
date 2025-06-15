@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Profile from '../models/Profile.js';
 import authenticate from './authMiddleware.js';
 import User from '../models/User.js';
@@ -25,6 +26,7 @@ router.get('/search-profiles', authenticate, async (req, res) => {
   }
 });
 
+// Retrieve friend info of user
 router.get('/:username', authenticate, async (req, res) => {
   const { username } = req.params;
 
@@ -117,5 +119,24 @@ router.get('/:username', authenticate, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// Retrieve multiple profiles
+router.post('/get-profiles', async (req, res) => {
+  try {
+    const { userIds } = req.body;
+    const objectIds = userIds.map((id) => new mongoose.Types.ObjectId(`${id}`))
+    const users = await Profile.find(
+      { _id: { $in: objectIds } },
+      { _id: 0, username: 1, profilePicture: 1 }
+    )
+    if (!users) {
+      return res.status(404).json({ message: 'No profiles found' })
+    }
+    return res.status(200).json({ message: 'Profiles successfully retrieved.', users});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error.'});
+  }
+})
 
 export default router;
