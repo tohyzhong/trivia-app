@@ -66,13 +66,69 @@
   box-sizing: border-box;
 }
 
-.game-lobby-chat {
+
+/* Game Chat */
+.game-lobby-chat-container {
   display: flex;
   flex-direction: column;
   width: 30%;
   height: 100%;
   background-color: #555;
   color: white;
-  padding: 20px;
   box-sizing: border-box;
+}
+
+.game-lobby-chat-messages {
+  flex-grow: 1;
+  height: 92%;
+  overflow-y: auto;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.chat-container:nth-child(odd) {
+  background-color: #666;
+}
+
+.chat-container:nth-child(even) {
+  background-color: #777;
+}
+
+.game-lobby-chat-messages p {
+  margin: 0;
+  border-bottom: 1px solid #666;
+}
+
+.game-lobby-chat-entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 8%;
+}
+
+.chat-input {
+  flex-grow: 1;
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  background-color: #888;
+  color: white;
+}
+
+.chat-send-button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  background-color: #055096;
+  color: white;
+  cursor: pointer;
 }

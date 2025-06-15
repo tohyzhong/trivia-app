@@ -7,51 +7,74 @@ import GameUsers from './GameUsers';
 import GameChat from './GameChat';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
+import { useNavigate } from 'react-router-dom';
 
 const socket = io(import.meta.env.VITE_API_URL)
 
-const GameLobby = () => {
-  const lobbyId = '7c8202df-0335-43a6-afa2-c9229d2260db';
+interface LobbyDetails {
+  lobbyId: string;
+  players: string[];
+  gameType: 'solo-classic' | 'solo-knowledge';
+  status: 'waiting' | 'in-progress' | 'finished';
+  gameData: object;
+  gameSettings: object;
+  gameResult: object;
+  chatMessages: { sender: string; message: string; timestamp: Date }[];
+}
+
+interface GameLobbyProps {
+  lobbyId: string;
+  lobbyState: LobbyDetails;
+}
+
+const GameLobby: React.FC<GameLobbyProps> = (props) => {
+  // Handle component loading
+  const [ loading, setLoading ] = useState<boolean>(true);
+
+  // Lobby details
+  const { lobbyId } = props;
+  const [ lobbyState, setLobbyState ] = useState(props.lobbyState);
 
   useEffect(() => {
-    if (lobbyId) {
-      socket.emit('joinLobby', lobbyId);
-      socket.on('lobbyUpdate', (data) => {
-        console.log(data);
-      });
-    }
-    return () => {
-      socket.emit('leaveLobby', lobbyId);
-      socket.off('lobbyUpdate');
-    }
-  }, [lobbyId])
+    if (lobbyState) setLoading(false);
+  }, [lobbyState])
 
-  const loggedInUser = useSelector((state: RootState) => state.user.username)
-  const test = async () => {
+  // Handle updates and disconnection from lobby
+  const navigate = useNavigate();
+  const disconnect = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/chat/${lobbyId}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ player: loggedInUser, message: 'test' }),
-        });
-      const data = await response.json();
-      console.log(data);
-
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ player: loggedInUser }),
+      });
     } catch (error) {
-      
+      navigate('/',{ state: { errorMessage: 'There was an issue disconnecting you. A report has been sent to the admins' } });
     }
   }
 
-  return (
+  useEffect(() => {
+    socket.emit('joinLobby', lobbyId);
+    socket.on('updateLobby', (data) => {
+      setLobbyState(data.updatedLobby);
+    });
+    return () => {
+      socket.emit('leaveLobby', lobbyId);
+      disconnect();
+      socket.off('updateLobby');
+    }
+  }, []);
+
+  const loggedInUser = useSelector((state: RootState) => state.user.username)
+
+  return loading ? <></> : (
     <div className='game-lobby-full'>
       <div className='game-lobby-container'>
         <GameSettings />
         <GameUsers />
-        <GameChat />
+        <GameChat lobbyId={lobbyId} chatMessages={lobbyState ? lobbyState.chatMessages : []}/>
       </div>
-      <button onClick={test}>Test</button>
     </div>
   )
 }

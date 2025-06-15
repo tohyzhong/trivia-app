@@ -81,6 +81,11 @@ router.post('/solo/create', async (req, res) => {
       lobbyId: id,
       players: [playerDoc._id],
       gameType: `${gameType}`,
+      chatMessages: [{
+        sender: 'System',
+        message: `${player} has created the lobby.`,
+        timestamp: new Date(),
+      }],
     };
 
     await Lobby.collection.insertOne(lobby);
@@ -127,7 +132,7 @@ router.post('/solo/connect/:lobbyId', async (req, res) => {
     // Notify all players in the lobby
     socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
 
-    return res.status(200).json({ message: 'Player connected successfully' });
+    return res.status(200).json({ message: 'Player connected successfully', lobbyDetails: updatedLobby });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving lobby' });
@@ -148,9 +153,6 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
     }
-    if (!lobby.players.includes(playerDoc._id)) {
-      return res.status(403).json({ message: 'Player not in this lobby.' });
-    }
 
     // Update chat messages
     const socketIO = getSocketIO();
@@ -169,6 +171,7 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
     if (!updatedLobby) {
       return res.status(404).json({ message: 'Failed to update lobby' });
     }
+    socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
 
     return res.status(200).json({ message: 'Player disconnected successfully' });
 
@@ -190,7 +193,7 @@ router.post('/solo/chat/:lobbyId', async (req, res) => {
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
     }
-    
+
     const newChatMessage = {
       sender: player,
       message,

@@ -9,11 +9,13 @@ import GameLobby from '../gamelobby/GameLobby';
 const SoloGameRouteHandler = () => {
   // Loading state
   const [ loading, setLoading ] = useState<boolean>(true);
+  const [ lobbyState, setLobbyState ] = useState(null);
 
   // Access check variables
   const { lobbyId } = useParams();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
+  // Handle access check and connection to lobby
   const navigate = useNavigate();
   const checkAccess = async () => {
     try {
@@ -27,7 +29,7 @@ const SoloGameRouteHandler = () => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log(data);
+        setLobbyState(data.lobbyDetails);
         setLoading(false);
       } else {
         navigate('/',{ state: { errorMessage: data.message || '' } });
@@ -45,7 +47,7 @@ const SoloGameRouteHandler = () => {
     }
   }, [lobbyId, loggedInUser])
 
-  return (loading ? (<GameLoading />) : (<GameLobby />))
+  return (loading && lobbyState ? (<GameLoading />) : (<GameLobby lobbyId={lobbyId} lobbyState={lobbyState}/>))
 }
 
 export default SoloGameRouteHandler
