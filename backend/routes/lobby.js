@@ -255,5 +255,9 @@ router.post('/solo/chat/:lobbyId', async (req, res) => {
   }
 });
 
+router.post('/solo/ready/:lobbyId', async (req, res) => {
+  // TODO when multiplayer is implemented
+});
+
 
 export default router;

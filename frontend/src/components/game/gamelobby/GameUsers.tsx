@@ -31,19 +31,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       })
       const data = await response.json();
       if (response.ok) {
-        setUsers([...data.users,
-          // For scroll test (to be deleted)
-          {username: 'test1', profilePicture: defaultAvatar},
-          {username: 'test2', profilePicture: defaultAvatar},
-          {username: 'test3', profilePicture: defaultAvatar},
-          {username: 'test4', profilePicture: defaultAvatar},
-          {username: 'test5', profilePicture: defaultAvatar},
-          {username: 'test6', profilePicture: defaultAvatar},
-          {username: 'test7', profilePicture: defaultAvatar},
-          {username: 'test8', profilePicture: defaultAvatar},
-          {username: 'test9', profilePicture: defaultAvatar},
-          {username: 'test10', profilePicture: defaultAvatar}
-        ])
+        setUsers(data.users)
       } else {
         throw new Error();
       }
@@ -56,6 +44,16 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
   useEffect(() => {
     if (userIds) renderUsers();
   }, [userIds])
+
+  // Ready button 
+  const handleReady = () => {
+    // TODO for multiplayer
+  }
+
+  // Start button
+  const handleStart = () => {
+
+  }
 
   // Leaving Lobby
   const handleLeave = async () => {
@@ -87,14 +85,15 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       <div className='game-lobby-users-list'>
         {users.length > 0 && users.map((user, index) => (
           <ul key={user.username+index} className='game-lobby-user'>
-            <img src={user.profilePicture} alt={user.username+'\'s Profile Picture'}/>
+            <img src={user.profilePicture || defaultAvatar} alt={user.username+'\'s Profile Picture'}/>
             <h3>&nbsp;{user.username}</h3>
           </ul>
         ))}
       </div>
       <div className='game-lobby-buttons'>
         <button className='leave-button' onClick={handleLeave}>Leave</button>
-        <button className='ready-button'>Ready</button>
+        <button className='ready-button' onClick={handleReady}>Ready</button>
+        <button className='start-button' onClick={handleStart}>Start</button>
       </div>
     </div>
   )
