@@ -185,7 +185,37 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error leaving lobby' });
+    res.status(500).json({ message: 'Error disconnecting from lobby' });
+  }
+});
+
+router.post('/solo/join/:lobbyId', async (req, res) => {
+  // TODO when multiplayer is implemented
+});
+
+router.post('/solo/leave/:lobbyId', async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { player } = req.body;
+    const playerDoc = await Profile.collection.findOne({ username: player })
+    const lobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      { $pull: { players: playerDoc._id } },
+      { returnDocument: 'after' }
+    );
+    if (!lobby) {
+      res.status(401).json({ message: 'Lobby not found.' })
+    }
+    
+    // Close lobby if empty
+    if (lobby.players.length === 0) {
+      await Lobby.collection.deleteOne(lobby);
+    }
+
+    res.status(200).json({ message: 'Successfully left lobby.' })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error leaving lobby' })
   }
 });
 

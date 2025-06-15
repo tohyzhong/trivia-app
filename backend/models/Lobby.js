@@ -16,7 +16,7 @@ const lobbySchema = new mongoose.Schema({
     categories: [],
   }, required: true },
   chatMessages: [{
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'Profile' },
+    sender: { type: String, required: true },
     message: { type: String, required: true },
     timestamp: { type: Date, default: Date.now }
   }]

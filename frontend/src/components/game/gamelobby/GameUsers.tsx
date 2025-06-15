@@ -10,11 +10,12 @@ interface User {
 }
 
 interface GameUsersProps {
+  lobbyId: string;
   userIds: string[];
 }
 
 const GameUsers: React.FC<GameUsersProps> = (props) => {
-  const { userIds } = props;
+  const { lobbyId, userIds } = props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [ users, setUsers ] = useState<User[]>([]);
 
@@ -54,8 +55,29 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   useEffect(() => {
     if (userIds) renderUsers();
-    console.log(users);
   }, [userIds])
+
+  // Leaving Lobby
+  const handleLeave = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ player: loggedInUser }),
+      })
+      const data = await response.json();
+      console.log(data);
+      if (response.ok){
+        navigate('/',{ state: { errorMessage: 'You left the lobby.' } });
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      console.error(error);
+      navigate('/',{ state: { errorMessage: 'Error loading lobby. A report has been sent to the admins' } });
+    }
+  }
 
   return (
     <div className='game-lobby-users'>
@@ -71,7 +93,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
         ))}
       </div>
       <div className='game-lobby-buttons'>
-        <button className='leave-button'>Leave</button>
+        <button className='leave-button' onClick={handleLeave}>Leave</button>
         <button className='ready-button'>Ready</button>
       </div>
     </div>
