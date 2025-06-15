@@ -21,22 +21,25 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     setChatInput(event.target.value);
   } 
 
+  const handleSend = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/chat/${lobbyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ player: loggedInUser, message: chatInput }),
+      })
+      if (response.ok) {
+        setChatInput('');
+      }
+    } catch (error) {
+      console.error('Error sending chat message:', error);
+    }
+  }
+
   const handleKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && chatInput.trim() !== '') {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/chat/${lobbyId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ player: loggedInUser, message: chatInput }),
-        })
-        const data = await response.json();
-        if (response.ok) {
-          setChatInput('');
-        }
-      } catch (error) {
-        console.error('Error sending chat message:', error);
-      }
+      await handleSend();
     }
   }
 
@@ -66,7 +69,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
           onChange={handleInputChange} 
           onKeyDown={handleKeyPress} 
         />
-        <button className='chat-send-button'>Send</button>
+        <button className='chat-send-button' onClick={handleSend}>Send</button>
       </div>
     </div>
   )
