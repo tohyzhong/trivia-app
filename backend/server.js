@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import http from 'http';
 import { initSocket } from './socket.js';
+import generateQuestions from './utils/questionbank.js';
 
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
@@ -69,11 +70,15 @@ app.use('/api/friends', friendRoutes);
 app.use('/api/lobby', lobbyRoutes);
 
 // Connection
-server.listen(8080, () => {  // uncomment for local production testing
-    console.log("Server is running on port 8080");
+server.listen(5000, () => {  // uncomment for local production testing
+    console.log("Server is running on port 5000");
 });
 
 // Run scheduled tasks
 runSchedulers();
+
+// Generate sample Classic Questions
+generateQuestions();
+
 
 export default app;
