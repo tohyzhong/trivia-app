@@ -18,20 +18,16 @@ interface GameSetting {
   categories: string[],
 }
 
-interface LobbyDetails {
-  lobbyId: string;
-  players: string[];
-  gameType: 'solo-classic' | 'solo-knowledge';
-  status: 'waiting' | 'in-progress' | 'finished';
-  gameData: object;
-  gameSettings: object;
-  gameResult: object;
-  chatMessages: { sender: string; message: string; timestamp: Date }[];
+interface ChatMessage {
+  sender: string;
+  message: string;
 }
 
 interface GameLobbyProps {
   lobbyId: string;
-  lobbyState: LobbyDetails;
+  lobbySettings: GameSetting;
+  lobbyUsers: string[]
+  lobbyChat: ChatMessage[];
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
@@ -39,49 +35,21 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   const [ loading, setLoading ] = useState<boolean>(true);
 
   // Lobby details
-  const { lobbyId } = props;
-  const [ lobbyState, setLobbyState ] = useState(props.lobbyState);
+  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat } = props;
 
+  // Ensure that the states are loaded
   useEffect(() => {
-    console.log('lobbystate:', lobbyState)
-    if (lobbyState) setLoading(false);
-  }, [lobbyState])
-
-  // Handle updates and disconnection from lobby
-  const navigate = useNavigate();
-  const disconnect = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ player: loggedInUser }),
-      });
-    } catch (error) {
-      navigate('/',{ state: { errorMessage: 'There was an issue disconnecting you. A report has been sent to the admins' } });
+    if (lobbyId && lobbySettings && lobbyUsers && lobbyChat) {
+      setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    socket.emit('joinLobby', lobbyId);
-    socket.on('updateLobby', (data) => {
-      setLobbyState(data.updatedLobby);
-    });
-    return () => {
-      socket.emit('leaveLobby', lobbyId);
-      disconnect();
-      socket.off('updateLobby');
-    }
-  }, []);
-
-  const loggedInUser = useSelector((state: RootState) => state.user.username)
+  }, [lobbyId, lobbySettings, lobbyUsers, lobbyChat])
 
   return loading ? <></> : (
     <div className='game-lobby-full'>
       <div className='game-lobby-container'>
-        <GameSettings gameSettings={lobbyState.gameSettings as GameSetting}/>
-        <GameUsers lobbyId={lobbyId} userIds={lobbyState.players}/>
-        <GameChat lobbyId={lobbyId} chatMessages={lobbyState.chatMessages}/>
+        <GameSettings gameSettings={lobbySettings}/>
+        <GameUsers lobbyId={lobbyId} userIds={lobbyUsers}/>
+        <GameChat lobbyId={lobbyId} chatMessages={lobbyChat}/>
       </div>
     </div>
   )

@@ -137,7 +137,7 @@ router.post('/solo/connect/:lobbyId', async (req, res) => {
     }
 
     // Notify all players in the lobby
-    socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
+    socketIO.to(lobbyId).emit('updateChat', { chatMessages: updatedLobby.chatMessages });
 
     return res.status(200).json({ message: 'Player connected successfully', lobbyDetails: updatedLobby });
   } catch (error) {
@@ -179,7 +179,7 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
     if (!updatedLobby) {
       return res.status(404).json({ message: 'Failed to update lobby' });
     }
-    socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
+    socketIO.to(lobbyId).emit('updateChat', { chatMessages: updatedLobby.chatMessages });
 
     return res.status(200).json({ message: 'Player disconnected successfully' });
 
@@ -247,7 +247,7 @@ router.post('/solo/chat/:lobbyId', async (req, res) => {
     }
     // Notify all players in the lobby
     const socketIO = getSocketIO();
-    socketIO.to(lobbyId).emit('updateLobby', { updatedLobby });
+    socketIO.to(lobbyId).emit('updateChat', { chatMessages: updatedLobby.chatMessages });
     return res.status(200).json({ message: 'Chat message sent successfully' });
   } catch (error) {
     console.error(error);
