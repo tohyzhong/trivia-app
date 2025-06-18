@@ -70,8 +70,8 @@ app.use('/api/friends', friendRoutes);
 app.use('/api/lobby', lobbyRoutes);
 
 // Connection
-server.listen(5000, () => {  // uncomment for local production testing
-    console.log("Server is running on port 5000");
+server.listen(process.env.PORT, () => {  // uncomment for local production testing
+    console.log(`Server is running on port ${process.env.PORT}`);
 });
 
 // Run scheduled tasks
