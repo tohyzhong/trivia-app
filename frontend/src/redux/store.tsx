@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
+import lobbyReducer from './lobbySlice';
 import { Middleware } from 'redux';
 
 const loadUserState = () => {
@@ -17,6 +18,7 @@ const saveUserState: Middleware = (storeAPI) => (next) => (action) => {
 const store = configureStore({
   reducer: {
     user: userReducer,
+    lobby: lobbyReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(saveUserState),

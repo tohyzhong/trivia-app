@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { io } from 'socket.io-client';
 
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
-import { RootState } from '../../../redux/store';
-import GameLoading from '../gamelobby/GameLoading';
-import GameLobby from '../gamelobby/GameLobby';
+import { RootState } from '../../redux/store';
+import GameLoading from './gamelobby/GameLoading';
+import GameLobby from './gamelobby/GameLobby';
+import { clearLobby } from '../../redux/lobbySlice';
 
 interface GameSetting {
   numQuestions: number,
@@ -47,6 +48,7 @@ const QuizHandler: React.FC = () => {
 
   // Socket management
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const disconnect = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`, {
@@ -101,10 +103,12 @@ const QuizHandler: React.FC = () => {
         setGameChat(lobbyDetails.chatMessages);
         setLoading(false);
       } else {
+        dispatch(clearLobby());
         navigate('/',{ state: { errorMessage: data.message || '' } });
       }
 
     } catch (error) {
+      dispatch(clearLobby());
       navigate('/',{ state: { errorMessage: 'Error fetching lobby details. Contact support if you believe this is an error.' } });
     }
   }
