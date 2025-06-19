@@ -3,9 +3,10 @@ import { motion } from 'motion/react';
 import '../../../styles/modeselect.css';
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import ErrorPopup from '../../authentication/subcomponents/ErrorPopup';
+import { setLobby } from '../../../redux/lobbySlice';
 
 interface SubMode {
   name: string;
@@ -40,7 +41,9 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
   const [showError, setShowError] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
+
   const handleSubmodeClick = async (submode: string) => {
     if (submode === 'Coming Soon...') return; // No effect for clicking on coming soon tab
     const mainMode = props.mode === 'Solo Mode' ? 'solo' : 'multi';
@@ -59,6 +62,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
       const data = await response.json();
 
       if (response.ok) {
+        dispatch(setLobby({ lobbyId: data.lobbyId }));
         navigate(`/play/${data.lobbyId}`);
       } else {
         setErrorMessage(data.message || 'Failed to create lobby');
