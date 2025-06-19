@@ -3,11 +3,12 @@ import * as crypto from 'node:crypto';
 import Lobby from '../models/Lobby.js';
 import Profile from '../models/Profile.js';
 import { getSocketIO } from '../socket.js';
+import authenticate from './authMiddleware.js';
 
 const router = express.Router();
 
 // Create a new Solo lobby
-router.post('/solo/create', async (req, res) => {
+router.post('/solo/create', authenticate, async (req, res) => {
   try {
     const { gameType, player } = req.body;
     const id = crypto.randomUUID();
@@ -92,6 +93,7 @@ router.post('/solo/create', async (req, res) => {
         message: `${player} has created the lobby.`,
         timestamp: new Date(),
       }],
+      lastActivity: new Date(),
     };
 
     await Lobby.collection.insertOne(lobby);
@@ -103,7 +105,7 @@ router.post('/solo/create', async (req, res) => {
 });
 
 // Connect a player to a Solo lobby (DIFFERENT FROM JOINING A LOBBY)
-router.post('/solo/connect/:lobbyId', async (req, res) => {
+router.post('/solo/connect/:lobbyId', authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player } = req.body;
@@ -112,6 +114,11 @@ router.post('/solo/connect/:lobbyId', async (req, res) => {
     if (!lobby) {
       return res.status(404).json({ message: 'Lobby not found.' });
     }
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { lastActivity: new Date() } }
+    );
 
     const players = await Profile.collection.find({ _id: { $in: lobby.players } }).toArray();;
     if (!players.map(p => p.username).includes(player)) {
@@ -147,7 +154,7 @@ router.post('/solo/connect/:lobbyId', async (req, res) => {
 });
 
 // Disconnect a player from a Solo lobby (DIFFERENT FROM LEAVING A LOBBY)
-router.post('/solo/disconnect/:lobbyId', async (req, res) => {
+router.post('/solo/disconnect/:lobbyId', authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player } = req.body;
@@ -156,6 +163,12 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
     if (!lobby) {
       return res.status(404).json({ message: 'Lobby not found.' });
     }
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { lastActivity: new Date() } }
+    );
+
     const playerDoc = await Profile.collection.findOne({ username: player });
     if (!playerDoc) {
       return res.status(404).json({ message: 'Player not found.' });
@@ -189,11 +202,16 @@ router.post('/solo/disconnect/:lobbyId', async (req, res) => {
   }
 });
 
-router.post('/solo/join/:lobbyId', async (req, res) => {
+router.post('/solo/join/:lobbyId', authenticate, async (req, res) => {
   // TODO when multiplayer is implemented
+  const { lobbyId } = req.params;
+  await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { lastActivity: new Date() } }
+    );
 });
 
-router.post('/solo/leave/:lobbyId', async (req, res) => {
+router.post('/solo/leave/:lobbyId', authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player } = req.body;
@@ -204,13 +222,18 @@ router.post('/solo/leave/:lobbyId', async (req, res) => {
       { returnDocument: 'after' }
     );
     if (!lobby) {
-      res.status(401).json({ message: 'Lobby not found.' })
+      return res.status(401).json({ message: 'Lobby not found.' })
     }
     
     // Close lobby if empty
     if (lobby.players.length === 0) {
       await Lobby.collection.deleteOne(lobby);
     }
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { lastActivity: new Date() } }
+    );
 
     res.status(200).json({ message: 'Successfully left lobby.' })
   } catch (error) {
@@ -219,7 +242,7 @@ router.post('/solo/leave/:lobbyId', async (req, res) => {
   }
 });
 
-router.post('/solo/chat/:lobbyId', async (req, res) => {
+router.post('/solo/chat/:lobbyId', authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player, message } = req.body;
@@ -239,7 +262,9 @@ router.post('/solo/chat/:lobbyId', async (req, res) => {
     };
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId },
-      { $push: { chatMessages: newChatMessage } },
+      { $push: { chatMessages: newChatMessage },
+        $set: { lastActivity: new Date() }, 
+      },
       { returnDocument: 'after' }
     );
     if (!updatedLobby) {
@@ -259,5 +284,30 @@ router.post('/solo/ready/:lobbyId', async (req, res) => {
   // TODO when multiplayer is implemented
 });
 
+router.get('/check', authenticate, async (req, res) => {
+  try {
+    const username = req.user.username;
+
+    const playerDoc = await Profile.collection.findOne({ username });
+
+    if (!playerDoc) {
+      return res.status(404).json({ message: 'Player not found.' });
+    }
+
+    const lobby = await Lobby.collection.findOne({
+      players: playerDoc._id,
+    });
+
+    if (!lobby) {
+      return res.status(200).json({ message: 'Player not in any lobby.' });
+    }
+
+    // Player is in a lobby, return the lobbyId
+    return res.status(200).json({ lobbyId: lobby.lobbyId });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error checking lobby status.' });
+  }
+});
 
 export default router;
