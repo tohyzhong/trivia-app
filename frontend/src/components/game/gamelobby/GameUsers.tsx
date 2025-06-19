@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { useNavigate } from 'react-router-dom';
 import defaultAvatar from '../../../assets/default-avatar.jpg';
+import { clearLobby } from '../../../redux/lobbySlice';
 
 interface User {
   username: string;
@@ -21,6 +22,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   // Render all users and avatars
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const renderUsers = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/get-profiles`, {
@@ -65,8 +67,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
         body: JSON.stringify({ player: loggedInUser }),
       })
       const data = await response.json();
-      console.log(data);
       if (response.ok){
+        dispatch(clearLobby());
         navigate('/',{ state: { errorMessage: 'You left the lobby.' } });
       } else {
         throw new Error();

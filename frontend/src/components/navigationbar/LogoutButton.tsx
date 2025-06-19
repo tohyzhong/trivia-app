@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/userSlice';
+import { clearLobby } from '../../redux/lobbySlice'
 import { useDispatch } from 'react-redux';
 
 const LogoutButton: React.FC = () => {
@@ -15,6 +16,7 @@ const LogoutButton: React.FC = () => {
 
       if (res.ok) {
         dispatch(logout());
+        dispatch(clearLobby());
         navigate('/');
         window.location.reload();
       } else {
