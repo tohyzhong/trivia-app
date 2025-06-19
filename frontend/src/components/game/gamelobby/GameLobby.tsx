@@ -33,9 +33,31 @@ interface GameLobbyProps {
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
   // Handle component loading
   const [ loading, setLoading ] = useState<boolean>(true);
+  const [isLobbyDeleted, setIsLobbyDeleted] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   // Lobby details
   const { lobbyId, lobbySettings, lobbyUsers, lobbyChat } = props;
+
+  useEffect(() => {
+    if (lobbyId) {
+      socket.on('lobbyDeleted', (deletedLobbyId: string) => {
+        if (deletedLobbyId === lobbyId) {
+          setIsLobbyDeleted(true);
+        }
+      });
+
+      return () => {
+        socket.off('lobbyDeleted');
+      };
+    }
+  }, [lobbyId]);
+
+  useEffect(() => {
+    if (isLobbyDeleted) {
+      window.location.reload()
+    }
+  }, [isLobbyDeleted, navigate]);
 
   // Ensure that the states are loaded
   useEffect(() => {
