@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import { playClickSound } from "../../../utils/soundManager";
 
 interface ChatMessage {
   sender: string;
@@ -22,6 +23,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   };
 
   const handleSend = async () => {
+    playClickSound();
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/solo/chat/${lobbyId}`,
@@ -29,7 +31,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ player: loggedInUser, message: chatInput }),
+          body: JSON.stringify({ player: loggedInUser, message: chatInput })
         }
       );
       if (response.ok) {

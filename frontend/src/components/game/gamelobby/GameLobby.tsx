@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 
+import { useInitSound } from "../../../hooks/useInitSound";
+
 interface GameSetting {
   numQuestions: number;
   timePerQuestion: number;
@@ -29,6 +31,8 @@ interface GameLobbyProps {
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
+  useInitSound();
+
   // Handle component loading
   const [loading, setLoading] = useState<boolean>(true);
   const [isLobbyDeleted, setIsLobbyDeleted] = useState<boolean>(false);
