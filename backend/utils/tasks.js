@@ -19,7 +19,7 @@ const runSchedulers = () => {
     }
   });
 
-  cron.schedule("*/1 * * * *", async () => {
+  cron.schedule("*/30 * * * *", async () => {
     console.log(
       "Clearing lobbies that have been inactive for more than 30 minutes"
     );

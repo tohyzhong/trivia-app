@@ -88,6 +88,7 @@ router.post("/solo/create", authenticate, async (req, res) => {
 
     const lobby = {
       lobbyId: id,
+      status: "waiting",
       players: [playerDoc._id],
       gameType: `${gameType}`,
       gameSettings: {
@@ -95,6 +96,11 @@ router.post("/solo/create", authenticate, async (req, res) => {
         timePerQuestion: 30,
         difficulty: 3, // 1-5 scale
         categories: [defaultCategory]
+      },
+      gameState: {
+        currentQuestion: 0,
+        question: null,
+        lastUpdate: Date.now()
       },
       chatMessages: [
         {
@@ -410,6 +416,43 @@ router.post("/solo/updateSettings/:lobbyId", authenticate, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error updating game settings" });
+  }
+});
+
+router.get("/startlobby/:lobbyId", async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+
+    if (!lobby) {
+      return res.status(404).json({ message: "Lobby not found" });
+      // } else if (lobby.status === "in-progress" || lobby.status === "finished") {
+      // return res.status(401).json({ message: "Lobby has already started." });
+    } else {
+      // Configure game state
+      const question = await ClassicQuestion.findOne({ category: "General" });
+      const gameState = {
+        currentQuestion: 1,
+        question,
+        lastUpdate: Date.now()
+      };
+
+      await Lobby.collection.updateOne(
+        { lobbyId },
+        { $set: { gameState, status: "in-progress" } }
+      );
+
+      // Notify players in the lobby
+      const socketIO = getSocketIO();
+      socketIO.to(lobbyId).emit("updateStatus", { status: "in-progress" });
+      socketIO.to(lobbyId).emit("updateState", { gameState });
+
+      return res.status(200).json({ message: "Lobby started." });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error starting lobby." });
   }
 });
 
