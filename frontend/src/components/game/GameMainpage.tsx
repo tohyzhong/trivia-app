@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/game.css";
 import ModeSelect from "./subcomponents/ModeSelect";
 import SoundSettings from "./subcomponents/SoundSettings";
+import { IoSettingsOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import SoloModeLogo from "../../assets/solo_mode.png";
 import MultiplayerModeLogo from "../../assets/multiplayer_mode.png";
@@ -129,17 +130,13 @@ export const GameMainpage: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="sound-settings-button">
-        <button
-          onClick={() => {
-            playClickSound();
-            setIsSoundPopupOpen(true);
-          }}
-          className="sound-settings-btn"
-        >
-          Sound Settings
-        </button>
-      </div>
+      <IoSettingsOutline
+        onClick={() => {
+          playClickSound();
+          setIsSoundPopupOpen(true);
+        }}
+        className="sound-settings-icon"
+      />
 
       {isSoundPopupOpen && (
         <div className="sound-settings-popup">

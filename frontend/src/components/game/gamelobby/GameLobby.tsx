@@ -11,6 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { useInitSound } from "../../../hooks/useInitSound";
 import PauseOverlay from "../PauseOverlay";
 import { useBGMResumeOverlay } from "../../../hooks/useBGMResumeOverlay";
+import SoundSettings from "../subcomponents/SoundSettings";
+import { playClickSound } from "../../../utils/soundManager";
+import { IoClose, IoSettingsOutline } from "react-icons/io5";
 
 interface GameSetting {
   numQuestions: number;
@@ -39,6 +42,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   // Handle component loading
   const [loading, setLoading] = useState<boolean>(true);
   const [isLobbyDeleted, setIsLobbyDeleted] = useState<boolean>(false);
+  const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
   // Lobby details
@@ -81,6 +85,27 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
         <GameUsers lobbyId={lobbyId} userIds={lobbyUsers} />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
       </div>
+
+      <IoSettingsOutline
+        onClick={() => {
+          playClickSound();
+          setIsSoundPopupOpen(true);
+        }}
+        className="sound-settings-icon"
+      />
+
+      {isSoundPopupOpen && (
+        <div className="sound-settings-popup">
+          <IoClose
+            className="submode-select-close"
+            onClick={() => {
+              playClickSound();
+              setIsSoundPopupOpen(false);
+            }}
+          />
+          <SoundSettings />
+        </div>
+      )}
     </div>
   );
 };
