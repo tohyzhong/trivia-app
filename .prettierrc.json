@@ -15,11 +15,10 @@
   "semi": true,
   "singleQuote": false,
   "tabWidth": 2,
-  "trailingComma": "es5",
+  "trailingComma": "none",
   "useTabs": false,
   "embeddedLanguageFormatting": "auto",
   "vueIndentScriptAndStyle": false,
   "experimentalTernaries": false,
-  "filepath": "/home/tohyzhong/trivia-app/frontend/vitest.config.ts",
-  "parser": "typescript"
+  "filepath": "/home/tohyzhong/trivia-app/frontend/src/components/game/gamelobby/GameSettings.tsx"
 }
