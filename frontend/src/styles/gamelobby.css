@@ -47,6 +47,7 @@
 .game-lobby-settings {
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
   width: 30%;
   height: 100%;
   background-color: #333;
@@ -64,7 +65,7 @@
   color: white;
   padding: 20px;
   box-sizing: border-box;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -305,4 +306,118 @@
 
 .game-lobby-buttons .start-button:active {
   background-color: #3478b8;
+}
+
+/* Quiz Display Header */
+.question-display-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 70%;
+  height: 100%;
+}
+
+.question-display-lobby-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 95%;
+}
+
+.question-display-lobby-details .leave-button {
+  background-color: #ff4d4d;
+}
+
+.question-display-lobby-details .leave-button:hover {
+  transition: background-color 0.2s;
+  background-color: #e53935;
+}
+
+.question-display-lobby-details .leave-button:active {
+  background-color: #b13937;
+}
+
+.question-display-lobby-details p {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* Quiz Question Display */
+.question-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  border: 1px solid white;
+  border-radius: 25px;
+  width: 95%;
+  height: 80%;
+  color: white;
+  font-family: "Fredoka", "Baloo", "Comic Neue", sans-serif;
+  font-weight: bold;
+}
+
+.question-header-details {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question-question {
+  display: flex;
+  height: 30%;
+  width: 90%;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid white;
+  border-radius: 10px;
+  font-size: 1.5rem;
+}
+
+.question-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 15px;
+  width: 90%;
+  height: 45%;
+  padding: 0;
+}
+
+.option {
+  width: 100%;
+  height: 100%;
+  font-size: 0.9rem;
+  padding: 15px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #111;
+  color: white;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.option:hover {
+  background-color: #222;
+}
+
+/* Question Timer Bar */
+.question-timer-border {
+  display: flex;
+  justify-content: left;
+  width: 90%;
+  height: 10px;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+.question-timer {
+  background-color: white;
+  border-radius: 10px;
+  height: 100%;
 }

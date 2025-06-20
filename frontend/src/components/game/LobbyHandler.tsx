@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
 import GameLobby from "./gamelobby/GameLobby";
+import QuizDisplay from "./quiz/QuizDisplay";
 import { clearLobby } from "../../redux/lobbySlice";
 
 interface GameSetting {
@@ -21,6 +22,7 @@ interface ChatMessage {
   message: string;
 }
 
+/*
 interface LobbyDetails {
   lobbyId: string;
   players: string[];
@@ -29,18 +31,43 @@ interface LobbyDetails {
   gameSettings: GameSetting;
   chatMessages: { sender: string; message: string; timestamp: Date }[];
 }
+*/
+
+interface ClassicQuestion {
+  question: string;
+  options: string[];
+  correctOption: number;
+  difficulty: number;
+  category: string;
+}
+
+interface KnowledgeQuestion {
+  question: string;
+  answer: string;
+}
+
+interface GameState {
+  currentQuestion: number;
+  question: ClassicQuestion | KnowledgeQuestion;
+  lastUpdate: Date;
+}
 
 const socket = io(import.meta.env.VITE_API_URL);
 
-const QuizHandler: React.FC = () => {
+const LobbyHandler: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
-  const [lobbyState, setLobbyState] = useState<LobbyDetails>(null);
+  // const [lobbyState, setLobbyState] = useState<LobbyDetails>(null);
 
   // Details needed for lobby display
   const [users, setUsers] = useState<string[]>(null);
+  const [gameType, setGameType] = useState<string>("");
   const [gameSettings, setGameSettings] = useState<GameSetting>(null);
   const [gameChat, setGameChat] = useState<ChatMessage[]>(null);
+
+  // Details needed for quiz display
+  const [gameState, setGameState] = useState<GameState>(null);
+  const [status, setStatus] = useState<string>("");
 
   // Access check variables
   const { lobbyId } = useParams();
@@ -72,6 +99,14 @@ const QuizHandler: React.FC = () => {
 
   useEffect(() => {
     socket.emit("joinLobby", lobbyId);
+
+    socket.on("updateState", (data) => {
+      setGameState(data.gameState);
+    });
+
+    socket.on("updateStatus", (data) => {
+      setStatus(data.status);
+    });
 
     socket.on("updateChat", (data) => {
       setGameChat(data.chatMessages);
@@ -110,10 +145,16 @@ const QuizHandler: React.FC = () => {
 
       if (response.ok) {
         const lobbyDetails = data.lobbyDetails;
-        setLobbyState(lobbyDetails);
-        setGameSettings(lobbyDetails.gameSettings);
+        // setLobbyState(lobbyDetails);
+
+        setStatus(lobbyDetails.status);
         setUsers(lobbyDetails.players);
+
+        setGameType(lobbyDetails.gameType);
+        setGameSettings(lobbyDetails.gameSettings);
+        setGameState(lobbyDetails.gameState);
         setGameChat(lobbyDetails.chatMessages);
+
         setLoading(false);
       } else {
         dispatch(clearLobby());
@@ -137,9 +178,9 @@ const QuizHandler: React.FC = () => {
     }
   }, [lobbyId, loggedInUser]);
 
-  return loading && lobbyState ? (
+  return loading ? (
     <GameLoading />
-  ) : (
+  ) : status === "waiting" ? (
     <GameLobby
       lobbyId={lobbyId}
       lobbySettings={gameSettings}
@@ -147,7 +188,15 @@ const QuizHandler: React.FC = () => {
       lobbyChat={gameChat}
       socket={socket}
     />
+  ) : (
+    <QuizDisplay
+      lobbyId={lobbyId}
+      lobbyChat={gameChat}
+      gameType={gameType}
+      gameState={gameState}
+      timeLimit={gameSettings.timePerQuestion}
+    />
   );
 };
 
-export default QuizHandler;
+export default LobbyHandler;
