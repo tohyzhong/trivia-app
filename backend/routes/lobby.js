@@ -427,8 +427,8 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
 
     if (!lobby) {
       return res.status(404).json({ message: "Lobby not found" });
-      // } else if (lobby.status === "in-progress" || lobby.status === "finished") {
-      // return res.status(401).json({ message: "Lobby has already started." });
+    } else if (lobby.status === "in-progress" || lobby.status === "finished") {
+      return res.status(401).json({ message: "Lobby has already started." });
     } else {
       // Configure game state
       const question = await ClassicQuestion.findOne({ category: "General" });
