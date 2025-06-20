@@ -61,13 +61,15 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ gameType: lobbyMode, player: loggedInUser }),
+          body: JSON.stringify({ gameType: lobbyMode, player: loggedInUser })
         }
       );
       const data = await response.json();
 
       if (response.ok) {
-        dispatch(setLobby({ lobbyId: data.lobbyId }));
+        dispatch(
+          setLobby({ lobbyId: data.lobbyId, categories: data.categories })
+        );
         navigate(`/play/${data.lobbyId}`);
       } else {
         setErrorMessage(data.message || "Failed to create lobby");

@@ -71,7 +71,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   ) : (
     <div className="game-lobby-full">
       <div className="game-lobby-container">
-        <GameSettings gameSettings={lobbySettings} />
+        <GameSettings lobbyId={lobbyId} gameSettings={lobbySettings} />
         <GameUsers lobbyId={lobbyId} userIds={lobbyUsers} />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
       </div>

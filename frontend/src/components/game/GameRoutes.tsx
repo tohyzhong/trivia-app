@@ -17,12 +17,14 @@ const GameRoutes = () => {
       // No lobby in redux, check if user in lobby
       fetch(`${import.meta.env.VITE_API_URL}/api/lobby/check`, {
         method: "GET",
-        credentials: "include",
+        credentials: "include"
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.lobbyId) {
-            dispatch(setLobby({ lobbyId: data.lobbyId }));
+            dispatch(
+              setLobby({ lobbyId: data.lobbyId, categories: data.categories })
+            );
             navigate(`/play/${data.lobbyId}`);
           }
         })

@@ -57,15 +57,15 @@ const QuizHandler: React.FC = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ player: loggedInUser }),
+          body: JSON.stringify({ player: loggedInUser })
         }
       );
     } catch (error) {
       navigate("/", {
         state: {
           errorMessage:
-            "There was an issue disconnecting you. A report has been sent to the admins",
-        },
+            "There was an issue disconnecting you. A report has been sent to the admins"
+        }
       });
     }
   };
@@ -77,13 +77,20 @@ const QuizHandler: React.FC = () => {
       setGameChat(data.chatMessages);
     });
 
-    socket.on("updateSettings", (data) => {});
+    socket.on("updateSettings", (data) => {
+      setGameSettings(data.gameSettings);
+    });
 
-    socket.on("updateUsers", (data) => {});
+    socket.on("updateUsers", (data) => {
+      setUsers(data.players);
+    });
+
     return () => {
       socket.emit("leaveLobby", lobbyId);
       disconnect();
-      socket.off("updateLobby");
+      socket.off("updateSettings");
+      socket.off("updateChat");
+      socket.off("updateUsers");
     };
   }, []);
 
@@ -96,7 +103,7 @@ const QuizHandler: React.FC = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ player: loggedInUser }),
+          body: JSON.stringify({ player: loggedInUser })
         }
       );
       const data = await response.json();
@@ -117,8 +124,8 @@ const QuizHandler: React.FC = () => {
       navigate("/", {
         state: {
           errorMessage:
-            "Error fetching lobby details. Contact support if you believe this is an error.",
-        },
+            "Error fetching lobby details. Contact support if you believe this is an error."
+        }
       });
     }
   };
