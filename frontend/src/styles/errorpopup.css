@@ -66,3 +66,19 @@
   font-size: 14px;
   margin-bottom: 10px;
 }
+
+.success {
+  background-color: green;
+}
+
+.success .information-icon {
+  color: white;
+}
+
+.success p {
+  color: white;
+}
+
+.success .close-icon {
+  color: white;
+}
