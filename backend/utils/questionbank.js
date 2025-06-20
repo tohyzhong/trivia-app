@@ -10,6 +10,8 @@ const generateQuestions = async () => {
       question: `Question ${i}`,
       options: ["Option 1", "Option 2", "Option 3", "Option 4"],
       correctOption: (i % 4) + 1,
+      category: i === 4 ? "Meme God" : "General",
+      difficulty: 1
     };
     documents.push(document);
   }
