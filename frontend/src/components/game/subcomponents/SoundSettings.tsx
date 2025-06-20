@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSoundSettings } from "../../../redux/soundSettingsSlice";
 import { RootState } from "../../../redux/store";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 
 const SoundSettings: React.FC = () => {
   const soundSettings = useSelector((state: RootState) => state.soundSettings);
@@ -18,13 +17,6 @@ const SoundSettings: React.FC = () => {
     soundSettings.sfxVolume || 100
   );
 
-  const [successMessage, setSuccessMessage] = useState<string>("");
-
-  const handleSave = () => {
-    dispatch(updateSoundSettings({ overallSound, bgmVolume, sfxVolume }));
-    setSuccessMessage("Settings Saved.");
-  };
-
   useEffect(() => {
     setOverallSound(soundSettings.overallSound);
     setBgmVolume(soundSettings.bgmVolume);
@@ -33,11 +25,6 @@ const SoundSettings: React.FC = () => {
 
   return (
     <div className="sound-settings">
-      <ErrorPopup
-        message={successMessage}
-        setMessage={setSuccessMessage}
-        success={successMessage === "Settings Saved."}
-      />
       <h3>Sound Settings</h3>
 
       <div className="volume-control">
@@ -47,7 +34,12 @@ const SoundSettings: React.FC = () => {
           min="0"
           max="100"
           value={overallSound}
-          onChange={(e) => setOverallSound(Number(e.target.value))}
+          onChange={(e) => {
+            setOverallSound(Number(e.target.value));
+            dispatch(
+              updateSoundSettings({ overallSound, bgmVolume, sfxVolume })
+            );
+          }}
         />
         <span>{overallSound}%</span>
       </div>
@@ -59,7 +51,12 @@ const SoundSettings: React.FC = () => {
           min="0"
           max="100"
           value={bgmVolume}
-          onChange={(e) => setBgmVolume(Number(e.target.value))}
+          onChange={(e) => {
+            setBgmVolume(Number(e.target.value));
+            dispatch(
+              updateSoundSettings({ overallSound, bgmVolume, sfxVolume })
+            );
+          }}
         />
         <span>{bgmVolume}%</span>
       </div>
@@ -71,14 +68,15 @@ const SoundSettings: React.FC = () => {
           min="0"
           max="100"
           value={sfxVolume}
-          onChange={(e) => setSfxVolume(Number(e.target.value))}
+          onChange={(e) => {
+            setSfxVolume(Number(e.target.value));
+            dispatch(
+              updateSoundSettings({ overallSound, bgmVolume, sfxVolume })
+            );
+          }}
         />
         <span>{sfxVolume}%</span>
       </div>
-
-      <button className="save-settings" onClick={handleSave}>
-        Save Settings
-      </button>
     </div>
   );
 };
