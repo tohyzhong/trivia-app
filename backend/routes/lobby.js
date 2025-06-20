@@ -2,6 +2,7 @@ import express from "express";
 import * as crypto from "node:crypto";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
+import ClassicQuestion from "../models/ClassicQuestion.js";
 import { getSocketIO } from "../socket.js";
 import authenticate from "./authMiddleware.js";
 
@@ -34,17 +35,17 @@ router.post("/solo/create", authenticate, async (req, res) => {
                   {
                     $match: {
                       $expr: {
-                        $in: [playerDoc._id, "$players"],
-                      },
-                    },
+                        $in: [playerDoc._id, "$players"]
+                      }
+                    }
                   },
-                  { $limit: 1 },
-                ],
-              },
-            },
+                  { $limit: 1 }
+                ]
+              }
+            }
           ],
-          as: "lobbies",
-        },
+          as: "lobbies"
+        }
       },
 
       // Retrieve lobby if it exists
@@ -57,18 +58,18 @@ router.post("/solo/create", authenticate, async (req, res) => {
             $cond: {
               if: { $gt: [{ $size: "$lobbies.lobbyExists" }, 0] },
               then: true,
-              else: false,
-            },
+              else: false
+            }
           },
           playerExists: {
             $cond: {
               if: { $gt: [{ $size: "$lobbies.playerExists" }, 0] },
               then: true,
-              else: false,
-            },
-          },
-        },
-      },
+              else: false
+            }
+          }
+        }
+      }
     ]);
 
     if (existingLobby[0].lobbyExists) {
@@ -76,6 +77,14 @@ router.post("/solo/create", authenticate, async (req, res) => {
     } else if (existingLobby[0].playerExists) {
       return res.status(400).json({ message: "Player already in a lobby." });
     }
+
+    const categories = await ClassicQuestion.distinct("category");
+
+    if (categories.length === 0) {
+      return res.status(400).json({ message: "No categories found." });
+    }
+
+    const defaultCategory = categories[0];
 
     const lobby = {
       lobbyId: id,
@@ -85,22 +94,22 @@ router.post("/solo/create", authenticate, async (req, res) => {
         numQuestions: 10,
         timePerQuestion: 30,
         difficulty: 3, // 1-5 scale
-        categories: [],
+        categories: [defaultCategory]
       },
       chatMessages: [
         {
           sender: "System",
           message: `${player} has created the lobby.`,
-          timestamp: new Date(),
-        },
+          timestamp: new Date()
+        }
       ],
-      lastActivity: new Date(),
+      lastActivity: new Date()
     };
 
     await Lobby.collection.insertOne(lobby);
     return res
       .status(201)
-      .json({ lobbyId: id, message: "Lobby created successfully" });
+      .json({ lobbyId: id, message: "Lobby created successfully", categories });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating lobby" });
@@ -118,11 +127,6 @@ router.post("/solo/connect/:lobbyId", authenticate, async (req, res) => {
       return res.status(404).json({ message: "Lobby not found." });
     }
 
-    await Lobby.collection.updateOne(
-      { lobbyId },
-      { $set: { lastActivity: new Date() } }
-    );
-
     const players = await Profile.collection
       .find({ _id: { $in: lobby.players } })
       .toArray();
@@ -137,13 +141,13 @@ router.post("/solo/connect/:lobbyId", authenticate, async (req, res) => {
     const newChatMessage = {
       sender: "System",
       message: `${player} has connected.`,
-      timestamp: new Date(),
+      timestamp: new Date()
     };
 
     const chatMessages = [...(lobby.chatMessages || []), newChatMessage];
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId },
-      { $set: { chatMessages } },
+      { $set: { chatMessages, lastActivity: new Date() } },
       { returnDocument: "after" }
     );
     if (!updatedLobby) {
@@ -157,7 +161,7 @@ router.post("/solo/connect/:lobbyId", authenticate, async (req, res) => {
 
     return res.status(200).json({
       message: "Player connected successfully",
-      lobbyDetails: updatedLobby,
+      lobbyDetails: updatedLobby
     });
   } catch (error) {
     console.error(error);
@@ -191,7 +195,7 @@ router.post("/solo/disconnect/:lobbyId", authenticate, async (req, res) => {
     const newChatMessage = {
       sender: "System",
       message: `${player} has disconnected.`,
-      timestamp: new Date(),
+      timestamp: new Date()
     };
     const chatMessages = [...(lobby.chatMessages || []), newChatMessage];
 
@@ -273,13 +277,13 @@ router.post("/solo/chat/:lobbyId", authenticate, async (req, res) => {
     const newChatMessage = {
       sender: player,
       message,
-      timestamp: new Date(),
+      timestamp: new Date()
     };
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId },
       {
         $push: { chatMessages: newChatMessage },
-        $set: { lastActivity: new Date() },
+        $set: { lastActivity: new Date() }
       },
       { returnDocument: "after" }
     );
@@ -313,18 +317,99 @@ router.get("/check", authenticate, async (req, res) => {
     }
 
     const lobby = await Lobby.collection.findOne({
-      players: playerDoc._id,
+      players: playerDoc._id
     });
 
     if (!lobby) {
       return res.status(200).json({ message: "Player not in any lobby." });
     }
 
+    const categories = await ClassicQuestion.distinct("category");
+
+    if (categories.length === 0) {
+      return res.status(400).json({ message: "No categories found." });
+    }
+
     // Player is in a lobby, return the lobbyId
-    return res.status(200).json({ lobbyId: lobby.lobbyId });
+    return res.status(200).json({ lobbyId: lobby.lobbyId, categories });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error checking lobby status." });
+  }
+});
+
+router.post("/solo/updateSettings/:lobbyId", authenticate, async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { gameSettings } = req.body;
+    const { username } = req.user;
+
+    const { numQuestions, timePerQuestion, difficulty, categories } =
+      gameSettings;
+
+    if (numQuestions < 3 || numQuestions > 20) {
+      return res.status(400).json({
+        message: "Number of questions must be between 3 and 20 (inclusive)."
+      });
+    }
+    if (timePerQuestion < 5 || timePerQuestion > 60) {
+      return res.status(400).json({
+        message: "Time per question must be between 5 and 60 (inclusive)."
+      });
+    }
+    if (difficulty < 1 || difficulty > 5) {
+      return res
+        .status(400)
+        .json({ message: "Difficulty must be between 1 and 5 (inclusive)." });
+    }
+    if (categories.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one category must be selected." });
+    }
+
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+    if (!lobby) {
+      return res.status(404).json({ message: "Lobby not found." });
+    }
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      {
+        $set: {
+          gameSettings: gameSettings,
+          lastActivity: new Date()
+        }
+      }
+    );
+
+    const socketIO = getSocketIO();
+    const newChatMessage = {
+      sender: "System",
+      message: `${username} has updated the game settings.`,
+      timestamp: new Date()
+    };
+
+    const chatMessages = [...(lobby.chatMessages || []), newChatMessage];
+
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      { $set: { chatMessages, lastActivity: new Date() } },
+      { returnDocument: "after" }
+    );
+
+    socketIO
+      .to(lobbyId)
+      .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
+
+    socketIO.to(lobbyId).emit("updateSettings", { gameSettings });
+
+    return res
+      .status(200)
+      .json({ message: "Game settings updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating game settings" });
   }
 });
 
