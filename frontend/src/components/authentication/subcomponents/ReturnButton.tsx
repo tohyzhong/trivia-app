@@ -1,15 +1,17 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const ReturnButton: React.FC = () => {
   const navigate = useNavigate();
   const handleBack = () => {
-    navigate('/');
-  }
+    navigate("/");
+  };
 
   return (
-    <a className='back-button' onClick={handleBack}>Back</a>
-  )
-}
+    <a className="back-button" onClick={handleBack}>
+      Back
+    </a>
+  );
+};
 
-export default ReturnButton
+export default ReturnButton;

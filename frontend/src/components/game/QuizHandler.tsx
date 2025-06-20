@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { io } from 'socket.io-client';
+import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom'
-import { RootState } from '../../redux/store';
-import GameLoading from './gamelobby/GameLoading';
-import GameLobby from './gamelobby/GameLobby';
-import { clearLobby } from '../../redux/lobbySlice';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { RootState } from "../../redux/store";
+import GameLoading from "./gamelobby/GameLoading";
+import GameLobby from "./gamelobby/GameLobby";
+import { clearLobby } from "../../redux/lobbySlice";
 
 interface GameSetting {
-  numQuestions: number,
-  timePerQuestion: number,
-  difficulty: number, 
-  categories: string[],
+  numQuestions: number;
+  timePerQuestion: number;
+  difficulty: number;
+  categories: string[];
 }
 
 interface ChatMessage {
@@ -24,8 +24,8 @@ interface ChatMessage {
 interface LobbyDetails {
   lobbyId: string;
   players: string[];
-  gameType: 'solo-classic' | 'solo-knowledge';
-  status: 'waiting' | 'in-progress' | 'finished';
+  gameType: "solo-classic" | "solo-knowledge";
+  status: "waiting" | "in-progress" | "finished";
   gameSettings: GameSetting;
   chatMessages: { sender: string; message: string; timestamp: Date }[];
 }
@@ -34,13 +34,13 @@ const socket = io(import.meta.env.VITE_API_URL);
 
 const QuizHandler: React.FC = () => {
   // Loading state
-  const [ loading, setLoading ] = useState<boolean>(true);
-  const [ lobbyState, setLobbyState ] = useState<LobbyDetails>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [lobbyState, setLobbyState] = useState<LobbyDetails>(null);
 
   // Details needed for lobby display
-  const [ users, setUsers ] = useState<string[]>(null);
-  const [ gameSettings, setGameSettings ] = useState<GameSetting>(null);
-  const [ gameChat, setGameChat ] = useState<ChatMessage[]>(null);
+  const [users, setUsers] = useState<string[]>(null);
+  const [gameSettings, setGameSettings] = useState<GameSetting>(null);
+  const [gameChat, setGameChat] = useState<ChatMessage[]>(null);
 
   // Access check variables
   const { lobbyId } = useParams();
@@ -51,48 +51,54 @@ const QuizHandler: React.FC = () => {
   const dispatch = useDispatch();
   const disconnect = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ player: loggedInUser }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ player: loggedInUser }),
+        }
+      );
     } catch (error) {
-      navigate('/',{ state: { errorMessage: 'There was an issue disconnecting you. A report has been sent to the admins' } });
+      navigate("/", {
+        state: {
+          errorMessage:
+            "There was an issue disconnecting you. A report has been sent to the admins",
+        },
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    socket.emit('joinLobby', lobbyId);
+    socket.emit("joinLobby", lobbyId);
 
-    socket.on('updateChat', (data) => {
+    socket.on("updateChat", (data) => {
       setGameChat(data.chatMessages);
     });
 
-    socket.on('updateSettings', (data) => {
+    socket.on("updateSettings", (data) => {});
 
-    })
-
-    socket.on('updateUsers', (data) => {
-
-    })
+    socket.on("updateUsers", (data) => {});
     return () => {
-      socket.emit('leaveLobby', lobbyId);
+      socket.emit("leaveLobby", lobbyId);
       disconnect();
-      socket.off('updateLobby');
-    }
-  }, [])
+      socket.off("updateLobby");
+    };
+  }, []);
 
   // Handle access check and connection to lobby
   const checkAccess = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/solo/connect/${lobbyId}`,
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/solo/connect/${lobbyId}`,
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ player: loggedInUser }),
-        });
+        }
+      );
       const data = await response.json();
 
       if (response.ok) {
@@ -104,23 +110,36 @@ const QuizHandler: React.FC = () => {
         setLoading(false);
       } else {
         dispatch(clearLobby());
-        navigate('/',{ state: { errorMessage: data.message || '' } });
+        navigate("/", { state: { errorMessage: data.message || "" } });
       }
-
     } catch (error) {
       dispatch(clearLobby());
-      navigate('/',{ state: { errorMessage: 'Error fetching lobby details. Contact support if you believe this is an error.' } });
+      navigate("/", {
+        state: {
+          errorMessage:
+            "Error fetching lobby details. Contact support if you believe this is an error.",
+        },
+      });
     }
-  }
+  };
 
   // Check player's access to lobby after the variables are loaded in
   useEffect(() => {
     if (lobbyId && loggedInUser) {
       checkAccess();
     }
-  }, [lobbyId, loggedInUser])
+  }, [lobbyId, loggedInUser]);
 
-  return (loading && lobbyState ? (<GameLoading />) : (<GameLobby lobbyId={lobbyId} lobbySettings={gameSettings} lobbyUsers={users} lobbyChat={gameChat}/>))
-}
+  return loading && lobbyState ? (
+    <GameLoading />
+  ) : (
+    <GameLobby
+      lobbyId={lobbyId}
+      lobbySettings={gameSettings}
+      lobbyUsers={users}
+      lobbyChat={gameChat}
+    />
+  );
+};
 
-export default QuizHandler
+export default QuizHandler;

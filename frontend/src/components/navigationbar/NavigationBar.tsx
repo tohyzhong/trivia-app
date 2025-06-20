@@ -1,59 +1,60 @@
-import React, { useEffect, useState } from 'react'
-import LoginBar from './LoginBar';
-import PlayButton from './PlayButton';
-import "../../styles/navbar.css"
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import React, { useEffect, useState } from "react";
+import LoginBar from "./LoginBar";
+import PlayButton from "./PlayButton";
+import "../../styles/navbar.css";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 export const NavigationBar = () => {
-  const isLoggedIn = useSelector((state: RootState) => state.user.isAuthenticated);
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
   const navigate = useNavigate();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [matchingProfiles, setMatchingProfiles] = useState([]);
 
   const [navBar, updateNavBar] = useState([
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Leaderboard', path: '/leaderboard' },
-  ])
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Leaderboard", path: "/leaderboard" },
+  ]);
 
   // TODO: Find a cleaner way to do this?
   useEffect(() => {
     if (isLoggedIn) {
       updateNavBar([
-        { name: 'Home', path: '/' },
-        { name: 'About', path: '/about' },
-        { name: 'Profile', path: '/profile' },
-        { name: 'Settings', path: '/settings' },
-      ])
+        { name: "Home", path: "/" },
+        { name: "About", path: "/about" },
+        { name: "Profile", path: "/profile" },
+        { name: "Settings", path: "/settings" },
+      ]);
     } else {
       updateNavBar([
-        { name: 'Home', path: '/' },
-        { name: 'About', path: '/about' }
-      ])
+        { name: "Home", path: "/" },
+        { name: "About", path: "/about" },
+      ]);
     }
-  }, [isLoggedIn])
-
+  }, [isLoggedIn]);
 
   const location = useLocation();
   useEffect(() => {
-    const navItems = document.querySelectorAll('.nav-item a');
+    const navItems = document.querySelectorAll(".nav-item a");
     navItems.forEach((item) => {
-      if (item.getAttribute('href') === location.pathname) {
-        item.classList.add('active');
+      if (item.getAttribute("href") === location.pathname) {
+        item.classList.add("active");
       } else {
-        item.classList.remove('active');
+        item.classList.remove("active");
       }
     });
-  }, [location.pathname, navBar])
+  }, [location.pathname, navBar]);
 
   // Search Bar
   const handleSearch = (e) => {
     e.preventDefault();
     const topProfile = matchingProfiles[0]?.username ?? searchQuery.trim();
-    setSearchQuery('');
+    setSearchQuery("");
     setMatchingProfiles([]);
 
     if (topProfile) {
@@ -70,12 +71,14 @@ export const NavigationBar = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/profile/search-profiles?query=${encodeURIComponent(query)}`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/profile/search-profiles?query=${encodeURIComponent(query)}`,
         {
-          credentials: 'include',
+          credentials: "include",
         }
       );
-      if (!response.ok) throw new Error('Failed to fetch profiles');
+      if (!response.ok) throw new Error("Failed to fetch profiles");
       const data = await response.json();
       setMatchingProfiles(data);
     } catch (err) {
@@ -89,22 +92,23 @@ export const NavigationBar = () => {
     filterProfiles(query);
   };
 
-  const onAuthPage = location.pathname.startsWith('/auth') || location.pathname === '/noaccess';
+  const onAuthPage =
+    location.pathname.startsWith("/auth") || location.pathname === "/noaccess";
 
   return !onAuthPage ? (
-    <nav className='navbar'>
+    <nav className="navbar">
       <PlayButton />
 
-      <div className='nav-search'>
-        <ul className='nav-list'>
-          {navBar.map((item) =>
-            <li key={item.name.toLowerCase() + "-button"} className='nav-item'>
+      <div className="nav-search">
+        <ul className="nav-list">
+          {navBar.map((item) => (
+            <li key={item.name.toLowerCase() + "-button"} className="nav-item">
               <Link to={item.path}>{item.name}</Link>
             </li>
-          )}
+          ))}
         </ul>
         {isLoggedIn ? (
-          <div className='search-bar'>
+          <div className="search-bar">
             <form onSubmit={handleSearch} className="search-form">
               <input
                 type="text"
@@ -119,13 +123,14 @@ export const NavigationBar = () => {
               <div className="profile-dropdown">
                 <ul>
                   {matchingProfiles.map((profile) => (
-                    <li key={profile.username} onClick={
-                      () => {
-                        navigate(`/profile/${profile.username}`)
-                        setSearchQuery('');
+                    <li
+                      key={profile.username}
+                      onClick={() => {
+                        navigate(`/profile/${profile.username}`);
+                        setSearchQuery("");
                         setMatchingProfiles([]);
-                      }
-                    }>
+                      }}
+                    >
                       {profile.username}
                     </li>
                   ))}
@@ -133,12 +138,14 @@ export const NavigationBar = () => {
               </div>
             )}
           </div>
-        ) : null }
+        ) : null}
       </div>
 
       <LoginBar />
     </nav>
-  ) : (<></>)
-}
+  ) : (
+    <></>
+  );
+};
 
-export default NavigationBar
+export default NavigationBar;

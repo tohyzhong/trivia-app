@@ -1,7 +1,7 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Profile from './Profile';
-import FriendsList from './FriendsList';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Profile from "./Profile";
+import FriendsList from "./FriendsList";
 
 const ProfileRoutes: React.FC = () => {
   return (

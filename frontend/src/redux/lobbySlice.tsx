@@ -1,15 +1,15 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface LobbyState {
   lobbyId: string | null;
 }
 
 const initialState: LobbyState = {
-  lobbyId: null
+  lobbyId: null,
 };
 
 const lobbySlice = createSlice({
-  name: 'lobby',
+  name: "lobby",
   initialState,
   reducers: {
     setLobby: (state, action: PayloadAction<LobbyState>) => {

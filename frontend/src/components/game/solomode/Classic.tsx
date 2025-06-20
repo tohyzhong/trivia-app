@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Classic = () => {
-  return (
-    <div>Classic</div>
-  )
-}
+  return <div>Classic</div>;
+};
 
-export default Classic
+export default Classic;

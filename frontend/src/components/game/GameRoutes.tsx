@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import GameMainpage from './GameMainpage';
-import QuizHandler from './QuizHandler';
-import LobbyNotFound from './gamelobby/LobbyNotFound'
-import { setLobby } from '../../redux/lobbySlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import React, { useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import GameMainpage from "./GameMainpage";
+import QuizHandler from "./QuizHandler";
+import LobbyNotFound from "./gamelobby/LobbyNotFound";
+import { setLobby } from "../../redux/lobbySlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const GameRoutes = () => {
   const navigate = useNavigate();
@@ -13,31 +13,32 @@ const GameRoutes = () => {
   const lobby = useSelector((state: RootState) => state.lobby);
 
   useEffect(() => {
-    if (!lobby.lobbyId) { // No lobby in redux, check if user in lobby
+    if (!lobby.lobbyId) {
+      // No lobby in redux, check if user in lobby
       fetch(`${import.meta.env.VITE_API_URL}/api/lobby/check`, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       })
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data.lobbyId) {
             dispatch(setLobby({ lobbyId: data.lobbyId }));
             navigate(`/play/${data.lobbyId}`);
           }
         })
-        .catch(error => {
-          console.error('Error fetching lobby:', error);
+        .catch((error) => {
+          console.error("Error fetching lobby:", error);
         });
     }
   }, [dispatch, lobby, navigate]);
-  
+
   return (
     <Routes>
-      {lobby.lobbyId && <Route path='/:lobbyId' element={<QuizHandler />} />}
-      <Route path='/:lobbyId' element={<LobbyNotFound />} />
-      <Route path='/*' element={<GameMainpage />} />
+      {lobby.lobbyId && <Route path="/:lobbyId" element={<QuizHandler />} />}
+      <Route path="/:lobbyId" element={<LobbyNotFound />} />
+      <Route path="/*" element={<GameMainpage />} />
     </Routes>
-  )
-}
+  );
+};
 
-export default GameRoutes
+export default GameRoutes;

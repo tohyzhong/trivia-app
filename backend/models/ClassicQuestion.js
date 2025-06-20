@@ -1,11 +1,14 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const classicQuestionSchema = new mongoose.Schema({
-  question: { type: String, required: true},
+  question: { type: String, required: true },
   options: [{ type: String, required: true }],
-  correctOption: { type: Number }
+  correctOption: { type: Number },
 });
 
-const ClassicQuestion = mongoose.model('ClassicQuestion', classicQuestionSchema)
+const ClassicQuestion = mongoose.model(
+  "ClassicQuestion",
+  classicQuestionSchema
+);
 
-export default ClassicQuestion
+export default ClassicQuestion;

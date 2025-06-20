@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
   email: string;
@@ -8,17 +8,24 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  email: '',
-  username: '',
+  email: "",
+  username: "",
   verified: undefined,
   isAuthenticated: undefined,
 };
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<{ username: string; email: string; verified: boolean }>) => {
+    setUser: (
+      state,
+      action: PayloadAction<{
+        username: string;
+        email: string;
+        verified: boolean;
+      }>
+    ) => {
       state.username = action.payload.username;
       state.email = action.payload.email;
       state.verified = action.payload.verified;

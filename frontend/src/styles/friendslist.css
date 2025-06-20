@@ -136,16 +136,25 @@ h2 {
   transition: 0.3s;
 }
 
-.friendslist-container .ag-theme-alpine .ag-paging-panel .ag-paging-button:hover {
+.friendslist-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button:hover {
   background: rgba(255, 255, 255, 0.4);
 }
 
-.friendslist-container .ag-theme-alpine .ag-paging-panel .ag-paging-button:disabled {
+.friendslist-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.friendslist-container .ag-theme-alpine .ag-paging-panel .ag-paging-button.ag-active {
+.friendslist-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button.ag-active {
   background: white;
   color: black;
   font-weight: bold;

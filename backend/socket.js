@@ -9,7 +9,7 @@ export function initSocket(server) {
       methods: ["GET", "POST"],
       credentials: true,
     },
-  })
+  });
 
   io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
@@ -18,12 +18,12 @@ export function initSocket(server) {
       console.log("User disconnected:", socket.id);
     });
 
-    socket.on('joinLobby', (lobbyId) => {
+    socket.on("joinLobby", (lobbyId) => {
       socket.join(lobbyId);
       console.log(`User ${socket.id} joined lobby ${lobbyId}`);
-    })
+    });
 
-    socket.on('leaveLobby', (lobbyId) => {
+    socket.on("leaveLobby", (lobbyId) => {
       socket.leave(lobbyId);
       console.log(`User ${socket.id} left lobby ${lobbyId}`);
     });
@@ -38,4 +38,3 @@ export function getSocketIO() {
   }
   return io;
 }
-

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { RootState } from '../../redux/store';
+import React, { useState, useEffect } from "react";
+import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from 'react-router-dom';
-import defaultAvatar from '../../assets/default-avatar.jpg';
-import '../../styles/Profile.css';
+import { useNavigate, useParams } from "react-router-dom";
+import defaultAvatar from "../../assets/default-avatar.jpg";
+import "../../styles/Profile.css";
 
 interface Friend {
   username: string;
@@ -27,7 +27,9 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const { username: paramUsername } = useParams<{ username: string }>();
-  const usernameFromRedux = useSelector((state: RootState) => state.user.username);
+  const usernameFromRedux = useSelector(
+    (state: RootState) => state.user.username
+  );
   const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUser] = useState<UserProfile | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -37,10 +39,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   // Retrieve profile details
   const fetchProfile = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/${username}`,
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
         {
-          credentials: 'include',
-        });
+          credentials: "include",
+        }
+      );
       const data: UserProfile = await response.json();
       setUser(data);
       setFriends(data.friends || []);
@@ -62,65 +66,79 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   const handleFriendsClick = () => {
     navigate(`/profile/${user.username}/friends`);
-  }
+  };
 
-  const isFriend = (friends?.map(friend => friend.username)).includes(usernameFromRedux) || false;
+  const isFriend =
+    friends?.map((friend) => friend.username).includes(usernameFromRedux) ||
+    false;
 
   const handleAddFriend = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${usernameFromRedux}/add`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          friendUsername: user.username,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/friends/${usernameFromRedux}/add`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            friendUsername: user.username,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         alert(data.message);
       } else {
-        alert('Failed to add friend: ' + (data.message || 'Unknown error.'));
+        alert("Failed to add friend: " + (data.message || "Unknown error."));
       }
     } catch (error) {
-      console.error('Error adding friend:', error);
-      alert('An error occurred while adding the friend.');
+      console.error("Error adding friend:", error);
+      alert("An error occurred while adding the friend.");
     }
     window.location.reload();
   };
 
   const handleDeleteFriend = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/friends/${usernameFromRedux}/remove`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          friendUsername: user.username,
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/friends/${usernameFromRedux}/remove`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            friendUsername: user.username,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         alert(data.message);
       } else {
-        alert('Failed to remove friend: ' + (data.message || 'Unknown error.'));
+        alert("Failed to remove friend: " + (data.message || "Unknown error."));
       }
     } catch (error) {
-      console.error('Error removing friend:', error);
-      alert('An error occurred while removing the friend.');
+      console.error("Error removing friend:", error);
+      alert("An error occurred while removing the friend.");
     }
     window.location.reload();
   };
 
-  if (!user || user.message === "Profile not found" || user.message === "Not authenticated") {
+  if (
+    !user ||
+    user.message === "Profile not found" ||
+    user.message === "Not authenticated"
+  ) {
     return <div className="not-found">Profile not found</div>;
   }
 
@@ -148,7 +166,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
               )}
 
               {isFriend && (
-                <button className="remove-friend-button" onClick={handleDeleteFriend}>
+                <button
+                  className="remove-friend-button"
+                  onClick={handleDeleteFriend}
+                >
                   Remove Friend
                 </button>
               )}
@@ -159,17 +180,27 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
       <div className="profile-details-container">
         <div className="profile-details">
-          <p><strong>Win Rate:</strong> {user.winRate}%</p>
-          <p><strong>Correct Rate:</strong> {user.correctRate}%</p>
-          <p><strong>Correct Answers:</strong> {user.correctNumber}</p>
-          <p><strong>Currency:</strong> {user.currency}</p>
-
+          <p>
+            <strong>Win Rate:</strong> {user.winRate}%
+          </p>
+          <p>
+            <strong>Correct Rate:</strong> {user.correctRate}%
+          </p>
+          <p>
+            <strong>Correct Answers:</strong> {user.correctNumber}
+          </p>
+          <p>
+            <strong>Currency:</strong> {user.currency}
+          </p>
         </div>
         <div className="friends-list">
           <h3 onClick={() => handleFriendsClick()}>Friends:</h3>
           <ul>
             {friends.map((friend, index) => (
-              <li key={friend.username} onClick={() => handleFriendClick(friend.username)}>
+              <li
+                key={friend.username}
+                onClick={() => handleFriendClick(friend.username)}
+              >
                 <span>{index + 1}. </span>
                 {friend.username}
               </li>

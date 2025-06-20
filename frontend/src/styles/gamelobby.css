@@ -31,7 +31,7 @@
   background-color: black;
   z-index: 100;
   align-items: center;
-  justify-content: center;;
+  justify-content: center;
 }
 
 .game-lobby-container {
@@ -129,7 +129,6 @@
   background-color: #388e3c;
 }
 
-
 /* Game Chat */
 .game-lobby-chat-container {
   display: flex;
@@ -198,7 +197,7 @@
 
 .chat-send-button:hover {
   background-color: #1a5a96;
-  transition: background-color 0.2s
+  transition: background-color 0.2s;
 }
 
 .chat-send-button:active {
@@ -247,7 +246,7 @@
 .game-lobby-user img {
   object-fit: contain;
   height: 100%;
-  padding: 2px; 
+  padding: 2px;
   border-radius: 50%;
 }
 
@@ -297,7 +296,6 @@
 
 .game-lobby-buttons .start-button {
   background-color: #055096;
-
 }
 
 .game-lobby-buttons .start-button:hover {
