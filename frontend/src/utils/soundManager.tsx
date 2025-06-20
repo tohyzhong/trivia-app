@@ -24,19 +24,47 @@ export const setVolumeLevels = ({
   }
 };
 
+let userHasInteracted = false;
+let isBGMPlaybackBlocked = false;
+let onPlaybackBlockedCallback: (() => void) | null = null;
+
+export const setOnPlaybackBlocked = (callback: () => void) => {
+  onPlaybackBlockedCallback = callback;
+};
+
+export const clearOnPlaybackBlocked = () => {
+  onPlaybackBlockedCallback = null;
+};
+
+export const notifyUserInteraction = () => {
+  userHasInteracted = true;
+  playBGM();
+};
+
 export const playBGM = () => {
   if (!bgm) {
     bgm = new Audio(bgmAudio);
     bgm.loop = true;
     bgm.volume = bgmVolume;
-    bgm.play().catch((err) => console.warn("BGM playback blocked:", err));
-  } else if (bgm.paused) {
-    bgm.volume = bgmVolume;
-    bgm.play().catch((err) => console.warn("BGM resume error:", err));
-  } else {
-    bgm.volume = bgmVolume;
+  }
+
+  if (bgm.paused) {
+    bgm
+      .play()
+      .then(() => {
+        isBGMPlaybackBlocked = false;
+      })
+      .catch((err) => {
+        isBGMPlaybackBlocked = true;
+        console.warn("BGM playback blocked:", err);
+        if (onPlaybackBlockedCallback) {
+          onPlaybackBlockedCallback();
+        }
+      });
   }
 };
+
+export const wasBGMBlocked = () => isBGMPlaybackBlocked;
 
 export const stopBGM = () => {
   if (bgm) {

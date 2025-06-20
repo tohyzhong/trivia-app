@@ -9,6 +9,8 @@ import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 
 import { useInitSound } from "../../../hooks/useInitSound";
+import PauseOverlay from "../PauseOverlay";
+import { useBGMResumeOverlay } from "../../../hooks/useBGMResumeOverlay";
 
 interface GameSetting {
   numQuestions: number;
@@ -32,6 +34,7 @@ interface GameLobbyProps {
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
   useInitSound();
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay();
 
   // Handle component loading
   const [loading, setLoading] = useState<boolean>(true);
@@ -72,6 +75,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     <></>
   ) : (
     <div className="game-lobby-full">
+      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       <div className="game-lobby-container">
         <GameSettings lobbyId={lobbyId} gameSettings={lobbySettings} />
         <GameUsers lobbyId={lobbyId} userIds={lobbyUsers} />

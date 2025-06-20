@@ -1,0 +1,39 @@
+.pause-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.pause-message {
+  background: white;
+  padding: 20px 60px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.pause-message h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.resume-button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.resume-button:hover {
+  background-color: #45a049;
+}

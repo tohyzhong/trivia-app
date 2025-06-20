@@ -9,6 +9,8 @@ import MultiplayerModeLogo from "../../assets/multiplayer_mode.png";
 import LeaderboardLogo from "../../assets/leaderboard_logo.png";
 
 import { useInitSound } from "../../hooks/useInitSound";
+import PauseOverlay from "./PauseOverlay";
+import { useBGMResumeOverlay } from "../../hooks/useBGMResumeOverlay";
 import { playClickSound } from "../../utils/soundManager";
 
 interface SubModes {
@@ -19,6 +21,7 @@ interface SubModes {
 
 export const GameMainpage: React.FC = () => {
   useInitSound();
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay();
 
   const modes = [
     {
@@ -89,6 +92,7 @@ export const GameMainpage: React.FC = () => {
     <div
       className={`game-mainpage ${isSoundPopupOpen ? "dimmed-background" : ""}`}
     >
+      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       {isPopupOpen && (
         <ModeSelect
           mode={popupMode}
