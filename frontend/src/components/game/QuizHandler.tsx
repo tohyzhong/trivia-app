@@ -145,6 +145,7 @@ const QuizHandler: React.FC = () => {
       lobbySettings={gameSettings}
       lobbyUsers={users}
       lobbyChat={gameChat}
+      socket={socket}
     />
   );
 };
