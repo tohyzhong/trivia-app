@@ -119,6 +119,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             name="numQuestions"
             value={settings.numQuestions}
             onChange={handleChange}
+            min={3}
+            max={20}
           />
         </div>
         <div className="game-lobby-settings-item">
@@ -128,6 +130,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             name="timePerQuestion"
             value={settings.timePerQuestion}
             onChange={handleChange}
+            min={5}
+            max={60}
           />
         </div>
         <div className="game-lobby-settings-item">
