@@ -42,7 +42,9 @@
 .submode-select-close:hover {
   color: red;
   transform: scale(1.1);
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .submode-select-content {

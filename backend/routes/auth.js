@@ -74,17 +74,15 @@ router.post(
       // MongoDB error 11000 is for duplicate keys
       if (err.code === 11000) {
         const dupField = Object.keys(err.keyPattern)[0];
-        return res
-          .status(400)
-          .json({
-            errors: [
-              {
-                msg: `${
-                  dupField.charAt(0).toUpperCase() + dupField.slice(1)
-                } is already in use.`,
-              },
-            ],
-          });
+        return res.status(400).json({
+          errors: [
+            {
+              msg: `${
+                dupField.charAt(0).toUpperCase() + dupField.slice(1)
+              } is already in use.`,
+            },
+          ],
+        });
       }
 
       res.status(500).json({ error: err.message });
@@ -299,15 +297,13 @@ router.post(
       for (const prevPassword of user.previousPasswords) {
         const isMatch = await bcrypt.compare(password, prevPassword);
         if (isMatch)
-          return res
-            .status(400)
-            .json({
-              errors: [
-                {
-                  msg: "Your new password cannot be the same as your last 3 passwords.",
-                },
-              ],
-            });
+          return res.status(400).json({
+            errors: [
+              {
+                msg: "Your new password cannot be the same as your last 3 passwords.",
+              },
+            ],
+          });
       }
 
       // Save used token to prevent reuse
@@ -340,12 +336,10 @@ router.post("/send-verification-email", async (req, res) => {
     res.status(200).json({ message: "Verification email sent successfully" });
   } catch (err) {
     console.error("Error sending verification email:", err);
-    res
-      .status(500)
-      .json({
-        message: "Error sending verification email",
-        error: err.message,
-      });
+    res.status(500).json({
+      message: "Error sending verification email",
+      error: err.message,
+    });
   }
 });
 

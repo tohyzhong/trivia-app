@@ -175,15 +175,13 @@ router.post("/verify-action", async (req, res) => {
       for (const prevPassword of user.previousPasswords) {
         const isMatch = await bcrypt.compare(newPassword, prevPassword);
         if (isMatch)
-          return res
-            .status(400)
-            .json({
-              errors: [
-                {
-                  msg: "Your new password cannot be the same as your last 3 passwords.",
-                },
-              ],
-            });
+          return res.status(400).json({
+            errors: [
+              {
+                msg: "Your new password cannot be the same as your last 3 passwords.",
+              },
+            ],
+          });
       }
 
       // Save used token to prevent reuse
