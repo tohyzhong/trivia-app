@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { logExecutionTime } from 'mongoose-execution-time';
+import mongoose from "mongoose";
+import { logExecutionTime } from "mongoose-execution-time";
 // mongoose.plugin(logExecutionTime, {
 //   loggerLevel: 'info'
 // });
@@ -11,11 +11,11 @@ const profileSchema = new mongoose.Schema(
     correctRate: { type: Number, default: 0 },
     correctNumber: { type: Number, default: 0 },
     currency: { type: Number, default: 0 },
-    profilePicture: { type: String, default: '' },
+    profilePicture: { type: String, default: "" },
   },
   { timestamps: true }
 );
 
-const Profile = mongoose.model('Profile', profileSchema);
+const Profile = mongoose.model("Profile", profileSchema);
 
 export default Profile;

@@ -1,19 +1,19 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { body, validationResult } from 'express-validator';
-import User from '../models/User.js';
-import UsedToken from '../models/UsedToken.js';
-import Profile from '../models/Profile.js';
-import authenticate from './authMiddleware.js';
-import sendEmail from '../utils/email.js';
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { body, validationResult } from "express-validator";
+import User from "../models/User.js";
+import UsedToken from "../models/UsedToken.js";
+import Profile from "../models/Profile.js";
+import authenticate from "./authMiddleware.js";
+import sendEmail from "../utils/email.js";
 
 const router = express.Router();
 
 // Authentication
-router.get('/verify-token', authenticate, (req, res) => {
+router.get("/verify-token", authenticate, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'User not authenticated' });
+    return res.status(401).json({ error: "User not authenticated" });
   }
   res.json({
     username: req.user.username,
@@ -23,64 +23,82 @@ router.get('/verify-token', authenticate, (req, res) => {
 });
 
 // Register
-router.post('/register', [
-  body('email').isEmail().withMessage('Please provide a valid email address.'),
-  body('username').notEmpty().withMessage('Username is required.'),
-  body('password')
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
-    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
-    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter.')
-    .matches(/[0-9]/).withMessage('Password must contain at least one number.')
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const { email, username, password } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({
-      email,
-      username,
-      password: hashedPassword,
-      previousPasswords: [hashedPassword],
-      verified: false
-    });
-
-    await Profile.create({
-      username,
-      profilePicture: '',
-      winRate: 0,
-      correctRate: 0,
-      correctNumber: 0,
-      friends: [],
-      currency: 0
-    });
-
-    await emailVerificationToken(username, req, res);
-
-    res.status(201).json({ message: 'User registered' });
-  } catch (err) {
-    // MongoDB error 11000 is for duplicate keys
-    if (err.code === 11000) {
-      const dupField = Object.keys(err.keyPattern)[0];
-      return res.status(400).json({ errors: [{ msg: `${dupField.charAt(0).toUpperCase() + dupField.slice(1)} is already in use.` }] });
+router.post(
+  "/register",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Please provide a valid email address."),
+    body("username").notEmpty().withMessage("Username is required."),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain at least one uppercase letter.")
+      .matches(/[a-z]/)
+      .withMessage("Password must contain at least one lowercase letter.")
+      .matches(/[0-9]/)
+      .withMessage("Password must contain at least one number."),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    res.status(500).json({ error: err.message });
+    const { email, username, password } = req.body;
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await User.create({
+        email,
+        username,
+        password: hashedPassword,
+        previousPasswords: [hashedPassword],
+        verified: false,
+      });
+
+      await Profile.create({
+        username,
+        profilePicture: "",
+        winRate: 0,
+        correctRate: 0,
+        correctNumber: 0,
+        friends: [],
+        currency: 0,
+      });
+
+      await emailVerificationToken(username, req, res);
+
+      res.status(201).json({ message: "User registered" });
+    } catch (err) {
+      // MongoDB error 11000 is for duplicate keys
+      if (err.code === 11000) {
+        const dupField = Object.keys(err.keyPattern)[0];
+        return res.status(400).json({
+          errors: [
+            {
+              msg: `${
+                dupField.charAt(0).toUpperCase() + dupField.slice(1)
+              } is already in use.`,
+            },
+          ],
+        });
+      }
+
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 // Login
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ error: 'No User Found' });
+    if (!user) return res.status(400).json({ error: "No User Found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: 'Wrong Password' });
+    if (!isMatch) return res.status(400).json({ error: "Wrong Password" });
 
     // await Profile.updateOne(
     //   { username },
@@ -126,7 +144,6 @@ router.post('/login', async (req, res) => {
     //   ]
     // );
 
-
     // await User.updateOne(
     //   { username },
     //   [
@@ -140,16 +157,20 @@ router.post('/login', async (req, res) => {
     //   ]
     // );
 
-    const token = jwt.sign({
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      verified: user.verified
-    }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.cookie('token', token, {
+    const token = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        verified: user.verified,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+    res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
     });
 
@@ -163,25 +184,33 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout
-router.post('/logout', (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
-  res.status(200).json({ message: 'Logged out successfully' });
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
 // Forgot Password
-router.post('/forgotpassword', async (req, res) => {
+router.post("/forgotpassword", async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: 'No user found with that email address.' });
+      return res
+        .status(400)
+        .json({ error: "No user found with that email address." });
     } else {
-      const token = jwt.sign({
-        email: email,
-        purpose: 'passwordReset',
-      }, process.env.JWT_SECRET, { expiresIn: '10m' });
+      const token = jwt.sign(
+        {
+          email: email,
+          purpose: "passwordReset",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "10m" }
+      );
       const link = `${process.env.FRONTEND_URL}/auth/forgotpassword?token=${token}`;
 
       const emailContent = `
@@ -191,111 +220,139 @@ router.post('/forgotpassword', async (req, res) => {
         <p>This link will expire in 10 minutes.</p>
       `;
 
-      await sendEmail(email, 'Password Reset Request', '', emailContent);
+      await sendEmail(email, "Password Reset Request", "", emailContent);
 
-      return res.status(200).json({ message: 'Password reset link sent to your email.' });
+      return res
+        .status(200)
+        .json({ message: "Password reset link sent to your email." });
     }
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-})
+});
 
 // Verify Password Reset Token
-router.post('/verifyreset', async (req, res) => {
+router.post("/verifyreset", async (req, res) => {
   const { token } = req.body;
 
   // Check if token has been used before
   const usedToken = await UsedToken.findOne({ token });
   if (usedToken) {
-    return res.status(400).json({ message: 'This token has already been used.' });
+    return res
+      .status(400)
+      .json({ message: "This token has already been used." });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email, purpose } = decoded;
-    if (purpose !== 'passwordReset') {
-      return res.status(400).json({ error: 'Invalid token purpose' });
+    if (purpose !== "passwordReset") {
+      return res.status(400).json({ error: "Invalid token purpose" });
     } else {
       return res.status(200).json({ email });
     }
   } catch (err) {
-    return res.status(400).json({ error: 'Invalid or expired token' });
+    return res.status(400).json({ error: "Invalid or expired token" });
   }
-})
+});
 
 // Reset password
-router.post('/resetpassword', [
-  body('password')
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
-    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
-    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter.')
-    .matches(/[0-9]/).withMessage('Password must contain at least one number.')
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const { token, password } = req.body;
-
-  try {
-    const alreadyUsed = await UsedToken.findOne({ token });
-    if (alreadyUsed) return res.status(400).json({ error: 'This token has already been used.' });
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { email, purpose } = decoded;
-    if (purpose !== 'passwordReset') return res.status(400).json({ error: 'Invalid token purpose.' });
-
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: 'User not found.' });
-
-    // Check if password has been used before
-    for (const prevPassword of user.previousPasswords) {
-      const isMatch = await bcrypt.compare(password, prevPassword);
-      if (isMatch) return res.status(400).json({ errors: [{ msg: 'Your new password cannot be the same as your last 3 passwords.' }] });
+router.post(
+  "/resetpassword",
+  [
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain at least one uppercase letter.")
+      .matches(/[a-z]/)
+      .withMessage("Password must contain at least one lowercase letter.")
+      .matches(/[0-9]/)
+      .withMessage("Password must contain at least one number."),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Save used token to prevent reuse
-    await UsedToken.create({
-      token,
-      usedAt: new Date()
-    })
+    const { token, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-    user.previousPasswords.push(hashedPassword);
-    if (user.previousPasswords.length > 3) {
-      user.previousPasswords.shift();
+    try {
+      const alreadyUsed = await UsedToken.findOne({ token });
+      if (alreadyUsed)
+        return res
+          .status(400)
+          .json({ error: "This token has already been used." });
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const { email, purpose } = decoded;
+      if (purpose !== "passwordReset")
+        return res.status(400).json({ error: "Invalid token purpose." });
+
+      const user = await User.findOne({ email });
+      if (!user) return res.status(404).json({ error: "User not found." });
+
+      // Check if password has been used before
+      for (const prevPassword of user.previousPasswords) {
+        const isMatch = await bcrypt.compare(password, prevPassword);
+        if (isMatch)
+          return res.status(400).json({
+            errors: [
+              {
+                msg: "Your new password cannot be the same as your last 3 passwords.",
+              },
+            ],
+          });
+      }
+
+      // Save used token to prevent reuse
+      await UsedToken.create({
+        token,
+        usedAt: new Date(),
+      });
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+      user.previousPasswords.push(hashedPassword);
+      if (user.previousPasswords.length > 3) {
+        user.previousPasswords.shift();
+      }
+
+      await user.save();
+      return res.status(200).json({ message: "Password reset successfully." });
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid or expired token." });
     }
-
-    await user.save();
-    return res.status(200).json({ message: 'Password reset successfully.' });
-  } catch (err) {
-    return res.status(400).json({ error: 'Invalid or expired token.' });
   }
-})
+);
 
 // Request Verification Email
-router.post('/send-verification-email', async (req, res) => {
+router.post("/send-verification-email", async (req, res) => {
   const { username } = req.body;
 
   try {
     await emailVerificationToken(username, req, res);
-    res.status(200).json({ message: 'Verification email sent successfully' });
+    res.status(200).json({ message: "Verification email sent successfully" });
   } catch (err) {
-    console.error('Error sending verification email:', err);
-    res.status(500).json({ message: 'Error sending verification email', error: err.message });
+    console.error("Error sending verification email:", err);
+    res.status(500).json({
+      message: "Error sending verification email",
+      error: err.message,
+    });
   }
 });
 
 // Email Verification API
-router.get('/verify', async (req, res) => {
+router.get("/verify", async (req, res) => {
   const { token } = req.query;
 
   // Check if token has been used before
   const usedToken = await UsedToken.findOne({ token });
   if (usedToken) {
-    return res.status(400).json({ message: 'This token has already been used.' });
+    return res
+      .status(400)
+      .json({ message: "This token has already been used." });
   }
 
   try {
@@ -305,7 +362,7 @@ router.get('/verify', async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     user.verified = true;
@@ -314,26 +371,32 @@ router.get('/verify', async (req, res) => {
     // Save used token to prevent reuse
     await UsedToken.create({
       token,
-      usedAt: new Date()
-    })
+      usedAt: new Date(),
+    });
 
-    const newToken = jwt.sign({
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      verified: true,
-    }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const newToken = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        verified: true,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
 
-    res.cookie('token', newToken, {
+    res.cookie("token", newToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    res.status(200).json({ message: 'User verified successfully!' });
+    res.status(200).json({ message: "User verified successfully!" });
   } catch (err) {
-    res.status(500).json({ message: 'Error verifying token', error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error verifying token", error: err.message });
   }
 });
 
@@ -342,18 +405,16 @@ const emailVerificationToken = async (username, req, res) => {
   const user = await User.findOne({ username });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   if (user.verified) {
-    throw new Error('User is already verified');
+    throw new Error("User is already verified");
   }
 
-  const token = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 
   const verificationUrl = `${process.env.FRONTEND_URL}/settings/verify-action?action=verify&token=${token}`;
   const emailContent = `
@@ -363,7 +424,12 @@ const emailVerificationToken = async (username, req, res) => {
     <p>This link will expire in 1 hour.</p>
   `;
 
-  await sendEmail(user.email, 'Please verify your email address', '', emailContent);
+  await sendEmail(
+    user.email,
+    "Please verify your email address",
+    "",
+    emailContent
+  );
 };
 
 export default router;

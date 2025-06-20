@@ -1,0 +1,169 @@
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
+
+interface GameSetting {
+  numQuestions: number;
+  timePerQuestion: number;
+  difficulty: number;
+  categories: string[];
+}
+
+interface GameSettingsProps {
+  gameSettings: GameSetting;
+  lobbyId: string;
+}
+
+const GameSettings: React.FC<GameSettingsProps> = ({
+  gameSettings,
+  lobbyId
+}) => {
+  const [settings, setSettings] = useState<GameSetting>(gameSettings);
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const availableCategories = useSelector(
+    (state: RootState) => state.lobby.categories
+  );
+
+  useEffect(() => {
+    setSettings(gameSettings);
+  }, [gameSettings]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+
+    if (name === "categories") {
+      setSettings((prevSettings) => ({
+        ...prevSettings,
+        categories: checked
+          ? [...prevSettings.categories, value]
+          : prevSettings.categories.filter((category) => category !== value)
+      }));
+    } else {
+      setSettings((prevSettings) => ({
+        ...prevSettings,
+        [name]:
+          name === "difficulty" ||
+          name === "numQuestions" ||
+          name === "timePerQuestion"
+            ? parseInt(value)
+            : value
+      }));
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    if (settings.categories.length === 0) {
+      setSuccessMessage("Please select at least one category.");
+      return;
+    } else if (settings.numQuestions < 3 || settings.numQuestions > 20) {
+      setSuccessMessage(
+        "Number of questions must be between 3 and 20 (inclusive)."
+      );
+      return;
+    } else if (settings.timePerQuestion < 5 || settings.timePerQuestion > 60) {
+      setSuccessMessage(
+        "Time per question must be between 5 and 60 (inclusive)."
+      );
+      return;
+    } else if (settings.difficulty < 1 || settings.difficulty > 5) {
+      setSuccessMessage("Difficulty must be between 1 and 5 (inclusive).");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/solo/updateSettings/${lobbyId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({ gameSettings: settings })
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        setSuccessMessage("Settings Saved.");
+      } else {
+        console.error(data.message);
+        setSuccessMessage("Error saving settings: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      setSuccessMessage("Error saving settings: " + error);
+    }
+  };
+
+  return (
+    <div className="game-lobby-settings">
+      <ErrorPopup
+        message={successMessage}
+        setMessage={setSuccessMessage}
+        success={successMessage === "Settings Saved."}
+      />
+
+      <div className="game-lobby-settings-header">
+        <h1>Game Settings</h1>
+      </div>
+      <div className="game-lobby-settings-content">
+        <div className="game-lobby-settings-item">
+          <label>Number of Questions:</label>
+          <input
+            type="number"
+            name="numQuestions"
+            value={settings.numQuestions}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="game-lobby-settings-item">
+          <label>Time Limit:</label>
+          <input
+            type="number"
+            name="timePerQuestion"
+            value={settings.timePerQuestion}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="game-lobby-settings-item">
+          <label>Difficulty:</label>
+          <input
+            type="number"
+            name="difficulty"
+            value={settings.difficulty}
+            onChange={handleChange}
+            min={1}
+            max={5}
+          />
+        </div>
+        <div className="game-lobby-settings-item">
+          <label>Categories:</label>
+          <div>
+            {availableCategories.map((category) => (
+              <div key={category}>
+                <input
+                  type="checkbox"
+                  id={category}
+                  name="categories"
+                  value={category}
+                  checked={settings.categories.includes(category)}
+                  onChange={handleChange}
+                />
+                <label htmlFor={category}>{category}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="game-lobby-settings-footer">
+        <button className="save-settings-button" onClick={handleSaveSettings}>
+          Save Settings
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default GameSettings;

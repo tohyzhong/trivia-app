@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 export const Leaderboard: React.FC = () => {
-  return (
-    <div>Leaderboard</div>
-  )
-}
+  return <div>Leaderboard</div>;
+};
 
 export default Leaderboard;

@@ -1,9 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { useLocation } from "react-router-dom";
 
-export const HomePage: React.FC = () => {
+export const HomePage: React.FC = (props) => {
+  // Error message display if redirected from another page after encountering an error
+  const location = useLocation();
+  const [errorMessage, setErrorMessage] = useState<string>(
+    location.state?.errorMessage || ""
+  );
+
   return (
-    <div>The Rizz Quiz</div>
-  )
-}
+    <>
+      <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />
+    </>
+  );
+};
 
-export default HomePage
+export default HomePage;
