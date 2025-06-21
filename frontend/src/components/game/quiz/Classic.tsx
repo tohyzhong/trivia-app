@@ -29,7 +29,6 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   submitted,
   answerRevealed
 }) => {
-  console.log(optionSelected, submitted, answerRevealed);
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
   // Option submission

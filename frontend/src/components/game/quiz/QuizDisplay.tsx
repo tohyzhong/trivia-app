@@ -113,7 +113,6 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 
   useEffect(() => {
     if (gameState) {
-      console.log(gameState);
       setLoading(false);
     }
   }, [gameState]);

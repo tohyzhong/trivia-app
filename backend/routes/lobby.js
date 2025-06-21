@@ -578,6 +578,8 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
 
     // Advance lobby
     const gameState = lobby.gameState;
+
+    // Reset player states
     const playerStates = gameState.playerStates;
     const updatedPlayerStates = {};
     for (const stateKey in playerStates) {
@@ -588,25 +590,55 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
       };
     }
 
-    const question = await ClassicQuestion.findOne({ category: "General" });
-    const updatedGameState = {
-      currentQuestion: gameState.currentQuestion + 1,
-      question,
-      playerStates: updatedPlayerStates,
-      answerRevealed: false,
-      lastUpdate: new Date()
-    };
+    if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
+      // Return to lobby waiting state if set of questions finished
+      const updatedGameState = {
+        currentQuestion: 0,
+        question: null,
+        playerStates: updatedPlayerStates,
+        answerRevealed: false,
+        lastUpdate: new Date()
+      };
 
-    await Lobby.collection.updateOne(
-      { lobbyId },
-      { $set: { gameState: updatedGameState, lastActivity: new Date() } }
-    );
+      await Lobby.collection.updateOne(
+        { lobbyId },
+        {
+          $set: {
+            gameState: updatedGameState,
+            status: "waiting",
+            lastActivity: new Date()
+          }
+        }
+      );
 
-    // Update frontend display through socket
-    const socketIO = getSocketIO();
-    socketIO.to(lobbyId).emit("updateState", { gameState: updatedGameState });
+      // Update frontend display through socket
+      const socketIO = getSocketIO();
+      socketIO.to(lobbyId).emit("updateStatus", { status: "waiting" });
+      socketIO.to(lobbyId).emit("updateState", { gameState: updatedGameState });
 
-    return res.status(200).json({ message: "Lobby advanced." });
+      return res.status(200).json({ message: "Lobby finished." });
+    } else {
+      // Go to next question
+      const question = await ClassicQuestion.findOne({ category: "General" });
+      const updatedGameState = {
+        currentQuestion: gameState.currentQuestion + 1,
+        question,
+        playerStates: updatedPlayerStates,
+        answerRevealed: false,
+        lastUpdate: new Date()
+      };
+
+      await Lobby.collection.updateOne(
+        { lobbyId },
+        { $set: { gameState: updatedGameState, lastActivity: new Date() } }
+      );
+
+      // Update frontend display through socket
+      const socketIO = getSocketIO();
+      socketIO.to(lobbyId).emit("updateState", { gameState: updatedGameState });
+
+      return res.status(200).json({ message: "Lobby advanced." });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error starting lobby." });
