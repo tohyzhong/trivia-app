@@ -41,6 +41,7 @@ interface QuizDisplayProps {
   gameType: string;
   gameState: GameState;
   timeLimit: number;
+  totalQuestions: number;
 }
 
 const QuizDisplay: React.FC<QuizDisplayProps> = ({
@@ -48,7 +49,8 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   lobbyChat,
   gameType,
   gameState,
-  timeLimit
+  timeLimit,
+  totalQuestions
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [loading, setLoading] = useState<boolean>(true);
@@ -116,6 +118,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           {gameType === "solo-classic" ? (
             <Classic
               currentQuestion={gameState.currentQuestion}
+              totalQuestions={totalQuestions}
               classicQuestion={gameState.question as ClassicQuestion}
             />
           ) : (

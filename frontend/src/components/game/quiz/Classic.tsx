@@ -11,11 +11,13 @@ interface ClassicQuestion {
 
 interface ClassicQuestionProps {
   currentQuestion: number;
+  totalQuestions: number;
   classicQuestion: ClassicQuestion;
 }
 
 const Classic: React.FC<ClassicQuestionProps> = ({
   currentQuestion,
+  totalQuestions,
   classicQuestion
 }) => {
   const [timer, setTimer] = useState<number>(0);
@@ -26,7 +28,9 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   return (
     <div className="question-details">
       <div className="question-header-details">
-        <p>Question {currentQuestion} / ??</p>
+        <p>
+          Question {currentQuestion} / {totalQuestions}
+        </p>
         <p>Category: {classicQuestion.category}</p>
       </div>
       <div className="question-question">{classicQuestion.question}</div>

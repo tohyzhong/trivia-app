@@ -195,6 +195,7 @@ const LobbyHandler: React.FC = () => {
       gameType={gameType}
       gameState={gameState}
       timeLimit={gameSettings.timePerQuestion}
+      totalQuestions={gameSettings.numQuestions}
     />
   );
 };
