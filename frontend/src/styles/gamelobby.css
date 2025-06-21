@@ -410,6 +410,22 @@
   background-color: #222;
 }
 
+.selected {
+  background-color: #001ea1 !important;
+}
+
+.wrong {
+  background-color: #ff4d4d !important;
+}
+
+.correct {
+  background-color: #088b3f !important;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+}
+
 /* Question Timer Bar */
 .question-timer-border {
   display: flex;

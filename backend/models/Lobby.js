@@ -30,6 +30,8 @@ const lobbySchema = new mongoose.Schema(
       default: {
         currentQuestion: 0, // Waiting state
         question: null, // Question collection ObjectId
+        playerStates: {}, // { playerId: { username: string, selectedOption: number, submitted: boolean } }
+        answerRevealed: false,
         lastUpdate: Date.now()
       },
       required: true

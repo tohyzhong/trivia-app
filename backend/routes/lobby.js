@@ -100,6 +100,14 @@ router.post("/solo/create", authenticate, async (req, res) => {
       gameState: {
         currentQuestion: 0,
         question: null,
+        playerStates: {
+          [playerDoc._id]: {
+            username: playerDoc.username,
+            selectedOption: 0,
+            submitted: false
+          }
+        },
+        answerRevealed: false,
         lastUpdate: Date.now()
       },
       chatMessages: [
@@ -432,11 +440,13 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
     } else {
       // Configure game state
       const question = await ClassicQuestion.findOne({ category: "General" });
-      const gameState = {
+      const update = {
         currentQuestion: 1,
         question,
         lastUpdate: Date.now()
       };
+
+      const gameState = { ...lobby.gameState, ...update };
 
       await Lobby.collection.updateOne(
         { lobbyId },
@@ -450,6 +460,63 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
 
       return res.status(200).json({ message: "Lobby started." });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error starting lobby." });
+  }
+});
+
+router.post("/submit/:lobbyId", async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { user, option } = req.body;
+
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+    if (!lobby) {
+      return res.status(404).json({ message: "Lobby not found" });
+    }
+
+    const playerDoc = await Profile.collection.findOne({ username: user });
+    if (!playerDoc) {
+      return res.status(404).json({ message: "Player not found." });
+    }
+
+    const updatedPlayerState = {
+      [playerDoc._id]: {
+        username: user,
+        selectedOption: option,
+        submitted: true
+      }
+    };
+    const updatedPlayerStates = {
+      ...lobby.gameState.playerStates,
+      ...updatedPlayerState
+    };
+
+    // TODO: set answerRevealed to true if all players submitted
+    let allSubmitted = true;
+    for (const stateKey in updatedPlayerStates) {
+      allSubmitted = allSubmitted && updatedPlayerState[stateKey].submitted;
+    }
+
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      {
+        $set: {
+          "gameState.playerStates": updatedPlayerStates,
+          "gameState.answerRevealed": allSubmitted
+        }
+      },
+      { returnDocument: "after" }
+    );
+
+    // Update frontend display through socket
+    const socketIO = getSocketIO();
+    socketIO
+      .to(lobbyId)
+      .emit("updateState", { gameState: updatedLobby.gameState });
+
+    return res.status(200).json({ message: "success test" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error starting lobby." });

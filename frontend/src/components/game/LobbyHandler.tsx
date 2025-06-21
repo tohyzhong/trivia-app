@@ -46,9 +46,13 @@ interface KnowledgeQuestion {
   answer: string;
 }
 
+type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
+
 interface GameState {
   currentQuestion: number;
-  question: ClassicQuestion | KnowledgeQuestion;
+  question: QuizQuestion;
+  playerStates: any;
+  answerRevealed: boolean;
   lastUpdate: Date;
 }
 

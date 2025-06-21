@@ -32,6 +32,8 @@ type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
 interface GameState {
   currentQuestion: number;
   question: QuizQuestion;
+  playerStates: any;
+  answerRevealed: boolean;
   lastUpdate: Date;
 }
 
@@ -55,14 +57,13 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Calculate question time left
-  const getSecondsDifference = (date1: Date, date2: Date) => {
-    return Math.abs((date2.getTime() - date1.getTime()) / 1000);
-  };
-  const timeLeft =
-    timeLimit -
-    getSecondsDifference(new Date(), new Date(gameState.lastUpdate));
-  const percentageLeft = (timeLeft / timeLimit) * 100;
+  // Option selection states
+  const [optionSelected, setOptionSelected] = useState<number>(0);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [answerRevealed, setAnswerRevealed] = useState<boolean>(false);
+
+  // Question time states
+  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   // Leaving Lobby
   const dispatch = useDispatch();
@@ -78,7 +79,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           body: JSON.stringify({ player: loggedInUser })
         }
       );
-      const data = await response.json();
+
       if (response.ok) {
         dispatch(clearLobby());
         navigate("/", { state: { errorMessage: "You left the lobby." } });
@@ -98,9 +99,34 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 
   useEffect(() => {
     if (gameState) {
+      const playerId = Object.keys(gameState.playerStates).find(
+        (id) => gameState.playerStates[id].username === loggedInUser
+      );
+      const playerState = playerId ? gameState.playerStates[playerId] : null;
+      setOptionSelected(playerState.selectedOption);
+      setSubmitted(playerState.submitted);
+      setAnswerRevealed(gameState.answerRevealed);
+
+      // Calculate question time left
+      if (!answerRevealed) {
+        const getSecondsDifference = (date1: Date, date2: Date) => {
+          return Math.abs((date2.getTime() - date1.getTime()) / 1000);
+        };
+        setTimeLeft(
+          Math.max(
+            timeLimit -
+              getSecondsDifference(new Date(), new Date(gameState.lastUpdate)),
+            0
+          )
+        );
+      } else {
+        setTimeLeft(0);
+      }
       setLoading(false);
     }
   }, [gameState]);
+
+  const percentageLeft = (timeLeft / timeLimit) * 100;
 
   return loading ? (
     <GameLoading />
@@ -117,21 +143,30 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           </div>
           {gameType === "solo-classic" ? (
             <Classic
+              lobbyId={lobbyId}
               currentQuestion={gameState.currentQuestion}
               totalQuestions={totalQuestions}
               classicQuestion={gameState.question as ClassicQuestion}
+              optionSelected={optionSelected}
+              submitted={submitted || answerRevealed}
+              answerRevealed={answerRevealed}
             />
           ) : (
             <Knowledge />
           )}
           <div className="question-timer-border">
             <motion.div
+              key={gameState.currentQuestion + "-" + answerRevealed}
               className="question-timer"
               initial={{ width: `${percentageLeft}%` }}
               animate={{
                 width: 0,
-                transition: { duration: timeLeft, ease: "linear" }
+                transition: {
+                  duration: answerRevealed ? 0 : timeLeft,
+                  ease: "linear"
+                }
               }}
+              onAnimationComplete={() => setAnswerRevealed(true)}
             />
           </div>
         </div>
