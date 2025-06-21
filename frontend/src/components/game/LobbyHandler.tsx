@@ -22,17 +22,6 @@ interface ChatMessage {
   message: string;
 }
 
-/*
-interface LobbyDetails {
-  lobbyId: string;
-  players: string[];
-  gameType: "solo-classic" | "solo-knowledge";
-  status: "waiting" | "in-progress" | "finished";
-  gameSettings: GameSetting;
-  chatMessages: { sender: string; message: string; timestamp: Date }[];
-}
-*/
-
 interface ClassicQuestion {
   question: string;
   options: string[];
@@ -61,7 +50,6 @@ const socket = io(import.meta.env.VITE_API_URL);
 const LobbyHandler: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
-  // const [lobbyState, setLobbyState] = useState<LobbyDetails>(null);
 
   // Details needed for lobby display
   const [users, setUsers] = useState<string[]>(null);
@@ -149,7 +137,6 @@ const LobbyHandler: React.FC = () => {
 
       if (response.ok) {
         const lobbyDetails = data.lobbyDetails;
-        // setLobbyState(lobbyDetails);
 
         setStatus(lobbyDetails.status);
         setUsers(lobbyDetails.players);

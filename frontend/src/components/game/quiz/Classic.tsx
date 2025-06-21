@@ -1,5 +1,4 @@
-import { number } from "motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 
@@ -30,20 +29,20 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   submitted,
   answerRevealed
 }) => {
+  console.log(optionSelected, submitted, answerRevealed);
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
+  // Option submission
   const handleSubmit = async (option) => {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/lobby/submit/${lobbyId}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ user: loggedInUser, option })
-      }
-    );
+    await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/submit/${lobbyId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ user: loggedInUser, option })
+    });
   };
 
+  // Update option styles (correct, wrong, selected)
   useEffect(() => {
     const optionButtons = document.querySelectorAll(".option");
     if (answerRevealed) {
@@ -64,7 +63,19 @@ const Classic: React.FC<ClassicQuestionProps> = ({
       if (optionSelected !== 0)
         optionButtons[optionSelected - 1].classList.add("selected");
     }
-  }, [optionSelected - 1, answerRevealed]);
+  }, [optionSelected, answerRevealed]);
+
+  // Next question
+  const handleNextQuestion = async () => {
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/api/lobby/advancelobby/${lobbyId}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      }
+    );
+  };
 
   return (
     <div className="question-details">
@@ -72,6 +83,11 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         <p>
           Question {currentQuestion} / {totalQuestions}
         </p>
+        {answerRevealed && (
+          <button className="advance-lobby-button" onClick={handleNextQuestion}>
+            Next Question →
+          </button>
+        )}
         <p>Category: {classicQuestion.category}</p>
       </div>
       <div className="question-question">{classicQuestion.question}</div>

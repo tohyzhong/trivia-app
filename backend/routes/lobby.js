@@ -108,7 +108,7 @@ router.post("/solo/create", authenticate, async (req, res) => {
           }
         },
         answerRevealed: false,
-        lastUpdate: Date.now()
+        lastUpdate: new Date()
       },
       chatMessages: [
         {
@@ -443,14 +443,14 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
       const update = {
         currentQuestion: 1,
         question,
-        lastUpdate: Date.now()
+        lastUpdate: new Date()
       };
 
       const gameState = { ...lobby.gameState, ...update };
 
       await Lobby.collection.updateOne(
         { lobbyId },
-        { $set: { gameState, status: "in-progress" } }
+        { $set: { gameState, status: "in-progress", lastActivity: new Date() } }
       );
 
       // Notify players in the lobby
@@ -493,7 +493,6 @@ router.post("/submit/:lobbyId", async (req, res) => {
       ...updatedPlayerState
     };
 
-    // TODO: set answerRevealed to true if all players submitted
     let allSubmitted = true;
     for (const stateKey in updatedPlayerStates) {
       allSubmitted = allSubmitted && updatedPlayerState[stateKey].submitted;
@@ -504,7 +503,8 @@ router.post("/submit/:lobbyId", async (req, res) => {
       {
         $set: {
           "gameState.playerStates": updatedPlayerStates,
-          "gameState.answerRevealed": allSubmitted
+          "gameState.answerRevealed": allSubmitted,
+          lastActivity: new Date()
         }
       },
       { returnDocument: "after" }
@@ -516,7 +516,97 @@ router.post("/submit/:lobbyId", async (req, res) => {
       .to(lobbyId)
       .emit("updateState", { gameState: updatedLobby.gameState });
 
-    return res.status(200).json({ message: "success test" });
+    return res
+      .status(200)
+      .json({ message: "Successfully submitted option selection" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error starting lobby." });
+  }
+});
+
+router.get("/revealanswer/:lobbyId", async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+    if (!lobby) {
+      return res.status(404).json({ message: "Lobby not found" });
+    }
+
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId },
+      { $set: { "gameState.answerRevealed": true } },
+      { returnDocument: "after" }
+    );
+
+    // Update frontend display through socket
+    const socketIO = getSocketIO();
+    socketIO
+      .to(lobbyId)
+      .emit("updateState", { gameState: updatedLobby.gameState });
+
+    return res.status(200).json({ message: "Answer revealed." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error starting lobby." });
+  }
+});
+
+router.get("/advancelobby/:lobbyId", async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+
+    const lobby = await Lobby.collection.findOne({ lobbyId });
+    if (!lobby) {
+      return res.status(404).json({ message: "Lobby not found" });
+    }
+
+    // Confirm eligibility for advancing lobby
+    const timeLimit = lobby.gameSettings.timePerQuestion;
+    const lastUpdate = lobby.gameState.lastUpdate;
+    const timePassed = (Date.now() - lastUpdate.getTime()) / 1000;
+
+    const eligible = timePassed > timeLimit || lobby.gameState.answerRevealed;
+    if (!eligible) {
+      return res.status(401).json({
+        message: "Not allowed to advanced lobby while question is ongoing"
+      });
+    }
+
+    // TODO: Update player stats
+
+    // Advance lobby
+    const gameState = lobby.gameState;
+    const playerStates = gameState.playerStates;
+    const updatedPlayerStates = {};
+    for (const stateKey in playerStates) {
+      updatedPlayerStates[stateKey] = {
+        ...playerStates[stateKey],
+        selectedOption: 0,
+        submitted: false
+      };
+    }
+
+    const question = await ClassicQuestion.findOne({ category: "General" });
+    const updatedGameState = {
+      currentQuestion: gameState.currentQuestion + 1,
+      question,
+      playerStates: updatedPlayerStates,
+      answerRevealed: false,
+      lastUpdate: new Date()
+    };
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { gameState: updatedGameState, lastActivity: new Date() } }
+    );
+
+    // Update frontend display through socket
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit("updateState", { gameState: updatedGameState });
+
+    return res.status(200).json({ message: "Lobby advanced." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error starting lobby." });

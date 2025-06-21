@@ -367,6 +367,17 @@
   justify-content: space-between;
 }
 
+.advance-lobby-button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #088b3f;
+}
+
 .question-question {
   display: flex;
   height: 30%;

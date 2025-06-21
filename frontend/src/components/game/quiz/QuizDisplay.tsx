@@ -58,12 +58,26 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
 
   // Option selection states
-  const [optionSelected, setOptionSelected] = useState<number>(0);
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const [answerRevealed, setAnswerRevealed] = useState<boolean>(false);
+  const playerId = Object.keys(gameState.playerStates).find(
+    (id) => gameState.playerStates[id].username === loggedInUser
+  );
+  const playerState = playerId ? gameState.playerStates[playerId] : null;
+  const optionSelected = playerState?.selectedOption ?? 0;
+  const submitted = playerState?.submitted ?? false;
+  let answerRevealed = gameState.answerRevealed ?? false;
 
   // Question time states
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+  let timeLeft = 0;
+  if (!answerRevealed) {
+    const getSecondsDifference = (date1: Date, date2: Date) => {
+      return Math.abs((date2.getTime() - date1.getTime()) / 1000);
+    };
+    timeLeft = Math.max(
+      timeLimit -
+        getSecondsDifference(new Date(), new Date(gameState.lastUpdate)),
+      0
+    );
+  }
 
   // Leaving Lobby
   const dispatch = useDispatch();
@@ -99,34 +113,23 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 
   useEffect(() => {
     if (gameState) {
-      const playerId = Object.keys(gameState.playerStates).find(
-        (id) => gameState.playerStates[id].username === loggedInUser
-      );
-      const playerState = playerId ? gameState.playerStates[playerId] : null;
-      setOptionSelected(playerState.selectedOption);
-      setSubmitted(playerState.submitted);
-      setAnswerRevealed(gameState.answerRevealed);
-
-      // Calculate question time left
-      if (!answerRevealed) {
-        const getSecondsDifference = (date1: Date, date2: Date) => {
-          return Math.abs((date2.getTime() - date1.getTime()) / 1000);
-        };
-        setTimeLeft(
-          Math.max(
-            timeLimit -
-              getSecondsDifference(new Date(), new Date(gameState.lastUpdate)),
-            0
-          )
-        );
-      } else {
-        setTimeLeft(0);
-      }
+      console.log(gameState);
       setLoading(false);
     }
   }, [gameState]);
 
   const percentageLeft = (timeLeft / timeLimit) * 100;
+
+  const handleTimesUp = async () => {
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/api/lobby/revealanswer/${lobbyId}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      }
+    );
+  };
 
   return loading ? (
     <GameLoading />
@@ -166,7 +169,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                   ease: "linear"
                 }
               }}
-              onAnimationComplete={() => setAnswerRevealed(true)}
+              onAnimationComplete={handleTimesUp}
             />
           </div>
         </div>
