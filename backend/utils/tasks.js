@@ -26,16 +26,16 @@ const runSchedulers = () => {
 
     try {
       const socketIO = getSocketIO();
-      const thirtyMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
 
       const lobbies = await Lobby.find({
-        lastActivity: { $lt: thirtyMinutesAgo },
+        lastActivity: { $lt: thirtyMinutesAgo }
       });
 
       console.log(`Found ${lobbies.length} to delete.`);
 
       const result = await Lobby.deleteMany({
-        lastActivity: { $lt: thirtyMinutesAgo },
+        lastActivity: { $lt: thirtyMinutesAgo }
       });
 
       if (result.deletedCount > 0) {
