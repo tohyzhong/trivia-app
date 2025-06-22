@@ -1,0 +1,145 @@
+[
+  {
+    "question": "Fill in the blank: What you know about rolling down in the _________",
+    "options": ["Deep", "Storm", "Waves", "Club"],
+    "correctOption": 1,
+    "explanation": "🎵 From the viral hit **[Masked Wolf - Astronaut In The Ocean](https://www.youtube.com/watch?v=3chGVpR9NzA)**",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the proper response to 'Who asked?'",
+    "options": ["You did", "Nobody", "I did", "Your mom"],
+    "correctOption": 2,
+    "explanation": "😶 The phrase **'Nobody asked'** is a classic internet comeback used to dismiss someone's comment as irrelevant.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What animal is often edited with 'Sigma grindset' music?",
+    "options": ["Wolf", "Hamster", "Capybara", "Gorilla"],
+    "correctOption": 1,
+    "explanation": "🐺 The **Sigma Wolf** aesthetic uses lone wolves with dark filters and motivational audio to represent 'lone alpha males.'",
+    "category": "Meme God",
+    "difficulty": 2
+  },
+  {
+    "question": "What kind of hat is most associated with 'Chad' memes?",
+    "options": ["Snapback", "Top hat", "Fedora", "No hat"],
+    "correctOption": 4,
+    "explanation": "💪 The original **Chad meme** (like GigaChad) features a muscular, bare-headed male figure signifying peak masculinity.",
+    "category": "Meme God",
+    "difficulty": 2
+  },
+  {
+    "question": "Which name is commonly associated with a picture of a horse out on a small balcony?",
+    "options": ["Henry", "Greg", "Juan", "Jesse"],
+    "correctOption": 3,
+    "explanation": "🐴 The absurd situation of **'Juan the Horse'** looking over on a small balcony went viral with the caption 'juan.'",
+    "category": "Meme God",
+    "difficulty": 2
+  },
+  {
+    "question": "What phrase is commonly used with 'Ohio' meme edits?",
+    "options": [
+      "Say cap right now",
+      "You won't believe this",
+      "Only in Ohio",
+      "Welcome to Ohio"
+    ],
+    "correctOption": 3,
+    "explanation": "🌀 **'Only in Ohio'** memes parody the state as a chaotic, surreal place where filled with bizarre situations.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the main trait of an NPC in internet slang?",
+    "options": ["Coolness", "Unpredictability", "Scripted behavior", "High IQ"],
+    "correctOption": 3,
+    "explanation": "🧠 An **NPC** (Non-Player Character) meme represents someone who lacks original thoughts and follows 'scripts' in real life.",
+    "category": "Meme God",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the 'default dance' originally from?",
+    "options": ["Roblox", "Fortnite", "TikTok", "Club Penguin"],
+    "correctOption": 2,
+    "explanation": "🕺 The **Default Dance** is an iconic emote from **Fortnite**.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "Finish the phrase: ‘Bro thinks he’s ________’",
+    "options": ["him", "built", "funny", "real"],
+    "correctOption": 1,
+    "explanation": "👤 **'Bro thinks he's him'** is a sarcastic phrase mocking someone for acting like they’re the main character or superior.",
+    "category": "Meme God",
+    "difficulty": 1
+  },
+  {
+    "question": "Which fictional food became a meme thanks to exaggerated reactions?",
+    "options": ["Krabby Patty", "Nutella", "Pink Sauce", "Chili Dogs"],
+    "correctOption": 3,
+    "explanation": "🎨 **Pink Sauce** went viral after TikTok creator **Veronica Shaw** made a bizarre homemade condiment, causing confusion, controversy, and memes.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "Which of these was used to make the 'Beluga' memes?",
+    "options": [
+      "Reddit Threads",
+      "Instagram DMs",
+      "Fake Discord chats",
+      "Tinder bios"
+    ],
+    "correctOption": 3,
+    "explanation": "💬 The **Beluga YouTube channel** gained popularity using comedic Discord chat roleplays featuring a cat character.",
+    "category": "Meme God",
+    "difficulty": 2
+  },
+  {
+    "question": "What name is used as a default insult in memes?",
+    "options": ["Kevin", "Kyle", "Chad", "Dawg"],
+    "correctOption": 2,
+    "explanation": "🥤 A **'Kyle'** is a meme stereotype of an aggressive teen who drinks Monster Energy and punches drywall.",
+    "category": "Meme God",
+    "difficulty": 2
+  },
+  {
+    "question": "What meme is often used to explain overly dramatic male behavior from the persepective of women?",
+    "options": [
+      "Bro is emotional",
+      "Men will literally...",
+      "Andrew Tate vibes",
+      "This you?"
+    ],
+    "correctOption": 2,
+    "explanation": "🧍‍♂️ **'Men will literally... instead of going to therapy'** is a meme format on X, usually a reference to a particular person, historical event, or activity associated with men.",
+    "category": "General",
+    "difficulty": 3
+  },
+  {
+    "question": "What game did 'sus' originate from in modern slang?",
+    "options": ["Roblox", "Among Us", "GTA Online", "Fall Guys"],
+    "correctOption": 2,
+    "explanation": "🚀 **'Sus'** (short for suspicious) became viral from **Among Us**, where players accuse each other of being impostors.",
+    "category": "Meme God",
+    "difficulty": 1
+  },
+  {
+    "question": "Finish the phrase: ‘He’s got that dog ______’",
+    "options": ["in him", "energy", "mentality", "on speed dial"],
+    "correctOption": 1,
+    "explanation": "🐶 Saying someone **'has that dog in him'** is a meme praising their mental toughness.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What 2020s app popularized 'brainrot' humor the most?",
+    "options": ["Reddit", "Twitter", "TikTok", "Instagram"],
+    "correctOption": 3,
+    "explanation": "Surely you know this...",
+    "category": "General",
+    "difficulty": 1
+  }
+]

@@ -18,6 +18,7 @@ interface ClassicQuestion {
   question: string;
   options: string[];
   correctOption: number;
+  explanation: string;
   difficulty: number;
   category: string;
 }

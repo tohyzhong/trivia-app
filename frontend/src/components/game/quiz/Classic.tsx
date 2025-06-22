@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import { IoIosInformationCircle } from "react-icons/io";
+import Explanation from "./Explanation";
 
 interface ClassicQuestion {
   question: string;
   options: string[];
   correctOption: number;
+  explanation: string;
   difficulty: number;
   category: string;
 }
@@ -76,8 +79,20 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     );
   };
 
+  // Explanation popup
+  const [showExplanation, setShowExplanation] = useState<boolean>(false);
+  const handleIconClick = () => {
+    setShowExplanation(true);
+  };
+
   return (
     <div className="question-details">
+      {showExplanation && (
+        <Explanation
+          setActive={setShowExplanation}
+          explanation={classicQuestion.explanation}
+        />
+      )}
       <div className="question-header-details">
         <p>
           Question {currentQuestion} / {totalQuestions}
@@ -89,7 +104,15 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         )}
         <p>Category: {classicQuestion.category}</p>
       </div>
-      <div className="question-question">{classicQuestion.question}</div>
+      <div className="question-question">
+        {classicQuestion.question}
+        {answerRevealed && (
+          <IoIosInformationCircle
+            className="question-explanation-icon"
+            onClick={handleIconClick}
+          />
+        )}
+      </div>
       <div className="question-options-grid">
         {classicQuestion.options.map((option, index) => (
           <button

@@ -357,6 +357,7 @@
   color: white;
   font-family: "Fredoka", "Baloo", "Comic Neue", sans-serif;
   font-weight: bold;
+  position: relative;
 }
 
 .question-header-details {
@@ -388,6 +389,22 @@
   border: 1px solid white;
   border-radius: 10px;
   font-size: 1.5rem;
+  position: relative;
+}
+
+.question-explanation-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.question-explanation-icon:hover {
+  transform: scale(1.1);
+}
+
+.question-explanation-icon:active {
+  transform: scale(1);
 }
 
 .question-options-grid {
@@ -451,4 +468,40 @@
   background-color: white;
   border-radius: 10px;
   height: 100%;
+}
+
+/* Question Explanation */
+.explanation-popup-full {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 98%;
+  height: 98%;
+  background-color: rgb(85, 64, 64, 0.3);
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
+  z-index: 100;
+}
+
+.explanation-popup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  min-width: 300px;
+  max-height: 100%;
+  max-width: 80%;
+  padding: 15px;
+  background: black;
+  border: 1px solid white;
+  border-radius: 15px;
+  position: relative;
+}
+
+.explanation-popup-close {
+  position: absolute;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
 }

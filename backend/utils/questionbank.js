@@ -1,22 +1,16 @@
 import ClassicQuestion from "../models/ClassicQuestion.js";
+import fs from "fs";
+import path from "path";
+
+const questionData = JSON.parse(
+  fs.readFileSync(path.resolve("./questiondata/ClassicQuestions.json"), "utf-8")
+);
 
 const generateQuestions = async () => {
   await ClassicQuestion.deleteMany();
   console.log("Questions cleared.");
 
-  const documents = [];
-  for (let i = 0; i < 5; i++) {
-    const document = {
-      question: `Question ${i}`,
-      options: ["Option 1", "Option 2", "Option 3", "Option 4"],
-      correctOption: (i % 4) + 1,
-      category: i === 4 ? "Meme God" : "General",
-      difficulty: 1
-    };
-    documents.push(document);
-  }
-
-  await ClassicQuestion.insertMany(documents);
+  await ClassicQuestion.insertMany(questionData);
   console.log("Questions added.");
 };
 
