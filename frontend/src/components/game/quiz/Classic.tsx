@@ -99,7 +99,9 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         </p>
         {answerRevealed && (
           <button className="advance-lobby-button" onClick={handleNextQuestion}>
-            Next Question →
+            {currentQuestion === totalQuestions
+              ? "Back to Lobby →"
+              : "Next Question →"}
           </button>
         )}
         <p>Category: {classicQuestion.category}</p>
