@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import GameChat from "../gamelobby/GameChat";
 import GameLoading from "../gamelobby/GameLoading";
 import Classic from "./Classic";
@@ -57,6 +57,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [loading, setLoading] = useState<boolean>(true);
+  const timesUpCalledRef = useRef(false);
 
   // Option selection states
   const playerId = Object.keys(gameState.playerStates).find(
@@ -118,9 +119,18 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
     }
   }, [gameState]);
 
+  useEffect(() => {
+    timesUpCalledRef.current = false;
+  }, [gameState.currentQuestion]);
+
   const percentageLeft = (timeLeft / timeLimit) * 100;
 
   const handleTimesUp = async () => {
+    if (timesUpCalledRef.current || !gameState || gameState.answerRevealed)
+      return;
+
+    timesUpCalledRef.current = true;
+
     await fetch(
       `${import.meta.env.VITE_API_URL}/api/lobby/revealanswer/${lobbyId}`,
       {
@@ -160,12 +170,12 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           <div className="question-timer-border">
             <motion.div
               key={gameState.currentQuestion + "-" + answerRevealed}
-              className="question-timer"
+              className={answerRevealed ? "nigger" : "question-timer"}
               initial={{ width: `${percentageLeft}%` }}
               animate={{
                 width: 0,
                 transition: {
-                  duration: answerRevealed ? 0 : timeLeft,
+                  duration: answerRevealed ? 0 : Math.max(timeLeft, 0),
                   ease: "linear"
                 }
               }}

@@ -51,6 +51,7 @@ const socket = io(import.meta.env.VITE_API_URL);
 const LobbyHandler: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
+  const [joined, setJoined] = useState(false);
 
   // Details needed for lobby display
   const [users, setUsers] = useState<string[]>(null);
@@ -92,6 +93,10 @@ const LobbyHandler: React.FC = () => {
 
   useEffect(() => {
     socket.emit("joinLobby", lobbyId);
+
+    socket.on("lobbyJoined", () => {
+      setJoined(true);
+    });
 
     socket.on("updateState", (data) => {
       setGameState(data.gameState);
@@ -170,7 +175,7 @@ const LobbyHandler: React.FC = () => {
     }
   }, [lobbyId, loggedInUser]);
 
-  return loading ? (
+  return loading || !socket || !socket.connected || !joined ? (
     <GameLoading />
   ) : status === "waiting" ? (
     <GameLobby
