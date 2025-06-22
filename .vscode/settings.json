@@ -7,7 +7,7 @@
   "files.autoSave": "onFocusChange", // optional but recommended
 
   "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
-    },
+    "source.fixAll.eslint": "explicit"
+  },
     "eslint.validate": ["javascript", "typescript", "javascriptreact", "html", "json", "markdown"],
 }

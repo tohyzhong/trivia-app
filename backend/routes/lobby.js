@@ -5,6 +5,7 @@ import Profile from "../models/Profile.js";
 import ClassicQuestion from "../models/ClassicQuestion.js";
 import { getSocketIO } from "../socket.js";
 import authenticate from "./authMiddleware.js";
+import getRandomClassicQuestion from "../utils/randomquestion.js";
 
 const router = express.Router();
 
@@ -439,7 +440,9 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
       return res.status(401).json({ message: "Lobby has already started." });
     } else {
       // Configure game state
-      const question = await ClassicQuestion.findOne({ category: "General" });
+      const question = await getRandomClassicQuestion(
+        lobby.gameSettings.categories
+      );
       const update = {
         currentQuestion: 1,
         question,
@@ -619,7 +622,9 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
       return res.status(200).json({ message: "Lobby finished." });
     } else {
       // Go to next question
-      const question = await ClassicQuestion.findOne({ category: "General" });
+      const question = await getRandomClassicQuestion(
+        lobby.gameSettings.categories
+      );
       const updatedGameState = {
         currentQuestion: gameState.currentQuestion + 1,
         question,
