@@ -21,8 +21,8 @@ interface SubModes {
 }
 
 export const GameMainpage: React.FC = () => {
-  useInitSound();
-  const { bgmBlocked, handleResume } = useBGMResumeOverlay();
+  useInitSound("Lobby");
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
 
   const modes = [
     {

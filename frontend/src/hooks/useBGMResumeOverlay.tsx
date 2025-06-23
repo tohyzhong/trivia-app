@@ -5,11 +5,11 @@ import {
   playBGM
 } from "../utils/soundManager";
 
-export const useBGMResumeOverlay = () => {
+export const useBGMResumeOverlay = (mode) => {
   const [bgmBlocked, setBgmBlocked] = useState(false);
 
   const handleResume = useCallback(() => {
-    playBGM();
+    playBGM(mode);
     setBgmBlocked(false);
   }, []);
 

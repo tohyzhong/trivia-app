@@ -1,7 +1,9 @@
 import bgmAudio from "../assets/bgm.mp3";
+import quizBgm from "../assets/quiz.mp3";
 import clickAudio from "../assets/click.mp3";
 
 let bgm: HTMLAudioElement | null = null;
+let mode: "lobby" | "quiz" | null = null;
 let click: HTMLAudioElement | null = null;
 
 let bgmVolume = 1.0;
@@ -38,12 +40,13 @@ export const clearOnPlaybackBlocked = () => {
 
 export const notifyUserInteraction = () => {
   userHasInteracted = true;
-  playBGM();
+  playBGM(mode);
 };
 
-export const playBGM = () => {
-  if (!bgm) {
-    bgm = new Audio(bgmAudio);
+export const playBGM = (modeSelected) => {
+  if (!bgm || mode !== modeSelected) {
+    mode = modeSelected;
+    bgm = new Audio(modeSelected === "Lobby" ? bgmAudio : quizBgm);
     bgm.loop = true;
     bgm.volume = bgmVolume;
   }

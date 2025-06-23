@@ -36,8 +36,8 @@ interface GameLobbyProps {
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
-  useInitSound();
-  const { bgmBlocked, handleResume } = useBGMResumeOverlay();
+  useInitSound("Lobby");
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
 
   // Handle component loading
   const [loading, setLoading] = useState<boolean>(true);

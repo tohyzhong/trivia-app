@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setVolumeLevels, playBGM, stopBGM } from "../utils/soundManager";
 
-export const useInitSound = () => {
+export const useInitSound = (mode) => {
   const soundSettings = useSelector((state: RootState) => state.soundSettings);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ export const useInitSound = () => {
       bgmVol: soundSettings.bgmVolume,
       sfxVol: soundSettings.sfxVolume
     });
-    playBGM();
+    playBGM(mode);
 
     return () => stopBGM();
   }, [soundSettings]);
