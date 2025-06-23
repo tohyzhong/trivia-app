@@ -29,6 +29,7 @@ const lobbySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: {
         currentQuestion: 0, // Waiting state
+        questionIds: [], // Array of question ObjectIds
         question: null, // Question collection ObjectId
         playerStates: {}, // { playerId: { username: string, selectedOption: number, submitted: boolean } }
         answerRevealed: false,

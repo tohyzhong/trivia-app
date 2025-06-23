@@ -32,6 +32,7 @@ type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
 
 interface GameState {
   currentQuestion: number;
+  questionIds: string[];
   question: QuizQuestion;
   playerStates: any;
   answerRevealed: boolean;

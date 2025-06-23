@@ -5,7 +5,10 @@ import Profile from "../models/Profile.js";
 import ClassicQuestion from "../models/ClassicQuestion.js";
 import { getSocketIO } from "../socket.js";
 import authenticate from "./authMiddleware.js";
-import getRandomClassicQuestion from "../utils/randomquestion.js";
+import {
+  generateUniqueQuestionIds,
+  getQuestionById
+} from "../utils/generateclassicquestions.js";
 
 const router = express.Router();
 
@@ -441,11 +444,14 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
       return res.status(401).json({ message: "Lobby has already started." });
     } else {
       // Configure game state
-      const question = await getRandomClassicQuestion(
+      const { questionIds, question } = await generateUniqueQuestionIds(
+        lobby.gameSettings.numQuestions,
         lobby.gameSettings.categories
       );
+
       const update = {
         currentQuestion: 1,
+        questionIds,
         question,
         lastUpdate: new Date()
       };
@@ -603,6 +609,7 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
       // Return to lobby waiting state if set of questions finished
       const updatedGameState = {
         currentQuestion: 0,
+        questionIds: [],
         question: null,
         playerStates: updatedPlayerStates,
         answerRevealed: false,
@@ -631,11 +638,12 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
       return res.status(200).json({ message: "Lobby finished." });
     } else {
       // Go to next question
-      const question = await getRandomClassicQuestion(
-        lobby.gameSettings.categories
+      const question = await getQuestionById(
+        gameState.questionIds[gameState.currentQuestion]
       );
       const updatedGameState = {
         currentQuestion: gameState.currentQuestion + 1,
+        questionIds: gameState.questionIds,
         question,
         playerStates: updatedPlayerStates,
         answerRevealed: false,
