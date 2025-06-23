@@ -7,39 +7,47 @@ const lobbySchema = new mongoose.Schema(
     gameType: {
       type: String,
       enum: ["solo-classic", "solo-knowledge"],
-      required: true,
+      required: true
     },
     status: {
       type: String,
       enum: ["waiting", "in-progress", "finished"],
       default: "waiting",
-      required: true,
+      required: true
     },
-    /*
-  gameData: { type: Object, default: {} },
-  gameResult: { type: Object, default: {} },
-  */
     gameSettings: {
       type: mongoose.Schema.Types.Mixed,
       default: {
         numQuestions: 10,
         timePerQuestion: 30,
         difficulty: 3, // 1-5 scale
-        categories: [],
+        categories: []
       },
-      required: true,
+      required: true
+    },
+    gameState: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {
+        currentQuestion: 0, // Waiting state
+        questionIds: [], // Array of question ObjectIds
+        question: null, // Question collection ObjectId
+        playerStates: {}, // { playerId: { username: string, selectedOption: number, submitted: boolean, answerHistory: {[questionId]: "correct" | "wrong" | "missed"} } }
+        answerRevealed: false,
+        lastUpdate: Date.now()
+      },
+      required: true
     },
     chatMessages: [
       {
         sender: { type: String, required: true },
         message: { type: String, required: true },
-        timestamp: { type: Date, default: Date.now },
-      },
+        timestamp: { type: Date, default: Date.now }
+      }
     ],
-    lastActivity: { type: Date, default: Date.now },
+    lastActivity: { type: Date, default: Date.now }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

@@ -1,0 +1,204 @@
+import React, { useEffect, useRef, useState } from "react";
+import GameChat from "../gamelobby/GameChat";
+import GameLoading from "../gamelobby/GameLoading";
+import Classic from "./Classic";
+import Knowledge from "./Knowledge";
+import { useDispatch, useSelector } from "react-redux";
+import { clearLobby } from "../../../redux/lobbySlice";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../../../redux/store";
+import { motion } from "motion/react";
+
+interface ChatMessage {
+  sender: string;
+  message: string;
+}
+
+interface ClassicQuestion {
+  question: string;
+  options: string[];
+  correctOption: number;
+  explanation: string;
+  difficulty: number;
+  category: string;
+}
+
+interface KnowledgeQuestion {
+  question: string;
+  answer: string;
+}
+
+type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
+
+interface GameState {
+  currentQuestion: number;
+  questionIds: string[];
+  question: QuizQuestion;
+  playerStates: any;
+  answerRevealed: boolean;
+  lastUpdate: Date;
+}
+
+interface QuizDisplayProps {
+  lobbyId: string;
+  lobbyChat: ChatMessage[];
+  gameType: string;
+  gameState: GameState;
+  serverTimeNow: Date;
+  timeLimit: number;
+  totalQuestions: number;
+}
+
+const QuizDisplay: React.FC<QuizDisplayProps> = ({
+  lobbyId,
+  lobbyChat,
+  gameType,
+  gameState,
+  serverTimeNow,
+  timeLimit,
+  totalQuestions
+}) => {
+  const loggedInUser = useSelector((state: RootState) => state.user.username);
+  const [loading, setLoading] = useState<boolean>(true);
+  const timesUpCalledRef = useRef(false);
+
+  // Option selection states
+  const playerId = Object.keys(gameState.playerStates).find(
+    (id) => gameState.playerStates[id].username === loggedInUser
+  );
+  const playerState = playerId ? gameState.playerStates[playerId] : null;
+  const optionSelected = playerState?.selectedOption ?? 0;
+  const submitted = playerState?.submitted ?? false;
+  let answerRevealed = gameState.answerRevealed ?? false;
+
+  // Question time states
+  let timeLeft = 0;
+  if (!answerRevealed) {
+    const getSecondsDifference = (date1: Date, date2: Date) => {
+      return (date1.getTime() - date2.getTime()) / 1000;
+    };
+    timeLeft = Math.max(
+      Math.min(
+        timeLimit -
+          getSecondsDifference(
+            new Date(serverTimeNow),
+            new Date(gameState.lastUpdate)
+          ),
+        timeLimit
+      ),
+      0
+    );
+  }
+
+  // Leaving Lobby
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLeave = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ player: loggedInUser })
+        }
+      );
+
+      if (response.ok) {
+        dispatch(clearLobby());
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      console.error(error);
+      navigate("/", {
+        state: {
+          errorMessage:
+            "Error loading lobby. A report has been sent to the admins"
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (gameState) {
+      setLoading(false);
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    timesUpCalledRef.current = false;
+  }, [gameState.currentQuestion]);
+
+  const percentageLeft = (timeLeft / timeLimit) * 100;
+
+  const handleTimesUp = async () => {
+    if (timesUpCalledRef.current || !gameState || gameState.answerRevealed)
+      return;
+
+    timesUpCalledRef.current = true;
+
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/api/lobby/revealanswer/${lobbyId}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      }
+    );
+  };
+
+  return loading ? (
+    <GameLoading />
+  ) : (
+    <div className="game-lobby-full">
+      <div className="game-lobby-container">
+        <div className="question-display-container">
+          <div className="question-display-lobby-details">
+            <button className="leave-button" onClick={handleLeave}>
+              Leave
+            </button>
+            <p>Lobby ID: {lobbyId}</p>
+            <p>Host: you</p>
+          </div>
+          {gameType === "solo-classic" ? (
+            <Classic
+              lobbyId={lobbyId}
+              currentQuestion={gameState.currentQuestion}
+              totalQuestions={totalQuestions}
+              classicQuestion={gameState.question as ClassicQuestion}
+              optionSelected={optionSelected}
+              submitted={submitted || answerRevealed}
+              answerRevealed={answerRevealed}
+              answerHistory={
+                gameState.playerStates[playerId]?.answerHistory || []
+              }
+            />
+          ) : (
+            <Knowledge />
+          )}
+          <div className="question-timer-border">
+            <motion.div
+              key={gameState.currentQuestion + "-" + answerRevealed}
+              className={"question-timer"}
+              initial={{ width: `${percentageLeft}%` }}
+              animate={{
+                width: 0,
+                transition: {
+                  duration: answerRevealed ? 0 : Math.max(timeLeft, 0),
+                  ease: "linear"
+                }
+              }}
+              onAnimationComplete={handleTimesUp}
+            />
+          </div>
+        </div>
+        <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
+      </div>
+    </div>
+  );
+};
+
+export default QuizDisplay;

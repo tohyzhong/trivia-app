@@ -3,7 +3,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "motion/react";
 import "../../../styles/gamelobby.css";
 
-const GameLoading = () => {
+const GameLoading: React.FC = () => {
   return (
     <div className="loader-full">
       <motion.div

@@ -64,8 +64,25 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
   };
 
   // Start button
-  const handleStart = () => {
+  const handleStart = async () => {
     playClickSound();
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/startlobby/${lobbyId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include"
+        }
+      );
+      if (!response.ok) {
+        throw new Error();
+      }
+    } catch (error) {
+      console.error(error);
+      // Error popup "unable to start lobby"
+    }
   };
 
   // Leaving Lobby

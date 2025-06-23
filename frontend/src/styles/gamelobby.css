@@ -47,6 +47,7 @@
 .game-lobby-settings {
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
   width: 30%;
   height: 100%;
   background-color: #333;
@@ -64,7 +65,7 @@
   color: white;
   padding: 20px;
   box-sizing: border-box;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -305,4 +306,230 @@
 
 .game-lobby-buttons .start-button:active {
   background-color: #3478b8;
+}
+
+/* Quiz Display Header */
+.question-display-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 70%;
+  height: 100%;
+}
+
+.question-display-lobby-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 95%;
+}
+
+.question-display-lobby-details .leave-button {
+  background-color: #ff4d4d;
+}
+
+.question-display-lobby-details .leave-button:hover {
+  transition: background-color 0.2s;
+  background-color: #e53935;
+}
+
+.question-display-lobby-details .leave-button:active {
+  background-color: #b13937;
+}
+
+.question-display-lobby-details p {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* Quiz Question Display */
+.question-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  border: 1px solid white;
+  border-radius: 25px;
+  width: 95%;
+  height: 80%;
+  color: white;
+  font-family: "Fredoka", "Baloo", "Comic Neue", sans-serif;
+  font-weight: bold;
+  position: relative;
+}
+
+.question-header-details {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.advance-lobby-button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #088b3f;
+}
+
+.question-question {
+  display: flex;
+  height: 30%;
+  width: 90%;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid white;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  position: relative;
+}
+
+.question-explanation-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.question-explanation-icon:hover {
+  transform: scale(1.1);
+}
+
+.question-explanation-icon:active {
+  transform: scale(1);
+}
+
+.question-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 15px;
+  width: 90%;
+  height: 45%;
+  padding: 0;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 15px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #111;
+  color: white;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.option:hover {
+  background-color: #222;
+}
+
+.selected {
+  background-color: #001ea1 !important;
+}
+
+.wrong {
+  background-color: #ff4d4d !important;
+}
+
+.correct {
+  background-color: #088b3f !important;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+}
+
+/* Question Timer Bar */
+.question-timer-border {
+  display: flex;
+  justify-content: left;
+  width: 90%;
+  height: 10px;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+.question-timer {
+  background-color: white;
+  border-radius: 10px;
+  height: 100%;
+}
+
+/* Question Explanation */
+.explanation-popup-full {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 98%;
+  height: 98%;
+  background-color: rgb(85, 64, 64, 0.3);
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
+  z-index: 100;
+}
+
+.explanation-popup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  min-width: 300px;
+  max-height: 100%;
+  max-width: 80%;
+  padding: 15px;
+  background: black;
+  border: 1px solid white;
+  border-radius: 15px;
+  position: relative;
+}
+
+.explanation-popup-close {
+  position: absolute;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
+}
+
+.answer-history-bar {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 5px;
+  position: relative;
+  width: 90%;
+}
+
+.answer-history-item {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.answer-history-item.green {
+  background-color: green;
+}
+
+.answer-history-item.red {
+  background-color: red;
+}
+
+.answer-history-item.grey {
+  background-color: grey;
 }
