@@ -33,7 +33,7 @@ export const generateUniqueQuestionIds = async (
 ) => {
   const allQuestions = await ClassicQuestion.find({
     category: { $in: categories },
-    difficulty: difficulty
+    difficulty: { $lte: difficulty }
   });
 
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
