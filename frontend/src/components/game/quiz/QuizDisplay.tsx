@@ -43,6 +43,7 @@ interface QuizDisplayProps {
   lobbyChat: ChatMessage[];
   gameType: string;
   gameState: GameState;
+  serverTimeNow: Date;
   timeLimit: number;
   totalQuestions: number;
 }
@@ -52,6 +53,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   lobbyChat,
   gameType,
   gameState,
+  serverTimeNow,
   timeLimit,
   totalQuestions
 }) => {
@@ -72,11 +74,17 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   let timeLeft = 0;
   if (!answerRevealed) {
     const getSecondsDifference = (date1: Date, date2: Date) => {
-      return Math.abs((date2.getTime() - date1.getTime()) / 1000);
+      return (date1.getTime() - date2.getTime()) / 1000;
     };
     timeLeft = Math.max(
-      timeLimit -
-        getSecondsDifference(new Date(), new Date(gameState.lastUpdate)),
+      Math.min(
+        timeLimit -
+          getSecondsDifference(
+            new Date(serverTimeNow),
+            new Date(gameState.lastUpdate)
+          ),
+        timeLimit
+      ),
       0
     );
   }
@@ -170,7 +178,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           <div className="question-timer-border">
             <motion.div
               key={gameState.currentQuestion + "-" + answerRevealed}
-              className={answerRevealed ? "nigger" : "question-timer"}
+              className={"question-timer"}
               initial={{ width: `${percentageLeft}%` }}
               animate={{
                 width: 0,

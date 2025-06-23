@@ -176,7 +176,8 @@ router.post("/solo/connect/:lobbyId", authenticate, async (req, res) => {
 
     return res.status(200).json({
       message: "Player connected successfully",
-      lobbyDetails: updatedLobby
+      lobbyDetails: updatedLobby,
+      serverTimeNow: new Date()
     });
   } catch (error) {
     console.error(error);
@@ -459,7 +460,9 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
       // Notify players in the lobby
       const socketIO = getSocketIO();
       socketIO.to(lobbyId).emit("updateStatus", { status: "in-progress" });
-      socketIO.to(lobbyId).emit("updateState", { gameState });
+      socketIO
+        .to(lobbyId)
+        .emit("updateState", { gameState, serverTimeNow: new Date() });
 
       return res.status(200).json({ message: "Lobby started." });
     }
@@ -514,6 +517,9 @@ router.post("/submit/:lobbyId", async (req, res) => {
     );
 
     // Update frontend display through socket
+    updatedLobby.gameState.question.correctOption = allSubmitted
+      ? updatedLobby.gameState.question.correctOption
+      : null;
     const socketIO = getSocketIO();
     socketIO
       .to(lobbyId)
@@ -617,7 +623,10 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
       // Update frontend display through socket
       const socketIO = getSocketIO();
       socketIO.to(lobbyId).emit("updateStatus", { status: "waiting" });
-      socketIO.to(lobbyId).emit("updateState", { gameState: updatedGameState });
+      socketIO.to(lobbyId).emit("updateState", {
+        gameState: updatedGameState,
+        serverTimeNow: new Date()
+      });
 
       return res.status(200).json({ message: "Lobby finished." });
     } else {
@@ -639,8 +648,12 @@ router.get("/advancelobby/:lobbyId", async (req, res) => {
       );
 
       // Update frontend display through socket
+      updatedGameState.question.correctOption = null;
       const socketIO = getSocketIO();
-      socketIO.to(lobbyId).emit("updateState", { gameState: updatedGameState });
+      socketIO.to(lobbyId).emit("updateState", {
+        gameState: updatedGameState,
+        serverTimeNow: new Date()
+      });
 
       return res.status(200).json({ message: "Lobby advanced." });
     }

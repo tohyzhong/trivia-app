@@ -61,6 +61,7 @@ const LobbyHandler: React.FC = () => {
 
   // Details needed for quiz display
   const [gameState, setGameState] = useState<GameState>(null);
+  const [timeNow, setTimeNow] = useState<Date>(null);
   const [status, setStatus] = useState<string>("");
 
   // Access check variables
@@ -100,6 +101,7 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateState", (data) => {
       setGameState(data.gameState);
+      setTimeNow(data.serverTimeNow);
     });
 
     socket.on("updateStatus", (data) => {
@@ -150,6 +152,7 @@ const LobbyHandler: React.FC = () => {
         setGameType(lobbyDetails.gameType);
         setGameSettings(lobbyDetails.gameSettings);
         setGameState(lobbyDetails.gameState);
+        setTimeNow(data.serverTimeNow);
         setGameChat(lobbyDetails.chatMessages);
 
         setLoading(false);
@@ -191,6 +194,7 @@ const LobbyHandler: React.FC = () => {
       lobbyChat={gameChat}
       gameType={gameType}
       gameState={gameState}
+      serverTimeNow={timeNow}
       timeLimit={gameSettings.timePerQuestion}
       totalQuestions={gameSettings.numQuestions}
     />
