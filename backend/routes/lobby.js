@@ -446,7 +446,8 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
       // Configure game state
       const { questionIds, question } = await generateUniqueQuestionIds(
         lobby.gameSettings.numQuestions,
-        lobby.gameSettings.categories
+        lobby.gameSettings.categories,
+        lobby.gameSettings.difficulty
       );
 
       const update = {

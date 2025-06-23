@@ -26,9 +26,14 @@ export const getQuestionById = async (questionId) => {
   return question;
 };
 
-export const generateUniqueQuestionIds = async (numQuestions, categories) => {
+export const generateUniqueQuestionIds = async (
+  numQuestions,
+  categories,
+  difficulty
+) => {
   const allQuestions = await ClassicQuestion.find({
-    category: { $in: categories }
+    category: { $in: categories },
+    difficulty: difficulty
   });
 
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
