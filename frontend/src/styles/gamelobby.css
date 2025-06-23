@@ -505,3 +505,31 @@
   top: 5px;
   right: 5px;
 }
+
+.answer-history-bar {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 5px;
+  position: relative;
+  width: 90%;
+}
+
+.answer-history-item {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.answer-history-item.green {
+  background-color: green;
+}
+
+.answer-history-item.red {
+  background-color: red;
+}
+
+.answer-history-item.grey {
+  background-color: grey;
+}

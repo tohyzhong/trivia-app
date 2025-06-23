@@ -172,6 +172,9 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
               optionSelected={optionSelected}
               submitted={submitted || answerRevealed}
               answerRevealed={answerRevealed}
+              answerHistory={
+                gameState.playerStates[playerId]?.answerHistory || []
+              }
             />
           ) : (
             <Knowledge />

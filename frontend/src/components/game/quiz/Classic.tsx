@@ -21,6 +21,7 @@ interface ClassicQuestionProps {
   optionSelected: number;
   submitted: boolean;
   answerRevealed: boolean;
+  answerHistory: { [key: string]: string };
 }
 
 const Classic: React.FC<ClassicQuestionProps> = ({
@@ -30,7 +31,8 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   classicQuestion,
   optionSelected,
   submitted,
-  answerRevealed
+  answerRevealed,
+  answerHistory
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
@@ -85,6 +87,23 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     setShowExplanation(true);
   };
 
+  const renderAnswerHistory = () => {
+    const recentAnswers = Object.keys(answerHistory)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .slice(0, 5);
+
+    return recentAnswers.map((questionId) => {
+      const status = answerHistory[questionId];
+
+      let color = "grey";
+      if (status === "correct") color = "green";
+      else if (status === "wrong") color = "red";
+      return (
+        <div key={questionId} className={`answer-history-item ${color}`} />
+      );
+    });
+  };
+
   return (
     <div className="question-details">
       {showExplanation && (
@@ -106,6 +125,9 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         )}
         <p>Category: {classicQuestion.category}</p>
       </div>
+
+      <div className="answer-history-bar">{renderAnswerHistory()}</div>
+
       <div className="question-question">
         {classicQuestion.question}
         {answerRevealed && (

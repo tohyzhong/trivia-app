@@ -31,7 +31,7 @@ const lobbySchema = new mongoose.Schema(
         currentQuestion: 0, // Waiting state
         questionIds: [], // Array of question ObjectIds
         question: null, // Question collection ObjectId
-        playerStates: {}, // { playerId: { username: string, selectedOption: number, submitted: boolean } }
+        playerStates: {}, // { playerId: { username: string, selectedOption: number, submitted: boolean, answerHistory: {[questionId]: "correct" | "wrong" | "missed"} } }
         answerRevealed: false,
         lastUpdate: Date.now()
       },

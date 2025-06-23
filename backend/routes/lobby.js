@@ -453,7 +453,8 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
         currentQuestion: 1,
         questionIds,
         question,
-        lastUpdate: new Date()
+        lastUpdate: new Date(),
+        playerStates: {}
       };
 
       const gameState = { ...lobby.gameState, ...update };
@@ -493,21 +494,53 @@ router.post("/submit/:lobbyId", async (req, res) => {
       return res.status(404).json({ message: "Player not found." });
     }
 
-    const updatedPlayerState = {
-      [playerDoc._id]: {
-        username: user,
-        selectedOption: option,
-        submitted: true
-      }
+    const playerState = {
+      username: user,
+      selectedOption: option,
+      submitted: true,
+      answerHistory:
+        lobby.gameState.playerStates[playerDoc._id]?.answerHistory || {}
     };
+    const currentQuestion = lobby.gameState.currentQuestion;
+
+    const isCorrect = option === lobby.gameState.question.correctOption;
+
+    playerState.answerHistory[currentQuestion] = isCorrect
+      ? "correct"
+      : "wrong";
+
+    for (let i = 0; i < 5; i++) {
+      const questionNumberToCheck = currentQuestion - i;
+
+      if (
+        questionNumberToCheck > 0 &&
+        !playerState.answerHistory[questionNumberToCheck]
+      ) {
+        playerState.answerHistory[questionNumberToCheck] = "wrong";
+      }
+    }
+
+    const sortedAnswerHistory = Object.keys(playerState.answerHistory).sort(
+      (a, b) => parseInt(a) - parseInt(b)
+    );
+
+    while (Object.keys(playerState.answerHistory).length > 5) {
+      const oldestQuestionNumber = sortedAnswerHistory[0];
+      sortedAnswerHistory.shift();
+      delete playerState.answerHistory[oldestQuestionNumber];
+    }
+
     const updatedPlayerStates = {
       ...lobby.gameState.playerStates,
-      ...updatedPlayerState
+      [playerDoc._id]: playerState
     };
 
     let allSubmitted = true;
     for (const stateKey in updatedPlayerStates) {
-      allSubmitted = allSubmitted && updatedPlayerState[stateKey].submitted;
+      if (!updatedPlayerStates[stateKey].submitted) {
+        allSubmitted = false;
+        break;
+      }
     }
 
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
