@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 
 import "../../../styles/gamelobby.css";
 import GameSettings from "./GameSettings";
@@ -8,8 +7,6 @@ import GameChat from "./GameChat";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
-
-const socket = io(import.meta.env.VITE_API_URL);
 
 interface GameSetting {
   numQuestions: number;
@@ -28,6 +25,7 @@ interface GameLobbyProps {
   lobbySettings: GameSetting;
   lobbyUsers: string[];
   lobbyChat: ChatMessage[];
+  socket: any;
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
@@ -37,7 +35,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   const navigate = useNavigate();
 
   // Lobby details
-  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat } = props;
+  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat, socket } = props;
 
   useEffect(() => {
     if (lobbyId) {

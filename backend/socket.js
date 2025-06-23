@@ -7,8 +7,8 @@ export function initSocket(server) {
     cors: {
       origin: process.env.FRONTEND_URL,
       methods: ["GET", "POST"],
-      credentials: true,
-    },
+      credentials: true
+    }
   });
 
   io.on("connection", (socket) => {
@@ -20,6 +20,7 @@ export function initSocket(server) {
 
     socket.on("joinLobby", (lobbyId) => {
       socket.join(lobbyId);
+      io.to(lobbyId).emit("lobbyJoined", lobbyId);
       console.log(`User ${socket.id} joined lobby ${lobbyId}`);
     });
 

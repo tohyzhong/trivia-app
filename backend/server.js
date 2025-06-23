@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
-    credentials: true,
+    credentials: true
   })
 );
 
@@ -44,7 +44,7 @@ const connectMongo = async () => {
       process.env.CONNECTION_STRING + process.env.NODE_ENV,
       {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
       }
     );
     isConnected = true;

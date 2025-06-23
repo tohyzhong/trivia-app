@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import GameMainpage from "./GameMainpage";
-import QuizHandler from "./QuizHandler";
+import LobbyHandler from "./LobbyHandler";
 import LobbyNotFound from "./gamelobby/LobbyNotFound";
 import { setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 
-const GameRoutes = () => {
+const GameRoutes: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const lobby = useSelector((state: RootState) => state.lobby);
@@ -36,7 +36,7 @@ const GameRoutes = () => {
 
   return (
     <Routes>
-      {lobby.lobbyId && <Route path="/:lobbyId" element={<QuizHandler />} />}
+      {lobby.lobbyId && <Route path="/:lobbyId" element={<LobbyHandler />} />}
       <Route path="/:lobbyId" element={<LobbyNotFound />} />
       <Route path="/*" element={<GameMainpage />} />
     </Routes>
