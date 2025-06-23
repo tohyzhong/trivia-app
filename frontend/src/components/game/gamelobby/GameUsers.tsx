@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { clearLobby } from "../../../redux/lobbySlice";
 
+import { playClickSound } from "../../../utils/soundManager";
+
 interface User {
   username: string;
   profilePicture: string;
@@ -57,11 +59,14 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   // Ready button
   const handleReady = () => {
+    playClickSound();
     // TODO for multiplayer
   };
 
   // Start button
   const handleStart = async () => {
+    playClickSound();
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/startlobby/${lobbyId}`,
@@ -82,6 +87,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   // Leaving Lobby
   const handleLeave = async () => {
+    playClickSound();
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,

@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 
+import { playClickSound } from "../../../utils/soundManager";
+
 interface GameSetting {
   numQuestions: number;
   timePerQuestion: number;
@@ -53,6 +55,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   };
 
   const handleSaveSettings = async () => {
+    playClickSound();
     if (settings.categories.length === 0) {
       setSuccessMessage("Please select at least one category.");
       return;
@@ -116,6 +119,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             name="numQuestions"
             value={settings.numQuestions}
             onChange={handleChange}
+            min={3}
+            max={20}
           />
         </div>
         <div className="game-lobby-settings-item">
@@ -125,6 +130,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             name="timePerQuestion"
             value={settings.timePerQuestion}
             onChange={handleChange}
+            min={5}
+            max={60}
           />
         </div>
         <div className="game-lobby-settings-item">

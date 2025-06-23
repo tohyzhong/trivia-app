@@ -8,6 +8,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 
+import { useInitSound } from "../../../hooks/useInitSound";
+import PauseOverlay from "../PauseOverlay";
+import { useBGMResumeOverlay } from "../../../hooks/useBGMResumeOverlay";
+import SoundSettings from "../subcomponents/SoundSettings";
+import { playClickSound } from "../../../utils/soundManager";
+import { IoClose, IoSettingsOutline } from "react-icons/io5";
+
 interface GameSetting {
   numQuestions: number;
   timePerQuestion: number;
@@ -29,9 +36,13 @@ interface GameLobbyProps {
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
+  useInitSound("Lobby");
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
+
   // Handle component loading
   const [loading, setLoading] = useState<boolean>(true);
   const [isLobbyDeleted, setIsLobbyDeleted] = useState<boolean>(false);
+  const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
   // Lobby details
@@ -68,11 +79,33 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     <></>
   ) : (
     <div className="game-lobby-full">
+      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       <div className="game-lobby-container">
         <GameSettings lobbyId={lobbyId} gameSettings={lobbySettings} />
         <GameUsers lobbyId={lobbyId} userIds={lobbyUsers} />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
       </div>
+
+      <IoSettingsOutline
+        onClick={() => {
+          playClickSound();
+          setIsSoundPopupOpen(true);
+        }}
+        className="sound-settings-icon"
+      />
+
+      {isSoundPopupOpen && (
+        <div className="sound-settings-popup">
+          <IoClose
+            className="submode-select-close"
+            onClick={() => {
+              playClickSound();
+              setIsSoundPopupOpen(false);
+            }}
+          />
+          <SoundSettings />
+        </div>
+      )}
     </div>
   );
 };
