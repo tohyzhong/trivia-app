@@ -107,7 +107,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 
       if (response.ok) {
         dispatch(clearLobby());
-        navigate("/", { state: { errorMessage: "You left the lobby." } });
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
       } else {
         throw new Error();
       }

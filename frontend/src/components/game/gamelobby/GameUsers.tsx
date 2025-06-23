@@ -31,7 +31,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ userIds }),
+          body: JSON.stringify({ userIds })
         }
       );
       const data = await response.json();
@@ -45,8 +45,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       navigate("/", {
         state: {
           errorMessage:
-            "Error loading lobby. A report has been sent to the admins",
-        },
+            "Error loading lobby. A report has been sent to the admins"
+        }
       });
     }
   };
@@ -68,7 +68,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "include"
         }
       );
       if (!response.ok) {
@@ -89,13 +89,13 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ player: loggedInUser }),
+          body: JSON.stringify({ player: loggedInUser })
         }
       );
       const data = await response.json();
       if (response.ok) {
         dispatch(clearLobby());
-        navigate("/", { state: { errorMessage: "You left the lobby." } });
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
       } else {
         throw new Error();
       }
@@ -104,8 +104,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       navigate("/", {
         state: {
           errorMessage:
-            "Error loading lobby. A report has been sent to the admins",
-        },
+            "Error loading lobby. A report has been sent to the admins"
+        }
       });
     }
   };
