@@ -432,7 +432,7 @@ router.post("/solo/updateSettings/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
-router.get("/startlobby/:lobbyId", async (req, res) => {
+router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
 
@@ -446,7 +446,8 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
       // Configure game state
       const { questionIds, question } = await generateUniqueQuestionIds(
         lobby.gameSettings.numQuestions,
-        lobby.gameSettings.categories
+        lobby.gameSettings.categories,
+        lobby.gameSettings.difficulty
       );
 
       const update = {
@@ -479,7 +480,7 @@ router.get("/startlobby/:lobbyId", async (req, res) => {
   }
 });
 
-router.post("/submit/:lobbyId", async (req, res) => {
+router.post("/submit/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { user, option } = req.body;
@@ -516,7 +517,7 @@ router.post("/submit/:lobbyId", async (req, res) => {
         questionNumberToCheck > 0 &&
         !playerState.answerHistory[questionNumberToCheck]
       ) {
-        playerState.answerHistory[questionNumberToCheck] = "wrong";
+        playerState.answerHistory[questionNumberToCheck] = "missing";
       }
     }
 
@@ -573,18 +574,67 @@ router.post("/submit/:lobbyId", async (req, res) => {
   }
 });
 
-router.get("/revealanswer/:lobbyId", async (req, res) => {
+router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
+    const { username } = req.user;
 
     const lobby = await Lobby.collection.findOne({ lobbyId });
     if (!lobby) {
       return res.status(404).json({ message: "Lobby not found" });
     }
 
+    const playerDoc = await Profile.collection.findOne({ username });
+    if (!playerDoc) {
+      return res.status(404).json({ message: "Player not found." });
+    }
+
+    const playerState = {
+      username: username,
+      selectedOption: 0,
+      submitted: false,
+      answerHistory:
+        lobby.gameState.playerStates[playerDoc._id]?.answerHistory || {}
+    };
+    const currentQuestion = lobby.gameState.currentQuestion;
+
+    playerState.answerHistory[currentQuestion] = "missing";
+
+    for (let i = 0; i < 5; i++) {
+      const questionNumberToCheck = currentQuestion - i;
+
+      if (
+        questionNumberToCheck > 0 &&
+        !playerState.answerHistory[questionNumberToCheck]
+      ) {
+        playerState.answerHistory[questionNumberToCheck] = "missing";
+      }
+    }
+
+    const sortedAnswerHistory = Object.keys(playerState.answerHistory).sort(
+      (a, b) => parseInt(a) - parseInt(b)
+    );
+
+    while (Object.keys(playerState.answerHistory).length > 5) {
+      const oldestQuestionNumber = sortedAnswerHistory[0];
+      sortedAnswerHistory.shift();
+      delete playerState.answerHistory[oldestQuestionNumber];
+    }
+
+    const updatedPlayerStates = {
+      ...lobby.gameState.playerStates,
+      [playerDoc._id]: playerState
+    };
+
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId },
-      { $set: { "gameState.answerRevealed": true } },
+      {
+        $set: {
+          "gameState.answerRevealed": true,
+          "gameState.playerStates": updatedPlayerStates,
+          lastActivity: new Date()
+        }
+      },
       { returnDocument: "after" }
     );
 
@@ -601,7 +651,7 @@ router.get("/revealanswer/:lobbyId", async (req, res) => {
   }
 });
 
-router.get("/advancelobby/:lobbyId", async (req, res) => {
+router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
 
