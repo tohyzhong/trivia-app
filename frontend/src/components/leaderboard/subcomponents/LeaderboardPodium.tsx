@@ -14,12 +14,7 @@ interface LeaderboardPodiumProps {
 const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
   podiumData
 }) => {
-  const podiumSetup = (arr: PodiumData[]) => {
-    arr.push(arr.shift());
-    arr.push(arr.shift());
-    return arr;
-  };
-  const podiumDisplayData = podiumSetup([...podiumData]);
+  const podiumDisplayData = [podiumData[1], podiumData[0], podiumData[2]];
 
   return (
     <div className="leaderboard-podium-container">
