@@ -39,19 +39,19 @@ h2 {
   color: white;
 }
 
-.ag-center-cols-container {
+.friendslist-container .ag-center-cols-container {
   height: min-content;
   min-height: 0px;
   height: auto;
 }
 
-.ag-header-cell-label {
+.friendslist-container .ag-header-cell-label {
   justify-content: center;
 }
 
-.ag-center-cols-container,
-.ag-viewport,
-.ag-center-cols-viewport {
+.friendslist-container .ag-center-cols-container,
+.friendslist-container .ag-viewport,
+.friendslist-container .ag-center-cols-viewport {
   margin-bottom: 0px;
   min-height: 0px !important;
 }
@@ -103,14 +103,14 @@ h2 {
   color: white;
 }
 
-.ag-cell-value {
+.friendslist-container .ag-cell-value {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 /* Avatar Styling */
-.avatar {
+.friendslist-container .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -118,7 +118,7 @@ h2 {
 }
 
 /* Pagination Styling */
-.ag-paging-panel {
+.friendslist-container .ag-paging-panel {
   display: flex;
   gap: 10px;
   margin-top: 0px;
@@ -126,7 +126,7 @@ h2 {
   background-color: rgba(0, 0, 0, 0.55);
 }
 
-.ag-theme-alpine .ag-paging-panel .ag-paging-button {
+.friendslist-container .ag-theme-alpine .ag-paging-panel .ag-paging-button {
   padding: 8px 12px;
   border: none;
   background: rgb(255, 255, 255, 1);
