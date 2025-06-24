@@ -9,9 +9,10 @@ const profileSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true },
     winRate: { type: Number, default: 0 },
     correctRate: { type: Number, default: 0 },
-    correctNumber: { type: Number, default: 0 },
+    correctAnswer: { type: Number, default: 0 },
+    totalAnswer: { type: Number, default: 0 },
     currency: { type: Number, default: 0 },
-    profilePicture: { type: String, default: "" },
+    profilePicture: { type: String, default: "" }
   },
   { timestamps: true }
 );

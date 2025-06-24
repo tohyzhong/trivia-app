@@ -14,7 +14,8 @@ interface UserProfile {
   username: string;
   winRate: number;
   correctRate: number;
-  correctNumber: number;
+  correctAnswer: number;
+  totalAnswer: number;
   currency: number;
   profilePicture: string;
   friends: Friend[];
@@ -42,7 +43,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
         {
-          credentials: "include",
+          credentials: "include"
         }
       );
       const data: UserProfile = await response.json();
@@ -79,12 +80,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername: user.username,
-          }),
+            friendUsername: user.username
+          })
         }
       );
 
@@ -111,12 +112,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername: user.username,
-          }),
+            friendUsername: user.username
+          })
         }
       );
 
@@ -187,7 +188,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
             <strong>Correct Rate:</strong> {user.correctRate}%
           </p>
           <p>
-            <strong>Correct Answers:</strong> {user.correctNumber}
+            <strong>Correct Answers:</strong> {user.correctAnswer}
+          </p>
+          <p>
+            <strong>Total Answered:</strong> {user.totalAnswer}
           </p>
           <p>
             <strong>Currency:</strong> {user.currency}
