@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const errorPopupParam = searchParams.get("error") || "";
   const ErrorPopupMessages = {
-    login_required: "You must be logged in to view this page.",
+    login_required: "You must be logged in to view this page."
   };
   const [errorPopup, setErrorPopup] = useState<string>(
     ErrorPopupMessages[errorPopupParam] || ""
@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password })
     });
 
     const data = await res.json();
@@ -53,6 +53,7 @@ const LoginPage: React.FC = () => {
           username: username,
           email: data.email,
           verified: data.verified,
+          role: data.role
         })
       );
       // navigate('/');

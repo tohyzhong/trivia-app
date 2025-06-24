@@ -5,6 +5,7 @@ interface UserState {
   username: string;
   verified: boolean;
   isAuthenticated?: boolean;
+  role?: string;
 }
 
 const initialState: UserState = {
@@ -12,6 +13,7 @@ const initialState: UserState = {
   username: "",
   verified: undefined,
   isAuthenticated: undefined,
+  role: undefined
 };
 
 const userSlice = createSlice({
@@ -24,20 +26,23 @@ const userSlice = createSlice({
         username: string;
         email: string;
         verified: boolean;
+        role: string;
       }>
     ) => {
       state.username = action.payload.username;
       state.email = action.payload.email;
       state.verified = action.payload.verified;
       state.isAuthenticated = true;
+      state.role = action.payload.role ?? "user";
     },
     logout: (state) => {
       state.username = undefined;
       state.email = undefined;
       state.verified = undefined;
       state.isAuthenticated = undefined;
-    },
-  },
+      state.role = undefined;
+    }
+  }
 });
 
 export const { setUser, logout } = userSlice.actions;
