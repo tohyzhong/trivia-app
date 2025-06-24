@@ -17,6 +17,7 @@ interface UserProfile {
   correctNumber: number;
   currency: number;
   profilePicture: string;
+  role: string;
   friends: Friend[];
   message?: string;
 }
@@ -27,9 +28,9 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const { username: paramUsername } = useParams<{ username: string }>();
-  const usernameFromRedux = useSelector(
-    (state: RootState) => state.user.username
-  );
+  const userFromRedux = useSelector((state: RootState) => state.user);
+  const usernameFromRedux = userFromRedux.username;
+  const currUserRole = userFromRedux.role;
   const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUser] = useState<UserProfile | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -42,10 +43,11 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
         {
-          credentials: "include",
+          credentials: "include"
         }
       );
       const data: UserProfile = await response.json();
+      console.log("Profile data:", data);
       setUser(data);
       setFriends(data.friends || []);
       setLoading(false);
@@ -79,12 +81,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername: user.username,
-          }),
+            friendUsername: user.username
+          })
         }
       );
 
@@ -111,12 +113,12 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername: user.username,
-          }),
+            friendUsername: user.username
+          })
         }
       );
 
@@ -147,13 +149,23 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       <div className="header-buttons">
         <div className="profile-header-container">
           <div className="profile-header">
-            <h1>{user.username}'s Profile</h1>
+            <h1 className="profile-name">{user.username}'s Profile</h1>
             <img
               src={user.profilePicture || defaultAvatar}
               alt={`${user.username}'s profile`}
               className="profile-image"
             />
           </div>
+        </div>
+
+        <div className="role-container">
+          <p className="profile-role">
+            {user.role === "superadmin"
+              ? "👑 Superadmin"
+              : user.role === "admin"
+                ? "🛡️ Admin"
+                : ""}
+          </p>
         </div>
 
         <div className="friend-buttons-container">
@@ -173,6 +185,93 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                   Remove Friend
                 </button>
               )}
+
+              {(() => {
+                const roleActions: {
+                  label: string;
+                  newRole: string;
+                  type: "promote" | "demote";
+                }[] = [];
+
+                if (currUserRole === "superadmin") {
+                  if (user.role === "superadmin") {
+                    roleActions.push({
+                      label: "Demote to Admin",
+                      newRole: "admin",
+                      type: "demote"
+                    });
+                  } else if (user.role === "admin") {
+                    roleActions.push(
+                      {
+                        label: "Demote to User",
+                        newRole: "user",
+                        type: "demote"
+                      },
+                      {
+                        label: "Promote to Superadmin",
+                        newRole: "superadmin",
+                        type: "promote"
+                      }
+                    );
+                  } else if (user.role === "user") {
+                    roleActions.push({
+                      label: "Promote to Admin",
+                      newRole: "admin",
+                      type: "promote"
+                    });
+                  }
+                } else if (currUserRole === "admin") {
+                  if (user.role === "user") {
+                    roleActions.push({
+                      label: "Promote to Admin",
+                      newRole: "admin",
+                      type: "promote"
+                    });
+                  }
+                }
+
+                return roleActions.map(({ label, newRole, type }) => (
+                  <button
+                    key={label}
+                    className={
+                      type === "promote"
+                        ? "add-friend-button"
+                        : "remove-friend-button"
+                    }
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(
+                          `${import.meta.env.VITE_API_URL}/api/profile/updaterole/${user.username}`,
+                          {
+                            method: "PUT",
+                            headers: {
+                              "Content-Type": "application/json"
+                            },
+                            credentials: "include",
+                            body: JSON.stringify({ role: newRole })
+                          }
+                        );
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                          alert(
+                            data.message || `User role updated to ${newRole}`
+                          );
+                          fetchProfile();
+                        } else {
+                          alert(data.message || "Failed to update role.");
+                        }
+                      } catch (err) {
+                        console.error("Error updating user role:", err);
+                        alert("Server error while updating role.");
+                      }
+                    }}
+                  >
+                    {label}
+                  </button>
+                ));
+              })()}
             </>
           )}
         </div>

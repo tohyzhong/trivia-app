@@ -287,7 +287,7 @@ const AdminApprovalDashboard: React.FC = () => {
     }
   ];
 
-  return role === "admin" ? (
+  return role.includes("admin") ? (
     <div className="admin-approval-dashboard">
       <ErrorPopup
         message={approvalMessage}

@@ -98,6 +98,20 @@ router.get("/:username", authenticate, async (req, res) => {
       },
 
       {
+        $lookup: {
+          from: "users",
+          localField: "username",
+          foreignField: "username",
+          as: "userInfo"
+        }
+      },
+      {
+        $addFields: {
+          role: { $arrayElemAt: ["$userInfo.role", 0] }
+        }
+      },
+
+      {
         $project: {
           _id: 1,
           username: 1,
@@ -106,6 +120,7 @@ router.get("/:username", authenticate, async (req, res) => {
           correctNumber: 1,
           currency: 1,
           profilePicture: 1,
+          role: 1,
           friends: "$mutualProfiles"
         }
       }
@@ -140,6 +155,64 @@ router.post("/get-profiles", authenticate, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error." });
+  }
+});
+
+// Update user roles
+router.put("/updaterole/:username", authenticate, async (req, res) => {
+  const { username } = req.params;
+  const { role: targetRole } = req.body;
+  const validRoles = ["user", "admin", "superadmin"];
+
+  if (!validRoles.includes(targetRole)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  try {
+    const actor = req.user;
+    const target = await User.findOne({ username });
+
+    if (!target) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (actor.username === target.username) {
+      return res.status(400).json({ message: "Can't change your own role" });
+    }
+
+    const ar = actor.role;
+    const tr = target.role;
+
+    const roleRules = {
+      superadmin: {
+        user: ["admin"],
+        admin: ["superadmin", "user"],
+        superadmin: ["admin"]
+      },
+      admin: {
+        user: ["admin"],
+        admin: [],
+        superadmin: []
+      },
+      user: {
+        user: [],
+        admin: [],
+        superadmin: []
+      }
+    };
+
+    const allowedTargets = roleRules[ar]?.[tr] || [];
+    if (!allowedTargets.includes(targetRole)) {
+      return res.status(403).json({ message: "Insufficient permissions" });
+    }
+
+    target.role = targetRole;
+    await target.save();
+
+    res.json({ message: `User role changed to ${targetRole}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

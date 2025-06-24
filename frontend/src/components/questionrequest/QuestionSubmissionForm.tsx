@@ -106,7 +106,7 @@ const QuestionSubmissionForm: React.FC = () => {
         success={isApprovalSuccess}
       />
 
-      {role === "admin" && (
+      {role.includes("admin") && (
         <button
           className="admin-dashboard-btn"
           onClick={() => navigate("/question-request/admin-dashboard")}

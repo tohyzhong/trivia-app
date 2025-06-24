@@ -54,7 +54,7 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
   const { username, role } = req.user;
 
   try {
-    if (role !== "admin") {
+    if (!role.includes("admin")) {
       return res
         .status(403)
         .send("You do not have permission to approve questions.");
@@ -81,7 +81,7 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
 
 router.delete("/reject/:id", authenticate, async (req, res) => {
   const { role } = req.user;
-  if (role !== "admin") {
+  if (!role.includes("admin")) {
     return res
       .status(403)
       .json({ message: "You do not have permission to reject questions." });
