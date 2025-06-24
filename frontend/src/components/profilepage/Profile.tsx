@@ -14,7 +14,8 @@ interface UserProfile {
   username: string;
   winRate: number;
   correctRate: number;
-  correctNumber: number;
+  correctAnswer: number;
+  totalAnswer: number;
   currency: number;
   profilePicture: string;
   role: string;
@@ -286,7 +287,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
             <strong>Correct Rate:</strong> {user.correctRate}%
           </p>
           <p>
-            <strong>Correct Answers:</strong> {user.correctNumber}
+            <strong>Correct Answers:</strong> {user.correctAnswer}
+          </p>
+          <p>
+            <strong>Total Answered:</strong> {user.totalAnswer}
           </p>
           <p>
             <strong>Currency:</strong> {user.currency}

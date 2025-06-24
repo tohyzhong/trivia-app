@@ -13,6 +13,7 @@ import settingsRoutes from "./routes/settings.js";
 import friendRoutes from "./routes/friend.js";
 import lobbyRoutes from "./routes/lobby.js";
 import questionRoutes from "./routes/question.js";
+import leaderboardRoutes from "./routes/leaderboard.js";
 
 import morgan from "morgan";
 import runSchedulers from "./utils/tasks.js";
@@ -77,6 +78,9 @@ app.use("/api/lobby", lobbyRoutes);
 
 // Question Requests
 app.use("/api/questions", questionRoutes);
+
+// Leaderboard
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // Connection
 server.listen(process.env.PORT, () => {

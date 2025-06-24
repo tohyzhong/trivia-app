@@ -525,11 +525,13 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
       (a, b) => parseInt(a) - parseInt(b)
     );
 
+    /*
     while (Object.keys(playerState.answerHistory).length > 5) {
       const oldestQuestionNumber = sortedAnswerHistory[0];
       sortedAnswerHistory.shift();
       delete playerState.answerHistory[oldestQuestionNumber];
     }
+    */
 
     const updatedPlayerStates = {
       ...lobby.gameState.playerStates,
@@ -615,11 +617,13 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
       (a, b) => parseInt(a) - parseInt(b)
     );
 
+    /*
     while (Object.keys(playerState.answerHistory).length > 5) {
       const oldestQuestionNumber = sortedAnswerHistory[0];
       sortedAnswerHistory.shift();
       delete playerState.answerHistory[oldestQuestionNumber];
     }
+    */
 
     const updatedPlayerStates = {
       ...lobby.gameState.playerStates,
@@ -672,13 +676,11 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       });
     }
 
-    // TODO: Update player stats
-
     // Advance lobby
     const gameState = lobby.gameState;
+    const playerStates = gameState.playerStates;
 
     // Reset player states
-    const playerStates = gameState.playerStates;
     const updatedPlayerStates = {};
     for (const stateKey in playerStates) {
       updatedPlayerStates[stateKey] = {
@@ -689,6 +691,36 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
     }
 
     if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
+      // TODO: Update player stats
+      for (const stateKey in playerStates) {
+        const correctAnswers = Object.values(
+          playerStates[stateKey].answerHistory
+        ).filter((v) => v == "correct").length;
+
+        // Get profile and update
+        const profile = await Profile.collection.findOne({
+          username: playerStates[stateKey].username
+        });
+
+        const newCorrectAnswer = profile.correctAnswer + correctAnswers;
+        const newTotalAnswer =
+          profile.totalAnswer + lobby.gameSettings.numQuestions;
+        const updatedData = {
+          correctAnswer: newCorrectAnswer,
+          totalAnswer: newTotalAnswer,
+          correctRate:
+            Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100 // Change to percantage in 2 decimal places
+        };
+
+        // console.log(updatedData);
+        // TODO?: Add correct answer streak stat
+
+        await Profile.collection.updateOne(
+          { username: playerStates[stateKey].username },
+          { $set: updatedData }
+        );
+      }
+
       // Return to lobby waiting state if set of questions finished
       const updatedGameState = {
         currentQuestion: 0,

@@ -63,7 +63,8 @@ router.post(
         profilePicture: "",
         winRate: 0,
         correctRate: 0,
-        correctNumber: 0,
+        correctAnswer: 0,
+        totalAnswer: 0,
         friends: [],
         currency: 0
       });

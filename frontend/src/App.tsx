@@ -13,7 +13,9 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const HomePage = lazy(() => import("./components/homepage/HomePage"));
 const GameRoutes = lazy(() => import("./components/game/GameRoutes"));
-const Leaderboard = lazy(() => import("./components/leaderboard/Leaderboard"));
+const LeaderboardRoutes = lazy(
+  () => import("./components/leaderboard/LeaderboardRoutes")
+);
 const SettingsRoutes = lazy(
   () => import("./components/settingspage/SettingsRoutes")
 );
@@ -65,7 +67,7 @@ function App() {
   const Components = [
     { component: HomePage, path: "/" },
     { component: GameRoutes, path: "/play/*" },
-    { component: Leaderboard, path: "/leaderboard" },
+    { component: LeaderboardRoutes, path: "/leaderboard/*" },
     { component: SettingsRoutes, path: "/settings/*" },
     { component: AboutPage, path: "/about" },
     { component: Authentication, path: "/auth/*" },

@@ -94,7 +94,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   const renderAnswerHistory = () => {
     const recentAnswers = Object.keys(answerHistory)
       .sort((a, b) => parseInt(a) - parseInt(b))
-      .slice(0, 5);
+      .slice(-5);
 
     return recentAnswers.map((questionId) => {
       const status = answerHistory[questionId];
