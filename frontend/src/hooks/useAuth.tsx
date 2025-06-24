@@ -15,7 +15,7 @@ const useAuth = () => {
           `${import.meta.env.VITE_API_URL}/api/auth/verify-token`,
           {
             method: "GET",
-            credentials: "include",
+            credentials: "include"
           }
         );
 
@@ -26,6 +26,7 @@ const useAuth = () => {
               username: data.username,
               email: data.email,
               verified: data.verified,
+              role: data.role
             })
           );
         } else {

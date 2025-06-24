@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/game.css";
 import ModeSelect from "./subcomponents/ModeSelect";
 import SoundSettings from "./subcomponents/SoundSettings";
-import { IoSettingsOutline } from "react-icons/io5";
-import { IoClose } from "react-icons/io5";
+import { IoSettingsOutline, IoClose } from "react-icons/io5";
+import { FaWpforms } from "react-icons/fa";
 import SoloModeLogo from "../../assets/solo_mode.png";
 import MultiplayerModeLogo from "../../assets/multiplayer_mode.png";
 import LeaderboardLogo from "../../assets/leaderboard_logo.png";
@@ -150,6 +150,14 @@ export const GameMainpage: React.FC = () => {
           <SoundSettings />
         </div>
       )}
+
+      <FaWpforms
+        onClick={() => {
+          playClickSound();
+          navigate("/question-request");
+        }}
+        className="question-submit-icon"
+      />
     </div>
   );
 };

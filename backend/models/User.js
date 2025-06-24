@@ -10,6 +10,12 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   previousPasswords: { type: Array, required: true, default: [] },
   verified: { type: Boolean, default: false },
+  role: {
+    type: String,
+    enum: ["user", "admin", "superadmin"],
+    required: true,
+    default: "user"
+  }
 });
 
 const User = mongoose.model("User", UserSchema);

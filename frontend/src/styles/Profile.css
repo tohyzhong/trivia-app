@@ -34,6 +34,36 @@
   margin-top: 100px;
 }
 
+.profile-header-container {
+  max-width: 55%;
+}
+
+.profile-name {
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1.2;
+  padding: 0 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.role-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-left: 50px;
+}
+
+.role-container p {
+  font-size: 20px;
+  color: #ff0000;
+  margin: 22px 0px 0px 0px;
+}
+
 .profile-image {
   border-radius: 50%;
   border: 3px solid #4caf50;
@@ -126,14 +156,20 @@
 }
 
 .friend-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   position: absolute;
   top: 0;
   right: 0;
   margin-top: 20px;
   margin-right: 20px;
+  max-width: 140px;
 }
 
 .add-friend-button {
+  text-align: center;
+  margin: auto;
   background-color: #4caf50;
   color: white;
   padding: 10px 15px;
@@ -143,6 +179,7 @@
   cursor: pointer;
   margin-bottom: 10px;
   transition: background-color 0.3s ease;
+  height: auto;
 }
 
 .add-friend-button:hover {
@@ -158,6 +195,7 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  height: auto;
 }
 
 .remove-friend-button:hover {

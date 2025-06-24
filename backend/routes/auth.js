@@ -18,7 +18,8 @@ router.get("/verify-token", authenticate, (req, res) => {
   res.json({
     username: req.user.username,
     email: req.user.email,
-    verified: req.user.verified
+    verified: req.user.verified,
+    role: req.user.role
   });
 });
 
@@ -163,7 +164,8 @@ router.post("/login", async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        verified: user.verified
+        verified: user.verified,
+        role: user.role || "user"
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -177,7 +179,8 @@ router.post("/login", async (req, res) => {
 
     res.json({
       email: user.email,
-      verified: user.verified
+      verified: user.verified,
+      role: user.role || "user"
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

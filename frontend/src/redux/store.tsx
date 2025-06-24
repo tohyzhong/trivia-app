@@ -15,7 +15,8 @@ const loadUserState = () => {
           username: undefined,
           email: undefined,
           verified: false,
-          isAuthenticated: false
+          isAuthenticated: false,
+          role: undefined
         },
     soundSettings: soundSettings
       ? JSON.parse(soundSettings)
