@@ -24,6 +24,9 @@ const Authentication = lazy(
 const ProfileRoutes = lazy(
   () => import("./components/profilepage/ProfileRoutes")
 );
+const QuestionRequestRoutes = lazy(
+  () => import("./components/questionrequest/QuestionRequestRoutes")
+);
 const NoAccess = lazy(() => import("./components/noaccess/NoAccess"));
 
 function App() {
@@ -67,8 +70,9 @@ function App() {
     { component: AboutPage, path: "/about" },
     { component: Authentication, path: "/auth/*" },
     { component: ProfileRoutes, path: "/profile/*" },
+    { component: QuestionRequestRoutes, path: "/question-request/*" },
     { component: NoAccess, path: "/noaccess" },
-    { component: NoAccess, path: "*" },
+    { component: NoAccess, path: "*" }
   ];
 
   if (!isAuthChecked) {
