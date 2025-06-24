@@ -19,6 +19,7 @@ router.get("/verify-token", authenticate, (req, res) => {
     username: req.user.username,
     email: req.user.email,
     verified: req.user.verified,
+    role: req.user.role
   });
 });
 
@@ -38,7 +39,7 @@ router.post(
       .matches(/[a-z]/)
       .withMessage("Password must contain at least one lowercase letter.")
       .matches(/[0-9]/)
-      .withMessage("Password must contain at least one number."),
+      .withMessage("Password must contain at least one number.")
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -54,7 +55,7 @@ router.post(
         username,
         password: hashedPassword,
         previousPasswords: [hashedPassword],
-        verified: false,
+        verified: false
       });
 
       await Profile.create({
@@ -64,7 +65,7 @@ router.post(
         correctRate: 0,
         correctNumber: 0,
         friends: [],
-        currency: 0,
+        currency: 0
       });
 
       await emailVerificationToken(username, req, res);
@@ -79,9 +80,9 @@ router.post(
             {
               msg: `${
                 dupField.charAt(0).toUpperCase() + dupField.slice(1)
-              } is already in use.`,
-            },
-          ],
+              } is already in use.`
+            }
+          ]
         });
       }
 
@@ -163,6 +164,7 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        role: user.role || "user"
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -171,12 +173,13 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 30 minutes (change in authMiddleware.js if modified)
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 30 minutes (change in authMiddleware.js if modified)
     });
 
     res.json({
       email: user.email,
       verified: user.verified,
+      role: user.role || "user"
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -188,7 +191,7 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   });
   res.status(200).json({ message: "Logged out successfully" });
 });
@@ -206,7 +209,7 @@ router.post("/forgotpassword", async (req, res) => {
       const token = jwt.sign(
         {
           email: email,
-          purpose: "passwordReset",
+          purpose: "passwordReset"
         },
         process.env.JWT_SECRET,
         { expiresIn: "10m" }
@@ -268,7 +271,7 @@ router.post(
       .matches(/[a-z]/)
       .withMessage("Password must contain at least one lowercase letter.")
       .matches(/[0-9]/)
-      .withMessage("Password must contain at least one number."),
+      .withMessage("Password must contain at least one number.")
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -300,16 +303,16 @@ router.post(
           return res.status(400).json({
             errors: [
               {
-                msg: "Your new password cannot be the same as your last 3 passwords.",
-              },
-            ],
+                msg: "Your new password cannot be the same as your last 3 passwords."
+              }
+            ]
           });
       }
 
       // Save used token to prevent reuse
       await UsedToken.create({
         token,
-        usedAt: new Date(),
+        usedAt: new Date()
       });
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -338,7 +341,7 @@ router.post("/send-verification-email", async (req, res) => {
     console.error("Error sending verification email:", err);
     res.status(500).json({
       message: "Error sending verification email",
-      error: err.message,
+      error: err.message
     });
   }
 });
@@ -371,7 +374,7 @@ router.get("/verify", async (req, res) => {
     // Save used token to prevent reuse
     await UsedToken.create({
       token,
-      usedAt: new Date(),
+      usedAt: new Date()
     });
 
     const newToken = jwt.sign(
@@ -379,7 +382,7 @@ router.get("/verify", async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        verified: true,
+        verified: true
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -389,7 +392,7 @@ router.get("/verify", async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
     });
 
     res.status(200).json({ message: "User verified successfully!" });
@@ -413,7 +416,7 @@ const emailVerificationToken = async (username, req, res) => {
   }
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "1h"
   });
 
   const verificationUrl = `${process.env.FRONTEND_URL}/settings/verify-action?action=verify&token=${token}`;

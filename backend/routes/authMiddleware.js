@@ -16,6 +16,7 @@ const authenticate = (req, res, next) => {
         username: decoded.username,
         email: decoded.email,
         verified: decoded.verified,
+        role: decoded.role
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -25,7 +26,7 @@ const authenticate = (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
     });
 
     req.user = decoded;
