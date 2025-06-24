@@ -1,0 +1,144 @@
+.leaderboard-container {
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 60%;
+  align-self: center;
+  margin: 0 auto;
+  margin-top: 100px;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: white;
+}
+
+.ag-center-cols-container {
+  height: min-content;
+  min-height: 0px;
+  height: auto;
+}
+
+.ag-header-cell-label {
+  justify-content: center;
+}
+
+.ag-center-cols-container,
+.ag-viewport,
+.ag-center-cols-viewport {
+  margin-bottom: 0px;
+  min-height: 0px !important;
+}
+
+.leaderboard-container .ag-theme-alpine {
+  height: auto;
+  width: 100%;
+  min-height: 0;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-header {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid white;
+  font-size: 15px;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-header-cell {
+  width: 100%;
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  text-align: center !important;
+  align-content: center;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-row {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 15px;
+  text-shadow: 1px 1px #000000;
+  align-items: center;
+  display: flex;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-cell {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid white;
+  background-color: rgba(0, 0, 0, 0.55);
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-root-wrapper {
+  background-color: transparent;
+  border-radius: 3px;
+  overflow: hidden;
+  color: white;
+}
+
+.ag-cell-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Avatar Styling */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Pagination Styling */
+.ag-paging-panel {
+  display: flex;
+  gap: 10px;
+  margin-top: 0px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.ag-theme-alpine .ag-paging-panel .ag-paging-button {
+  padding: 8px 12px;
+  border: none;
+  background: rgb(255, 255, 255, 1);
+  color: rgb(0, 0, 0);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.leaderboard-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.leaderboard-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leaderboard-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button.ag-active {
+  background: white;
+  color: black;
+  font-weight: bold;
+}
+
+.ag-picker-field-wrapper {
+  color: black;
+}

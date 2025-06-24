@@ -712,7 +712,8 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
             Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100 // Change to percantage in 2 decimal places
         };
 
-        console.log(updatedData);
+        // console.log(updatedData);
+        // TODO?: Add correct answer streak stat
 
         await Profile.collection.updateOne(
           { username: playerStates[stateKey].username },
