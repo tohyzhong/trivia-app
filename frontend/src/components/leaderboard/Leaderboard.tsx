@@ -1,6 +1,7 @@
 import React from "react";
 import LeaderboardTable from "./subcomponents/LeaderboardTable";
 import "../../styles/leaderboard.css";
+import { useInitSound } from "../../hooks/useInitSound";
 
 interface LeaderboardProps {
   headerTitle: string;
@@ -15,6 +16,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   valueField,
   valueHeader
 }) => {
+  useInitSound("Lobby");
   return (
     <div className="leaderboard-container-full">
       <h1 className="leaderboard-header">Top {headerTitle}</h1>

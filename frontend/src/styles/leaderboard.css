@@ -145,10 +145,14 @@ h2 {
 
 /* Leaderboard Header */
 .leaderboard-container-full {
+  background-color: #554040;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
+  min-height: 100vh;
+  min-width: 100vw;
+  height: auto;
+  padding-top: 100px;
 }
 
 /* Leaderboard Podium */
