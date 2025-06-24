@@ -321,7 +321,7 @@ router.post("/solo/chat/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
-router.post("/solo/ready/:lobbyId", async (req, res) => {
+router.post("/solo/ready/:lobbyId", authenticate, async (req, res) => {
   // TODO when multiplayer is implemented
 });
 

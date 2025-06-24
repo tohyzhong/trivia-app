@@ -16,7 +16,7 @@ router.get("/search-profiles", authenticate, async (req, res) => {
     }
 
     const matchingUsers = await User.find({
-      username: { $regex: query, $options: "i" },
+      username: { $regex: query, $options: "i" }
     })
       .select("username")
       .lean()
@@ -42,8 +42,8 @@ router.get("/:username", authenticate, async (req, res) => {
           from: "friends",
           localField: "username",
           foreignField: "from",
-          as: "outgoingFriends",
-        },
+          as: "outgoingFriends"
+        }
       },
 
       {
@@ -51,8 +51,8 @@ router.get("/:username", authenticate, async (req, res) => {
           from: "friends",
           localField: "username",
           foreignField: "to",
-          as: "incomingFriends",
-        },
+          as: "incomingFriends"
+        }
       },
 
       {
@@ -61,26 +61,26 @@ router.get("/:username", authenticate, async (req, res) => {
             $map: {
               input: "$outgoingFriends",
               as: "of",
-              in: "$$of.to",
-            },
+              in: "$$of.to"
+            }
           },
           incomingUsernames: {
             $map: {
               input: "$incomingFriends",
               as: "inf",
-              in: "$$inf.from",
-            },
-          },
-        },
+              in: "$$inf.from"
+            }
+          }
+        }
       },
 
       // Mutual friend logic
       {
         $addFields: {
           mutualUsernames: {
-            $setIntersection: ["$incomingUsernames", "$outgoingUsernames"],
-          },
-        },
+            $setIntersection: ["$incomingUsernames", "$outgoingUsernames"]
+          }
+        }
       },
 
       // Obtain username and profile picture of mutual friends
@@ -91,10 +91,10 @@ router.get("/:username", authenticate, async (req, res) => {
           pipeline: [
             { $match: { $expr: { $in: ["$username", "$$mutuals"] } } },
             { $project: { username: 1, profilePicture: 1 } },
-            { $limit: 10 },
+            { $limit: 10 }
           ],
-          as: "mutualProfiles",
-        },
+          as: "mutualProfiles"
+        }
       },
 
       {
@@ -106,9 +106,9 @@ router.get("/:username", authenticate, async (req, res) => {
           correctNumber: 1,
           currency: 1,
           profilePicture: 1,
-          friends: "$mutualProfiles",
-        },
-      },
+          friends: "$mutualProfiles"
+        }
+      }
     ]);
 
     if (!results.length) {
@@ -123,7 +123,7 @@ router.get("/:username", authenticate, async (req, res) => {
 });
 
 // Retrieve multiple profiles
-router.post("/get-profiles", async (req, res) => {
+router.post("/get-profiles", authenticate, async (req, res) => {
   try {
     const { userIds } = req.body;
     const objectIds = userIds.map((id) => new mongoose.Types.ObjectId(`${id}`));

@@ -49,13 +49,16 @@ const AdminApprovalDashboard: React.FC = () => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("/api/questions/initial", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/questions/initial`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json"
+            }
           }
-        });
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch initial questions and categories");
         }

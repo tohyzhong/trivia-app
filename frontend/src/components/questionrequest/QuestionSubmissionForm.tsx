@@ -55,23 +55,26 @@ const QuestionSubmissionForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/questions/request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          question,
-          options,
-          correctOption,
-          explanation,
-          category,
-          difficulty,
-          approved: false,
-          createdBy: username
-        })
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/questions/request`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            question,
+            options,
+            correctOption,
+            explanation,
+            category,
+            difficulty,
+            approved: false,
+            createdBy: username
+          })
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to submit question");
