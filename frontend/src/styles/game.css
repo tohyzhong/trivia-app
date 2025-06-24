@@ -91,6 +91,20 @@
   background-color: #e64a19;
 }
 
+.question-submit-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 65px;
+  font-size: 40px;
+  color: #4caf50;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.question-submit-icon:hover {
+  color: #45a049;
+}
+
 .sound-settings-icon {
   position: fixed;
   bottom: 20px;
