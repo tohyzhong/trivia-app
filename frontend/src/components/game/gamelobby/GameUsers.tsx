@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { clearLobby } from "../../../redux/lobbySlice";
 
+import { playClickSound } from "../../../utils/soundManager";
+
 interface User {
   username: string;
   profilePicture: string;
@@ -31,7 +33,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ userIds }),
+          body: JSON.stringify({ userIds })
         }
       );
       const data = await response.json();
@@ -45,8 +47,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       navigate("/", {
         state: {
           errorMessage:
-            "Error loading lobby. A report has been sent to the admins",
-        },
+            "Error loading lobby. A report has been sent to the admins"
+        }
       });
     }
   };
@@ -57,18 +59,21 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   // Ready button
   const handleReady = () => {
+    playClickSound();
     // TODO for multiplayer
   };
 
   // Start button
   const handleStart = async () => {
+    playClickSound();
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/startlobby/${lobbyId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "include"
         }
       );
       if (!response.ok) {
@@ -82,6 +87,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   // Leaving Lobby
   const handleLeave = async () => {
+    playClickSound();
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,
@@ -89,13 +95,13 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ player: loggedInUser }),
+          body: JSON.stringify({ player: loggedInUser })
         }
       );
       const data = await response.json();
       if (response.ok) {
         dispatch(clearLobby());
-        navigate("/", { state: { errorMessage: "You left the lobby." } });
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
       } else {
         throw new Error();
       }
@@ -104,8 +110,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       navigate("/", {
         state: {
           errorMessage:
-            "Error loading lobby. A report has been sent to the admins",
-        },
+            "Error loading lobby. A report has been sent to the admins"
+        }
       });
     }
   };

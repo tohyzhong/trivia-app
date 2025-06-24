@@ -9,6 +9,13 @@ import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../redux/store";
 import { motion } from "motion/react";
 
+import { useInitSound } from "../../../hooks/useInitSound";
+import PauseOverlay from "../PauseOverlay";
+import { useBGMResumeOverlay } from "../../../hooks/useBGMResumeOverlay";
+import { playClickSound } from "../../../utils/soundManager";
+import { IoClose, IoSettingsOutline } from "react-icons/io5";
+import SoundSettings from "../subcomponents/SoundSettings";
+
 interface ChatMessage {
   sender: string;
   message: string;
@@ -58,6 +65,10 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   timeLimit,
   totalQuestions
 }) => {
+  useInitSound("Quiz");
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay("Quiz");
+  const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
+
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [loading, setLoading] = useState<boolean>(true);
   const timesUpCalledRef = useRef(false);
@@ -94,6 +105,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLeave = async () => {
+    playClickSound();
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,
@@ -107,7 +119,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 
       if (response.ok) {
         dispatch(clearLobby());
-        navigate("/", { state: { errorMessage: "You left the lobby." } });
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
       } else {
         throw new Error();
       }
@@ -154,6 +166,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
     <GameLoading />
   ) : (
     <div className="game-lobby-full">
+      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       <div className="game-lobby-container">
         <div className="question-display-container">
           <div className="question-display-lobby-details">
@@ -196,6 +209,26 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           </div>
         </div>
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
+        <IoSettingsOutline
+          onClick={() => {
+            playClickSound();
+            setIsSoundPopupOpen(true);
+          }}
+          className="sound-settings-icon"
+        />
+
+        {isSoundPopupOpen && (
+          <div className="sound-settings-popup">
+            <IoClose
+              className="submode-select-close"
+              onClick={() => {
+                playClickSound();
+                setIsSoundPopupOpen(false);
+              }}
+            />
+            <SoundSettings />
+          </div>
+        )}
       </div>
     </div>
   );

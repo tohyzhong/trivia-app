@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { IoIosInformationCircle } from "react-icons/io";
 import Explanation from "./Explanation";
+import { playClickSound } from "../../../utils/soundManager";
 
 interface ClassicQuestion {
   question: string;
@@ -38,6 +39,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Option submission
   const handleSubmit = async (option) => {
+    playClickSound();
     await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/submit/${lobbyId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -71,6 +73,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Next question
   const handleNextQuestion = async () => {
+    playClickSound();
     await fetch(
       `${import.meta.env.VITE_API_URL}/api/lobby/advancelobby/${lobbyId}`,
       {
@@ -84,6 +87,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   // Explanation popup
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
   const handleIconClick = () => {
+    playClickSound();
     setShowExplanation(true);
   };
 
