@@ -143,6 +143,19 @@ h2 {
   color: black;
 }
 
+.table-gap {
+  margin: 50px 0;
+}
+
+.username-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.username-link:hover {
+  text-decoration: underline;
+}
+
 /* Leaderboard Header */
 .leaderboard-container-full {
   background-color: #554040;
