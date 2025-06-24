@@ -9,12 +9,6 @@ import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
 import LeaderboardDropdown from "./LeaderboardDropdown";
 
-interface LeaderboardTableProps {
-  apiRoute: string;
-  valueField: string;
-  valueHeader: string;
-}
-
 interface PodiumData {
   rank: number;
   username: string;
@@ -27,6 +21,12 @@ interface LeaderboardRow {
   profilePicture: string;
   username: string;
   [key: string]: number | string; // Allows any additional string key with number or string value
+}
+
+interface LeaderboardTableProps {
+  apiRoute: string;
+  valueField: string;
+  valueHeader: string;
 }
 
 const LeaderboardTable: React.FC<LeaderboardTableProps> = ({

@@ -10,6 +10,7 @@ const LeaderboardRoutes: React.FC = () => {
         path="/"
         element={
           <Leaderboard
+            headerTitle="Sigma Snipers"
             apiRoute="correctrate"
             valueField="correctRate"
             valueHeader="Correct Answer Rate"
@@ -20,6 +21,7 @@ const LeaderboardRoutes: React.FC = () => {
         path="/correctrate"
         element={
           <Leaderboard
+            headerTitle="Sigma Snipers"
             apiRoute="correctrate"
             valueField="correctRate"
             valueHeader="Correct Answer Rate"
@@ -30,6 +32,7 @@ const LeaderboardRoutes: React.FC = () => {
         path="/totalanswer"
         element={
           <Leaderboard
+            headerTitle="Certified Quiz Addicts"
             apiRoute="totalanswer"
             valueField="totalAnswer"
             valueHeader="Total Answered"
@@ -40,6 +43,7 @@ const LeaderboardRoutes: React.FC = () => {
         path="/correctanswer"
         element={
           <Leaderboard
+            headerTitle="Enlightened Rizzlers"
             apiRoute="correctanswer"
             valueField="correctAnswer"
             valueHeader="Correct Answers"

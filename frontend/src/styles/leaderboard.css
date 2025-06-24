@@ -8,7 +8,6 @@
   width: 60%;
   align-self: center;
   margin: 0 auto;
-  margin-top: 100px;
 }
 
 h2 {
@@ -142,6 +141,14 @@ h2 {
 
 .ag-picker-field-wrapper {
   color: black;
+}
+
+/* Leaderboard Header */
+.leaderboard-container-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
 }
 
 /* Leaderboard Podium */
