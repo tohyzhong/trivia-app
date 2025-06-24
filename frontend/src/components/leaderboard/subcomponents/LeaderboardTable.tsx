@@ -6,11 +6,26 @@ import defaultAvatar from "../../../assets/default-avatar.jpg";
 import "../../../styles/leaderboard.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import LeaderboardPodium from "./LeaderboardPodium";
 
 interface LeaderboardTableProps {
   apiRoute: string;
   valueField: string;
   valueHeader: string;
+}
+
+interface PodiumData {
+  rank: number;
+  username: string;
+  profilePicture: string;
+  value: number | string;
+}
+
+interface LeaderboardRow {
+  rank: number;
+  profilePicture: string;
+  username: string;
+  [key: string]: number | string; // Allows any additional string key with number or string value
 }
 
 const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
@@ -25,9 +40,10 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
 
   // Leaderboard states
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const [leaderboardData, setLeaderboardData] = useState<any>(null);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardRow[]>([]);
 
   const fetchAnswerRateLeaderboard = async () => {
+    console.log("test");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/leaderboard/${apiRoute}`,
@@ -37,10 +53,10 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
           credentials: "include"
         }
       );
+      console.log("test");
       if (!response.ok) throw new Error("Failed to fetch friends");
 
       const data = await response.json();
-      console.log(data);
 
       setLeaderboardData(data.rowData);
     } catch (error) {
@@ -133,8 +149,20 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
     }
   ];
 
-  return (
+  return loading ? (
+    <></>
+  ) : (
     <div className="leaderboard-container">
+      <LeaderboardPodium
+        podiumData={
+          leaderboardData.slice(0, 3).map((row) => ({
+            rank: row.rank,
+            username: row.username,
+            profilePicture: row.profilePicture,
+            value: row[valueField]
+          })) as PodiumData[]
+        }
+      />
       <div className="ag-theme-alpine">
         <AgGridReact
           pagination={true}
