@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import LeaderboardTable from "./subcomponents/LeaderboardTable";
 import "../../styles/leaderboard.css";
 import { useInitSound } from "../../hooks/useInitSound";
 import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
 import PauseOverlay from "../game/PauseOverlay";
+import { IoClose, IoSettingsOutline } from "react-icons/io5";
+import SoundSettings from "../game/subcomponents/SoundSettings";
+import { playClickSound } from "../../utils/soundManager";
 
 interface LeaderboardProps {
   headerTitle: string;
@@ -20,6 +23,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
 }) => {
   useInitSound("Lobby");
   const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
+
+  const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
+
   return (
     <div className="leaderboard-container-full">
       {bgmBlocked && <PauseOverlay onResume={handleResume} />}
@@ -29,6 +35,27 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
         valueField={valueField}
         valueHeader={valueHeader}
       />
+
+      <IoSettingsOutline
+        onClick={() => {
+          playClickSound();
+          setIsSoundPopupOpen(true);
+        }}
+        className="sound-settings-icon"
+      />
+
+      {isSoundPopupOpen && (
+        <div className="sound-settings-popup">
+          <IoClose
+            className="submode-select-close"
+            onClick={() => {
+              playClickSound();
+              setIsSoundPopupOpen(false);
+            }}
+          />
+          <SoundSettings />
+        </div>
+      )}
     </div>
   );
 };
