@@ -1,0 +1,97 @@
+.question-submission-page {
+  max-width: 600px;
+  margin: 115px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.question-submission-page h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.question-submission-page label {
+  display: block;
+  margin: 12px 0 6px 0;
+  font-weight: 600;
+  color: #444;
+}
+
+.question-submission-page input[type="text"],
+.question-submission-page input[type="number"],
+.question-submission-page textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.question-submission-page input[type="text"]:focus,
+.question-submission-page input[type="number"]:focus,
+.question-submission-page textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.question-submission-page .option-input-wrapper input[type="text"] {
+  margin-bottom: 10px;
+}
+
+.question-submission-page button {
+  display: inline-block;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+  font-family: inherit;
+}
+
+.question-submission-page button:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+}
+
+.question-submission-page button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.question-submission-page button.admin-dashboard-btn {
+  background-color: #007bff;
+  margin-bottom: 30px;
+  width: 100%;
+  font-weight: 600;
+}
+
+.question-submission-page button.admin-dashboard-btn:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 640px) {
+  .question-submission-page {
+    margin: 20px 10px;
+    padding: 20px;
+  }
+
+  .question-submission-page h2 {
+    font-size: 24px;
+  }
+
+  .question-submission-page button {
+    font-size: 14px;
+  }
+}
