@@ -7,6 +7,7 @@ import "../../../styles/leaderboard.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
+import LeaderboardDropdown from "./LeaderboardDropdown";
 
 interface LeaderboardTableProps {
   apiRoute: string;
@@ -43,7 +44,6 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardRow[]>([]);
 
   const fetchAnswerRateLeaderboard = async () => {
-    console.log("test");
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/leaderboard/${apiRoute}`,
@@ -53,7 +53,6 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
           credentials: "include"
         }
       );
-      console.log("test");
       if (!response.ok) throw new Error("Failed to fetch friends");
 
       const data = await response.json();
@@ -67,8 +66,8 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
   };
 
   useEffect(() => {
-    fetchAnswerRateLeaderboard();
-  }, [loggedInUser]);
+    if (apiRoute && loggedInUser) fetchAnswerRateLeaderboard();
+  }, [loggedInUser, apiRoute]);
 
   const columnDefs: ColDef[] = [
     {
@@ -78,7 +77,6 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       autoHeight: true,
       sortable: false,
       cellRenderer: (params: any) => {
-        console.log(params);
         return (
           <strong>
             <span>
@@ -163,6 +161,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
           })) as PodiumData[]
         }
       />
+      <LeaderboardDropdown />
       <div className="ag-theme-alpine">
         <AgGridReact
           pagination={true}

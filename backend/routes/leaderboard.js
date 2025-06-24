@@ -23,7 +23,6 @@ router.get("/correctrate", authenticate, async (req, res) => {
     stats.forEach((item, idx) => {
       item.rank = idx + 1;
     });
-    console.log(stats);
 
     return res.status(200).json({ rowData: stats });
   } catch (error) {
@@ -50,7 +49,6 @@ router.get("/totalanswer", authenticate, async (req, res) => {
     stats.forEach((item, idx) => {
       item.rank = idx + 1;
     });
-    console.log(stats);
 
     return res.status(200).json({ rowData: stats });
   } catch (error) {
@@ -77,7 +75,6 @@ router.get("/correctanswer", authenticate, async (req, res) => {
     stats.forEach((item, idx) => {
       item.rank = idx + 1;
     });
-    console.log(stats);
 
     return res.status(200).json({ rowData: stats });
   } catch (error) {
