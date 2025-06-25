@@ -36,10 +36,10 @@ const SettingsActions: React.FC = () => {
             {
               method: "POST",
               headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
               },
               credentials: "include",
-              body: JSON.stringify({ token }),
+              body: JSON.stringify({ token })
             }
           );
 
@@ -59,7 +59,7 @@ const SettingsActions: React.FC = () => {
                 `${import.meta.env.VITE_API_URL}/api/auth/logout`,
                 {
                   method: "POST",
-                  credentials: "include",
+                  credentials: "include"
                 }
               );
 
@@ -100,10 +100,10 @@ const SettingsActions: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ token, newPassword }),
+          body: JSON.stringify({ token, newPassword })
         }
       );
 
@@ -117,7 +117,7 @@ const SettingsActions: React.FC = () => {
             `${import.meta.env.VITE_API_URL}/api/auth/logout`,
             {
               method: "POST",
-              credentials: "include",
+              credentials: "include"
             }
           );
 
@@ -147,7 +147,7 @@ const SettingsActions: React.FC = () => {
         }
       }
     } catch (err) {
-      alert(err.message || "Error changing password");
+      setMessage(err.message || "Error changing password");
       error.current = true;
     }
   };
@@ -161,7 +161,7 @@ const SettingsActions: React.FC = () => {
           const response = await fetch(
             `${import.meta.env.VITE_API_URL}/api/auth/verify?token=${token}`,
             {
-              credentials: "include",
+              credentials: "include"
             }
           );
 

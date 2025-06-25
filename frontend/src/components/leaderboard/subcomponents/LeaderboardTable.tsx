@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
 import LeaderboardDropdown from "./LeaderboardDropdown";
+import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 
 interface PodiumData {
   rank: number;
@@ -148,9 +149,12 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
   ];
 
   return loading ? (
-    <></>
+    <>
+      <ErrorPopup message={error} setMessage={setError} />
+    </>
   ) : (
     <div className="leaderboard-container">
+      <ErrorPopup message={error} setMessage={setError} />
       <LeaderboardPodium
         podiumData={
           leaderboardData.slice(0, 3).map((row) => ({
