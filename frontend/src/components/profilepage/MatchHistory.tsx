@@ -73,35 +73,55 @@ const MatchHistory: React.FC = () => {
         </h1>
       </div>
       <div className="match-history-container">
-        {matchHistory.map((match, index) => (
-          <ul
-            key={`match-${index}`}
-            className={`match-history-item ${match.state}`}
-          >
-            <h3 className="match-state">{match.state.toUpperCase()}</h3>
-            <div className="match-details">
-              <div className="match-type">
-                <h3>Mode: {match.type}</h3>
-              </div>
-              <div className="match-stats">
-                <h3>Game Stats:</h3>
-                <p>
-                  <strong>Correctly Answered: </strong>
-                  {match.correctNumber}
-                  <br />
-                  <strong>Total Questions: </strong>
-                  {match.totalPlayed}
-                </p>
-              </div>
-            </div>
-            <h4
-              className="match-detailed-view"
-              onClick={() => alert("Feature coming soon...")}
+        {matchHistory.map((match, index) => {
+          const date = new Date(match.date);
+          const formatted = date.toLocaleString(undefined, {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+          });
+
+          return (
+            <ul
+              key={`match-${index}`}
+              className={`match-history-item ${match.state}`}
             >
-              See Details →
-            </h4>
-          </ul>
-        ))}
+              <div className="match-date">
+                <h3>Date Finished:</h3>
+                <h4>{formatted}</h4>
+              </div>
+              <h3 className="match-state">{match.state.toUpperCase()}</h3>
+              <div className="match-details">
+                <div className="match-type">
+                  <h3>
+                    Mode: <br />
+                    {match.type}
+                  </h3>
+                </div>
+                <div className="match-stats">
+                  <h3>Game Stats:</h3>
+                  <p>
+                    <strong>Correctly Answered: </strong>
+                    {match.correctNumber}
+                    <br />
+                    <strong>Total Questions: </strong>
+                    {match.totalPlayed}
+                  </p>
+                </div>
+              </div>
+              <h4
+                className="match-detailed-view"
+                onClick={() => alert("Feature coming soon...")}
+              >
+                See Details →
+              </h4>
+            </ul>
+          );
+        })}
       </div>
     </div>
   );

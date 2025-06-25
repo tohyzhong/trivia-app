@@ -4,7 +4,7 @@
   align-items: center;
   padding: 20px;
   font-family: "Arial", sans-serif;
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
   background-color: #f9f9f9;
   color: black;
@@ -63,6 +63,24 @@
   background-color: #ff4d4d;
 }
 
+.match-date {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  margin-left: 10px;
+}
+
+.match-date h3 {
+  margin: 5px;
+}
+
+.match-date h4 {
+  margin: 0;
+}
+
 .match-state {
   display: flex;
   align-items: center;
@@ -84,7 +102,7 @@
 }
 
 .match-type {
-  flex: 1;
+  flex: 0.8;
   padding: 20px;
 }
 
