@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { motion } from "motion/react";
 import "../../styles/contactform.css";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { useSelector } from "react-redux";
@@ -18,6 +19,7 @@ const ContactForm = () => {
 
   const [approvalMessage, setApprovalMessage] = useState("");
   const [isApprovalSuccess, setIsApprovalSuccess] = useState(false);
+  const [sending, setSending] = useState<boolean>(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +44,7 @@ const ContactForm = () => {
     }
 
     try {
+      setSending(true);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/settings/contact`,
         {
@@ -58,8 +61,8 @@ const ContactForm = () => {
         setApprovalMessage("Your message has been sent!");
         setFormData({
           name: "",
-          username: "",
-          email: "",
+          username: user.username,
+          email: user.email,
           subject: "",
           message: ""
         });
@@ -78,6 +81,8 @@ const ContactForm = () => {
           "Failed to send your message. Please try again later or email us directly."
       );
     }
+
+    setSending(false);
   };
 
   return (
@@ -140,7 +145,21 @@ const ContactForm = () => {
             required
           />
         </div>
-        <button type="submit">Send Message</button>
+        <button type="submit" className={sending ? "disabled" : ""}>
+          Send Message
+          {sending && (
+            <>
+              &nbsp;
+              <motion.div
+                className="loading-icon-container"
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+              >
+                <AiOutlineLoading3Quarters className="loading-icon" />
+              </motion.div>
+            </>
+          )}
+        </button>
       </form>
       <ErrorPopup
         message={approvalMessage}

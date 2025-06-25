@@ -75,3 +75,11 @@ a.send-email-prompt:hover {
 .contact-form-container button:hover {
   background-color: #45a049;
 }
+
+.contact-form-container .disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.7;
+}
