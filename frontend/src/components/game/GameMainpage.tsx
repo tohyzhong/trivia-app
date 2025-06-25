@@ -4,6 +4,7 @@ import "../../styles/game.css";
 import ModeSelect from "./subcomponents/ModeSelect";
 import SoundSettings from "./subcomponents/SoundSettings";
 import { IoSettingsOutline, IoClose } from "react-icons/io5";
+import { IoHelp } from "react-icons/io5";
 import { FaWpforms } from "react-icons/fa";
 import SoloModeLogo from "../../assets/solo_mode.png";
 import MultiplayerModeLogo from "../../assets/multiplayer_mode.png";
@@ -157,6 +158,14 @@ export const GameMainpage: React.FC = () => {
           navigate("/question-request");
         }}
         className="question-submit-icon"
+      />
+
+      <IoHelp
+        onClick={() => {
+          playClickSound();
+          navigate("/contact");
+        }}
+        className="help-icon"
       />
     </div>
   );

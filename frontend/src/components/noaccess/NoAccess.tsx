@@ -10,7 +10,7 @@ const NoAccess: React.FC = () => {
       </p>
       <p className="no-access-text">
         Please{" "}
-        <a className="contact-support" href="/">
+        <a className="contact-support" href="/contact">
           contact support
         </a>{" "}
         if you believe this is an error.

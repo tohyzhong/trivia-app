@@ -702,14 +702,28 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           username: playerStates[stateKey].username
         });
 
+        // Answer stats
         const newCorrectAnswer = profile.correctAnswer + correctAnswers;
         const newTotalAnswer =
           profile.totalAnswer + lobby.gameSettings.numQuestions;
+
+        // Match History
+        const newMatchHistory = [...profile.matchHistory];
+        newMatchHistory.push({
+          type: lobby.gameType,
+          state: "solo", // TODO: update with win/lose logic for multiplayer
+          totalPlayed: lobby.gameSettings.numQuestions,
+          correctNumber: correctAnswers,
+          date: new Date()
+        });
+        while (newMatchHistory.length > 10) newMatchHistory.shift();
+
         const updatedData = {
           correctAnswer: newCorrectAnswer,
           totalAnswer: newTotalAnswer,
           correctRate:
-            Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100 // Change to percantage in 2 decimal places
+            Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100, // Change to percantage in 2 decimal places
+          matchHistory: newMatchHistory
         };
 
         // console.log(updatedData);
