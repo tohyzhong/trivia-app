@@ -62,11 +62,6 @@ export const GameMainpage: React.FC = () => {
       image: SoloModeLogo
     },
     {
-      name: "Knowledge",
-      description: "Test your knowledge with open-ended questions.",
-      image: SoloModeLogo
-    },
-    {
       name: "Coming Soon...",
       description: "",
       image: SoloModeLogo
