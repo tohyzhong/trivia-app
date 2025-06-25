@@ -24,7 +24,7 @@ const Settings: React.FC = () => {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
           {
-            credentials: "include",
+            credentials: "include"
           }
         );
         const data: UserProfile = await response.json();
@@ -50,13 +50,13 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
             username,
-            profilePictureUrl: newProfilePictureUrl,
-          }),
+            profilePictureUrl: newProfilePictureUrl
+          })
         }
       );
 
@@ -80,10 +80,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ username })
         }
       );
 
@@ -107,10 +107,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username, newEmail }),
+          body: JSON.stringify({ username, newEmail })
         }
       );
 
@@ -134,10 +134,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ username })
         }
       );
 
@@ -157,10 +157,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ username })
         }
       );
 
@@ -187,7 +187,7 @@ const Settings: React.FC = () => {
 
   return (
     <div className="settings-container">
-      <h1>Settings</h1>
+      <h1>Profile Settings</h1>
       <div className="user-info">
         <img
           src={user?.profilePicture || defaultAvatar}
