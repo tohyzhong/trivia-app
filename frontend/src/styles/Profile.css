@@ -201,3 +201,13 @@
 .remove-friend-button:hover {
   background-color: #e53935;
 }
+
+.profile-details .see-match-history {
+  color: rgb(83, 82, 82);
+  font-size: 1rem;
+}
+
+.profile-details .see-match-history:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}

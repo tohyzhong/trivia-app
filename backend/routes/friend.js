@@ -14,35 +14,35 @@ router.post("/:username/all", authenticate, async (req, res) => {
         $facet: {
           outgoing: [
             { $match: { from: username } },
-            { $project: { user: "$to", _id: 0 } },
+            { $project: { user: "$to", _id: 0 } }
           ],
           incoming: [
             { $match: { to: username } },
-            { $project: { user: "$from", _id: 0 } },
-          ],
-        },
+            { $project: { user: "$from", _id: 0 } }
+          ]
+        }
       },
       {
         $project: {
           outgoingUsernames: "$outgoing.user",
-          incomingUsernames: "$incoming.user",
-        },
+          incomingUsernames: "$incoming.user"
+        }
       },
       {
         $addFields: {
           mutualUsernames: {
-            $setIntersection: ["$outgoingUsernames", "$incomingUsernames"],
+            $setIntersection: ["$outgoingUsernames", "$incomingUsernames"]
           },
           incomingRequests: {
-            $setDifference: ["$incomingUsernames", "$outgoingUsernames"],
-          },
-        },
+            $setDifference: ["$incomingUsernames", "$outgoingUsernames"]
+          }
+        }
       },
       {
         $project: {
           mutualUsernames: mutual ? "$mutualUsernames" : [],
-          incomingRequests: incoming ? "$incomingRequests" : [],
-        },
+          incomingRequests: incoming ? "$incomingRequests" : []
+        }
       },
       {
         $facet: {
@@ -53,16 +53,16 @@ router.post("/:username/all", authenticate, async (req, res) => {
                 from: "profiles",
                 localField: "mutualUsernames",
                 foreignField: "username",
-                as: "profile",
-              },
+                as: "profile"
+              }
             },
             { $unwind: "$profile" },
             {
               $project: {
                 username: "$profile.username",
-                profilePicture: "$profile.profilePicture",
-              },
-            },
+                profilePicture: "$profile.profilePicture"
+              }
+            }
           ],
           incomingProfiles: [
             { $unwind: "$incomingRequests" },
@@ -71,26 +71,26 @@ router.post("/:username/all", authenticate, async (req, res) => {
                 from: "profiles",
                 localField: "incomingRequests",
                 foreignField: "username",
-                as: "profile",
-              },
+                as: "profile"
+              }
             },
             { $unwind: "$profile" },
             {
               $project: {
                 username: "$profile.username",
-                profilePicture: "$profile.profilePicture",
-              },
-            },
-          ],
-        },
-      },
+                profilePicture: "$profile.profilePicture"
+              }
+            }
+          ]
+        }
+      }
     ]);
 
     const result = results[0] || {};
     res.status(200).json({
       mutual: mutual ? result.mutualProfiles : [],
       incoming: incoming ? result.incomingProfiles : [],
-      message: "Friends fetched.",
+      message: "Friends fetched."
     });
   } catch (err) {
     console.error(err);
@@ -117,7 +117,7 @@ router.put("/:username/add", authenticate, async (req, res) => {
     return res.status(200).json({
       message: mutual
         ? "You are now friends!"
-        : "Friend request sent. Waiting for the other user to add you back.",
+        : "Friend request sent. Waiting for the other user to add you back."
     });
   } catch (error) {
     // Code 11000 is the MongoDB error code for duplicate key errors
@@ -139,8 +139,8 @@ router.put("/:username/remove", authenticate, async (req, res) => {
     const result = await Friend.deleteMany({
       $or: [
         { from: username, to: friendUsername },
-        { from: friendUsername, to: username },
-      ],
+        { from: friendUsername, to: username }
+      ]
     });
 
     if (result.deletedCount === 0) {
