@@ -4,6 +4,7 @@ import ReturnButton from "./ReturnButton";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ErrorPopup from "./ErrorPopup";
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -11,6 +12,7 @@ const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
 
   const navigate = useNavigate();
   const isLoggedIn = useSelector(
@@ -53,13 +55,19 @@ const SignupPage: React.FC = () => {
         );
         setErrors(errorMessages);
       } else {
-        alert(data.error || "Registration failed");
+        setErrorPopupMessage(data.error || "Registration failed");
       }
     }
   };
 
   return (
     <div className="signup-form-container">
+      {errorPopupMessage !== "" && (
+        <ErrorPopup
+          message={errorPopupMessage}
+          setMessage={setErrorPopupMessage}
+        />
+      )}
       <form onSubmit={handleRegister}>
         {errors.length > 0 && (
           <div className="error-message">

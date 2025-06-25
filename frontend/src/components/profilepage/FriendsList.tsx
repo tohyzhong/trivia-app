@@ -7,6 +7,7 @@ import "../../styles/friendslist.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import ToggleButton from "./ToggleButton";
+import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 
 interface Friend {
   username: string;
@@ -26,7 +27,8 @@ const FriendsList: React.FC = () => {
 
   // Loading and error utils
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
 
   // Fetching friends information
@@ -41,8 +43,8 @@ const FriendsList: React.FC = () => {
           credentials: "include",
           body: JSON.stringify({
             mutual: true,
-            incoming: loggedInUser === username,
-          }),
+            incoming: loggedInUser === username
+          })
         }
       );
       if (!response.ok) throw new Error("Failed to fetch friends");
@@ -51,7 +53,8 @@ const FriendsList: React.FC = () => {
       setFriends(data.mutual);
       setIncomingFriends(data.incoming);
     } catch (err) {
-      setError("Could not fetch friends");
+      setMessage("Could not fetch friends");
+      setIsSuccess(false);
     } finally {
       setLoading(false);
     }
@@ -62,8 +65,6 @@ const FriendsList: React.FC = () => {
     if (renderIncoming && loggedInUser !== username) navigate("/noaccess"); // Deny access to view other people's incoming friend requests
     fetchFriends();
   }, [username, loggedInUser]);
-
-  if (error) return <div className="not-found">{error}</div>;
 
   const handleButtonClick = () => {
     setRenderIncoming(!renderIncoming);
@@ -76,20 +77,24 @@ const FriendsList: React.FC = () => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername,
-          }),
+            friendUsername
+          })
         }
       );
 
       if (!response.ok)
         throw new Error("Failed to accept incoming friend request");
-      else alert(`You are now friends with ${friendUsername}`);
+      else {
+        setIsSuccess(true);
+        setMessage(`You are now friends with ${friendUsername}`);
+      }
     } catch (error) {
-      setError("Unable to accept friend requests. Please reload the page.");
+      setMessage("Unable to accept friend requests. Please reload the page.");
+      setIsSuccess(false);
     } finally {
       setLoading(false);
     }
@@ -104,20 +109,24 @@ const FriendsList: React.FC = () => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername: loggedInUser,
-          }),
+            friendUsername: loggedInUser
+          })
         }
       );
 
       if (!response.ok)
         throw new Error("Failed to decline incoming friend request");
-      else alert("Friend request ignored.");
+      else {
+        setMessage("Friend request ignored.");
+        setIsSuccess(true);
+      }
     } catch (error) {
-      setError("Unable to decline friend requests. Please reload the page.");
+      setMessage("Unable to decline friend requests. Please reload the page.");
+      setIsSuccess(false);
     } finally {
       setLoading(false);
     }
@@ -151,12 +160,12 @@ const FriendsList: React.FC = () => {
               height: "40px",
               borderRadius: "50%",
               cursor: "pointer",
-              objectFit: "cover",
+              objectFit: "cover"
             }}
             onClick={() => navigate(`/profile/${params.data.username}`)}
           />
         );
-      },
+      }
     },
     {
       headerName: "Username",
@@ -171,7 +180,7 @@ const FriendsList: React.FC = () => {
             {params.value}
           </span>
         );
-      },
+      }
     },
     {
       headerName: "Actions",
@@ -195,12 +204,18 @@ const FriendsList: React.FC = () => {
             </button>
           </div>
         );
-      },
-    },
+      }
+    }
   ];
 
   return (
     <div className="friendslist-container">
+      <ErrorPopup
+        message={message}
+        setMessage={setMessage}
+        success={isSuccess}
+      />
+
       <h2> {username}'s Friends</h2>
       {loggedInUser === username && (
         <ToggleButton
