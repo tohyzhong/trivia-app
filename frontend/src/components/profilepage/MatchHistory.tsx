@@ -75,15 +75,20 @@ const MatchHistory: React.FC = () => {
       <div className="match-history-container">
         {matchHistory.map((match, index) => {
           const date = new Date(match.date);
-          const formatted = date.toLocaleString(undefined, {
-            weekday: "short",
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true
-          });
+          const parts = date
+            .toLocaleString(undefined, {
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true
+            })
+            .replace(/,/g, "")
+            .split(" ");
+
+          const formatted = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]}, ${parts[4]} ${parts[5]}`;
 
           return (
             <ul
