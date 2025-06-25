@@ -47,7 +47,10 @@ interface GameState {
   lastUpdate: Date;
 }
 
-const socket = io(import.meta.env.VITE_API_URL);
+const socket = io(import.meta.env.VITE_API_URL, {
+  withCredentials: true,
+  transports: ["websocket"]
+});
 
 const LobbyHandler: React.FC = () => {
   // Loading state
