@@ -51,7 +51,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         }
       );
       const data: UserProfile = await response.json();
-      console.log("Profile data:", data);
       setUser(data);
       setFriends(data.friends || []);
       setLoading(false);
@@ -147,6 +146,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       setMessage("An error occurred while removing the friend.");
     }
     window.location.reload();
+  };
+
+  const handleSeeMatchHistory = () => {
+    navigate(`/profile/${username}/matchhistory`);
   };
 
   if (
@@ -300,6 +303,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
       <div className="profile-details-container">
         <div className="profile-details">
+          <h3>Game Stats:</h3>
           <p>
             <strong>Win Rate:</strong> {user.winRate}%
           </p>
@@ -312,8 +316,8 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           <p>
             <strong>Total Answered:</strong> {user.totalAnswer}
           </p>
-          <p>
-            <strong>Currency:</strong> {user.currency}
+          <p className="see-match-history" onClick={handleSeeMatchHistory}>
+            See Game History...
           </p>
         </div>
         <div className="friends-list">

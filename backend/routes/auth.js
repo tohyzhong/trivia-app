@@ -65,8 +65,8 @@ router.post(
         correctRate: 0,
         correctAnswer: 0,
         totalAnswer: 0,
-        friends: [],
-        currency: 0
+        currency: 0,
+        matchHistory: []
       });
 
       await emailVerificationToken(username, req, res);

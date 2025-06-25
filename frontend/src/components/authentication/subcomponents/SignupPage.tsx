@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../styles/signuppage.css";
 import ReturnButton from "./ReturnButton";
+import { RootState } from "../../../redux/store";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import ErrorPopup from "./ErrorPopup";
 
 const SignupPage: React.FC = () => {
@@ -10,6 +13,17 @@ const SignupPage: React.FC = () => {
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
+
+  const navigate = useNavigate();
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

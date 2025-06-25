@@ -213,7 +213,7 @@ const Settings: React.FC = () => {
         setMessage={setErrorPopupMessage}
         success={isResponseSuccess}
       />
-      <h1>Settings</h1>
+      <h1>Profile Settings</h1>
       <div className="user-info">
         <img
           src={user?.profilePicture || defaultAvatar}
