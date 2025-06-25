@@ -91,7 +91,7 @@ const AdminApprovalDashboard: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/questions/search?searchQuery=${query}`,
+        `${import.meta.env.VITE_API_URL}/api/questions/search?searchQuery=${query}`,
         {
           method: "GET",
           credentials: "include",
@@ -145,11 +145,14 @@ const AdminApprovalDashboard: React.FC = () => {
 
   const sendApproval = async (questionId: string, categoryToUse: string) => {
     try {
-      const response = await fetch(`/api/questions/approve/${questionId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category: categoryToUse })
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/questions/approve/${questionId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: categoryToUse })
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Approval failed: ${response.status}`);
@@ -185,10 +188,13 @@ const AdminApprovalDashboard: React.FC = () => {
       );
       if (!confirmed) return;
 
-      const response = await fetch(`/api/questions/reject/${questionId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" }
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/questions/reject/${questionId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to reject question");
