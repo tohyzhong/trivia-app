@@ -40,7 +40,12 @@ function App() {
   const verified = useSelector((state: RootState) => state.user.verified);
   const username = useSelector((state: RootState) => state.user.username);
 
-  const authFreeRoutes = ["/auth", "/about", "/settings/verify-action"];
+  const authFreeRoutes = [
+    "/auth",
+    "/about",
+    "/settings/verify-action",
+    "/contact"
+  ];
   const verifiedFreeRoutes = authFreeRoutes.concat(["/settings"]);
 
   useEffect(() => {

@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/contactform.css";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const ContactForm = () => {
+  const user = useSelector((state: RootState) => state.user);
+
   const [formData, setFormData] = useState({
     name: "",
-    username: "",
-    email: "",
+    username: user.isAuthenticated ? user.username : "",
+    email: user.isAuthenticated ? user.email : "",
     subject: "",
     message: ""
   });
@@ -103,6 +107,7 @@ const ContactForm = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
+            disabled={user.isAuthenticated}
           />
         </div>
         <div className="form-group">
@@ -113,6 +118,7 @@ const ContactForm = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            disabled={user.isAuthenticated}
           />
         </div>
         <div className="form-group">
