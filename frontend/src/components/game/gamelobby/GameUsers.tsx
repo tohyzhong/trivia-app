@@ -6,6 +6,7 @@ import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { clearLobby } from "../../../redux/lobbySlice";
 
 import { playClickSound } from "../../../utils/soundManager";
+import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 
 interface User {
   username: string;
@@ -21,6 +22,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
   const { lobbyId, userIds } = props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [users, setUsers] = useState<User[]>([]);
+  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
 
   // Render all users and avatars
   const navigate = useNavigate();
@@ -81,7 +83,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       }
     } catch (error) {
       console.error(error);
-      // Error popup "unable to start lobby"
+      setErrorPopupMessage("Unable to start lobby");
     }
   };
 
@@ -118,6 +120,12 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   return (
     <div className="game-lobby-users">
+      {errorPopupMessage !== "" && (
+        <ErrorPopup
+          message={errorPopupMessage}
+          setMessage={setErrorPopupMessage}
+        />
+      )}
       <div className="game-lobby-users-header">
         <h1>Players</h1>
       </div>

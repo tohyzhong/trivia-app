@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { playClickSound } from "../../../utils/soundManager";
+import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 
 interface ChatMessage {
   sender: string;
@@ -17,6 +18,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   const { lobbyId, chatMessages } = props;
   const [chatInput, setChatInput] = useState<string>("");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
+  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChatInput(event.target.value);
@@ -36,9 +38,16 @@ const GameChat: React.FC<GameChatProps> = (props) => {
       );
       if (response.ok) {
         setChatInput("");
+      } else {
+        const data = await response.json();
+        console.error("Error sending chat message: ", data.message);
+        setErrorPopupMessage(
+          `Error sending chat message: ${String(data.message)}`
+        );
       }
     } catch (error) {
       console.error("Error sending chat message:", error);
+      setErrorPopupMessage(`Error sending chat message: ${String(error)}`);
     }
   };
 
@@ -60,6 +69,12 @@ const GameChat: React.FC<GameChatProps> = (props) => {
 
   return (
     <div className="game-lobby-chat-container">
+      {errorPopupMessage !== "" && (
+        <ErrorPopup
+          message={errorPopupMessage}
+          setMessage={setErrorPopupMessage}
+        />
+      )}
       <div className="game-lobby-chat-messages" ref={chatContainerRef}>
         {chatMessages &&
           chatMessages.map((msg, index) => (

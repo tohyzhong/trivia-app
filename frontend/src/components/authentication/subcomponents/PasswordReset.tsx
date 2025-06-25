@@ -29,7 +29,7 @@ const PasswordReset: React.FC = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ token }),
+          body: JSON.stringify({ token })
         }
       );
 
@@ -58,7 +58,7 @@ const PasswordReset: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email: messageEmail }),
+        body: JSON.stringify({ email: messageEmail })
       }
     );
 
@@ -68,7 +68,7 @@ const PasswordReset: React.FC = () => {
       setEmailSent(true);
       setCountdown(60);
     } else {
-      alert(data.error || "Failed to send OTP");
+      setErrorPopupMessage(data.error || "Failed to send OTP");
     }
   };
 
@@ -105,7 +105,7 @@ const PasswordReset: React.FC = () => {
     const confirmPassword = (form.elements[1] as HTMLInputElement).value;
 
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessages(["Passwords do not match"]);
       return;
     }
 
@@ -115,7 +115,7 @@ const PasswordReset: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ token, password: newPassword }),
+        body: JSON.stringify({ token, password: newPassword })
       }
     );
 
@@ -125,7 +125,6 @@ const PasswordReset: React.FC = () => {
       alert("Password reset successfully. Redirecting to Login Page...");
       navigate("/auth/login");
     } else {
-      alert(data.error || "Failed to reset password");
       const errorMessages = data.errors.map(
         (error: { msg: string }) => error.msg
       );
@@ -138,7 +137,9 @@ const PasswordReset: React.FC = () => {
       <div className="form-container">
         <form onSubmit={handlePasswordReset}>
           <h3>Password Reset ({email})</h3>
-          <p>Request verified successfully!</p>
+          <p className="verify-request-successful">
+            Request verified successfully!
+          </p>
           <input type="password" placeholder="New Password" required />
           <input type="password" placeholder="Confirm New Password" required />
           {errorMessages.length > 0 && (

@@ -111,7 +111,7 @@ router.post(
       );
 
       res.json({
-        message: "Verification email sent to the new email for change",
+        message: "Verification email sent to the new email for change"
       });
     } catch (err) {
       res.status(500).json({ error: "Server error" });
@@ -142,7 +142,7 @@ router.post("/delete-account", authenticate, async (req, res) => {
     );
 
     res.json({
-      message: "Verification email sent to confirm account deletion",
+      message: "Verification email sent to confirm account deletion"
     });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
@@ -178,16 +178,16 @@ router.post("/verify-action", async (req, res) => {
           return res.status(400).json({
             errors: [
               {
-                msg: "Your new password cannot be the same as your last 3 passwords.",
-              },
-            ],
+                msg: "Your new password cannot be the same as your last 3 passwords."
+              }
+            ]
           });
       }
 
       // Save used token to prevent reuse
       await UsedToken.create({
         token,
-        usedAt: new Date(),
+        usedAt: new Date()
       });
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -205,7 +205,7 @@ router.post("/verify-action", async (req, res) => {
       // Save used token to prevent reuse
       await UsedToken.create({
         token,
-        usedAt: new Date(),
+        usedAt: new Date()
       });
 
       switch (decoded.action) {
@@ -225,7 +225,7 @@ router.post("/verify-action", async (req, res) => {
               id: user._id,
               username: user.username,
               email: newEmail,
-              verified: user.verified,
+              verified: user.verified
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
@@ -235,7 +235,7 @@ router.post("/verify-action", async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
           });
 
           res.json({ message: "Email changed successfully" });
@@ -245,8 +245,8 @@ router.post("/verify-action", async (req, res) => {
             User.findByIdAndDelete(decoded.userId),
             Profile.findOneAndDelete({ username: user.username }),
             Friend.deleteMany({
-              $or: [{ from: user.username }, { to: user.username }],
-            }),
+              $or: [{ from: user.username }, { to: user.username }]
+            })
           ]);
 
           res.json({ message: "Account deleted successfully" });

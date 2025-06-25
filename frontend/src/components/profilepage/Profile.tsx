@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
+import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 
 interface Friend {
   username: string;
@@ -37,6 +38,8 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [message, setMessage] = useState<string>("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Retrieve profile details
   const fetchProfile = async () => {
@@ -94,13 +97,17 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.message);
+        setIsSuccess(true);
+        setMessage(data.message);
       } else {
-        alert("Failed to add friend: " + (data.message || "Unknown error."));
+        setIsSuccess(false);
+        setMessage(
+          "Failed to add friend: " + (data.message || "Unknown error.")
+        );
       }
     } catch (error) {
-      console.error("Error adding friend:", error);
-      alert("An error occurred while adding the friend.");
+      setIsSuccess(false);
+      setMessage("An error occurred while adding the friend.");
     }
     window.location.reload();
   };
@@ -126,13 +133,18 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.message);
+        setIsSuccess(true);
+        setMessage(data.message);
       } else {
-        alert("Failed to remove friend: " + (data.message || "Unknown error."));
+        setIsSuccess(false);
+        setMessage(
+          "Failed to remove friend: " + (data.message || "Unknown error.")
+        );
       }
     } catch (error) {
       console.error("Error removing friend:", error);
-      alert("An error occurred while removing the friend.");
+      setIsSuccess(false);
+      setMessage("An error occurred while removing the friend.");
     }
     window.location.reload();
   };
@@ -147,6 +159,11 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   return (
     <div className="profile-container">
+      <ErrorPopup
+        message={message}
+        setMessage={setMessage}
+        success={isSuccess}
+      />
       <div className="header-buttons">
         <div className="profile-header-container">
           <div className="profile-header">
@@ -256,16 +273,19 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                         const data = await response.json();
 
                         if (response.ok) {
-                          alert(
+                          setMessage(
                             data.message || `User role updated to ${newRole}`
                           );
+                          setIsSuccess(true);
                           fetchProfile();
                         } else {
-                          alert(data.message || "Failed to update role.");
+                          setMessage(data.message || "Failed to update role.");
+                          setIsSuccess(false);
                         }
                       } catch (err) {
                         console.error("Error updating user role:", err);
-                        alert("Server error while updating role.");
+                        setMessage("Server error while updating role.");
+                        setIsSuccess(false);
                       }
                     }}
                   >

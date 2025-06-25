@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../../../styles/signuppage.css";
 import ReturnButton from "./ReturnButton";
+import ErrorPopup from "./ErrorPopup";
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -8,6 +9,7 @@ const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +25,7 @@ const SignupPage: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, username, password }),
+        body: JSON.stringify({ email, username, password })
       }
     );
 
@@ -39,13 +41,19 @@ const SignupPage: React.FC = () => {
         );
         setErrors(errorMessages);
       } else {
-        alert(data.error || "Registration failed");
+        setErrorPopupMessage(data.error || "Registration failed");
       }
     }
   };
 
   return (
     <div className="signup-form-container">
+      {errorPopupMessage !== "" && (
+        <ErrorPopup
+          message={errorPopupMessage}
+          setMessage={setErrorPopupMessage}
+        />
+      )}
       <form onSubmit={handleRegister}>
         {errors.length > 0 && (
           <div className="error-message">

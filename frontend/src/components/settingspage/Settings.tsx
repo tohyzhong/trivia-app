@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Settings.css";
+import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 
 interface UserProfile {
   username: string;
@@ -17,6 +18,8 @@ const Settings: React.FC = () => {
   const verified = stateUser.verified || false;
   const [user, setUser] = useState<UserProfile | null>(null);
   const count = useRef(0);
+  const [errorPopupMessage, setErrorPopupMessage] = useState("");
+  const [isResponseSuccess, setIsResponseSuccess] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -24,13 +27,15 @@ const Settings: React.FC = () => {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
           {
-            credentials: "include",
+            credentials: "include"
           }
         );
         const data: UserProfile = await response.json();
         setUser(data);
       } catch (error) {
         console.error("Error fetching profile data", error);
+        setErrorPopupMessage("Error fetching profile data: " + String(error));
+        setIsResponseSuccess(false);
       }
     };
 
@@ -50,13 +55,13 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
             username,
-            profilePictureUrl: newProfilePictureUrl,
-          }),
+            profilePictureUrl: newProfilePictureUrl
+          })
         }
       );
 
@@ -65,10 +70,13 @@ const Settings: React.FC = () => {
       }
 
       await response.json();
-      alert("Profile picture updated!");
+      setErrorPopupMessage("Profile picture updated!");
+      setIsResponseSuccess(true);
+
       window.location.reload();
     } catch (err) {
-      alert(err.message || "Error updating profile picture");
+      setErrorPopupMessage(err.message || "Error updating profile picture");
+      setIsResponseSuccess(false);
     }
   };
 
@@ -80,10 +88,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ username })
         }
       );
 
@@ -91,11 +99,15 @@ const Settings: React.FC = () => {
         throw new Error("Error sending password reset request");
       }
 
-      alert(
+      setErrorPopupMessage(
         "Password reset request sent! Please check your email for further instructions."
       );
+      setIsResponseSuccess(true);
     } catch (err) {
-      alert(err.message || "Error sending password reset request");
+      setErrorPopupMessage(
+        err.message || "Error sending password reset request"
+      );
+      setIsResponseSuccess(false);
     }
   };
 
@@ -107,10 +119,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username, newEmail }),
+          body: JSON.stringify({ username, newEmail })
         }
       );
 
@@ -118,11 +130,13 @@ const Settings: React.FC = () => {
         throw new Error("Error changing email");
       }
 
-      alert(
+      setErrorPopupMessage(
         "Email change request sent! Please check your new email to verify the change."
       );
+      setIsResponseSuccess(true);
     } catch (err) {
-      alert(err.message || "Error changing email");
+      setErrorPopupMessage(err.message || "Error changing email");
+      setIsResponseSuccess(false);
     }
   };
 
@@ -134,18 +148,22 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ username })
         }
       );
 
       const data = await response.json();
 
-      alert("Please check your email to confirm account deletion.");
+      setErrorPopupMessage(
+        "Please check your email to confirm account deletion."
+      );
+      setIsResponseSuccess(true);
     } catch (err) {
-      alert(err.message || "Error deleting account");
+      setErrorPopupMessage(err.message || "Error deleting account");
+      setIsResponseSuccess(false);
     }
   };
 
@@ -157,10 +175,10 @@ const Settings: React.FC = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ username })
         }
       );
 
@@ -168,18 +186,21 @@ const Settings: React.FC = () => {
         throw new Error("Error sending verification email");
       }
 
-      alert(
+      setErrorPopupMessage(
         "Verification email sent! Please check your inbox to verify your account."
       );
+      setIsResponseSuccess(true);
     } catch (err) {
-      alert(err.message || "Error sending verification email");
+      setErrorPopupMessage(err.message || "Error sending verification email");
+      setIsResponseSuccess(false);
     }
   };
 
   useEffect(() => {
     if (stateUser.verified === false && count.current === 0) {
       count.current += 1;
-      alert(
+      setIsResponseSuccess(false);
+      setErrorPopupMessage(
         "Your account is not verified. Please check your email to verify your account."
       );
     }
@@ -187,6 +208,11 @@ const Settings: React.FC = () => {
 
   return (
     <div className="settings-container">
+      <ErrorPopup
+        message={errorPopupMessage}
+        setMessage={setErrorPopupMessage}
+        success={isResponseSuccess}
+      />
       <h1>Settings</h1>
       <div className="user-info">
         <img
