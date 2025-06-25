@@ -18,7 +18,7 @@ export const NavigationBar = () => {
   const [navBar, updateNavBar] = useState([
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
-    { name: "Leaderboard", path: "/leaderboard" },
+    { name: "Leaderboard", path: "/leaderboard" }
   ]);
 
   // TODO: Find a cleaner way to do this?
@@ -29,11 +29,13 @@ export const NavigationBar = () => {
         { name: "About", path: "/about" },
         { name: "Profile", path: "/profile" },
         { name: "Settings", path: "/settings" },
+        { name: "Help", path: "/contact" }
       ]);
     } else {
       updateNavBar([
         { name: "Home", path: "/" },
         { name: "About", path: "/about" },
+        { name: "Help", path: "/contact" }
       ]);
     }
   }, [isLoggedIn]);
@@ -75,7 +77,7 @@ export const NavigationBar = () => {
           import.meta.env.VITE_API_URL
         }/api/profile/search-profiles?query=${encodeURIComponent(query)}`,
         {
-          credentials: "include",
+          credentials: "include"
         }
       );
       if (!response.ok) throw new Error("Failed to fetch profiles");

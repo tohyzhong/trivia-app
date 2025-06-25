@@ -29,6 +29,7 @@ const ProfileRoutes = lazy(
 const QuestionRequestRoutes = lazy(
   () => import("./components/questionrequest/QuestionRequestRoutes")
 );
+const ContactForm = lazy(() => import("./components/contact/ContactForm"));
 const NoAccess = lazy(() => import("./components/noaccess/NoAccess"));
 
 function App() {
@@ -69,10 +70,11 @@ function App() {
     { component: GameRoutes, path: "/play/*" },
     { component: LeaderboardRoutes, path: "/leaderboard/*" },
     { component: SettingsRoutes, path: "/settings/*" },
-    { component: AboutPage, path: "/about" },
+    { component: AboutPage, path: "/about/*" },
     { component: Authentication, path: "/auth/*" },
     { component: ProfileRoutes, path: "/profile/*" },
     { component: QuestionRequestRoutes, path: "/question-request/*" },
+    { component: ContactForm, path: "/contact/*" },
     { component: NoAccess, path: "/noaccess" },
     { component: NoAccess, path: "*" }
   ];
