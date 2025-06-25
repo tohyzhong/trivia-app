@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../styles/signuppage.css";
 import ReturnButton from "./ReturnButton";
+import { RootState } from "../../../redux/store";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -8,6 +11,17 @@ const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
+
+  const navigate = useNavigate();
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +37,7 @@ const SignupPage: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, username, password }),
+        body: JSON.stringify({ email, username, password })
       }
     );
 
