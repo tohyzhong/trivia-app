@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { RootState } from "../../redux/store";
 import "../../styles/matchhistory.css";
 
 interface MatchDetails {
+  type: string;
   state: string;
   totalPlayed: number;
   correctNumber: number;
@@ -40,6 +39,7 @@ const MatchHistory: React.FC = () => {
       );
 
       const data = await response.json();
+      console.log(data);
       if (!response.ok) {
         throw new Error(data.message);
       } else {
@@ -55,9 +55,12 @@ const MatchHistory: React.FC = () => {
     if (username) {
       getMatchHistory();
       setLoading(false);
-      console.log(matchHistory);
     }
   }, [username]);
+
+  useEffect(() => {
+    console.log(matchHistory);
+  }, [matchHistory]);
 
   return loading ? (
     <></>
@@ -65,10 +68,41 @@ const MatchHistory: React.FC = () => {
     <div className="match-history-div-full">
       <div className="match-history-div-header">
         <h1>
-          <span onClick={handleBackClick}>{username}'s</span> Match History
+          <span onClick={handleBackClick}>{username}'s</span> Game History (Last
+          10)
         </h1>
       </div>
-      <div className="match-history-container"></div>
+      <div className="match-history-container">
+        {matchHistory.map((match, index) => (
+          <ul
+            key={`match-${index}`}
+            className={`match-history-item ${match.state}`}
+          >
+            <h3 className="match-state">{match.state.toUpperCase()}</h3>
+            <div className="match-details">
+              <div className="match-type">
+                <h3>Mode: {match.type}</h3>
+              </div>
+              <div className="match-stats">
+                <h3>Game Stats:</h3>
+                <p>
+                  <strong>Correctly Answered: </strong>
+                  {match.correctNumber}
+                  <br />
+                  <strong>Total Questions: </strong>
+                  {match.totalPlayed}
+                </p>
+              </div>
+            </div>
+            <h4
+              className="match-detailed-view"
+              onClick={() => alert("Feature coming soon...")}
+            >
+              See Details →
+            </h4>
+          </ul>
+        ))}
+      </div>
     </div>
   );
 };

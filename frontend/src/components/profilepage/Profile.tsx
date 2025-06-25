@@ -297,7 +297,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
             <strong>Total Answered:</strong> {user.totalAnswer}
           </p>
           <p className="see-match-history" onClick={handleSeeMatchHistory}>
-            See Match History...
+            See Game History...
           </p>
         </div>
         <div className="friends-list">

@@ -222,18 +222,19 @@ router.get("/matchhistory/:username", authenticate, async (req, res) => {
   try {
     const { username } = req.params;
 
-    const matchHistory = await Profile.find(
+    const profile = await Profile.findOne(
       { username },
       { _id: 0, matchHistory: 1 }
     );
 
-    if (!matchHistory) {
+    if (!profile) {
       return res.status(401).json({ message: "Profile not found." });
     }
 
-    return res
-      .status(200)
-      .json({ message: "Successfully retrieved match history.", matchHistory });
+    return res.status(200).json({
+      message: "Successfully retrieved match history.",
+      matchHistory: profile.matchHistory.reverse()
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
