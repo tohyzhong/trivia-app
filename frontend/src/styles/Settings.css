@@ -1,10 +1,14 @@
 .settings-container {
-  margin-top: 150px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
-  max-width: 600px;
-  font-size: 18px;
+  max-width: 700px;
+  margin: 130px auto;
+  padding: 20px 40px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.settings-container h1 {
+  color: black;
 }
 
 .user-info {
@@ -13,16 +17,21 @@
   gap: 20px;
 }
 
+.user-info p {
+  color: black;
+  font-size: 20px;
+}
+
 .profile-picture {
-  width: 50px;
-  height: 50px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .settings-actions {
   margin-top: 30px;
-  color: white;
+  color: black;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -68,7 +77,7 @@
 }
 
 .verification-status.verified {
-  color: rgb(18, 221, 18);
+  color: rgb(19, 161, 19);
 }
 
 .verification-status.not-verified {
