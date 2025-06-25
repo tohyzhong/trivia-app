@@ -1,17 +1,34 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = 8080;
 
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(
+  express.static(path.join(__dirname, "dist"), {
+    extensions: ["html"],
+    index: false,
+    maxAge: "1y",
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith("index.html")) {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    }
+  })
+);
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  const indexPath = path.join(__dirname, "dist", "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(500).send("index.html not found");
+  }
 });
 
 app.listen(PORT, () => {
-  console.log(`Frontend server running on port ${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
