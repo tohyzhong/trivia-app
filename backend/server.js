@@ -83,9 +83,9 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 
 // Connection
-server.listen(process.env.PORT, () => {
+server.listen(8080, () => {
   // uncomment for local production testing
-  console.log(`Server is running on port ${process.env.PORT}`);
+  console.log(`Server is running on port 8080`);
 });
 
 // Run scheduled tasks
