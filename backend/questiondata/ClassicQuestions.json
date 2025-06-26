@@ -1145,5 +1145,235 @@
     "explanation": "'Song Share' is a trend for recommending and sharing favorite music.",
     "category": "TikTok",
     "difficulty": 1
+  },
+  {
+    "question": "What does 'AFK' stand for in internet slang?",
+    "options": [
+      "All For Kicks",
+      "Away From Keyboard",
+      "A Fast Kick",
+      "Always Feeling Kool"
+    ],
+    "correctOption": 2,
+    "explanation": "'AFK' means 'Away From Keyboard', used to indicate someone is temporarily unavailable online.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'FOMO' mean?",
+    "options": [
+      "Feeling Of Major Offense",
+      "Freaking Out, Man!",
+      "Fear Of Missing Out",
+      "Fast On My Own"
+    ],
+    "correctOption": 3,
+    "explanation": "'FOMO' stands for 'Fear Of Missing Out', the anxiety of missing something exciting.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'GOAT' mean in meme slang?",
+    "options": [
+      "Go On And Try",
+      "Game On At Ten",
+      "Get Out And Travel",
+      "Greatest Of All Time"
+    ],
+    "correctOption": 4,
+    "explanation": "'GOAT' is an acronym for 'Greatest Of All Time'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'TL;DR' stand for?",
+    "options": [
+      "Take Leave; Don't Return",
+      "Too Long; Didn't Read",
+      "Talk Less; Do Right",
+      "Try Later; Don't Rush"
+    ],
+    "correctOption": 2,
+    "explanation": "'TL;DR' means 'Too Long; Didn't Read', used to summarize lengthy posts.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'BRB' mean?",
+    "options": [
+      "Best Reaction, Bro",
+      "Big Red Button",
+      "Be Right Back",
+      "Bring Real Bread"
+    ],
+    "correctOption": 3,
+    "explanation": "'BRB' means 'Be Right Back', used when someone steps away briefly.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'SMH' mean in internet slang?",
+    "options": [
+      "Shaking My Head",
+      "So Much Hate",
+      "Stay More Humble",
+      "Send Me Help"
+    ],
+    "correctOption": 1,
+    "explanation": "'SMH' means 'Shaking My Head', expressing disappointment or disbelief.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'IDK' stand for?",
+    "options": ["I Drink Kale", "I Do Knit", "I Dig Kicks", "I Don't Know"],
+    "correctOption": 4,
+    "explanation": "'IDK' means 'I Don't Know'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'ICYMI' mean?",
+    "options": [
+      "I Could Yell More Intensely",
+      "I Can't Yell Much Inside",
+      "Icy Milk Is My Interest",
+      "In Case You Missed It"
+    ],
+    "correctOption": 4,
+    "explanation": "'ICYMI' stands for 'In Case You Missed It'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'TFW' mean in meme culture?",
+    "options": [
+      "That Feeling When",
+      "Too Fast, Wow",
+      "Totally Feeling Weird",
+      "The Funniest Win"
+    ],
+    "correctOption": 1,
+    "explanation": "'TFW' means 'That Feeling When', used to describe a relatable emotion.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'DM' stand for in social media?",
+    "options": ["Don't Mind", "Direct Message", "Dance Move", "Daily Meme"],
+    "correctOption": 2,
+    "explanation": "'DM' means 'Direct Message', a private message on social platforms.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'IMO' mean?",
+    "options": [
+      "Internet Meme Organization",
+      "I Might Offend",
+      "In My Opinion",
+      "Instant Meme Output"
+    ],
+    "correctOption": 3,
+    "explanation": "'IMO' means 'In My Opinion'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Yeet' mean in meme slang?",
+    "options": [
+      "To throw something forcefully",
+      "To run away",
+      "To eat quickly",
+      "To laugh loudly"
+    ],
+    "correctOption": 1,
+    "explanation": "'Yeet' means to throw something with force, often used humorously.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Bet' mean in meme slang?",
+    "options": ["Go to sleep", "Place a wager", "Try your best", "Okay/Agreed"],
+    "correctOption": 4,
+    "explanation": "'Bet' is used to express agreement or affirmation.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Flex' mean in meme culture?",
+    "options": ["Show off", "Ignore", "Exercise", "Bend"],
+    "correctOption": 1,
+    "explanation": "'Flex' means to show off or boast about something.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Salty' mean in meme slang?",
+    "options": ["Funny", "Bitter or upset", "Sweaty", "Tasty"],
+    "correctOption": 2,
+    "explanation": "'Salty' means being bitter or upset, usually over something minor.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Ghost' mean in internet slang?",
+    "options": [
+      "To post anonymously",
+      "To scare someone",
+      "To dress up for Halloween",
+      "To suddenly ignore someone"
+    ],
+    "correctOption": 4,
+    "explanation": "'Ghost' means to suddenly cut off communication with someone.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Simp' mean in meme culture?",
+    "options": [
+      "A type of shrimp",
+      "A computer simulation",
+      "A simple person",
+      "Someone who is overly attentive to someone they like"
+    ],
+    "correctOption": 4,
+    "explanation": "'Simp' is used to describe someone who is overly attentive or submissive to someone they like.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'W' mean in meme slang?",
+    "options": ["Wait", "Wack", "Weird", "Win"],
+    "correctOption": 4,
+    "explanation": "'W' stands for 'Win', used to celebrate success.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'LMAO' stand for?",
+    "options": [
+      "Let Me Ask Others",
+      "Laughing My Ass Off",
+      "Leave Me Alone, Okay?",
+      "Love My Awesome Outfit"
+    ],
+    "correctOption": 2,
+    "explanation": "'LMAO' means 'Laughing My Ass Off', used to express laughter.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'BFF' mean?",
+    "options": [
+      "Best Friends Forever",
+      "Be First, Fast",
+      "Best Food Forever",
+      "Big Fun Friday"
+    ],
+    "correctOption": 1,
+    "explanation": "'BFF' stands for 'Best Friends Forever'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   }
 ]
