@@ -6,6 +6,7 @@ import App from "./App";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
+import { SocketProvider } from "./context/SocketContext";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 const root = document.getElementById("root") as HTMLElement;
@@ -13,9 +14,11 @@ if (root !== null) {
   createRoot(root).render(
     // <StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <SocketProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </SocketProvider>
     </Provider>
     /* </StrictMode>, */
   );
