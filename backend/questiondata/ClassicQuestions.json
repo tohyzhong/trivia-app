@@ -816,22 +816,6 @@
     "difficulty": 1
   },
   {
-    "question": "Which viral TikTok dance trend uses arm movements to simulate a speed-up effect?",
-    "options": ["Time Warp", "Speed Arms", "Fast Hands", "Arm Wave"],
-    "correctOption": 4,
-    "explanation": "The 'Arm Wave' trend creates an illusion of speed-up through synchronized arm movements.",
-    "category": "TikTok",
-    "difficulty": 2
-  },
-  {
-    "question": "What type of TikTok video shows a day in someone's life with fast transitions?",
-    "options": ["Day Speed", "Quick Life", "Transition Day", "Life Flash"],
-    "correctOption": 3,
-    "explanation": "'Transition Day' videos use quick cuts to show daily activities in an aesthetic way.",
-    "category": "TikTok",
-    "difficulty": 1
-  },
-  {
     "question": "Which TikTok trend involves users rating things with intense music?",
     "options": ["Power Ranking", "Epic Rates", "Megascore", "Rating Time"],
     "correctOption": 1,
@@ -954,14 +938,6 @@
     "difficulty": 2
   },
   {
-    "question": "Which trend involves rating things on an 'Infinite Scale'?",
-    "options": ["Beyond Rate", "Scale Plus", "Power Score", "Mega Rate"],
-    "correctOption": 1,
-    "explanation": "'Beyond Rate' uses an exaggerated rating system beyond traditional scales.",
-    "category": "TikTok",
-    "difficulty": 1
-  },
-  {
     "question": "Which TikTok challenge involves freezing in place while a song plays?",
     "options": [
       "Mannequin Challenge",
@@ -971,14 +947,6 @@
     ],
     "correctOption": 1,
     "explanation": "The Mannequin Challenge became popular for participants freezing in place while music played.",
-    "category": "TikTok",
-    "difficulty": 1
-  },
-  {
-    "question": "What is the name of the TikTok trend where users show their pet's reaction to a filter?",
-    "options": ["Pet Filter", "Dog Vision", "Animal Lens", "Pet Reaction"],
-    "correctOption": 4,
-    "explanation": "The Pet Reaction trend uses filters to capture funny animal responses.",
     "category": "TikTok",
     "difficulty": 1
   },
@@ -1091,20 +1059,12 @@
     "difficulty": 1
   },
   {
-    "question": "What is the name of the TikTok trend where users share their study tips?",
-    "options": ["Study Tok", "Learn With Me", "Study Hacks", "Smart Moves"],
-    "correctOption": 4,
-    "explanation": "'Smart Moves' is a trend for sharing effective study strategies.",
-    "category": "TikTok",
-    "difficulty": 2
-  },
-  {
     "question": "Which TikTok trend involves users showing their favorite books?",
     "options": ["BookTok", "Read With Me", "Book Club", "Page Turners"],
     "correctOption": 1,
     "explanation": "'BookTok' is a community and trend for sharing book recommendations.",
     "category": "TikTok",
-    "difficulty": 1
+    "difficulty": 3
   },
   {
     "question": "Which TikTok trend features users sharing their skincare routines?",
