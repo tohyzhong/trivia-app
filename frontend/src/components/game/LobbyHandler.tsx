@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +8,7 @@ import GameLoading from "./gamelobby/GameLoading";
 import GameLobby from "./gamelobby/GameLobby";
 import QuizDisplay from "./quiz/QuizDisplay";
 import { clearLobby } from "../../redux/lobbySlice";
+import { useSocket } from "../../context/SocketContext";
 
 interface GameSetting {
   numQuestions: number;
@@ -47,11 +47,6 @@ interface GameState {
   lastUpdate: Date;
 }
 
-const socket = io(import.meta.env.VITE_API_URL, {
-  withCredentials: true,
-  transports: ["websocket"]
-});
-
 const LobbyHandler: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
@@ -73,6 +68,7 @@ const LobbyHandler: React.FC = () => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
   // Socket management
+  const socket = useSocket();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const disconnect = async () => {
