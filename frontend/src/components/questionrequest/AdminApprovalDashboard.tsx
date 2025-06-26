@@ -23,7 +23,6 @@ interface Question {
 const AdminApprovalDashboard: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const role = user.role;
-  console.log(user);
 
   const [approvalMessage, setApprovalMessage] = useState("");
   const [isApprovalSuccess, setIsApprovalSuccess] = useState(false);
