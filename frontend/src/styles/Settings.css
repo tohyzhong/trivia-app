@@ -22,6 +22,16 @@
   font-size: 20px;
 }
 
+.user-info-details p {
+  max-width: 350px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  min-height: 30px;
+  max-height: 200px;
+  overflow: hidden;
+}
+
 .profile-picture {
   width: 100px;
   height: 100px;
@@ -84,11 +94,23 @@
   color: red;
 }
 
+.verification-email {
+  margin-left: auto;
+}
+
 .verification-email button {
+  position: relative;
   background-color: #007bff;
   color: white;
+  margin-left: 20px;
 }
 
 .verification-email button:hover {
   background-color: #0056b3;
+}
+
+.settings-container button:disabled {
+  background-color: #888888;
+  color: #cccccc;
+  cursor: not-allowed;
 }

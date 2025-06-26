@@ -4,6 +4,9 @@ import { RootState } from "../../redux/store";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Settings.css";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { useCooldown } from "../../hooks/useCooldown";
+import { motion } from "motion/react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface UserProfile {
   username: string;
@@ -20,6 +23,26 @@ const Settings: React.FC = () => {
   const count = useRef(0);
   const [errorPopupMessage, setErrorPopupMessage] = useState("");
   const [isResponseSuccess, setIsResponseSuccess] = useState(false);
+
+  const [sendingVerification, setSendingVerification] =
+    useState<boolean>(false);
+  const [sendingPassword, setSendingPassword] = useState<boolean>(false);
+  const [sendingEmail, setSendingEmail] = useState<boolean>(false);
+  const [sendingDelete, setSendingDelete] = useState<boolean>(false);
+  const {
+    remaining: verificationCooldown,
+    triggerCooldown: triggerVerificationCooldown
+  } = useCooldown("lastVerificationEmail", 60000);
+  const {
+    remaining: passwordResetCooldown,
+    triggerCooldown: triggerPasswordResetCooldown
+  } = useCooldown("lastPasswordReset", 60000);
+  const {
+    remaining: emailChangeCooldown,
+    triggerCooldown: triggerEmailChangeCooldown
+  } = useCooldown("lastEmailChange", 60000);
+  const { remaining: deleteCooldown, triggerCooldown: triggerDeleteCooldown } =
+    useCooldown("lastAccountDeletion", 60000);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -82,6 +105,7 @@ const Settings: React.FC = () => {
 
   // Handle password reset request
   const handlePasswordResetRequest = async () => {
+    setSendingPassword(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/settings/change-password`,
@@ -99,6 +123,7 @@ const Settings: React.FC = () => {
         throw new Error("Error sending password reset request");
       }
 
+      triggerPasswordResetCooldown();
       setErrorPopupMessage(
         "Password reset request sent! Please check your email for further instructions."
       );
@@ -109,11 +134,14 @@ const Settings: React.FC = () => {
       );
       setIsResponseSuccess(false);
     }
+
+    setSendingPassword(false);
   };
 
   // Handle email change request
   const handleEmailChangeRequest = async () => {
     try {
+      setSendingEmail(true);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/settings/change-email`,
         {
@@ -130,6 +158,7 @@ const Settings: React.FC = () => {
         throw new Error("Error changing email");
       }
 
+      triggerEmailChangeCooldown();
       setErrorPopupMessage(
         "Email change request sent! Please check your new email to verify the change."
       );
@@ -138,11 +167,14 @@ const Settings: React.FC = () => {
       setErrorPopupMessage(err.message || "Error changing email");
       setIsResponseSuccess(false);
     }
+
+    setSendingEmail(false);
   };
 
   // Handle account deletion
   const handleAccountDeletion = async () => {
     try {
+      setSendingDelete(true);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/settings/delete-account`,
         {
@@ -157,6 +189,7 @@ const Settings: React.FC = () => {
 
       const data = await response.json();
 
+      triggerDeleteCooldown();
       setErrorPopupMessage(
         "Please check your email to confirm account deletion."
       );
@@ -165,11 +198,14 @@ const Settings: React.FC = () => {
       setErrorPopupMessage(err.message || "Error deleting account");
       setIsResponseSuccess(false);
     }
+
+    setSendingDelete(false);
   };
 
   // Handle send verification email
   const handleVerificationEmail = async () => {
     try {
+      setSendingVerification(true);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/auth/send-verification-email`,
         {
@@ -186,6 +222,7 @@ const Settings: React.FC = () => {
         throw new Error("Error sending verification email");
       }
 
+      triggerVerificationCooldown();
       setErrorPopupMessage(
         "Verification email sent! Please check your inbox to verify your account."
       );
@@ -194,6 +231,8 @@ const Settings: React.FC = () => {
       setErrorPopupMessage(err.message || "Error sending verification email");
       setIsResponseSuccess(false);
     }
+
+    setSendingVerification(false);
   };
 
   useEffect(() => {
@@ -220,7 +259,7 @@ const Settings: React.FC = () => {
           alt={username}
           className="profile-picture"
         />
-        <div>
+        <div className="user-info-details">
           <p>
             <strong>Username:</strong> {username}
           </p>
@@ -240,8 +279,33 @@ const Settings: React.FC = () => {
         </div>
         <div className="verification-email">
           {!verified && (
-            <button onClick={handleVerificationEmail}>
-              Send Verification Email
+            <button
+              onClick={handleVerificationEmail}
+              disabled={verificationCooldown > 0 || sendingVerification}
+            >
+              {verificationCooldown > 0 ? (
+                `Wait ${Math.ceil(verificationCooldown / 1000)}s for Resend`
+              ) : (
+                <>
+                  Verify
+                  {sendingVerification && (
+                    <>
+                      &nbsp;
+                      <motion.div
+                        className="loading-icon-container"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear"
+                        }}
+                      >
+                        <AiOutlineLoading3Quarters className="loading-icon" />
+                      </motion.div>
+                    </>
+                  )}
+                </>
+              )}
             </button>
           )}
         </div>
@@ -269,19 +333,96 @@ const Settings: React.FC = () => {
             onChange={(e) => setNewEmail(e.target.value)}
             placeholder="Enter new email"
           />
-          <button onClick={handleEmailChangeRequest}>
-            Request Email Change
+          <button
+            onClick={handleEmailChangeRequest}
+            disabled={sendingEmail || emailChangeCooldown > 0}
+          >
+            {emailChangeCooldown > 0 ? (
+              `Wait ${Math.ceil(emailChangeCooldown / 1000)}s to Change Email Again`
+            ) : (
+              <>
+                Request Email Change
+                {sendingEmail && (
+                  <>
+                    &nbsp;
+                    <motion.div
+                      className="loading-icon-container"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "linear"
+                      }}
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  </>
+                )}
+              </>
+            )}
           </button>
         </div>
 
         <div className="password-reset">
-          <button onClick={handlePasswordResetRequest}>
-            Request Password Reset
+          <button
+            onClick={handlePasswordResetRequest}
+            disabled={sendingPassword || passwordResetCooldown > 0}
+          >
+            {passwordResetCooldown > 0 ? (
+              `Wait ${Math.ceil(passwordResetCooldown / 1000)}s to Change Password Again`
+            ) : (
+              <>
+                Request Password Reset
+                {sendingPassword && (
+                  <>
+                    &nbsp;
+                    <motion.div
+                      className="loading-icon-container"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "linear"
+                      }}
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  </>
+                )}
+              </>
+            )}
           </button>
         </div>
 
         <div className="delete-account">
-          <button onClick={handleAccountDeletion}>Delete Account</button>
+          <button
+            onClick={handleAccountDeletion}
+            disabled={sendingDelete || deleteCooldown > 0}
+          >
+            {deleteCooldown > 0 ? (
+              `Wait ${Math.ceil(deleteCooldown / 1000)}s to Request Deletions Again`
+            ) : (
+              <>
+                Delete Account
+                {sendingDelete && (
+                  <>
+                    &nbsp;
+                    <motion.div
+                      className="loading-icon-container"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "linear"
+                      }}
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  </>
+                )}
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
