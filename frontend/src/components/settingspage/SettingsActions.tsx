@@ -183,7 +183,7 @@ const SettingsActions: React.FC = () => {
   return (
     <div className="settings-actions-container">
       <h1>Action Verification</h1>
-      <p className={error.current ? "error" : "success"}>
+      <p className={error.current ? "error" : "settings-success"}>
         {Array.isArray(message)
           ? message.map((msg, index) => (
               <p className={error.current ? "error" : "success"} key={index}>
