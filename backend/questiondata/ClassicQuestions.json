@@ -1,26 +1,26 @@
 [
   {
     "question": "Fill in the blank: What you know about rolling down in the _________",
-    "options": ["Deep", "Storm", "Waves", "Club"],
-    "correctOption": 1,
+    "options": ["Storm", "Waves", "Club", "Deep"],
+    "correctOption": 4,
     "explanation": "🎵 From the viral hit **[Masked Wolf - Astronaut In The Ocean](https://www.youtube.com/watch?v=3chGVpR9NzA)**",
     "category": "General",
     "difficulty": 2
   },
   {
     "question": "What is the proper response to 'Who asked?'",
-    "options": ["You did", "Nobody", "I did", "Your mom"],
-    "correctOption": 2,
+    "options": ["You did", "I did", "Nobody", "Your mom"],
+    "correctOption": 3,
     "explanation": "😶 The phrase **'Nobody asked'** is a classic internet comeback used to dismiss someone's comment as irrelevant.",
     "category": "General",
     "difficulty": 1
   },
   {
     "question": "What animal is often edited with 'Sigma grindset' music?",
-    "options": ["Wolf", "Hamster", "Capybara", "Gorilla"],
-    "correctOption": 1,
+    "options": ["Hamster", "Capybara", "Gorilla", "Wolf"],
+    "correctOption": 4,
     "explanation": "🐺 The **Sigma Wolf** aesthetic uses lone wolves with dark filters and motivational audio to represent 'lone alpha males.'",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -28,7 +28,7 @@
     "options": ["Snapback", "Top hat", "Fedora", "No hat"],
     "correctOption": 4,
     "explanation": "💪 The original **Chad meme** (like GigaChad) features a muscular, bare-headed male figure signifying peak masculinity.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -36,7 +36,7 @@
     "options": ["Henry", "Greg", "Juan", "Jesse"],
     "correctOption": 3,
     "explanation": "🐴 The absurd situation of **'Juan the Horse'** looking over on a small balcony went viral with the caption 'juan.'",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -57,32 +57,24 @@
     "options": ["Coolness", "Unpredictability", "Scripted behavior", "High IQ"],
     "correctOption": 3,
     "explanation": "🧠 An **NPC** (Non-Player Character) meme represents someone who lacks original thoughts and follows 'scripts' in real life.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
     "question": "What is the 'default dance' originally from?",
-    "options": ["Roblox", "Fortnite", "TikTok", "Club Penguin"],
-    "correctOption": 2,
+    "options": ["Roblox", "TikTok", "Fortnite", "Club Penguin"],
+    "correctOption": 3,
     "explanation": "🕺 The **Default Dance** is an iconic emote from **Fortnite**.",
     "category": "General",
     "difficulty": 1
   },
   {
     "question": "Finish the phrase: ‘Bro thinks he’s ________’",
-    "options": ["him", "built", "funny", "real"],
-    "correctOption": 1,
+    "options": ["built", "funny", "real", "him"],
+    "correctOption": 4,
     "explanation": "👤 **'Bro thinks he's him'** is a sarcastic phrase mocking someone for acting like they’re the main character or superior.",
-    "category": "Meme God",
-    "difficulty": 1
-  },
-  {
-    "question": "Which fictional food became a meme thanks to exaggerated reactions?",
-    "options": ["Krabby Patty", "Nutella", "Pink Sauce", "Chili Dogs"],
-    "correctOption": 3,
-    "explanation": "🎨 **Pink Sauce** went viral after TikTok creator **Veronica Shaw** made a bizarre homemade condiment, causing confusion, controversy, and memes.",
     "category": "General",
-    "difficulty": 2
+    "difficulty": 1
   },
   {
     "question": "Which of these was used to make the 'Beluga' memes?",
@@ -94,15 +86,15 @@
     ],
     "correctOption": 3,
     "explanation": "💬 The **Beluga YouTube channel** gained popularity using comedic Discord chat roleplays featuring a cat character.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
     "question": "What name is used as a default insult in memes?",
-    "options": ["Kevin", "Kyle", "Chad", "Dawg"],
-    "correctOption": 2,
+    "options": ["Kevin", "Chad", "Kyle", "Dawg"],
+    "correctOption": 3,
     "explanation": "🥤 A **'Kyle'** is a meme stereotype of an aggressive teen who drinks Monster Energy and punches drywall.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -123,13 +115,13 @@
     "options": ["Roblox", "Among Us", "GTA Online", "Fall Guys"],
     "correctOption": 2,
     "explanation": "🚀 **'Sus'** (short for suspicious) became viral from **Among Us**, where players accuse each other of being impostors.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
   },
   {
     "question": "Finish the phrase: ‘He’s got that dog ______’",
-    "options": ["in him", "energy", "mentality", "on speed dial"],
-    "correctOption": 1,
+    "options": ["energy", "mentality", "on speed dial", "in him"],
+    "correctOption": 4,
     "explanation": "🐶 Saying someone **'has that dog in him'** is a meme praising their mental toughness.",
     "category": "General",
     "difficulty": 1
@@ -147,13 +139,11 @@
     "options": ["Self-improvement", "Social justice", "Gaming", "Cooking"],
     "correctOption": 1,
     "explanation": "💪 **Sigma grindset** memes focus on self-improvement, hustle culture, and often mock traditional masculinity.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 2
   },
   {
-    "question": "What is the 'NPC' meme often used to describe?",
+    "question": "What is the 'NPC' term often used to describe?",
     "options": [
       "People with unique personalities",
       "Individuals who follow trends blindly",
@@ -161,11 +151,9 @@
       "Creative thinkers"
     ],
     "correctOption": 2,
-    "explanation": "🧠 The **NPC** meme represents people who lack original thoughts and follow 'scripts' in real life.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "explanation": "🧠 The **NPC** (Non-Player Character) term represents people who lack original thoughts and follow 'scripts' in real life.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
   },
   {
     "question": "What is the 'Ohio' meme often used to describe?",
@@ -177,40 +165,32 @@
     ],
     "correctOption": 2,
     "explanation": "🌀 **'Only in Ohio'** memes parody the state as a chaotic, surreal place filled with bizarre situations.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 1
   },
   {
     "question": "Which phrase is commonly used to describe someone who blindly follows trends?",
     "options": ["Trendsetter", "NPC", "Sigma", "Chad"],
     "correctOption": 2,
     "explanation": "NPC memes are often used to describe people who follow trends without thinking for themselves.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 1
   },
   {
     "question": "What is the main theme of 'rizz' memes?",
-    "options": ["Charisma", "Cooking", "Gaming", "Travel"],
-    "correctOption": 1,
+    "options": ["Cooking", "Gaming", "Charisma", "Travel"],
+    "correctOption": 3,
     "explanation": "'Rizz' is internet slang for charisma or flirting skills.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "Which meme is associated with the phrase 'sheesh'?",
-    "options": ["Excitement", "Sadness", "Confusion", "Anger"],
-    "correctOption": 1,
+    "options": ["Sadness", "Confusion", "Excitement", "Anger"],
+    "correctOption": 3,
     "explanation": "'Sheesh' is often used to express excitement or amazement in memes.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "What does 'ratio' mean in internet slang?",
@@ -222,170 +202,128 @@
     ],
     "correctOption": 2,
     "explanation": "'Ratio' refers to a tweet or post that gets more replies than likes, indicating disapproval.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 2
   },
   {
     "question": "Which meme is used to mock people for being overly dramatic?",
     "options": ["Bro is emotional", "Sigma grindset", "NPC", "Chad"],
     "correctOption": 1,
     "explanation": "'Bro is emotional' is a meme mocking exaggerated emotional reactions.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 1
   },
   {
     "question": "What does 'based' mean in meme culture?",
     "options": ["Unpopular", "Authentic", "Annoying", "Funny"],
     "correctOption": 2,
     "explanation": "'Based' means being authentic or unapologetically oneself.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 2
   },
   {
     "question": "Which meme phrase is used to call out hypocrisy?",
     "options": ["This you?", "No cap", "Sheesh", "Ratio"],
     "correctOption": 1,
     "explanation": "'This you?' is used to point out hypocrisy by referencing someone's past actions.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 2
   },
   {
     "question": "What is the meaning of 'mid' in meme slang?",
     "options": ["Amazing", "Average", "Old", "Expensive"],
     "correctOption": 2,
     "explanation": "'Mid' is used to describe something as average or mediocre.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "Which meme is associated with the phrase 'no cap'?",
     "options": ["Lying", "Telling the truth", "Being funny", "Being angry"],
     "correctOption": 2,
     "explanation": "'No cap' means telling the truth or being honest.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "What does 'L' mean in meme language?",
     "options": ["Win", "Loss", "Laugh", "Like"],
     "correctOption": 2,
     "explanation": "'L' stands for loss or failure in meme culture.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
-  },
-  {
-    "question": "Which meme is used to describe someone acting superior?",
-    "options": ["Sigma", "NPC", "Chad", "Karen"],
-    "correctOption": 1,
-    "explanation": "'Sigma' memes often depict people acting superior or independent.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "What does 'sus' mean in meme slang?",
-    "options": ["Suspicious", "Successful", "Super", "Sad"],
-    "correctOption": 1,
+    "options": ["Successful", "Super", "Sad", "Suspicious"],
+    "correctOption": 4,
     "explanation": "'Sus' is short for suspicious, popularized by Among Us.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "Which meme is used to describe someone who complains a lot?",
-    "options": ["Karen", "Chad", "Sigma", "NPC"],
-    "correctOption": 1,
+    "options": ["Chad", "Sigma", "NPC", "Karen"],
+    "correctOption": 4,
     "explanation": "'Karen' memes are used to describe people who complain or demand to speak to the manager.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 1
   },
   {
     "question": "What does 'drip' refer to in meme culture?",
     "options": ["Dancing", "Fashion", "Food", "Music"],
     "correctOption": 2,
     "explanation": "'Drip' refers to stylish or fashionable clothing.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "Which meme is associated with the phrase 'main character energy'?",
     "options": ["NPC", "Sigma", "Chad", "Bro thinks he's him"],
     "correctOption": 4,
     "explanation": "'Bro thinks he's him' is used to mock someone acting like the main character.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 2
   },
   {
     "question": "What does 'go touch grass' mean in meme slang?",
     "options": ["Go outside", "Play games", "Eat healthy", "Sleep"],
     "correctOption": 1,
     "explanation": "'Go touch grass' means to go outside and take a break from the internet.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 1
   },
   {
     "question": "Which meme is used to describe someone who is overly confident?",
-    "options": ["Sigma", "NPC", "Karen", "Kyle"],
-    "correctOption": 1,
+    "options": ["NPC", "Karen", "Kyle", "Sigma"],
+    "correctOption": 4,
     "explanation": "'Sigma' memes often depict people with extreme confidence.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 2
   },
   {
     "question": "What does 'copium' mean in meme culture?",
     "options": ["Hope", "Denial", "Excitement", "Anger"],
     "correctOption": 2,
     "explanation": "'Copium' is a meme term for denial or rationalizing failure.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 2
   },
   {
     "question": "Which meme is used to describe someone who is always angry?",
     "options": ["Karen", "Kyle", "NPC", "Sigma"],
     "correctOption": 2,
     "explanation": "'Kyle' memes stereotype someone as always angry and destructive.",
-    "category": "Community",
-    "difficulty": 1,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "General",
+    "difficulty": 1
   },
   {
     "question": "What does 'gigachad' represent in meme culture?",
-    "options": ["Weakness", "Ultimate masculinity", "Confusion", "Sadness"],
-    "correctOption": 2,
+    "options": ["Weakness", "Confusion", "Ultimate masculinity", "Sadness"],
+    "correctOption": 3,
     "explanation": "'Gigachad' is a meme representing the ultimate masculine ideal.",
-    "category": "Community",
-    "difficulty": 2,
-    "approved": false,
-    "createdBy": "CoPilot"
+    "category": "Slang & Acronyms",
+    "difficulty": 2
   },
 
   {
@@ -438,8 +376,8 @@
   },
   {
     "question": "Which meme is associated with the phrase 'It’s Wednesday, my dudes'?",
-    "options": ["Frog", "Dog", "Cat", "Lizard"],
-    "correctOption": 1,
+    "options": ["Dog", "Cat", "Lizard", "Frog"],
+    "correctOption": 4,
     "explanation": "The meme features a frog and the phrase 'It’s Wednesday, my dudes.'",
     "category": "General",
     "difficulty": 1
@@ -455,12 +393,12 @@
   {
     "question": "Which meme features a distracted boyfriend?",
     "options": [
-      "Distracted Boyfriend",
       "Mocking SpongeBob",
       "Woman Yelling at Cat",
-      "Doge"
+      "Doge",
+      "Distracted Boyfriend"
     ],
-    "correctOption": 1,
+    "correctOption": 4,
     "explanation": "The 'Distracted Boyfriend' meme is a stock photo of a man looking at another woman.",
     "category": "General",
     "difficulty": 1
@@ -474,9 +412,9 @@
     "difficulty": 2
   },
   {
-    "question": "Which meme is associated with the phrase 'Is this a pigeon?'",
-    "options": ["Butterfly", "Bird", "Dog", "Cat"],
-    "correctOption": 1,
+    "question": "Which animal is associated with the meme phrase 'Is this a pigeon?'",
+    "options": ["Bird", "Dog", "Cat", "Butterfly"],
+    "correctOption": 4,
     "explanation": "The meme comes from an anime scene where a character mistakes a butterfly for a pigeon.",
     "category": "General",
     "difficulty": 2
@@ -484,12 +422,12 @@
   {
     "question": "What is the main joke in the 'Expanding Brain' meme?",
     "options": [
-      "Levels of intelligence",
       "Levels of anger",
       "Levels of sadness",
-      "Levels of happiness"
+      "Levels of happiness",
+      "Levels of intelligence"
     ],
-    "correctOption": 1,
+    "correctOption": 4,
     "explanation": "The meme shows increasing levels of intelligence or enlightenment.",
     "category": "General",
     "difficulty": 2
@@ -509,8 +447,8 @@
   },
   {
     "question": "What is the main theme of 'Two Buttons' meme?",
-    "options": ["Confusion", "Happiness", "Sadness", "Anger"],
-    "correctOption": 1,
+    "options": ["Happiness", "Sadness", "Anger", "Confusion"],
+    "correctOption": 4,
     "explanation": "The meme shows a character struggling to choose between two options.",
     "category": "General",
     "difficulty": 2
@@ -524,25 +462,17 @@
     "difficulty": 1
   },
   {
-    "question": "What is the main joke in the 'Change My Mind' meme?",
-    "options": ["Debate", "Agreement", "Confusion", "Happiness"],
-    "correctOption": 1,
-    "explanation": "The meme features a person inviting others to change their opinion.",
-    "category": "General",
-    "difficulty": 2
-  },
-  {
     "question": "Which meme is associated with the phrase 'Ight, Imma head out'?",
-    "options": ["SpongeBob", "Patrick", "Squidward", "Mr. Krabs"],
-    "correctOption": 1,
+    "options": ["Patrick", "Squidward", "Mr. Krabs", "SpongeBob"],
+    "correctOption": 4,
     "explanation": "The meme features SpongeBob getting up from a chair, indicating he's leaving.",
     "category": "General",
     "difficulty": 1
   },
   {
     "question": "What is the main theme of 'Epic Handshake' meme?",
-    "options": ["Agreement", "Disagreement", "Confusion", "Happiness"],
-    "correctOption": 1,
+    "options": ["Disagreement", "Confusion", "Happiness", "Agreement"],
+    "correctOption": 4,
     "explanation": "The meme shows two people shaking hands over a shared trait or idea.",
     "category": "General",
     "difficulty": 2
@@ -550,20 +480,20 @@
   {
     "question": "Which meme features a dog in a burning room?",
     "options": [
-      "This is fine",
       "Doge",
       "Surprised Pikachu",
+      "This is fine",
       "Woman Yelling at Cat"
     ],
-    "correctOption": 1,
+    "correctOption": 3,
     "explanation": "The 'This is fine' meme features a dog calmly sitting in a burning room.",
     "category": "General",
     "difficulty": 1
   },
   {
     "question": "What is the main joke in the 'Gru's Plan' meme?",
-    "options": ["Unexpected outcomes", "Happiness", "Sadness", "Victory"],
-    "correctOption": 1,
+    "options": ["Happiness", "Sadness", "Victory", "Unexpected outcomes"],
+    "correctOption": 4,
     "explanation": "The meme shows Gru's plan going wrong in a series of panels.",
     "category": "General",
     "difficulty": 2
@@ -582,7 +512,7 @@
     "options": ["Shiba Inu", "Golden Retriever", "Bulldog", "Pug"],
     "correctOption": 1,
     "explanation": "Cheems is a Shiba Inu dog featured in many meme formats.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
   },
   {
@@ -590,7 +520,7 @@
     "options": ["Finance", "Cooking", "Travel", "Music"],
     "correctOption": 1,
     "explanation": "'Stonks' memes parody financial decisions and stock market trends.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -603,7 +533,7 @@
     ],
     "correctOption": 1,
     "explanation": "The 'Distracted Boyfriend' meme is a stock photo used in many meme formats.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
   },
   {
@@ -611,7 +541,7 @@
     "options": ["Mistaken identity", "Happiness", "Sadness", "Victory"],
     "correctOption": 1,
     "explanation": "The meme comes from an anime scene where a butterfly is mistaken for a pigeon.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -619,7 +549,7 @@
     "options": ["Unexpected actions", "Agreement", "Confusion", "Happiness"],
     "correctOption": 1,
     "explanation": "The 'No one:' meme is used to highlight unexpected or random actions.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
   },
   {
@@ -632,73 +562,41 @@
     ],
     "correctOption": 1,
     "explanation": "The meme shows increasing levels of intelligence or enlightenment.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
     "question": "Which meme features a cat at a dinner table?",
     "options": [
-      "Woman Yelling at Cat",
       "Doge",
       "Surprised Pikachu",
+      "Woman Yelling at Cat",
       "Mocking SpongeBob"
     ],
-    "correctOption": 1,
+    "correctOption": 3,
     "explanation": "The meme features a woman yelling and a cat sitting at a dinner table.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
-  },
-  {
-    "question": "What is the main joke in the 'Two Buttons' meme?",
-    "options": ["Confusion", "Happiness", "Sadness", "Anger"],
-    "correctOption": 1,
-    "explanation": "The meme shows a character struggling to choose between two options.",
-    "category": "Meme God",
-    "difficulty": 2
-  },
-  {
-    "question": "Which meme is associated with the phrase 'Change My Mind'?",
-    "options": ["Debate", "Agreement", "Confusion", "Happiness"],
-    "correctOption": 1,
-    "explanation": "The meme features a person inviting others to change their opinion.",
-    "category": "Meme God",
-    "difficulty": 2
-  },
-  {
-    "question": "What is the main theme of 'Epic Handshake' memes?",
-    "options": ["Agreement", "Disagreement", "Confusion", "Happiness"],
-    "correctOption": 1,
-    "explanation": "The meme shows two people shaking hands over a shared trait or idea.",
-    "category": "Meme God",
-    "difficulty": 2
   },
   {
     "question": "Which meme features a dog in a burning room?",
     "options": [
-      "This is fine",
       "Doge",
       "Surprised Pikachu",
-      "Woman Yelling at Cat"
+      "Woman Yelling at Cat",
+      "This is fine"
     ],
-    "correctOption": 1,
+    "correctOption": 4,
     "explanation": "The 'This is fine' meme features a dog calmly sitting in a burning room.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
-  },
-  {
-    "question": "What is the main joke in the 'Gru's Plan' meme?",
-    "options": ["Unexpected outcomes", "Happiness", "Sadness", "Victory"],
-    "correctOption": 1,
-    "explanation": "The meme shows Gru's plan going wrong in a series of panels.",
-    "category": "Meme God",
-    "difficulty": 2
   },
   {
     "question": "Which meme is associated with the phrase 'You had one job'?",
     "options": ["Failure", "Success", "Happiness", "Confusion"],
     "correctOption": 1,
     "explanation": "The meme is used to highlight simple tasks that were failed.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
   },
   {
@@ -711,7 +609,7 @@
     ],
     "correctOption": 1,
     "explanation": "The meme features a frog and the phrase 'It’s Wednesday, my dudes.'",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 1
   },
   {
@@ -719,7 +617,7 @@
     "options": ["Happiness", "Confusion", "Tragedy", "Victory"],
     "correctOption": 3,
     "explanation": "The 'Loss' meme references a tragic comic strip from Ctrl+Alt+Del.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -727,7 +625,7 @@
     "options": ["Butterfly", "Bird", "Dog", "Cat"],
     "correctOption": 1,
     "explanation": "The meme comes from an anime scene where a character mistakes a butterfly for a pigeon.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
@@ -740,36 +638,702 @@
     ],
     "correctOption": 1,
     "explanation": "The meme shows increasing levels of intelligence or enlightenment.",
-    "category": "Meme God",
-    "difficulty": 2
-  },
-  {
-    "question": "Which meme features a cat sitting at a dinner table?",
-    "options": [
-      "Woman Yelling at Cat",
-      "Doge",
-      "Surprised Pikachu",
-      "Mocking SpongeBob"
-    ],
-    "correctOption": 1,
-    "explanation": "The meme features a woman yelling and a cat sitting at a dinner table.",
-    "category": "Meme God",
-    "difficulty": 1
-  },
-  {
-    "question": "What is the main theme of 'Two Buttons' meme?",
-    "options": ["Confusion", "Happiness", "Sadness", "Anger"],
-    "correctOption": 1,
-    "explanation": "The meme shows a character struggling to choose between two options.",
-    "category": "Meme God",
+    "category": "General",
     "difficulty": 2
   },
   {
     "question": "Which meme is associated with the phrase 'Nobody:'?",
-    "options": ["No one asked", "Unexpected actions", "Mocking", "Repeating"],
-    "correctOption": 2,
+    "options": ["No one asked", "Mocking", "Unexpected actions", "Repeating"],
+    "correctOption": 3,
     "explanation": "The 'Nobody:' meme is used to highlight unexpected or random actions.",
-    "category": "Meme God",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "Which animal became a meme on TikTok due to its chill and surreal vibes?",
+    "options": ["Capybara", "Hamster", "Axolotl", "Ferret"],
+    "correctOption": 1,
+    "explanation": "🦫 Capybaras became a meme with chill TikToks and relaxing music like 'After Party'.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the name of the viral homemade condiment that caused TikTok controversy?",
+    "options": ["Pink Sauce", "Blue Ketchup", "Rainbow Mustard", "Golden Mayo"],
+    "correctOption": 1,
+    "explanation": "🎨 Pink Sauce went viral after TikTok creator Veronica Shaw made a bizarre homemade condiment.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok creator is famous for lip-syncing and dancing with a signature head bob?",
+    "options": [
+      "Charli D'Amelio",
+      "Addison Rae",
+      "Bella Poarch",
+      "Dixie D'Amelio"
+    ],
+    "correctOption": 1,
+    "explanation": "💃 Charli D'Amelio rose to fame with her distinctive dance moves and TikTok presence.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which phrase means manifesting success through delusion on TikTok?",
+    "options": [
+      "Slay the day",
+      "Delulu is the solulu",
+      "Main character energy",
+      "Fake it till you make it"
+    ],
+    "correctOption": 2,
+    "explanation": "🌀 'Delulu is the solulu' is a TikTok slang phrase about manifesting through delusion.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend features people dancing confidently on public transportation?",
+    "options": ["Traincore", "Tube Girl", "Subway Vogue", "Glam Tram"],
+    "correctOption": 2,
+    "explanation": "🚇 The Tube Girl trend showed people slaying and lip-syncing on public transit.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok creator is famous for livestreaming NPC-style reactions?",
+    "options": ["Bella Poarch", "Pinkydoll", "Khaby Lame", "Charli D'Amelio"],
+    "correctOption": 2,
+    "explanation": "🕹️ Pinkydoll became famous for acting like an NPC during TikTok livestreams.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok aesthetic features emotional montages with chaotic clips?",
+    "options": ["WitchTok", "Cottagecore", "Corecore", "Dreamcore"],
+    "correctOption": 3,
+    "explanation": "🎞️ Corecore mixes random video clips and emotional music to evoke feelings.",
+    "category": "TikTok",
+    "difficulty": 3
+  },
+  {
+    "question": "Which song is commonly used in TikTok edits to dramatize slay moments?",
+    "options": [
+      "Summertime Sadness",
+      "Slay Queen",
+      "Jealous Girl (sped up)",
+      "Main Character"
+    ],
+    "correctOption": 3,
+    "explanation": "🎶 'Jealous Girl' became the soundtrack to many slay edits on TikTok.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which fictional currency was used in a TikTok fantasy economy?",
+    "options": ["Catcoins", "Fluff Dollars", "Dabloons", "MeowBux"],
+    "correctOption": 3,
+    "explanation": "💰 Dabloons were handed out in a fake TikTok world where cats gave out imaginary wealth.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok phrase is used to hype up main character vibes?",
+    "options": [
+      "Slay the day",
+      "Delulu is the solulu",
+      "Fake it till you make it",
+      "Main character energy"
+    ],
+    "correctOption": 4,
+    "explanation": "✨ 'Main character energy' means acting like the star of your own story.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok aesthetic blends soft vintage looks with flirty energy?",
+    "options": ["Y2K Baddie", "Barbiecore", "Fairycore", "Coquette"],
+    "correctOption": 4,
+    "explanation": "💋 Coquette channels vintage feminine vibes with a playful and flirty style.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend popularized the phrase 'And I oop'?",
+    "options": [
+      "Lip Sync Challenge",
+      "Comedy Skits",
+      "Vine Compilations",
+      "Drag Queen Reaction"
+    ],
+    "correctOption": 4,
+    "explanation": "The phrase 'And I oop' was popularized by drag queen Jasmine Masters and became a viral TikTok meme.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is a common format for TikTok 'duet' videos?",
+    "options": [
+      "Side-by-side reaction",
+      "Stitching videos",
+      "Split screen singing",
+      "Multi-angle shots"
+    ],
+    "correctOption": 1,
+    "explanation": "TikTok duets show two videos side-by-side, often for reaction or collaboration purposes.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which popular TikTok trend involves users showing their 'before and after' looks?",
+    "options": ["Makeover Magic", "Transformations", "Glow Up", "Style Switch"],
+    "correctOption": 3,
+    "explanation": "The **Glow Up** trend features users showcasing their improvement or changes in appearance over time.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the name of the TikTok filter that turns users into Disney-like characters?",
+    "options": ["AI Portrait", "Cartoon", "Disney Me", "Pixar Filter"],
+    "correctOption": 3,
+    "explanation": "The 'Disney Me' or 'Disney-style' filter became viral for transforming users into animated characters.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which food trend on TikTok involves crushing various snacks into a drink?",
+    "options": ["Dirty Soda", "Snack Mix", "Crunch Punch", "Food Fusion"],
+    "correctOption": 1,
+    "explanation": "'Dirty Soda' involves mixing sodas with cream and crushed snacks or candies.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the term for TikTok's text-to-speech voice that sounds like a robot?",
+    "options": ["Bot Voice", "TikTalk", "AutoReader", "Robo Speech"],
+    "correctOption": 2,
+    "explanation": "TikTalk is the commonly used name for the platform's robotic text-to-speech feature.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend involves users rating things with intense music?",
+    "options": ["Power Ranking", "Epic Rates", "Megascore", "Rating Time"],
+    "correctOption": 1,
+    "explanation": "'Power Ranking' videos feature dramatic music while users rate various items or concepts.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the name for TikTok videos that show satisfying cleaning transformations?",
+    "options": ["Clean Tok", "Wash Wave", "CleanCore", "Tidy Time"],
+    "correctOption": 1,
+    "explanation": "'Clean Tok' features satisfying cleaning and organization content.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend has users sharing their 'red flags' in relationships?",
+    "options": ["Warning Signs", "Red Alert", "Flag Drop", "Red Check"],
+    "correctOption": 2,
+    "explanation": "'Red Alert' became a trend for sharing relationship warning signs.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the term for POV videos where creators act out scenarios?",
+    "options": ["Story Time", "Scene Play", "Role Life", "POV Acting"],
+    "correctOption": 4,
+    "explanation": "'POV Acting' involves creators performing point-of-view scenarios.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend involves showing a 'golden retriever personality'?",
+    "options": [
+      "Dog Energy",
+      "Puppy Vibes",
+      "Golden Personality",
+      "Retriever Core"
+    ],
+    "correctOption": 3,
+    "explanation": "'Golden Personality' refers to having an enthusiastic, friendly demeanor like a golden retriever.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What's the name of the trend where users share their 'chosen families'?",
+    "options": ["Found Family", "Friend Core", "Bond Squad", "Team Pick"],
+    "correctOption": 1,
+    "explanation": "'Found Family' videos showcase close friend groups that feel like family.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok effect makes videos look like old VHS recordings?",
+    "options": ["Retro Cam", "VHS Vision", "Time Warp", "Vintage View"],
+    "correctOption": 2,
+    "explanation": "'VHS Vision' adds vintage video effects to make content look like old tape recordings.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What trend involves users sharing their 'villain origin story'?",
+    "options": ["Dark Past", "Evil Begin", "Villain Arc", "Bad Start"],
+    "correctOption": 3,
+    "explanation": "'Villain Arc' videos share moments that changed someone's personality or outlook.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend uses the 'Not Funny, Didn't Laugh' sound?",
+    "options": ["Joke Review", "Humor Check", "Comedy Rate", "Laugh Test"],
+    "correctOption": 4,
+    "explanation": "'Laugh Test' videos use this sound to rate humor or respond to jokes.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What's the name for aesthetic videos showing cozy, rainy day activities?",
+    "options": ["Rain Core", "Cozy Vibes", "Pluviophile", "Weather Mood"],
+    "correctOption": 1,
+    "explanation": "'Rain Core' features aesthetic content centered around rainy day comfort.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which trend has users sharing their 'comfort character' traits?",
+    "options": [
+      "Character Match",
+      "Comfort Core",
+      "Personality Type",
+      "Trait Match"
+    ],
+    "correctOption": 2,
+    "explanation": "'Comfort Core' involves relating personality traits to favorite fictional characters.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What's the name for TikTok's trend of hyper-organized daily routines?",
+    "options": ["Life Plan", "Routine Core", "That Girl", "Day Design"],
+    "correctOption": 3,
+    "explanation": "'That Girl' refers to having a perfectly organized, aesthetic daily routine.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend shows extreme close-ups with dramatic music?",
+    "options": ["Zoom Drama", "Close Core", "Mega Focus", "Intensity Shot"],
+    "correctOption": 4,
+    "explanation": "'Intensity Shot' videos use extreme close-ups with dramatic music for effect.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What's the term for TikTok's romanticized lifestyle content?",
+    "options": ["Life Glam", "Romance Core", "Soft Life", "Dream Style"],
+    "correctOption": 3,
+    "explanation": "'Soft Life' content shows an idealized, romantic version of daily activities.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok challenge involves freezing in place while a song plays?",
+    "options": [
+      "Mannequin Challenge",
+      "Freeze Frame",
+      "Still Life",
+      "Pause Trend"
+    ],
+    "correctOption": 1,
+    "explanation": "The Mannequin Challenge became popular for participants freezing in place while music played.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok sound is often used for dramatic slow-motion reveals?",
+    "options": ["Oh No", "Dramatic Reveal", "Slow Beat", "Epic Drop"],
+    "correctOption": 1,
+    "explanation": "The 'Oh No' sound is widely used for slow-motion or dramatic reveal videos.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend features users showing their outfit changes to the beat of a song?",
+    "options": ["Outfit Switch", "Fit Check", "Transition Trend", "Style Swap"],
+    "correctOption": 2,
+    "explanation": "'Fit Check' videos show users changing outfits in sync with music.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the name of the TikTok trend where users lip-sync to movie scenes?",
+    "options": ["Scene Sync", "Movie Lips", "Film Dub", "Cinema Voice"],
+    "correctOption": 3,
+    "explanation": "'Film Dub' involves users lip-syncing to famous movie lines.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend involves users pretending to be NPCs in real life?",
+    "options": ["NPC IRL", "Real Life NPC", "Human NPC", "NPC Challenge"],
+    "correctOption": 4,
+    "explanation": "The NPC Challenge has users acting like non-player characters in real life.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend features users sharing their 'icks' about dating?",
+    "options": [
+      "Ick List",
+      "Red Flag Trend",
+      "Turn Offs",
+      "Dealbreaker Diaries"
+    ],
+    "correctOption": 1,
+    "explanation": "'Ick List' videos are about things that turn people off in dating.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the name of the TikTok trend where users show their childhood photos?",
+    "options": [
+      "Throwback Trend",
+      "Baby Me",
+      "Then and Now",
+      "Glow Up Challenge"
+    ],
+    "correctOption": 2,
+    "explanation": "'Baby Me' is a trend where users share their childhood pictures.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend involves users making food with only three ingredients?",
+    "options": [
+      "Simple Eats",
+      "Three Ingredient Challenge",
+      "Quick Bites",
+      "Easy Meals"
+    ],
+    "correctOption": 2,
+    "explanation": "The Three Ingredient Challenge is about making recipes with just three items.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend features users showing their morning routines?",
+    "options": [
+      "Morning Vibes",
+      "Rise and Shine",
+      "Routine Reveal",
+      "AM Routine"
+    ],
+    "correctOption": 3,
+    "explanation": "'Routine Reveal' videos show users' morning habits and rituals.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the name of the TikTok trend where users duet with themselves?",
+    "options": ["Self Duet", "Double Trouble", "Twin Tok", "Mirror Me"],
+    "correctOption": 1,
+    "explanation": "'Self Duet' involves users creating duets with their own videos.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend involves users sharing their favorite comfort foods?",
+    "options": ["Foodie Faves", "Comfort Eats", "Snack Attack", "Yum Trend"],
+    "correctOption": 2,
+    "explanation": "'Comfort Eats' is about sharing favorite foods that bring comfort.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend features users showing their pets doing tricks?",
+    "options": ["Pet Tricks", "Animal Show", "Trick Tok", "Pet Performance"],
+    "correctOption": 3,
+    "explanation": "'Trick Tok' is a trend for showing off pets' special skills.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend involves users showing their favorite books?",
+    "options": ["BookTok", "Read With Me", "Book Club", "Page Turners"],
+    "correctOption": 1,
+    "explanation": "'BookTok' is a community and trend for sharing book recommendations.",
+    "category": "TikTok",
+    "difficulty": 3
+  },
+  {
+    "question": "Which TikTok trend features users sharing their skincare routines?",
+    "options": ["SkinTok", "Glow Routine", "Face Care", "Beauty Steps"],
+    "correctOption": 2,
+    "explanation": "'Glow Routine' is about sharing skincare steps and products.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the name of the TikTok trend where users show their art process?",
+    "options": ["Art Reveal", "Process Tok", "Draw With Me", "Art Journey"],
+    "correctOption": 3,
+    "explanation": "'Draw With Me' videos show the step-by-step process of creating art.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend involves users sharing their favorite travel destinations?",
+    "options": ["TravelTok", "Wanderlust", "Trip Share", "Globe Trotters"],
+    "correctOption": 4,
+    "explanation": "'Globe Trotters' is a trend for sharing travel experiences and tips.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok trend features users showing their favorite memes?",
+    "options": ["MemeTok", "Laugh Out Loud", "Funny Share", "Joke Time"],
+    "correctOption": 1,
+    "explanation": "'MemeTok' is a trend for sharing and reacting to popular memes.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the name of the TikTok trend where users share their favorite songs?",
+    "options": ["MusicTok", "Song Share", "Playlist Trend", "Tune Time"],
+    "correctOption": 2,
+    "explanation": "'Song Share' is a trend for recommending and sharing favorite music.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'AFK' stand for in internet slang?",
+    "options": [
+      "All For Kicks",
+      "Away From Keyboard",
+      "A Fast Kick",
+      "Always Feeling Kool"
+    ],
+    "correctOption": 2,
+    "explanation": "'AFK' means 'Away From Keyboard', used to indicate someone is temporarily unavailable online.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'FOMO' mean?",
+    "options": [
+      "Feeling Of Major Offense",
+      "Freaking Out, Man!",
+      "Fear Of Missing Out",
+      "Fast On My Own"
+    ],
+    "correctOption": 3,
+    "explanation": "'FOMO' stands for 'Fear Of Missing Out', the anxiety of missing something exciting.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'GOAT' mean in meme slang?",
+    "options": [
+      "Go On And Try",
+      "Game On At Ten",
+      "Get Out And Travel",
+      "Greatest Of All Time"
+    ],
+    "correctOption": 4,
+    "explanation": "'GOAT' is an acronym for 'Greatest Of All Time'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'TL;DR' stand for?",
+    "options": [
+      "Take Leave; Don't Return",
+      "Too Long; Didn't Read",
+      "Talk Less; Do Right",
+      "Try Later; Don't Rush"
+    ],
+    "correctOption": 2,
+    "explanation": "'TL;DR' means 'Too Long; Didn't Read', used to summarize lengthy posts.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'BRB' mean?",
+    "options": [
+      "Best Reaction, Bro",
+      "Big Red Button",
+      "Be Right Back",
+      "Bring Real Bread"
+    ],
+    "correctOption": 3,
+    "explanation": "'BRB' means 'Be Right Back', used when someone steps away briefly.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'SMH' mean in internet slang?",
+    "options": [
+      "Shaking My Head",
+      "So Much Hate",
+      "Stay More Humble",
+      "Send Me Help"
+    ],
+    "correctOption": 1,
+    "explanation": "'SMH' means 'Shaking My Head', expressing disappointment or disbelief.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'IDK' stand for?",
+    "options": ["I Drink Kale", "I Do Knit", "I Dig Kicks", "I Don't Know"],
+    "correctOption": 4,
+    "explanation": "'IDK' means 'I Don't Know'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'ICYMI' mean?",
+    "options": [
+      "I Could Yell More Intensely",
+      "I Can't Yell Much Inside",
+      "Icy Milk Is My Interest",
+      "In Case You Missed It"
+    ],
+    "correctOption": 4,
+    "explanation": "'ICYMI' stands for 'In Case You Missed It'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'TFW' mean in meme culture?",
+    "options": [
+      "That Feeling When",
+      "Too Fast, Wow",
+      "Totally Feeling Weird",
+      "The Funniest Win"
+    ],
+    "correctOption": 1,
+    "explanation": "'TFW' means 'That Feeling When', used to describe a relatable emotion.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'DM' stand for in social media?",
+    "options": ["Don't Mind", "Direct Message", "Dance Move", "Daily Meme"],
+    "correctOption": 2,
+    "explanation": "'DM' means 'Direct Message', a private message on social platforms.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'IMO' mean?",
+    "options": [
+      "Internet Meme Organization",
+      "I Might Offend",
+      "In My Opinion",
+      "Instant Meme Output"
+    ],
+    "correctOption": 3,
+    "explanation": "'IMO' means 'In My Opinion'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Yeet' mean in meme slang?",
+    "options": [
+      "To throw something forcefully",
+      "To run away",
+      "To eat quickly",
+      "To laugh loudly"
+    ],
+    "correctOption": 1,
+    "explanation": "'Yeet' means to throw something with force, often used humorously.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Bet' mean in meme slang?",
+    "options": ["Go to sleep", "Place a wager", "Try your best", "Okay/Agreed"],
+    "correctOption": 4,
+    "explanation": "'Bet' is used to express agreement or affirmation.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Flex' mean in meme culture?",
+    "options": ["Show off", "Ignore", "Exercise", "Bend"],
+    "correctOption": 1,
+    "explanation": "'Flex' means to show off or boast about something.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Salty' mean in meme slang?",
+    "options": ["Funny", "Bitter or upset", "Sweaty", "Tasty"],
+    "correctOption": 2,
+    "explanation": "'Salty' means being bitter or upset, usually over something minor.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Ghost' mean in internet slang?",
+    "options": [
+      "To post anonymously",
+      "To scare someone",
+      "To dress up for Halloween",
+      "To suddenly ignore someone"
+    ],
+    "correctOption": 4,
+    "explanation": "'Ghost' means to suddenly cut off communication with someone.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Simp' mean in meme culture?",
+    "options": [
+      "A type of shrimp",
+      "A computer simulation",
+      "A simple person",
+      "Someone who is overly attentive to someone they like"
+    ],
+    "correctOption": 4,
+    "explanation": "'Simp' is used to describe someone who is overly attentive or submissive to someone they like.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'W' mean in meme slang?",
+    "options": ["Wait", "Wack", "Weird", "Win"],
+    "correctOption": 4,
+    "explanation": "'W' stands for 'Win', used to celebrate success.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'LMAO' stand for?",
+    "options": [
+      "Let Me Ask Others",
+      "Laughing My Ass Off",
+      "Leave Me Alone, Okay?",
+      "Love My Awesome Outfit"
+    ],
+    "correctOption": 2,
+    "explanation": "'LMAO' means 'Laughing My Ass Off', used to express laughter.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'BFF' mean?",
+    "options": [
+      "Best Friends Forever",
+      "Be First, Fast",
+      "Best Food Forever",
+      "Big Fun Friday"
+    ],
+    "correctOption": 1,
+    "explanation": "'BFF' stands for 'Best Friends Forever'.",
+    "category": "Slang & Acronyms",
     "difficulty": 1
   }
 ]
