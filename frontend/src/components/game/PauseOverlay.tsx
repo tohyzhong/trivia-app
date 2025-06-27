@@ -9,7 +9,7 @@ const PauseOverlay: React.FC<PauseOverlayProps> = ({ onResume }) => {
   return (
     <div className="pause-overlay">
       <div className="pause-message">
-        <h2>Game Paused</h2>
+        <h2>Game Not In Focus</h2>
         <button className="resume-button" onClick={onResume}>
           Resume
         </button>
