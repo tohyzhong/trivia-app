@@ -93,6 +93,7 @@
   padding: 10px;
   border: 1px solid #555;
   height: 80%;
+  position: relative;
 }
 
 .game-lobby-settings-item {
@@ -105,7 +106,10 @@
 
 .community-mode-warning {
   color: rgb(243, 62, 62);
-  text-align: center;
+  text-align: left;
+  position: absolute;
+  word-break: break-word;
+  bottom: 0;
 }
 
 .game-lobby-settings-footer {
