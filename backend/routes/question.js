@@ -1,4 +1,6 @@
 import express from "express";
+import sendEmail from "../utils/email.js";
+import User from "../models/User.js";
 import ClassicQuestion from "../models/ClassicQuestion.js";
 import authenticate from "./authMiddleware.js";
 
@@ -50,7 +52,7 @@ router.get("/search", authenticate, async (req, res) => {
 
 router.put("/approve/:questionId", authenticate, async (req, res) => {
   const { questionId } = req.params;
-  const { category } = req.body;
+  const { category, difficulty } = req.body;
   const { username, role } = req.user;
 
   try {
@@ -58,6 +60,12 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
       return res
         .status(403)
         .send("You do not have permission to approve questions.");
+    }
+
+    if (typeof difficulty !== "number" || difficulty < 1 || difficulty > 5) {
+      return res
+        .status(400)
+        .send("Please enter a valid difficulty between 1 and 5 (inclusive)");
     }
 
     const question = await ClassicQuestion.findById(questionId);
@@ -69,8 +77,32 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
     question.approved = true;
     question.approvedBy = username;
     question.category = category;
+    question.difficulty = difficulty;
 
     await question.save();
+
+    if (question.createdBy) {
+      const user = await User.findOne({ username: question.createdBy });
+      if (user) {
+        const subject = "[The Rizz Quiz] Your question has been approved!";
+        const html = `
+          <div style="font-family: Arial, sans-serif; color: #333;">
+            <h2 style="color: #28a745;">Your question was approved!</h2>
+            <p>Hi <strong>${user.username}</strong>,</p>
+            <p>Great news! Your question has been reviewed and approved by an admin.</p>
+            <h4>Question Details:</h4>
+            <ul>
+              <li><strong>Question:</strong> ${question.question}</li>
+              <li><strong>Category:</strong> ${category}</li>
+              <li><strong>Difficulty:</strong> ${difficulty}</li>
+            </ul>
+            <p>Thanks for contributing to the community!</p>
+            <p style="color: #888;">– The Rizz Quiz Admin</p>
+          </div>
+        `;
+        await sendEmail(user.email, subject, "", html);
+      }
+    }
 
     res.status(200).json({ message: "Question approved successfully" });
   } catch (error) {
@@ -89,6 +121,35 @@ router.delete("/reject/:id", authenticate, async (req, res) => {
 
   try {
     const { id } = req.params;
+    const { reason } = req.body;
+    const question = await ClassicQuestion.findById(id);
+    if (!question)
+      return res.status(404).json({ message: "Question not found." });
+
+    if (question.createdBy) {
+      const user = await User.findOne({ username: question.createdBy });
+      if (user) {
+        const subject = "[The Rizz Quiz] Your question was rejected";
+        const html = `
+          <div style="font-family: Arial, sans-serif; color: #333;">
+            <h2 style="color: #dc3545;">Your question was rejected</h2>
+            <p>Hi <strong>${user.username}</strong>,</p>
+            <p>We regret to inform you that your submitted question was not approved by the admin team.</p>
+            <h4>Question:</h4>
+            <p>${question.question}</p>
+            ${
+              reason?.trim()
+                ? `<h4>Reason:</h4><p style="background-color: #f8f8f8; padding: 10px; border-left: 4px solid #dc3545;">${reason}</p>`
+                : ""
+            }
+            <p>If you'd like, you may revise and resubmit the question for review.</p>
+            <p style="color: #888;">– The Rizz Quiz Admin</p>
+          </div>
+        `;
+        await sendEmail(user.email, subject, "", html);
+      }
+    }
+
     await ClassicQuestion.findByIdAndDelete(id);
     res.status(200).json({ message: "Question rejected and deleted." });
   } catch (error) {

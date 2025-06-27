@@ -7,7 +7,7 @@ body {
 }
 
 .admin-approval-dashboard {
-  max-width: 1000px;
+  max-width: 1300px;
   margin: 130px auto 100px auto;
   padding: 24px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -69,6 +69,7 @@ body {
 
 .question-text-request,
 .category-text-request,
+.difficulty-text-request,
 .correct-option-request,
 .options-label-request {
   margin: 10px 0;
@@ -76,7 +77,7 @@ body {
   font-size: 16px;
 }
 
-.options-list-request {
+.admin-approval-dashboard .options-list-request {
   padding-left: 20px;
   margin: 0 0 10px;
   list-style-type: disc;
@@ -93,7 +94,11 @@ body {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
-  margin-bottom: 6px;
+  text-align: left;
+  text-overflow: ellipsis; /* Truncate long text with ... */
+  white-space: nowrap;
+  overflow: hidden !important;
+  max-width: 150px;
 }
 
 .manual-category-input {
@@ -106,7 +111,7 @@ body {
   width: 100%;
 }
 
-.approve-button {
+.admin-approval-dashboard .approve-button {
   background-color: #28a745;
   color: white;
   border: none;
@@ -115,13 +120,20 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+  display: inline-block;
+  text-align: center;
+  height: 35px;
 }
-
-.approve-button:hover {
+.admin-approval-dashboard .approve-button:hover {
   background-color: #218838;
 }
+.admin-approval-dashboard .approve-button:disabled {
+  background-color: #a5d6b2;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
-.reject-button {
+.admin-approval-dashboard .reject-button {
   background-color: #dc3545;
   color: white;
   border: none;
@@ -130,17 +142,42 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+  display: inline-block;
+  text-align: center;
+  height: 35px;
 }
-.reject-button:hover {
+.admin-approval-dashboard .reject-button:hover {
   background-color: #c82333;
 }
+.admin-approval-dashboard .reject-button:disabled {
+  background-color: #e0aeb2;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
-.clickable-row {
+.admin-approval-dashboard .loading-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.admin-approval-dashboard .loading-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-approval-dashboard .loading-icon {
+  font-size: 14px;
+}
+
+.admin-approval-dashboard .clickable-row {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.clickable-row:hover {
+.admin-approval-dashboard .clickable-row:hover {
   background-color: #f5f5f5;
 }
 
@@ -149,11 +186,11 @@ body {
   margin-top: 40px;
 }
 
-.ag-theme-alpine .ag-header-cell-label {
+.admin-approval-dashboard .ag-theme-alpine .ag-header-cell-label {
   justify-content: center;
 }
 
-.ag-theme-alpine .ag-cell {
+.admin-approval-dashboard .ag-theme-alpine .ag-cell {
   justify-content: center;
   align-items: center;
 }
@@ -195,14 +232,14 @@ body {
   border-radius: 5px;
 }
 
-.popup-actions {
+.admin-approval-dashboard .popup-actions {
   display: flex;
   justify-content: right;
   gap: 15px;
   margin: 20px auto auto auto;
 }
 
-.popup-actions .approve-button {
+.admin-approval-dashboard .popup-actions .approve-button {
   background-color: #28a745;
   color: white;
   border: none;
@@ -213,11 +250,11 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.popup-actions .approve-button:hover {
+.admin-approval-dashboard .popup-actions .approve-button:hover {
   background-color: #218838;
 }
 
-.popup-actions .cancel-button {
+.admin-approval-dashboard .popup-actions .cancel-button {
   background-color: #dc3545;
   color: white;
   border: none;
@@ -228,6 +265,6 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.popup-actions .cancel-button:hover {
+.admin-approval-dashboard .popup-actions .cancel-button:hover {
   background-color: #c82333;
 }
