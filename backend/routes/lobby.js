@@ -386,6 +386,11 @@ router.post("/solo/updateSettings/:lobbyId", authenticate, async (req, res) => {
         .status(400)
         .json({ message: "At least one category must be selected." });
     }
+    if (categories.length > 1 && categories.includes("Community")) {
+      return res.status(400).json({
+        message: "Community Mode cannot be selected with other modes."
+      });
+    }
 
     const lobby = await Lobby.collection.findOne({ lobbyId });
     if (!lobby) {
