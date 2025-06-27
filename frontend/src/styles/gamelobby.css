@@ -135,6 +135,11 @@
   background-color: #388e3c;
 }
 
+.save-settings-button.disabled {
+  cursor: default !important;
+  background-color: #555 !important;
+}
+
 /* Game Chat */
 .game-lobby-chat-container {
   display: flex;

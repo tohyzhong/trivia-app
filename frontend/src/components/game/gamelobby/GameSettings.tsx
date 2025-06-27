@@ -32,13 +32,15 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     gameSettings.categories.includes("Community")
   );
 
+  // For button disabling
+  const [settingsChanged, setSettingsChanged] = useState<boolean>(false);
+
   useEffect(() => {
     setSettings(gameSettings);
   }, [gameSettings]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
-    console.log(name, value, checked);
 
     if (name === "categories") {
       if (value === "Community") {
@@ -65,6 +67,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   };
 
   const handleSaveSettings = async () => {
+    if (!settingsChanged) return; //
+
     playClickSound();
     if (settings.categories.length === 0) {
       setSuccessMessage("Please select at least one category.");
@@ -113,6 +117,21 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       setSuccessMessage("Error saving settings: " + error);
     }
   };
+
+  // Enable and disable button accordingly
+  useEffect(() => {
+    setSettingsChanged(
+      !(
+        JSON.stringify(gameSettings) ===
+        JSON.stringify({
+          ...settings,
+          categories: settings.categories.includes("Community")
+            ? ["Community"]
+            : settings.categories
+        })
+      )
+    );
+  }, [settings, gameSettings]);
 
   return (
     <div className="game-lobby-settings">
@@ -188,8 +207,11 @@ const GameSettings: React.FC<GameSettingsProps> = ({
         )}
       </div>
       <div className="game-lobby-settings-footer">
-        <button className="save-settings-button" onClick={handleSaveSettings}>
-          Save Settings
+        <button
+          className={`save-settings-button ${settingsChanged ? "" : "disabled"}`}
+          onClick={handleSaveSettings}
+        >
+          Update Settings
         </button>
       </div>
     </div>
