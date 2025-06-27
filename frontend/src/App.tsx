@@ -9,8 +9,6 @@ import NavigationBar from "./components/navigationbar/NavigationBar";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 
-import { SpeedInsights } from "@vercel/speed-insights/react";
-
 const HomePage = lazy(() => import("./components/homepage/HomePage"));
 const GameRoutes = lazy(() => import("./components/game/GameRoutes"));
 const LeaderboardRoutes = lazy(
@@ -90,24 +88,21 @@ function App() {
 
   return (
     <>
-      <>
-        <NavigationBar />
-        <Suspense fallback={<></>}>
-          <Routes>
-            {Components.map((comp) => {
-              const ComponentName = comp.component;
-              return (
-                <Route
-                  key={comp.path}
-                  path={comp.path}
-                  element={<ComponentName />}
-                />
-              );
-            })}
-          </Routes>
-        </Suspense>
-      </>
-      <SpeedInsights />
+      <NavigationBar />
+      <Suspense fallback={<></>}>
+        <Routes>
+          {Components.map((comp) => {
+            const ComponentName = comp.component;
+            return (
+              <Route
+                key={comp.path}
+                path={comp.path}
+                element={<ComponentName />}
+              />
+            );
+          })}
+        </Routes>
+      </Suspense>
     </>
   );
 }

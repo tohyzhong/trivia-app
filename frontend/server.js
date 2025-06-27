@@ -23,6 +23,8 @@ app.use(
 app.get("*", (req, res) => {
   const indexPath = path.join(__dirname, "dist", "index.html");
   if (fs.existsSync(indexPath)) {
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Content-Type", "text/html");
     res.sendFile(indexPath);
   } else {
     res.status(500).send("index.html not found");
@@ -30,5 +32,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
