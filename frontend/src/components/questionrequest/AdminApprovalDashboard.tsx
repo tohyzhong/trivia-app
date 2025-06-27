@@ -6,6 +6,8 @@ import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import NoAccess from "../noaccess/NoAccess";
+import { motion } from "framer-motion";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface Question {
   _id: string;
@@ -32,8 +34,20 @@ const AdminApprovalDashboard: React.FC = () => {
     [key: string]: string;
   }>({});
   const [showManualPopup, setShowManualPopup] = useState(false);
+  const [editedDifficulties, setEditedDifficulties] = useState<{
+    [key: string]: number;
+  }>({});
   const [pendingApprovalId, setPendingApprovalId] = useState<string | null>(
     null
+  );
+  const [showRejectPopup, setShowRejectPopup] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [pendingRejectId, setPendingRejectId] = useState<string | null>(null);
+  const [approvingIds, setApprovingIds] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [rejectingIds, setRejectingIds] = useState<{ [key: string]: boolean }>(
+    {}
   );
   const [selectedCategories, setSelectedCategories] = useState<{
     [key: string]: string;
@@ -143,13 +157,35 @@ const AdminApprovalDashboard: React.FC = () => {
   };
 
   const sendApproval = async (questionId: string, categoryToUse: string) => {
+    const difficultyToUse =
+      editedDifficulties[questionId] ??
+      questions.find((q) => q._id === questionId)?.difficulty;
+
+    if (
+      difficultyToUse === undefined ||
+      difficultyToUse === null ||
+      isNaN(difficultyToUse) ||
+      difficultyToUse < 1 ||
+      difficultyToUse > 5
+    ) {
+      setIsApprovalSuccess(false);
+      setApprovalMessage("Please enter a valid difficulty between 1 and 5.");
+      return;
+    }
+
+    setApprovingIds((prev) => ({ ...prev, [questionId]: true }));
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/questions/approve/${questionId}`,
         {
           method: "PUT",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ category: categoryToUse })
+          body: JSON.stringify({
+            category: categoryToUse,
+            difficulty: difficultyToUse
+          })
         }
       );
 
@@ -177,21 +213,34 @@ const AdminApprovalDashboard: React.FC = () => {
       console.error("Error approving:", error);
       setIsApprovalSuccess(false);
       setApprovalMessage("Failed to approve question. Please try again.");
+    } finally {
+      setApprovingIds((prev) => {
+        const updated = { ...prev };
+        delete updated[questionId];
+        return updated;
+      });
     }
   };
 
-  const handleReject = async (questionId: string) => {
-    try {
-      const confirmed = window.confirm(
-        "Are you sure you want to reject this question?"
-      );
-      if (!confirmed) return;
+  const handleReject = (questionId: string) => {
+    setPendingRejectId(questionId);
+    setRejectReason("");
+    setShowRejectPopup(true);
+  };
 
+  const sendRejection = async (questionId: string, reason: string) => {
+    setRejectingIds((prev) => ({ ...prev, [questionId]: true }));
+
+    try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/questions/reject/${questionId}`,
         {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ reason })
         }
       );
 
@@ -206,6 +255,12 @@ const AdminApprovalDashboard: React.FC = () => {
       console.error("Error rejecting question:", error);
       setIsApprovalSuccess(false);
       setApprovalMessage("Failed to reject question.");
+    } finally {
+      setRejectingIds((prev) => {
+        const updated = { ...prev };
+        delete updated[questionId];
+        return updated;
+      });
     }
   };
 
@@ -228,12 +283,19 @@ const AdminApprovalDashboard: React.FC = () => {
       headerName: "Category",
       field: "category",
       sortable: false,
-      maxWidth: 200,
+      maxWidth: 180,
       flex: 2,
+      cellStyle: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "8px"
+      },
       cellRenderer: (params) => {
         const id = params.data._id;
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div>
             <select
               className="category-select"
               value={selectedCategories[id] || params.data.category}
@@ -247,22 +309,48 @@ const AdminApprovalDashboard: React.FC = () => {
               ))}
               <option value="Other">Other</option>
             </select>
-
-            {selectedCategories[id] === "Other" && (
-              <input
-                type="text"
-                className="manual-category-input"
-                placeholder="Enter new category"
-                value={manualCategories[id] || ""}
-                onChange={(e) => {
-                  setManualCategories((prev) => ({
-                    ...prev,
-                    [id]: e.target.value
-                  }));
-                }}
-              />
-            )}
           </div>
+        );
+      }
+    },
+    {
+      headerName: "Difficulty",
+      field: "difficulty",
+      editable: true,
+      maxWidth: 100,
+      flex: 1,
+      cellStyle: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center"
+      },
+      cellRenderer: (params) => {
+        const id = params.data._id;
+        const value = editedDifficulties[id] ?? params.data.difficulty;
+
+        return (
+          <input
+            type="number"
+            min={1}
+            max={5}
+            value={value}
+            onChange={(e) => {
+              const num = parseInt(e.target.value);
+              setEditedDifficulties((prev) => ({
+                ...prev,
+                [id]: isNaN(num) ? value : num
+              }));
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="category-select"
+            style={{
+              textAlign: "center",
+              width: "100%",
+              borderColor:
+                value < 1 || value > 5 || isNaN(value) ? "red" : "#ccc"
+            }}
+          />
         );
       }
     },
@@ -272,20 +360,48 @@ const AdminApprovalDashboard: React.FC = () => {
       maxWidth: 250,
       sortable: false,
       flex: 1,
+      cellStyle: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center"
+      },
       cellRenderer: (params) => (
         <div style={{ display: "flex", gap: "8px" }}>
           <button
-            className="approve-button"
+            className="approve-button loading-button"
             onClick={() => handleApprove(params.data._id)}
+            disabled={!!approvingIds[params.data._id]}
           >
-            Approve
+            {approvingIds[params.data._id] ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                className="loading-icon-wrapper"
+              >
+                <AiOutlineLoading3Quarters className="loading-icon" />
+              </motion.div>
+            ) : (
+              "Approve"
+            )}
           </button>
 
           <button
-            className="reject-button"
+            className="reject-button loading-button"
             onClick={() => handleReject(params.data._id)}
+            disabled={!!rejectingIds[params.data._id]}
           >
-            Reject
+            {rejectingIds[params.data._id] ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                className="loading-icon-wrapper"
+              >
+                <AiOutlineLoading3Quarters className="loading-icon" />
+              </motion.div>
+            ) : (
+              "Reject"
+            )}
           </button>
         </div>
       )
@@ -332,6 +448,9 @@ const AdminApprovalDashboard: React.FC = () => {
           </p>
           <p className="category-text-request">
             <strong>Category:</strong> {selectedQuestion.category}
+          </p>
+          <p className="difficulty-text-request">
+            <strong>Difficulty:</strong> {selectedQuestion.difficulty}
           </p>
           <p className="options-label-request">
             <strong>Options:</strong>
@@ -386,7 +505,7 @@ const AdminApprovalDashboard: React.FC = () => {
                     setShowManualPopup(false);
                     setPendingApprovalId(null);
                   }}
-                  className="cancel-button"
+                  className="reject-button"
                 >
                   Cancel
                 </button>
@@ -394,6 +513,46 @@ const AdminApprovalDashboard: React.FC = () => {
             </div>
           </div>
         )}
+        {showRejectPopup && pendingRejectId && (
+          <div className="manual-category-popup-overlay">
+            <div className="manual-category-popup">
+              <h3>Reason for Rejection</h3>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Optional: Add a brief explanation"
+                style={{
+                  width: "100%",
+                  minHeight: "100px",
+                  padding: "10px",
+                  fontSize: "14px"
+                }}
+              />
+              <div className="popup-actions">
+                <button
+                  onClick={() => {
+                    sendRejection(pendingRejectId, rejectReason);
+                    setShowRejectPopup(false);
+                    setPendingRejectId(null);
+                  }}
+                  className="reject-button"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={() => {
+                    setShowRejectPopup(false);
+                    setPendingRejectId(null);
+                  }}
+                  className="approve-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <h3>Unapproved Community Questions</h3>
         {isLoading ? (
           <p>Loading...</p>
