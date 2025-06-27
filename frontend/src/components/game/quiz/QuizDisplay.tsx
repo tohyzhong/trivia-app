@@ -176,21 +176,25 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
             <p>Lobby ID: {lobbyId}</p>
             <p>Host: you</p>
           </div>
-          {gameType === "solo-classic" ? (
-            <Classic
-              lobbyId={lobbyId}
-              currentQuestion={gameState.currentQuestion}
-              totalQuestions={totalQuestions}
-              classicQuestion={gameState.question as ClassicQuestion}
-              optionSelected={optionSelected}
-              submitted={submitted || answerRevealed}
-              answerRevealed={answerRevealed}
-              answerHistory={
-                gameState.playerStates[playerId]?.answerHistory || []
-              }
-            />
+          {gameState.question ? (
+            gameType === "solo-classic" ? (
+              <Classic
+                lobbyId={lobbyId}
+                currentQuestion={gameState.currentQuestion}
+                totalQuestions={totalQuestions}
+                classicQuestion={gameState.question as ClassicQuestion}
+                optionSelected={optionSelected}
+                submitted={submitted || answerRevealed}
+                answerRevealed={answerRevealed}
+                answerHistory={
+                  gameState.playerStates[playerId]?.answerHistory || []
+                }
+              />
+            ) : (
+              <Knowledge />
+            )
           ) : (
-            <Knowledge />
+            <GameLoading />
           )}
           <div className="question-timer-border">
             <motion.div
