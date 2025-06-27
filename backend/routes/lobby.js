@@ -691,48 +691,52 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
     }
 
     if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
-      // TODO: Update player stats
-      for (const stateKey in playerStates) {
-        const correctAnswers = Object.values(
-          playerStates[stateKey].answerHistory
-        ).filter((v) => v == "correct").length;
+      // Update player states
+      if (lobby.gameSettings.categories.includes("Community")) {
+        // TODO: Update separate community question bank stats
+      } else {
+        for (const stateKey in playerStates) {
+          const correctAnswers = Object.values(
+            playerStates[stateKey].answerHistory
+          ).filter((v) => v == "correct").length;
 
-        // Get profile and update
-        const profile = await Profile.collection.findOne({
-          username: playerStates[stateKey].username
-        });
+          // Get profile and update
+          const profile = await Profile.collection.findOne({
+            username: playerStates[stateKey].username
+          });
 
-        // Answer stats
-        const newCorrectAnswer = profile.correctAnswer + correctAnswers;
-        const newTotalAnswer =
-          profile.totalAnswer + lobby.gameSettings.numQuestions;
+          // Answer stats
+          const newCorrectAnswer = profile.correctAnswer + correctAnswers;
+          const newTotalAnswer =
+            profile.totalAnswer + lobby.gameSettings.numQuestions;
 
-        // Match History
-        const newMatchHistory = [...profile.matchHistory];
-        newMatchHistory.push({
-          type: lobby.gameType,
-          state: "solo", // TODO: update with win/lose logic for multiplayer
-          totalPlayed: lobby.gameSettings.numQuestions,
-          correctNumber: correctAnswers,
-          date: new Date()
-        });
-        while (newMatchHistory.length > 10) newMatchHistory.shift();
+          // Match History
+          const newMatchHistory = [...profile.matchHistory];
+          newMatchHistory.push({
+            type: lobby.gameType,
+            state: "solo", // TODO: update with win/lose logic for multiplayer
+            totalPlayed: lobby.gameSettings.numQuestions,
+            correctNumber: correctAnswers,
+            date: new Date()
+          });
+          while (newMatchHistory.length > 10) newMatchHistory.shift();
 
-        const updatedData = {
-          correctAnswer: newCorrectAnswer,
-          totalAnswer: newTotalAnswer,
-          correctRate:
-            Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100, // Change to percantage in 2 decimal places
-          matchHistory: newMatchHistory
-        };
+          const updatedData = {
+            correctAnswer: newCorrectAnswer,
+            totalAnswer: newTotalAnswer,
+            correctRate:
+              Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100, // Change to percantage in 2 decimal places
+            matchHistory: newMatchHistory
+          };
 
-        // console.log(updatedData);
-        // TODO?: Add correct answer streak stat
+          // console.log(updatedData);
+          // TODO?: Add correct answer streak stat
 
-        await Profile.collection.updateOne(
-          { username: playerStates[stateKey].username },
-          { $set: updatedData }
-        );
+          await Profile.collection.updateOne(
+            { username: playerStates[stateKey].username },
+            { $set: updatedData }
+          );
+        }
       }
 
       // Return to lobby waiting state if set of questions finished

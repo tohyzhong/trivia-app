@@ -201,7 +201,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           <div className="community-mode-warning-container">
             <p className="community-mode-warning">
               Note: Community Mode uses a separate question bank built from
-              player contributions.
+              player contributions. Stats will not be counted in this category.
             </p>
           </div>
         )}
