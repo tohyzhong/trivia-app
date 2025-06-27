@@ -27,14 +27,24 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     (state: RootState) => state.lobby.categories
   );
 
+  // Keep community mode separate from default categories
+  const [isCommunitySelected, setCommunitySelected] = useState<boolean>(
+    gameSettings.categories.includes("Community")
+  );
+
   useEffect(() => {
     setSettings(gameSettings);
   }, [gameSettings]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
+    console.log(name, value, checked);
 
     if (name === "categories") {
+      if (value === "Community") {
+        setCommunitySelected(checked);
+      }
+
       setSettings((prevSettings) => ({
         ...prevSettings,
         categories: checked
@@ -83,7 +93,11 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ gameSettings: settings })
+          body: JSON.stringify(
+            isCommunitySelected
+              ? { gameSettings: { ...settings, categories: ["Community"] } }
+              : { gameSettings: settings }
+          )
         }
       );
 
@@ -149,7 +163,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           <label>Categories:</label>
           <div>
             {availableCategories.map((category) => (
-              <div key={category}>
+              <div key={category} className="game-lobby-settings-category">
                 <input
                   type="checkbox"
                   id={category}
@@ -157,6 +171,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   value={category}
                   checked={settings.categories.includes(category)}
                   onChange={handleChange}
+                  disabled={isCommunitySelected && category !== "Community"}
                 />
                 <label htmlFor={category}>{category}</label>
               </div>

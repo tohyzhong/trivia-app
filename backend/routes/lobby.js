@@ -88,7 +88,7 @@ router.post("/solo/create", authenticate, async (req, res) => {
       return res.status(400).json({ message: "No categories found." });
     }
 
-    const defaultCategory = categories[0];
+    const defaultCategory = "General";
 
     const lobby = {
       lobbyId: id,
