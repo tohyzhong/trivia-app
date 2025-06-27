@@ -144,6 +144,7 @@ export const GameMainpage: React.FC = () => {
         }}
         className="sound-settings-icon"
       />
+      <p className="hover-text sound-settings-icon-text">Sound Settings</p>
 
       {isSoundPopupOpen && (
         <div className="sound-settings-popup">
@@ -165,6 +166,7 @@ export const GameMainpage: React.FC = () => {
         }}
         className="question-submit-icon"
       />
+      <p className="hover-text question-submit-icon-text">Submit A Question</p>
 
       <IoHelp
         onClick={() => {
@@ -173,6 +175,7 @@ export const GameMainpage: React.FC = () => {
         }}
         className="help-icon"
       />
+      <p className="hover-text help-icon-text">Contact Us</p>
     </div>
   );
 };

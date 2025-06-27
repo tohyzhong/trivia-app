@@ -91,10 +91,34 @@
   background-color: #e64a19;
 }
 
+.hover-text {
+  opacity: 0;
+  position: fixed;
+  bottom: 7px;
+  right: 165px;
+  background-color: black;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid white;
+  transition: opacity 0.3s;
+}
+
+.hover-text-2 {
+  opacity: 0;
+  position: fixed;
+  bottom: 7px;
+  right: 70px !important;
+  background-color: black;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid white;
+  transition: opacity 0.3s;
+}
+
 .help-icon {
   position: fixed;
   bottom: 20px;
-  right: 113px;
+  right: 113px !important;
   font-size: 39px;
   border: 3px solid #4caf50;
   border-radius: 100%;
@@ -105,6 +129,10 @@
 
 .help-icon:hover {
   color: #45a049;
+}
+
+.help-icon:hover ~ .help-icon-text {
+  opacity: 1;
 }
 
 .question-submit-icon {
@@ -121,6 +149,10 @@
   color: #45a049;
 }
 
+.question-submit-icon:hover ~ .question-submit-icon-text {
+  opacity: 1;
+}
+
 .sound-settings-icon {
   position: fixed;
   bottom: 20px;
@@ -133,6 +165,10 @@
 
 .sound-settings-icon:hover {
   color: #45a049;
+}
+
+.sound-settings-icon:hover ~ .sound-settings-icon-text {
+  opacity: 1;
 }
 
 .sound-settings-popup {

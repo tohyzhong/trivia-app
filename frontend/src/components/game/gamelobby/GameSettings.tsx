@@ -27,6 +27,14 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     (state: RootState) => state.lobby.categories
   );
 
+  // Keep community mode separate from default categories
+  const [isCommunitySelected, setCommunitySelected] = useState<boolean>(
+    gameSettings.categories.includes("Community")
+  );
+
+  // For button disabling
+  const [settingsChanged, setSettingsChanged] = useState<boolean>(false);
+
   useEffect(() => {
     setSettings(gameSettings);
   }, [gameSettings]);
@@ -35,6 +43,10 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     const { name, value, checked } = e.target;
 
     if (name === "categories") {
+      if (value === "Community") {
+        setCommunitySelected(checked);
+      }
+
       setSettings((prevSettings) => ({
         ...prevSettings,
         categories: checked
@@ -55,6 +67,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   };
 
   const handleSaveSettings = async () => {
+    if (!settingsChanged) return; //
+
     playClickSound();
     if (settings.categories.length === 0) {
       setSuccessMessage("Please select at least one category.");
@@ -83,7 +97,11 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify({ gameSettings: settings })
+          body: JSON.stringify(
+            isCommunitySelected
+              ? { gameSettings: { ...settings, categories: ["Community"] } }
+              : { gameSettings: settings }
+          )
         }
       );
 
@@ -99,6 +117,21 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       setSuccessMessage("Error saving settings: " + error);
     }
   };
+
+  // Enable and disable button accordingly
+  useEffect(() => {
+    setSettingsChanged(
+      !(
+        JSON.stringify(gameSettings) ===
+        JSON.stringify({
+          ...settings,
+          categories: settings.categories.includes("Community")
+            ? ["Community"]
+            : settings.categories
+        })
+      )
+    );
+  }, [settings, gameSettings]);
 
   return (
     <div className="game-lobby-settings">
@@ -149,7 +182,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           <label>Categories:</label>
           <div>
             {availableCategories.map((category) => (
-              <div key={category}>
+              <div key={category} className="game-lobby-settings-category">
                 <input
                   type="checkbox"
                   id={category}
@@ -157,16 +190,28 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   value={category}
                   checked={settings.categories.includes(category)}
                   onChange={handleChange}
+                  disabled={isCommunitySelected && category !== "Community"}
                 />
                 <label htmlFor={category}>{category}</label>
               </div>
             ))}
           </div>
         </div>
+        {isCommunitySelected && (
+          <div className="community-mode-warning-container">
+            <p className="community-mode-warning">
+              Note: Community Mode uses a separate question bank built from
+              player contributions. Stats will not be counted in this category.
+            </p>
+          </div>
+        )}
       </div>
       <div className="game-lobby-settings-footer">
-        <button className="save-settings-button" onClick={handleSaveSettings}>
-          Save Settings
+        <button
+          className={`save-settings-button ${settingsChanged ? "" : "disabled"}`}
+          onClick={handleSaveSettings}
+        >
+          Update Settings
         </button>
       </div>
     </div>

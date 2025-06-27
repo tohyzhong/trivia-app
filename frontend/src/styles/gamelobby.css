@@ -93,6 +93,7 @@
   padding: 10px;
   border: 1px solid #555;
   height: 80%;
+  position: relative;
 }
 
 .game-lobby-settings-item {
@@ -101,6 +102,14 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.community-mode-warning {
+  color: rgb(243, 62, 62);
+  text-align: left;
+  position: absolute;
+  word-break: break-word;
+  bottom: 0;
 }
 
 .game-lobby-settings-footer {
@@ -128,6 +137,11 @@
 
 .save-settings-button:active {
   background-color: #388e3c;
+}
+
+.save-settings-button.disabled {
+  cursor: default !important;
+  background-color: #555 !important;
 }
 
 /* Game Chat */
