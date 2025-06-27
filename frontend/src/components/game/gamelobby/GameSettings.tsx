@@ -178,6 +178,14 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             ))}
           </div>
         </div>
+        {isCommunitySelected && (
+          <div className="game-lobby-settings-item">
+            <p className="community-mode-warning">
+              Note: Community Mode uses a separate question bank built from
+              player contributions.
+            </p>
+          </div>
+        )}
       </div>
       <div className="game-lobby-settings-footer">
         <button className="save-settings-button" onClick={handleSaveSettings}>

@@ -103,6 +103,11 @@
   margin-bottom: 10px;
 }
 
+.community-mode-warning {
+  color: rgb(243, 62, 62);
+  text-align: center;
+}
+
 .game-lobby-settings-footer {
   display: flex;
   flex-direction: row;
