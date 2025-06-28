@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { RootState } from "../../redux/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { setUser } from "../../redux/userSlice";
+import { BooleanLiteral } from "typescript";
 
 interface Friend {
   username: string;
@@ -22,6 +24,8 @@ interface UserProfile {
   role: string;
   friends: Friend[];
   message?: string;
+  addedFriend: Boolean;
+  receivedFriendRequest: Boolean;
 }
 
 interface ProfileProps {
@@ -34,12 +38,14 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const usernameFromRedux = userFromRedux.username;
   const currUserRole = userFromRedux.role;
   const username = paramUsername || user1 || usernameFromRedux;
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUserProfile] = useState<UserProfile | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const [message, setMessage] = useState<string>("");
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  const dispatch = useDispatch();
 
   // Retrieve profile details
   const fetchProfile = async () => {
@@ -51,7 +57,15 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         }
       );
       const data: UserProfile = await response.json();
-      setUser(data);
+      if (username === usernameFromRedux && data.role !== currUserRole) {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token`, {
+          method: "POST",
+          credentials: "include"
+        });
+
+        dispatch(setUser({ ...userFromRedux, role: data.role }));
+      }
+      setUserProfile(data);
       setFriends(data.friends || []);
       setLoading(false);
     } catch (error) {
@@ -98,6 +112,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       if (response.ok) {
         setIsSuccess(true);
         setMessage(data.message);
+        fetchProfile();
       } else {
         setIsSuccess(false);
         setMessage(
@@ -108,7 +123,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       setIsSuccess(false);
       setMessage("An error occurred while adding the friend.");
     }
-    window.location.reload();
   };
 
   const handleDeleteFriend = async () => {
@@ -134,6 +148,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       if (response.ok) {
         setIsSuccess(true);
         setMessage(data.message);
+        fetchProfile();
       } else {
         setIsSuccess(false);
         setMessage(
@@ -145,7 +160,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       setIsSuccess(false);
       setMessage("An error occurred while removing the friend.");
     }
-    window.location.reload();
   };
 
   const handleSeeMatchHistory = () => {
@@ -192,18 +206,38 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         <div className="friend-buttons-container">
           {user.username !== usernameFromRedux && (
             <>
-              {!isFriend && (
-                <button className="add-friend-button" onClick={handleAddFriend}>
-                  Add Friend
-                </button>
-              )}
-
               {isFriend && (
                 <button
                   className="remove-friend-button"
                   onClick={handleDeleteFriend}
                 >
                   Remove Friend
+                </button>
+              )}
+
+              {!isFriend && user.receivedFriendRequest && (
+                <button className="add-friend-button" onClick={handleAddFriend}>
+                  Confirm Friend Request
+                </button>
+              )}
+
+              {!isFriend &&
+                !user.receivedFriendRequest &&
+                !user.addedFriend && (
+                  <button
+                    className="add-friend-button"
+                    onClick={handleAddFriend}
+                  >
+                    Add Friend
+                  </button>
+                )}
+
+              {!isFriend && !user.receivedFriendRequest && user.addedFriend && (
+                <button
+                  className="remove-friend-button"
+                  onClick={handleDeleteFriend}
+                >
+                  Delete Friend Request
                 </button>
               )}
 
