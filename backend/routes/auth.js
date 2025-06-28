@@ -23,6 +23,42 @@ router.get("/verify-token", authenticate, (req, res) => {
   });
 });
 
+// Refresh token (frontend calls this if outdated data deteced)
+router.post("/refresh-token", authenticate, async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Not authenticated" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const newToken = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        verified: user.verified,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+    });
+
+    res.json({ message: "Token refreshed" });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+});
+
 // Register
 router.post(
   "/register",

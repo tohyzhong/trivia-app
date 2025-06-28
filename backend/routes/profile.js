@@ -112,6 +112,63 @@ router.get("/:username", authenticate, async (req, res) => {
       },
 
       {
+        $lookup: {
+          from: "friends",
+          let: { viewingUser: req.user.username, targetUser: "$username" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$from", "$$viewingUser"] },
+                    { $eq: ["$to", "$$targetUser"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "sentFriendRequest"
+        }
+      },
+      {
+        $lookup: {
+          from: "friends",
+          let: { viewingUser: req.user.username, targetUser: "$username" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$from", "$$targetUser"] },
+                    { $eq: ["$to", "$$viewingUser"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "receivedFriendRequest"
+        }
+      },
+      {
+        $addFields: {
+          addedFriend: {
+            $cond: {
+              if: { $eq: ["$username", req.user.username] },
+              then: true,
+              else: { $gt: [{ $size: "$sentFriendRequest" }, 0] }
+            }
+          },
+          receivedFriendRequest: {
+            $cond: {
+              if: { $eq: ["$username", req.user.username] },
+              then: true,
+              else: { $gt: [{ $size: "$receivedFriendRequest" }, 0] }
+            }
+          }
+        }
+      },
+
+      {
         $project: {
           _id: 1,
           username: 1,
@@ -122,7 +179,9 @@ router.get("/:username", authenticate, async (req, res) => {
           currency: 1,
           profilePicture: 1,
           role: 1,
-          friends: "$mutualProfiles"
+          friends: "$mutualProfiles",
+          addedFriend: 1,
+          receivedFriendRequest: 1
         }
       }
     ]);
