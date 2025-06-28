@@ -23,6 +23,51 @@ router.get("/verify-token", authenticate, (req, res) => {
   });
 });
 
+// Ping every 2 minutes to check if frontend user data matches DB data
+router.get("/ping", authenticate, async (req, res) => {
+  try {
+    const { id, username, email, verified, role: tokenRole } = req.user;
+
+    const user = await User.findById(id).select("role");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (
+      user.role !== tokenRole ||
+      user.email !== email ||
+      user.verified !== verified
+    ) {
+      const newToken = jwt.sign(
+        {
+          id,
+          username,
+          email: user.email,
+          verified: user.verified,
+          role: user.role
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      });
+
+      return res.status(200).json({ roleChanged: true });
+    }
+
+    return res.status(200).json({ roleChanged: false });
+  } catch (err) {
+    console.error("Error in /ping:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Refresh token (frontend calls this if outdated data deteced)
 router.post("/refresh-token", authenticate, async (req, res) => {
   const token = req.cookies.token;

@@ -68,6 +68,23 @@ function App() {
     }
   }, [username, location.pathname, navigate]);
 
+  useEffect(() => {
+    const interval = setInterval(
+      async () => {
+        try {
+          await fetch(`${import.meta.env.VITE_API_URL}/api/auth/ping`, {
+            credentials: "include"
+          });
+        } catch (err) {
+          console.error("User details ping failed", err);
+        }
+      },
+      2 * 60 * 1000 // Check if user login cookie + redux email, verified, role match database records every 2 minutes and update if required
+    );
+
+    return () => clearInterval(interval);
+  }, []);
+
   const Components = [
     { component: HomePage, path: "/" },
     { component: GameRoutes, path: "/play/*" },
