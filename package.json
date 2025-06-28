@@ -3,7 +3,9 @@
     "setup": "npm i --legacy-peer-deps && cd frontend && npm i --legacy-peer-deps && cd ../backend && npm i",
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
     "test": "npm run test --prefix frontend",
-    "test:ui": "npm run test:ui --prefix frontend"
+    "test:ui": "npm run test:ui --prefix frontend",
+    "deploy-frontend": "cd frontend && npm run build && cd .. && gcloud app deploy frontend/app.frontendstandard.yaml --version 20250628t033311",
+    "deploy-backend": "gcloud run deploy backend-run --source backend"
   },
   "devDependencies": {
     "@eslint/css": "^0.9.0",
