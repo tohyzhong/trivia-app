@@ -11,6 +11,19 @@ import authenticate from "./authMiddleware.js";
 
 const router = express.Router();
 
+// Helper function to check password validity
+const passwordValidation = [
+  body("newPassword")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long.")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one uppercase letter.")
+    .matches(/[a-z]/)
+    .withMessage("Password must contain at least one lowercase letter.")
+    .matches(/[0-9]/)
+    .withMessage("Password must contain at least one number.")
+];
+
 // Helper function to generate a token
 const generateToken = (userId, action, newEmail = null) => {
   const payload = { userId, action };
@@ -167,6 +180,9 @@ router.post("/verify-action", async (req, res) => {
 
     if (decoded.action === "change-password") {
       const { newPassword } = req.body;
+      await Promise.all(
+        passwordValidation.map((validation) => validation.run(req))
+      );
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -262,7 +278,7 @@ router.post("/verify-action", async (req, res) => {
 
 router.post(
   "/contact",
-  [body("newEmail").isEmail().withMessage("Invalid email format.")],
+  [body("email").isEmail().withMessage("Invalid email format.")],
   async (req, res) => {
     const { name, username, email, subject, message } = req.body;
 

@@ -103,7 +103,13 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please provide a valid email address."),
-    body("username").notEmpty().withMessage("Username is required."),
+    body("username")
+      .notEmpty()
+      .withMessage("Username is required.")
+      .isLength({ min: 5, max: 16 })
+      .withMessage("Username must be between 5 to 16 characters long")
+      .isAlphanumeric()
+      .withMessage("Username must only contain letters and numbers."),
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters long.")
