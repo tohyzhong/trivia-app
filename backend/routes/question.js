@@ -1,6 +1,6 @@
 import express from "express";
 import sendEmail from "../utils/email.js";
-import User from "../models/User.js";
+import mongoose from "mongoose";
 import ClassicQuestion from "../models/ClassicQuestion.js";
 import authenticate from "./authMiddleware.js";
 
@@ -8,11 +8,20 @@ const router = express.Router();
 
 router.get("/initial", authenticate, async (req, res) => {
   try {
-    const communityQuestions = await ClassicQuestion.find({ approved: false });
+    const result = await ClassicQuestion.aggregate([
+      {
+        $facet: {
+          questions: [{ $match: { approved: false } }],
+          categories: [{ $group: { _id: "$category" } }]
+        }
+      }
+    ]);
 
-    const categories = await ClassicQuestion.distinct("category");
+    const data = result[0];
+    const questions = data.questions;
+    const categories = data.categories.map((c) => c._id);
 
-    res.json({ questions: communityQuestions, categories });
+    res.status(200).json({ questions, categories });
   } catch (error) {
     console.error("Error fetching initial questions and categories:", error);
     res.status(500).send("An error occurred while fetching questions.");
@@ -68,31 +77,49 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
         .send("Please enter a valid difficulty between 1 and 5 (inclusive)");
     }
 
-    const question = await ClassicQuestion.findById(questionId);
+    const result = await ClassicQuestion.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(questionId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "username",
+          as: "userInfo"
+        }
+      },
+      { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } }
+    ]);
 
-    if (!question) {
+    console.log(result);
+
+    if (result.length === 0) {
       return res.status(404).send("Question not found");
     }
 
-    question.approved = true;
-    question.approvedBy = username;
-    question.category = category;
-    question.difficulty = difficulty;
+    const question = result[0];
+    const user = question.userInfo || null;
 
-    await question.save();
+    const updated = await ClassicQuestion.findByIdAndUpdate(
+      questionId,
+      {
+        approved: true,
+        approvedBy: username,
+        category,
+        difficulty
+      },
+      { new: true }
+    );
 
-    if (question.createdBy) {
-      const user = await User.findOne({ username: question.createdBy });
-      if (user) {
-        const subject = "[The Rizz Quiz] Your question has been approved!";
-        const html = `
+    if (user) {
+      const subject = "[The Rizz Quiz] Your question has been approved!";
+      const html = `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #28a745;">Your question was approved!</h2>
             <p>Hi <strong>${user.username}</strong>,</p>
             <p>Great news! Your question has been reviewed and approved by an admin.</p>
             <h4>Question Details:</h4>
             <ul>
-              <li><strong>Question:</strong> ${question.question}</li>
+              <li><strong>Question:</strong> ${updated.question}</li>
               <li><strong>Category:</strong> ${category}</li>
               <li><strong>Difficulty:</strong> ${difficulty}</li>
             </ul>
@@ -100,8 +127,7 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
             <p style="color: #888;">– The Rizz Quiz Admin</p>
           </div>
         `;
-        await sendEmail(user.email, subject, "", html);
-      }
+      await sendEmail(user.email, subject, "", html);
     }
 
     res.status(200).json({ message: "Question approved successfully" });
@@ -111,7 +137,7 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
   }
 });
 
-router.delete("/reject/:id", authenticate, async (req, res) => {
+router.delete("/reject/:questionId", authenticate, async (req, res) => {
   const { role } = req.user;
   if (!role.includes("admin")) {
     return res
@@ -120,17 +146,32 @@ router.delete("/reject/:id", authenticate, async (req, res) => {
   }
 
   try {
-    const { id } = req.params;
+    const { questionId } = req.params;
     const { reason } = req.body;
-    const question = await ClassicQuestion.findById(id);
-    if (!question)
-      return res.status(404).json({ message: "Question not found." });
 
-    if (question.createdBy) {
-      const user = await User.findOne({ username: question.createdBy });
-      if (user) {
-        const subject = "[The Rizz Quiz] Your question was rejected";
-        const html = `
+    const result = await ClassicQuestion.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(questionId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "username",
+          as: "userInfo"
+        }
+      },
+      { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } }
+    ]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Question not found." });
+    }
+
+    const question = result[0];
+    const user = question.userInfo || null;
+
+    if (user) {
+      const subject = "[The Rizz Quiz] Your question was rejected";
+      const html = `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #dc3545;">Your question was rejected</h2>
             <p>Hi <strong>${user.username}</strong>,</p>
@@ -146,11 +187,10 @@ router.delete("/reject/:id", authenticate, async (req, res) => {
             <p style="color: #888;">– The Rizz Quiz Admin</p>
           </div>
         `;
-        await sendEmail(user.email, subject, "", html);
-      }
+      await sendEmail(user.email, subject, "", html);
     }
 
-    await ClassicQuestion.findByIdAndDelete(id);
+    await ClassicQuestion.findByIdAndDelete(questionId);
     res.status(200).json({ message: "Question rejected and deleted." });
   } catch (error) {
     console.error("Error deleting question:", error);
