@@ -200,10 +200,9 @@ router.get("/:username", authenticate, async (req, res) => {
 // Retrieve multiple profiles
 router.post("/get-profiles", authenticate, async (req, res) => {
   try {
-    const { userIds } = req.body;
-    const objectIds = userIds.map((id) => new mongoose.Types.ObjectId(`${id}`));
+    const { usernames } = req.body;
     const users = await Profile.find(
-      { _id: { $in: objectIds } },
+      { username: { $in: usernames } },
       { _id: 0, username: 1, profilePicture: 1 }
     );
     if (!users) {

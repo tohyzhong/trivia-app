@@ -82,7 +82,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
       {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       <div className="game-lobby-container">
         <GameSettings lobbyId={lobbyId} gameSettings={lobbySettings} />
-        <GameUsers lobbyId={lobbyId} userIds={lobbyUsers} />
+        <GameUsers lobbyId={lobbyId} usernames={lobbyUsers} />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
       </div>
 

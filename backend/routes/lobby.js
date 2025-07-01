@@ -15,32 +15,23 @@ const router = express.Router();
 // Create a new Solo lobby
 router.post("/solo/create", authenticate, async (req, res) => {
   try {
-    const { gameType, player } = req.body;
-    const id = crypto.randomUUID();
-    const playerDoc = await Profile.collection.findOne({ username: player });
+    const gameType = req.body.gameType;
+    const username = req.user.username;
+    const lobbyId = crypto.randomUUID();
 
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
-    }
-
-    const existingLobby = await Profile.aggregate([
-      // Retrieve player information
-      { $match: { username: player } },
-
-      // Check if the lobby already exists and if the player is already in the lobby
+    const [playerDoc] = await Profile.aggregate([
+      { $match: { username } },
       {
         $lookup: {
           from: "lobbies",
           pipeline: [
             {
               $facet: {
-                lobbyExists: [{ $match: { lobbyId: id } }, { $limit: 1 }],
+                lobbyExists: [{ $match: { lobbyId } }, { $limit: 1 }],
                 playerExists: [
                   {
                     $match: {
-                      $expr: {
-                        $in: [playerDoc._id, "$players"]
-                      }
+                      players: username
                     }
                   },
                   { $limit: 1 }
@@ -48,53 +39,59 @@ router.post("/solo/create", authenticate, async (req, res) => {
               }
             }
           ],
-          as: "lobbies"
+          as: "lobbyStatus"
         }
       },
-
-      // Retrieve lobby if it exists
-      { $unwind: "$lobbies" },
-
       {
-        $project: {
-          _id: 0,
+        $lookup: {
+          from: "classicquestions",
+          pipeline: [
+            { $group: { _id: "$category" } },
+            { $project: { _id: 0, category: "$_id" } }
+          ],
+          as: "categories"
+        }
+      },
+      { $unwind: "$lobbyStatus" },
+      {
+        $addFields: {
           lobbyExists: {
-            $cond: {
-              if: { $gt: [{ $size: "$lobbies.lobbyExists" }, 0] },
-              then: true,
-              else: false
-            }
+            $gt: [{ $size: "$lobbyStatus.lobbyExists" }, 0]
           },
           playerExists: {
-            $cond: {
-              if: { $gt: [{ $size: "$lobbies.playerExists" }, 0] },
-              then: true,
-              else: false
-            }
+            $gt: [{ $size: "$lobbyStatus.playerExists" }, 0]
           }
+        }
+      },
+      {
+        $project: {
+          username: 1,
+          lobbyExists: 1,
+          playerExists: 1,
+          categories: "$categories.category"
         }
       }
     ]);
 
-    if (existingLobby[0].lobbyExists) {
+    if (!playerDoc)
+      return res.status(404).json({ message: "Player not found." });
+    if (playerDoc.lobbyExists)
       return res.status(400).json({ message: "Lobby ID already exists." });
-    } else if (existingLobby[0].playerExists) {
+    if (playerDoc.playerExists)
       return res.status(400).json({ message: "Player already in a lobby." });
-    }
-
-    const categories = await ClassicQuestion.distinct("category");
-
-    if (categories.length === 0) {
+    if (playerDoc.categories.length === 0) {
       return res.status(400).json({ message: "No categories found." });
     }
 
-    const defaultCategory = "General";
+    const defaultCategory = playerDoc.categories.includes("General")
+      ? "General"
+      : playerDoc.categories[0];
 
     const lobby = {
-      lobbyId: id,
+      lobbyId,
       status: "waiting",
-      players: [playerDoc._id],
-      gameType: `${gameType}`,
+      players: [username],
+      gameType,
       gameSettings: {
         numQuestions: 10,
         timePerQuestion: 30,
@@ -105,8 +102,7 @@ router.post("/solo/create", authenticate, async (req, res) => {
         currentQuestion: 0,
         question: null,
         playerStates: {
-          [playerDoc._id]: {
-            username: playerDoc.username,
+          [username]: {
             selectedOption: 0,
             submitted: false
           }
@@ -117,7 +113,7 @@ router.post("/solo/create", authenticate, async (req, res) => {
       chatMessages: [
         {
           sender: "System",
-          message: `${player} has created the lobby.`,
+          message: `${username} has created the lobby.`,
           timestamp: new Date()
         }
       ],
@@ -125,12 +121,70 @@ router.post("/solo/create", authenticate, async (req, res) => {
     };
 
     await Lobby.collection.insertOne(lobby);
-    return res
-      .status(201)
-      .json({ lobbyId: id, message: "Lobby created successfully", categories });
+    return res.status(201).json({
+      lobbyId,
+      message: "Lobby created successfully",
+      categories: playerDoc.categories
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating lobby" });
+  }
+});
+
+router.get("/check", authenticate, async (req, res) => {
+  try {
+    const username = req.user.username;
+
+    const [result] = await Lobby.collection
+      .aggregate([
+        {
+          $facet: {
+            lobby: [
+              { $match: { players: username } },
+              { $project: { lobbyId: 1 } }
+            ],
+            categories: [
+              {
+                $group: {
+                  _id: "$gameSettings.categories" // placeholder value for categories
+                }
+              },
+              {
+                $lookup: {
+                  from: "classicquestions",
+                  pipeline: [
+                    { $group: { _id: "$category" } },
+                    { $project: { _id: 0, category: "$_id" } }
+                  ],
+                  as: "categories"
+                }
+              },
+              { $unwind: "$categories" },
+              { $replaceRoot: { newRoot: "$categories" } }
+            ]
+          }
+        }
+      ])
+      .toArray();
+
+    const lobby = result.lobby[0];
+    const categories = result.categories.map((c) => c.category);
+
+    if (!lobby) {
+      return res.status(200).json({ message: "Player not in any lobby." });
+    }
+    if (categories.length === 0) {
+      return res.status(400).json({ message: "No categories found." });
+    }
+
+    return res.status(200).json({
+      lobbyId: lobby.lobbyId,
+      categories
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error checking lobby status." });
   }
 });
 
@@ -138,44 +192,39 @@ router.post("/solo/create", authenticate, async (req, res) => {
 router.post("/solo/connect/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
-    const { player } = req.body;
-    const lobby = await Lobby.collection.findOne({ lobbyId });
+    const username = req.user.username;
 
-    if (!lobby) {
-      return res.status(404).json({ message: "Lobby not found." });
-    }
-
-    const players = await Profile.collection
-      .find({ _id: { $in: lobby.players } })
-      .toArray();
-    if (!players.map((p) => p.username).includes(player)) {
-      return res
-        .status(403)
-        .json({ message: "Player does not have access to this lobby." });
-    }
-
-    // Update chat messages
-    const socketIO = getSocketIO();
     const newChatMessage = {
       sender: "System",
-      message: `${player} has connected.`,
+      message: `${username} has connected.`,
       timestamp: new Date()
     };
 
-    const chatMessages = [...(lobby.chatMessages || []), newChatMessage];
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId },
-      { $set: { chatMessages, lastActivity: new Date() } },
+      {
+        lobbyId,
+        players: username
+      },
+      {
+        $push: { chatMessages: newChatMessage },
+        $set: { lastActivity: new Date() }
+      },
       { returnDocument: "after" }
     );
+
     if (!updatedLobby) {
-      return res.status(404).json({ message: "Failed to update lobby" });
+      return res.status(403).json({
+        message: "Lobby not found or player not in lobby."
+      });
     }
 
-    // Notify all players in the lobby
-    socketIO
-      .to(lobbyId)
-      .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit("updateChat", {
+      chatMessages: updatedLobby.chatMessages
+    });
+    socketIO.to(lobbyId).emit("updateUsers", {
+      players: updatedLobby.players
+    });
 
     return res.status(200).json({
       message: "Player connected successfully",
@@ -193,47 +242,44 @@ router.post("/solo/disconnect/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player } = req.body;
-    const lobby = await Lobby.collection.findOne({ lobbyId });
+    const { username } = req.user;
 
-    if (!lobby) {
-      return res.status(404).json({ message: "Lobby not found." });
+    if (player === username) {
+      const newChatMessage = {
+        sender: "System",
+        message: `${player} has disconnected.`,
+        timestamp: new Date()
+      };
+
+      const updatedLobby = await Lobby.collection.findOneAndUpdate(
+        { lobbyId, players: username },
+        {
+          $push: { chatMessages: newChatMessage },
+          $set: { lastActivity: new Date() }
+        },
+        { returnDocument: "after" }
+      );
+
+      if (!updatedLobby) {
+        return res.status(404).json({ message: "Lobby not found." });
+      }
+
+      const socketIO = getSocketIO();
+      socketIO
+        .to(lobbyId)
+        .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
+      socketIO.to(lobbyId).emit("updateUsers", {
+        players: updatedLobby.players
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Player disconnected successfully" });
+    } else {
+      return res
+        .status(401)
+        .json({ message: "User unauthorised to disconnect." });
     }
-
-    await Lobby.collection.updateOne(
-      { lobbyId },
-      { $set: { lastActivity: new Date() } }
-    );
-
-    const playerDoc = await Profile.collection.findOne({ username: player });
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
-    }
-
-    // Update chat messages
-    const socketIO = getSocketIO();
-    const newChatMessage = {
-      sender: "System",
-      message: `${player} has disconnected.`,
-      timestamp: new Date()
-    };
-    const chatMessages = [...(lobby.chatMessages || []), newChatMessage];
-
-    // Emit chat message
-    const updatedLobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId },
-      { $set: { chatMessages } },
-      { returnDocument: "after" }
-    );
-    if (!updatedLobby) {
-      return res.status(404).json({ message: "Failed to update lobby" });
-    }
-    socketIO
-      .to(lobbyId)
-      .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
-
-    return res
-      .status(200)
-      .json({ message: "Player disconnected successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error disconnecting from lobby" });
@@ -253,27 +299,35 @@ router.post("/solo/leave/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { player } = req.body;
-    const playerDoc = await Profile.collection.findOne({ username: player });
-    const lobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId },
-      { $pull: { players: playerDoc._id } },
-      { returnDocument: "after" }
-    );
-    if (!lobby) {
-      return res.status(401).json({ message: "Lobby not found." });
+    const { username } = req.user;
+
+    if (username === player) {
+      const updatedLobby = await Lobby.findOneAndUpdate(
+        { lobbyId, players: username },
+        {
+          $pull: { players: username },
+          $set: { lastActivity: new Date() }
+        },
+        { new: true }
+      );
+
+      if (!updatedLobby) {
+        return res
+          .status(404)
+          .json({ message: "Lobby not found or player not in lobby." });
+      }
+
+      // Delete lobby if it's empty
+      if (updatedLobby.players.length === 0) {
+        await Lobby.deleteOne({ lobbyId });
+      }
+
+      return res.status(200).json({ message: "Successfully left lobby." });
+    } else {
+      return res
+        .status(401)
+        .json({ message: "User unauthorised to leave lobby." });
     }
-
-    // Close lobby if empty
-    if (lobby.players.length === 0) {
-      await Lobby.collection.deleteOne(lobby);
-    }
-
-    await Lobby.collection.updateOne(
-      { lobbyId },
-      { $set: { lastActivity: new Date() } }
-    );
-
-    res.status(200).json({ message: "Successfully left lobby." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error leaving lobby" });
@@ -283,23 +337,17 @@ router.post("/solo/leave/:lobbyId", authenticate, async (req, res) => {
 router.post("/solo/chat/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
-    const { player, message } = req.body;
-    const lobby = await Lobby.collection.findOne({ lobbyId });
-    if (!lobby) {
-      return res.status(404).json({ message: "Lobby not found." });
-    }
-    const playerDoc = await Profile.collection.findOne({ username: player });
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
-    }
+    const { message } = req.body;
+    const username = req.user.username;
 
     const newChatMessage = {
-      sender: player,
+      sender: username,
       message,
       timestamp: new Date()
     };
+
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId },
+      { lobbyId, players: username },
       {
         $push: { chatMessages: newChatMessage },
         $set: { lastActivity: new Date() }
@@ -307,13 +355,16 @@ router.post("/solo/chat/:lobbyId", authenticate, async (req, res) => {
       { returnDocument: "after" }
     );
     if (!updatedLobby) {
-      return res.status(404).json({ message: "Failed to update lobby" });
+      return res
+        .status(404)
+        .json({ message: "Lobby not found or user unauthorised" });
     }
     // Notify all players in the lobby
     const socketIO = getSocketIO();
     socketIO
       .to(lobbyId)
       .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
+
     return res.status(200).json({ message: "Chat message sent successfully" });
   } catch (error) {
     console.error(error);
@@ -323,38 +374,11 @@ router.post("/solo/chat/:lobbyId", authenticate, async (req, res) => {
 
 router.post("/solo/ready/:lobbyId", authenticate, async (req, res) => {
   // TODO when multiplayer is implemented
-});
-
-router.get("/check", authenticate, async (req, res) => {
-  try {
-    const username = req.user.username;
-
-    const playerDoc = await Profile.collection.findOne({ username });
-
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
-    }
-
-    const lobby = await Lobby.collection.findOne({
-      players: playerDoc._id
-    });
-
-    if (!lobby) {
-      return res.status(200).json({ message: "Player not in any lobby." });
-    }
-
-    const categories = await ClassicQuestion.distinct("category");
-
-    if (categories.length === 0) {
-      return res.status(400).json({ message: "No categories found." });
-    }
-
-    // Player is in a lobby, return the lobbyId
-    return res.status(200).json({ lobbyId: lobby.lobbyId, categories });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error checking lobby status." });
-  }
+  const { lobbyId } = req.params;
+  await Lobby.collection.updateOne(
+    { lobbyId },
+    { $set: { lastActivity: new Date() } }
+  );
 });
 
 router.post("/solo/updateSettings/:lobbyId", authenticate, async (req, res) => {
@@ -392,41 +416,39 @@ router.post("/solo/updateSettings/:lobbyId", authenticate, async (req, res) => {
       });
     }
 
-    const lobby = await Lobby.collection.findOne({ lobbyId });
-    if (!lobby) {
-      return res.status(404).json({ message: "Lobby not found." });
-    }
-
-    await Lobby.collection.updateOne(
-      { lobbyId },
-      {
-        $set: {
-          gameSettings: gameSettings,
-          lastActivity: new Date()
-        }
-      }
-    );
-
-    const socketIO = getSocketIO();
     const newChatMessage = {
       sender: "System",
       message: `${username} has updated the game settings.`,
       timestamp: new Date()
     };
 
-    const chatMessages = [...(lobby.chatMessages || []), newChatMessage];
-
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId },
-      { $set: { chatMessages, lastActivity: new Date() } },
+      { lobbyId, players: username },
+      {
+        $set: {
+          gameSettings,
+          lastActivity: new Date()
+        },
+        $push: {
+          chatMessages: newChatMessage
+        }
+      },
       { returnDocument: "after" }
     );
 
-    socketIO
-      .to(lobbyId)
-      .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
+    if (!updatedLobby) {
+      return res
+        .status(404)
+        .json({ message: "Lobby not found or access denied." });
+    }
 
-    socketIO.to(lobbyId).emit("updateSettings", { gameSettings });
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit("updateChat", {
+      chatMessages: updatedLobby.chatMessages
+    });
+    socketIO.to(lobbyId).emit("updateSettings", {
+      gameSettings: updatedLobby.gameSettings
+    });
 
     return res
       .status(200)
@@ -494,18 +516,14 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
     if (!lobby) {
       return res.status(404).json({ message: "Lobby not found" });
     }
-
-    const playerDoc = await Profile.collection.findOne({ username: user });
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
+    if (!lobby.players.includes(user)) {
+      return res.status(403).json({ message: "Player not in lobby" });
     }
 
     const playerState = {
-      username: user,
       selectedOption: option,
       submitted: true,
-      answerHistory:
-        lobby.gameState.playerStates[playerDoc._id]?.answerHistory || {}
+      answerHistory: lobby.gameState.playerStates[user]?.answerHistory || {}
     };
     const currentQuestion = lobby.gameState.currentQuestion;
 
@@ -540,7 +558,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
     const updatedPlayerStates = {
       ...lobby.gameState.playerStates,
-      [playerDoc._id]: playerState
+      [user]: playerState
     };
 
     let allSubmitted = true;
@@ -590,18 +608,14 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
     if (!lobby) {
       return res.status(404).json({ message: "Lobby not found" });
     }
-
-    const playerDoc = await Profile.collection.findOne({ username });
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
+    if (!lobby.players.includes(username)) {
+      return res.status(403).json({ message: "Player not in lobby" });
     }
 
     const playerState = {
-      username: username,
       selectedOption: 0,
       submitted: false,
-      answerHistory:
-        lobby.gameState.playerStates[playerDoc._id]?.answerHistory || {}
+      answerHistory: lobby.gameState.playerStates[username]?.answerHistory || {}
     };
     const currentQuestion = lobby.gameState.currentQuestion;
 
@@ -632,7 +646,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
     const updatedPlayerStates = {
       ...lobby.gameState.playerStates,
-      [playerDoc._id]: playerState
+      [username]: playerState
     };
 
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
@@ -686,61 +700,69 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
     const playerStates = gameState.playerStates;
 
     // Reset player states
-    const updatedPlayerStates = {};
-    for (const stateKey in playerStates) {
-      updatedPlayerStates[stateKey] = {
-        ...playerStates[stateKey],
+    const resetPlayerStates = {};
+    for (const username in playerStates) {
+      resetPlayerStates[username] = {
+        ...playerStates[username],
         selectedOption: 0,
         submitted: false
       };
     }
 
+    const socketIO = getSocketIO();
+
     if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
-      // Update player states
+      // Update player states when lobby ends
       if (lobby.gameSettings.categories.includes("Community")) {
         // TODO: Update separate community question bank stats
       } else {
-        for (const stateKey in playerStates) {
+        const usernamesToUpdate = Object.keys(playerStates);
+        const numQuestions = lobby.gameSettings.numQuestions;
+        const matchDate = new Date();
+
+        const playerUpdates = await Profile.collection
+          .find({ username: { $in: usernamesToUpdate } })
+          .toArray();
+
+        const bulkOps = playerUpdates.map((profile) => {
+          const username = profile.username;
           const correctAnswers = Object.values(
-            playerStates[stateKey].answerHistory
-          ).filter((v) => v == "correct").length;
+            playerStates[username].answerHistory
+          ).filter((v) => v === "correct").length;
 
-          // Get profile and update
-          const profile = await Profile.collection.findOne({
-            username: playerStates[stateKey].username
-          });
-
-          // Answer stats
           const newCorrectAnswer = profile.correctAnswer + correctAnswers;
-          const newTotalAnswer =
-            profile.totalAnswer + lobby.gameSettings.numQuestions;
+          const newTotalAnswer = profile.totalAnswer + numQuestions;
 
-          // Match History
-          const newMatchHistory = [...profile.matchHistory];
-          newMatchHistory.push({
+          const matchEntry = {
             type: lobby.gameType,
-            state: "solo", // TODO: update with win/lose logic for multiplayer
-            totalPlayed: lobby.gameSettings.numQuestions,
+            state: "solo",
+            totalPlayed: numQuestions,
             correctNumber: correctAnswers,
-            date: new Date()
-          });
-          while (newMatchHistory.length > 10) newMatchHistory.shift();
-
-          const updatedData = {
-            correctAnswer: newCorrectAnswer,
-            totalAnswer: newTotalAnswer,
-            correctRate:
-              Math.round((newCorrectAnswer / newTotalAnswer) * 10000) / 100, // Change to percantage in 2 decimal places
-            matchHistory: newMatchHistory
+            date: matchDate
           };
 
-          // console.log(updatedData);
-          // TODO?: Add correct answer streak stat
+          const updatedMatchHistory = [...profile.matchHistory, matchEntry];
+          while (updatedMatchHistory.length > 10) updatedMatchHistory.shift();
 
-          await Profile.collection.updateOne(
-            { username: playerStates[stateKey].username },
-            { $set: updatedData }
-          );
+          return {
+            updateOne: {
+              filter: { username },
+              update: {
+                $set: {
+                  correctAnswer: newCorrectAnswer,
+                  totalAnswer: newTotalAnswer,
+                  correctRate:
+                    Math.round((newCorrectAnswer / newTotalAnswer) * 10000) /
+                    100,
+                  matchHistory: updatedMatchHistory
+                }
+              }
+            }
+          };
+        });
+
+        if (bulkOps.length > 0) {
+          await Profile.collection.bulkWrite(bulkOps);
         }
       }
 
@@ -749,7 +771,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         currentQuestion: 0,
         questionIds: [],
         question: null,
-        playerStates: updatedPlayerStates,
+        playerStates: resetPlayerStates,
         answerRevealed: false,
         lastUpdate: new Date()
       };
@@ -783,7 +805,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         currentQuestion: gameState.currentQuestion + 1,
         questionIds: gameState.questionIds,
         question,
-        playerStates: updatedPlayerStates,
+        playerStates: resetPlayerStates,
         answerRevealed: false,
         lastUpdate: new Date()
       };
