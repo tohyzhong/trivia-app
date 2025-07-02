@@ -13,7 +13,8 @@ const profileSchema = new mongoose.Schema(
     totalAnswer: { type: Number, default: 0 },
     currency: { type: Number, default: 0 },
     profilePicture: { type: String, default: "" },
-    matchHistory: { type: Array, default: [] } // { state: solo/win/lose (grey, green, red), totalPlayed: number, correctNumber: number, date: Date}
+    matchHistory: { type: Array, default: [] }, // { state: solo/win/lose (grey, green, red), totalPlayed: number, correctNumber: number, date: Date}'
+    leaderboardStats: mongoose.Schema.Types.Mixed
   },
   { timestamps: true }
 );

@@ -471,16 +471,18 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
       return res.status(401).json({ message: "Lobby has already started." });
     } else {
       // Configure game state
-      const { questionIds, question } = await generateUniqueQuestionIds(
-        lobby.gameSettings.numQuestions,
-        lobby.gameSettings.categories,
-        lobby.gameSettings.difficulty
-      );
+      const { questionIds, questionCategories, question } =
+        await generateUniqueQuestionIds(
+          lobby.gameSettings.numQuestions,
+          lobby.gameSettings.categories,
+          lobby.gameSettings.difficulty
+        );
 
       const update = {
         currentQuestion: 1,
         questionIds,
         question,
+        questionCategories,
         lastUpdate: new Date(),
         playerStates: {}
       };
@@ -713,57 +715,103 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
 
     if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
       // Update player states when lobby ends
-      if (lobby.gameSettings.categories.includes("Community")) {
-        // TODO: Update separate community question bank stats
-      } else {
-        const usernamesToUpdate = Object.keys(playerStates);
+      const usernamesToUpdate = Object.keys(playerStates);
+      const playerUpdates = await Profile.collection
+        .find({ username: { $in: usernamesToUpdate } })
+        .toArray();
+
+      const bulkOps = playerUpdates.map((profile) => {
+        const username = profile.username;
+        const answerHistory = playerStates[username].answerHistory || {};
+        const leaderboardStats = profile.leaderboardStats || {};
+        const matchCategoryStats = {};
+        const correctCount = Object.values(answerHistory).filter(
+          (v) => v === "correct"
+        ).length;
+
+        const gameMode = lobby.gameType.split("-")[0]; // solo/versus/coop
+        const gameFormat = lobby.gameType.split("-")[1]; // classic/knowledge
         const numQuestions = lobby.gameSettings.numQuestions;
         const matchDate = new Date();
+        const categoriesInMatch = gameState.questionCategories || [];
 
-        const playerUpdates = await Profile.collection
-          .find({ username: { $in: usernamesToUpdate } })
-          .toArray();
+        if (!leaderboardStats[gameFormat]) leaderboardStats[gameFormat] = {};
+        if (!leaderboardStats[gameFormat].overall)
+          leaderboardStats[gameFormat].overall = {};
+        if (!leaderboardStats[gameFormat][gameMode]) {
+          leaderboardStats[gameFormat][gameMode] = {};
+        }
 
-        const bulkOps = playerUpdates.map((profile) => {
-          const username = profile.username;
-          const correctAnswers = Object.values(
-            playerStates[username].answerHistory
-          ).filter((v) => v === "correct").length;
+        const formatStats = leaderboardStats[gameFormat];
+        const modeStats = formatStats[gameMode];
+        const overallStats = formatStats.overall;
 
-          const newCorrectAnswer = profile.correctAnswer + correctAnswers;
-          const newTotalAnswer = profile.totalAnswer + numQuestions;
+        for (let i = 0; i < numQuestions; i++) {
+          const category = categoriesInMatch[i];
+          const result = answerHistory[i + 1];
 
-          const matchEntry = {
-            type: lobby.gameType,
-            state: "solo",
-            totalPlayed: numQuestions,
-            correctNumber: correctAnswers,
-            date: matchDate
-          };
+          if (!matchCategoryStats[category]) {
+            matchCategoryStats[category] = { correct: 0, total: 0 };
+          }
+          matchCategoryStats[category].total++;
+          if (result === "correct") matchCategoryStats[category].correct++;
 
-          const updatedMatchHistory = [...profile.matchHistory, matchEntry];
-          while (updatedMatchHistory.length > 10) updatedMatchHistory.shift();
+          if (!modeStats[category]) {
+            modeStats[category] = { correct: 0, total: 0 };
+          }
+          modeStats[category].total++;
+          if (result === "correct") modeStats[category].correct++;
 
-          return {
-            updateOne: {
-              filter: { username },
-              update: {
-                $set: {
-                  correctAnswer: newCorrectAnswer,
-                  totalAnswer: newTotalAnswer,
-                  correctRate:
-                    Math.round((newCorrectAnswer / newTotalAnswer) * 10000) /
-                    100,
-                  matchHistory: updatedMatchHistory
-                }
+          if (!modeStats.overall) {
+            modeStats.overall = { correct: 0, total: 0 };
+          }
+          if (category !== "Community") {
+            modeStats.overall.total++;
+            if (result === "correct") modeStats.overall.correct++;
+          }
+
+          if (!overallStats.overall) {
+            overallStats.overall = { correct: 0, total: 0 };
+          }
+          if (category !== "Community") {
+            overallStats.overall.total++;
+            if (result === "correct") overallStats.overall.correct++;
+          }
+
+          if (!overallStats[category]) {
+            overallStats[category] = { correct: 0, total: 0 };
+          }
+          overallStats[category].total++;
+          if (result === "correct") overallStats[category].correct++;
+        }
+
+        const matchEntry = {
+          type: lobby.gameType,
+          state: gameMode,
+          totalPlayed: numQuestions,
+          correctNumber: correctCount,
+          date: matchDate,
+          categoryStats: matchCategoryStats
+        };
+
+        const updatedMatchHistory = [...profile.matchHistory, matchEntry];
+        while (updatedMatchHistory.length > 10) updatedMatchHistory.shift();
+
+        return {
+          updateOne: {
+            filter: { username },
+            update: {
+              $set: {
+                leaderboardStats,
+                matchHistory: updatedMatchHistory
               }
             }
-          };
-        });
+          }
+        };
+      });
 
-        if (bulkOps.length > 0) {
-          await Profile.collection.bulkWrite(bulkOps);
-        }
+      if (bulkOps.length > 0) {
+        await Profile.collection.bulkWrite(bulkOps);
       }
 
       // Return to lobby waiting state if set of questions finished
@@ -771,6 +819,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         currentQuestion: 0,
         questionIds: [],
         question: null,
+        questionCategories: [],
         playerStates: resetPlayerStates,
         answerRevealed: false,
         lastUpdate: new Date()
@@ -788,7 +837,6 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       );
 
       // Update frontend display through socket
-      const socketIO = getSocketIO();
       socketIO.to(lobbyId).emit("updateStatus", { status: "waiting" });
       socketIO.to(lobbyId).emit("updateState", {
         gameState: updatedGameState,
@@ -802,6 +850,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         gameState.questionIds[gameState.currentQuestion]
       );
       const updatedGameState = {
+        ...gameState,
         currentQuestion: gameState.currentQuestion + 1,
         questionIds: gameState.questionIds,
         question,
@@ -817,7 +866,6 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
 
       // Update frontend display through socket
       updatedGameState.question.correctOption = null;
-      const socketIO = getSocketIO();
       socketIO.to(lobbyId).emit("updateState", {
         gameState: updatedGameState,
         serverTimeNow: new Date()
