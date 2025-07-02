@@ -1,74 +1,101 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ColDef } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import "../../../styles/leaderboard.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
-import LeaderboardDropdown from "./LeaderboardDropdown";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 
-interface PodiumData {
-  rank: number;
+interface Props {
+  gameFormat: string;
+  mode: string;
+  category: string;
+}
+
+interface RowData {
   username: string;
   profilePicture: string;
-  value: number | string;
-}
-
-interface LeaderboardRow {
+  correctAnswer: number;
+  totalAnswer: number;
+  correctRate?: string;
   rank: number;
-  profilePicture: string;
-  username: string;
-  [key: string]: number | string; // Allows any additional string key with number or string value
 }
 
-interface LeaderboardTableProps {
-  apiRoute: string;
-  valueField: string;
-  valueHeader: string;
-}
-
-const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
-  apiRoute,
-  valueField,
-  valueHeader
-}) => {
-  // Loading state
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
+const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
+  const [loading, setLoading] = useState(true);
+  const [rawData, setRawData] = useState<RowData[]>([]);
+  const [rowData, setRowData] = useState<RowData[]>([]);
+  const [error, setError] = useState("");
+  const [sortField, setSortField] = useState<string>("correctAnswer");
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
+  const loggedInUser = useSelector((state: RootState) => state.user.username);
+  const gridRef = useRef<any>(null);
   const navigate = useNavigate();
 
-  // Leaderboard states
-  const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardRow[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/leaderboard/stats?gameFormat=${gameFormat}&mode=${mode.toLowerCase().replace("-", "")}&category=${category === "Overall" ? "overall" : category}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
+          }
+        );
+        const data = await res.json();
+        const withRate = data.map((entry: RowData) => {
+          const correct = entry.correctAnswer;
+          const total = entry.totalAnswer;
+          const rate =
+            total === 0 ? "0.00%" : `${((correct / total) * 100).toFixed(2)}%`;
+          return { ...entry, correctRate: rate };
+        });
+        setRawData(withRate);
+        updateRanks(withRate);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [gameFormat, mode, category]);
 
-  const fetchAnswerRateLeaderboard = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/leaderboard/${apiRoute}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include"
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch friends");
+  const updateRanks = (
+    data: RowData[],
+    field: string = "correctAnswer",
+    asc: boolean = false
+  ) => {
+    const sortedDesc = [...data].sort((a, b) => {
+      const aVal = field === "correctRate" ? parseFloat(a[field]!) : a[field];
+      const bVal = field === "correctRate" ? parseFloat(b[field]!) : b[field];
+      return bVal - aVal;
+    });
 
-      const data = await response.json();
+    sortedDesc.forEach((entry, idx) => (entry.rank = idx + 1));
 
-      setLeaderboardData(data.rowData);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
+    const sortedByRank = [...sortedDesc].sort((a, b) => a.rank - b.rank);
+
+    setRowData(sortedByRank);
+    setSortField(field);
+    setSortAsc(asc);
   };
 
-  useEffect(() => {
-    if (apiRoute && loggedInUser) fetchAnswerRateLeaderboard();
-  }, [loggedInUser, apiRoute]);
+  const onSortChanged = (event: any) => {
+    const api = event.api;
+    const sortModel = api.getColumnState().find((col: any) => col.sort);
+    if (!sortModel) return updateRanks(rowData);
+
+    const colId = sortModel.colId;
+    const sortAsc = sortModel.sort === "asc";
+
+    updateRanks(rawData, colId, sortAsc);
+  };
 
   const columnDefs: ColDef[] = [
     {
@@ -97,7 +124,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
     {
       headerName: "Avatar",
       field: "profilePicture",
-      flex: 1,
+      flex: 0.5,
       autoHeight: true,
       sortable: false,
       cellRenderer: (params: any) => {
@@ -123,7 +150,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       headerName: "Username",
       field: "username",
       sortable: false,
-      flex: 3,
+      flex: 2,
       cellRenderer: (params: any) => {
         return (
           <span
@@ -141,39 +168,49 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       }
     },
     {
-      headerName: valueHeader,
-      field: valueField,
-      flex: 1,
-      sortable: false
+      headerName: "Correct",
+      field: "correctAnswer",
+      flex: 0.5,
+      sortable: true,
+      sortingOrder: ["desc", "asc"]
+    },
+    {
+      headerName: "Total",
+      field: "totalAnswer",
+      flex: 0.5,
+      sortable: true,
+      sortingOrder: ["desc", "asc"]
+    },
+    {
+      headerName: "Correct Rate",
+      field: "correctRate",
+      flex: 0.5,
+      sortable: true,
+      sortingOrder: ["desc", "asc"]
     }
   ];
 
-  return loading ? (
-    <>
-      <ErrorPopup message={error} setMessage={setError} />
-    </>
-  ) : (
+  return (
     <div className="leaderboard-container">
       <ErrorPopup message={error} setMessage={setError} />
-      <LeaderboardPodium
-        podiumData={
-          leaderboardData.slice(0, 3).map((row) => ({
-            rank: row.rank,
-            username: row.username,
-            profilePicture: row.profilePicture,
-            value: row[valueField]
-          })) as PodiumData[]
-        }
-      />
-      <LeaderboardDropdown />
+      {!loading && rowData && (
+        <LeaderboardPodium
+          podiumData={rowData
+            .filter((entry) => entry.rank <= 3)
+            .sort((a, b) => a.rank - b.rank)}
+          sortField={sortField}
+        />
+      )}
       <div className="ag-theme-alpine">
         <AgGridReact
+          ref={gridRef}
+          columnDefs={columnDefs}
+          rowData={rowData}
           pagination={true}
           paginationPageSize={20}
           paginationPageSizeSelector={[20, 50, 100]}
-          columnDefs={columnDefs}
-          rowData={leaderboardData}
           domLayout="autoHeight"
+          onSortChanged={onSortChanged}
         />
       </div>
     </div>

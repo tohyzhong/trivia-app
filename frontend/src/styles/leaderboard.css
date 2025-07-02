@@ -289,9 +289,24 @@
 .leaderboard-dropdown-container {
   display: flex;
   flex-direction: row;
-  justify-content: left;
-  align-items: left;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+  gap: 50px;
+}
+
+.dropdown-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.dropdown-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
 }
 
 .leaderboard-dropdown {
