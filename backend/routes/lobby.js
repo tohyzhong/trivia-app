@@ -720,9 +720,18 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         .find({ username: { $in: usernamesToUpdate } })
         .toArray();
 
+      const playerScoreSummary = {};
+      usernamesToUpdate.forEach((username) => {
+        const answerHistory = playerStates[username]?.answerHistory || {};
+        const correct = Object.values(answerHistory).filter(
+          (v) => v === "correct"
+        ).length;
+        playerScoreSummary[username] = { correct };
+      });
+
       const bulkOps = playerUpdates.map((profile) => {
         const username = profile.username;
-        const answerHistory = playerStates[username].answerHistory || {};
+        const answerHistory = playerStates[username]?.answerHistory || {};
         const leaderboardStats = profile.leaderboardStats || {};
         const matchCategoryStats = {};
         const correctCount = Object.values(answerHistory).filter(
@@ -791,7 +800,10 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           totalPlayed: numQuestions,
           correctNumber: correctCount,
           date: matchDate,
-          categoryStats: matchCategoryStats
+          difficulty: lobby.gameSettings.difficulty,
+          categoryStats: matchCategoryStats,
+          answerHistory,
+          playerScoreSummary
         };
 
         const updatedMatchHistory = [...profile.matchHistory, matchEntry];
