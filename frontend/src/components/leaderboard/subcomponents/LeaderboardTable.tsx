@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ColDef } from "ag-grid-community";
+import { ColDef, SortDirection } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { data, useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
@@ -21,7 +21,11 @@ interface RowData {
   correctAnswer: number;
   totalAnswer: number;
   correctRate?: string;
+  wonMatches?: number;
+  totalMatches?: number;
+  winRate?: string;
   rank: number;
+  score: string;
 }
 
 const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
@@ -51,9 +55,22 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
         const withRate = data.map((entry: RowData) => {
           const correct = entry.correctAnswer;
           const total = entry.totalAnswer;
-          const rate =
+          const correctRate =
             total === 0 ? "0.00%" : `${((correct / total) * 100).toFixed(2)}%`;
-          return { ...entry, correctRate: rate };
+
+          let winRate: string | undefined = undefined;
+          if (
+            (category === "Overall" || category === "Community") &&
+            typeof entry.wonMatches === "number" &&
+            typeof entry.totalMatches === "number"
+          ) {
+            winRate =
+              entry.totalMatches === 0
+                ? "0.00%"
+                : `${((entry.wonMatches / entry.totalMatches) * 100).toFixed(2)}%`;
+          }
+
+          return { ...entry, correctRate, winRate };
         });
         setRawData(withRate);
         updateRanks(withRate);
@@ -72,8 +89,18 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
     asc: boolean = false
   ) => {
     const sortedDesc = [...data].sort((a, b) => {
-      const aVal = field === "correctRate" ? parseFloat(a[field]!) : a[field];
-      const bVal = field === "correctRate" ? parseFloat(b[field]!) : b[field];
+      const aVal =
+        field === "correctRate" || field === "winRate"
+          ? parseFloat(a[field])
+          : field === "score"
+            ? parseInt(a[field])
+            : a[field];
+      const bVal =
+        field === "correctRate" || field === "winRate"
+          ? parseFloat(b[field])
+          : field === "score"
+            ? parseInt(b[field])
+            : b[field];
       return bVal - aVal;
     });
 
@@ -150,7 +177,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       headerName: "Username",
       field: "username",
       sortable: false,
-      flex: 2,
+      flex: 1.5,
       cellRenderer: (params: any) => {
         return (
           <span
@@ -170,24 +197,56 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
     {
       headerName: "Correct",
       field: "correctAnswer",
-      flex: 0.5,
+      flex: 0.6,
       sortable: true,
       sortingOrder: ["desc", "asc"]
     },
     {
       headerName: "Total",
       field: "totalAnswer",
-      flex: 0.5,
+      flex: 0.6,
       sortable: true,
       sortingOrder: ["desc", "asc"]
     },
     {
-      headerName: "Correct Rate",
+      headerName: "Correct %",
       field: "correctRate",
-      flex: 0.5,
+      flex: 0.6,
       sortable: true,
       sortingOrder: ["desc", "asc"]
-    }
+    },
+    ...(category === "Overall" || category === "Community"
+      ? [
+          {
+            headerName: "Wins",
+            field: "wonMatches",
+            flex: 0.6,
+            sortable: true,
+            sortingOrder: ["desc", "asc"] as SortDirection[]
+          },
+          {
+            headerName: "Matches",
+            field: "totalMatches",
+            flex: 0.6,
+            sortable: true,
+            sortingOrder: ["desc", "asc"] as SortDirection[]
+          },
+          {
+            headerName: "Win %",
+            field: "winRate",
+            flex: 0.6,
+            sortable: true,
+            sortingOrder: ["desc", "asc"] as SortDirection[]
+          },
+          {
+            headerName: "Score",
+            field: "score",
+            flex: 0.6,
+            sortable: true,
+            sortingOrder: ["desc", "asc"] as SortDirection[]
+          }
+        ]
+      : [])
   ];
 
   return (

@@ -24,12 +24,24 @@ router.get("/stats", authenticate, async (req, res) => {
       const stats =
         user.leaderboardStats?.[gameFormat]?.[mode]?.[category] || {};
 
-      return {
-        username: user.username,
-        profilePicture: user.profilePicture,
-        correctAnswer: stats.correct || 0,
-        totalAnswer: stats.total || 0
-      };
+      const score = stats.score || 0;
+
+      return category === "overall" || category === "Community"
+        ? {
+            username: user.username,
+            profilePicture: user.profilePicture,
+            correctAnswer: stats.correct || 0,
+            totalAnswer: stats.total || 0,
+            wonMatches: stats.wonMatches || 0,
+            totalMatches: stats.totalMatches || 0,
+            score: score.toLocaleString("en-US")
+          }
+        : {
+            username: user.username,
+            profilePicture: user.profilePicture,
+            correctAnswer: stats.correct || 0,
+            totalAnswer: stats.total || 0
+          };
     });
 
     res.json(data);

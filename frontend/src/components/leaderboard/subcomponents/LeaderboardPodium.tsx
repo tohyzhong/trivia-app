@@ -9,6 +9,10 @@ interface RowData {
   correctAnswer: number;
   totalAnswer: number;
   correctRate?: string;
+  wonMatches?: number;
+  totalMatches?: number;
+  winRate?: string;
+  score?: string;
 }
 
 interface LeaderboardPodiumProps {
@@ -28,8 +32,22 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
       return `${data.correctAnswer} Correct Answers`;
     if (sortField === "totalAnswer")
       return `${data.totalAnswer} Questions Answered`;
-    if (sortField === "correctRate") return `${data.correctRate}`;
-    return "";
+    if (sortField === "correctRate") return `${data.correctRate} Correct`;
+    return sortField === "correctAnswer"
+      ? `${data.correctAnswer} Correct Answers`
+      : sortField === "totalAnswer"
+        ? `${data.totalAnswer} Questions Answered`
+        : sortField === "correctRate"
+          ? `${data.correctRate}`
+          : sortField === "wonMatches"
+            ? `${data.wonMatches} Matches Won`
+            : sortField === "totalMatches"
+              ? `${data.totalMatches} Matches`
+              : sortField === "winRate"
+                ? `${data.winRate} Won`
+                : sortField === "score"
+                  ? `${data.score}`
+                  : "";
   };
 
   console.log(podiumData);
