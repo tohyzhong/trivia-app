@@ -513,6 +513,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
     const { user, option } = req.body;
+    const timeNow = new Date();
 
     const lobby = await Lobby.collection.findOne({ lobbyId });
     if (!lobby) {
@@ -525,15 +526,34 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
     const playerState = {
       selectedOption: option,
       submitted: true,
-      answerHistory: lobby.gameState.playerStates[user]?.answerHistory || {}
+      answerHistory: lobby.gameState.playerStates[user]?.answerHistory || {},
+      score: lobby.gameState.playerStates[user]?.score || 0
     };
     const currentQuestion = lobby.gameState.currentQuestion;
 
     const isCorrect = option === lobby.gameState.question.correctOption;
+    let bonus = true;
 
-    playerState.answerHistory[currentQuestion] = isCorrect
-      ? "correct"
-      : "wrong";
+    if (isCorrect) {
+      playerState.answerHistory[currentQuestion] = "correct";
+      const timeElapsed = (timeNow - lobby.gameState.lastUpdate) / 1000;
+      const timeLimit = lobby.gameSettings.timePerQuestion;
+      if (timeElapsed <= 0.3 * timeLimit) {
+        // Award full score 100
+        playerState.score += 100;
+      } else {
+        // Award exponentially less score after 30% of the time is up
+        // Score drops faster towards the end but minimum of 40 score is given
+        const timeAfter30 = timeElapsed - 0.3 * timeLimit;
+        const remainingTime = timeLimit - 0.3 * timeLimit;
+        const k = 0.8;
+        let score = 100 * Math.exp(-k * (timeAfter30 / remainingTime));
+        score = Math.max(40, Math.round(score));
+        playerState.score += score;
+      }
+    } else {
+      playerState.answerHistory[currentQuestion] = "wrong";
+    }
 
     for (let i = 0; i < 5; i++) {
       const questionNumberToCheck = currentQuestion - i;
@@ -543,6 +563,18 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
         !playerState.answerHistory[questionNumberToCheck]
       ) {
         playerState.answerHistory[questionNumberToCheck] = "missing";
+      }
+
+      if (
+        bonus &&
+        isCorrect &&
+        questionNumberToCheck > 1 &&
+        playerState.answerHistory[questionNumberToCheck - 1] === "correct"
+      ) {
+        // Max bonus is 50 for 5 correct in a row
+        playerState.score += 10;
+      } else {
+        bonus = false;
       }
     }
 
@@ -726,8 +758,47 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         const correct = Object.values(answerHistory).filter(
           (v) => v === "correct"
         ).length;
-        playerScoreSummary[username] = { correct };
+        const score = playerStates[username]?.score || 0;
+        playerScoreSummary[username] = { correct, score };
       });
+
+      const scores = Object.entries(playerScoreSummary)
+        .map(([username, { score }]) => ({ username, score }))
+        .sort((a, b) => b.score - a.score);
+
+      let ranks = {};
+      if (lobby.gameType.split("-")[0] === "versus") {
+        let currentRank = 1;
+        let prevScore = null;
+        let prevRank = 1;
+        let sameScoreCount = 0;
+        let rankSuffix = (rank) =>
+          rank === 1
+            ? "1st"
+            : rank === 2
+              ? "2nd"
+              : rank === 3
+                ? "3rd"
+                : `${rank}th`;
+
+        scores.forEach((entry, idx) => {
+          if (prevScore !== null && entry.score === prevScore) {
+            sameScoreCount++;
+          } else {
+            currentRank = idx + 1;
+            prevRank = currentRank;
+            sameScoreCount = 1;
+          }
+          ranks[entry.username] = rankSuffix(prevRank);
+          prevScore = entry.score;
+          if (
+            idx + 1 < scores.length &&
+            scores[idx + 1].score !== entry.score
+          ) {
+            prevRank = currentRank + sameScoreCount;
+          }
+        });
+      }
 
       const bulkOps = playerUpdates.map((profile) => {
         const username = profile.username;
@@ -737,6 +808,8 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         const correctCount = Object.values(answerHistory).filter(
           (v) => v === "correct"
         ).length;
+        const score = playerStates[username].score;
+        let color = "solo";
 
         const gameMode = lobby.gameType.split("-")[0]; // solo/versus/coop
         const gameFormat = lobby.gameType.split("-")[1]; // classic/knowledge
@@ -759,51 +832,110 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           const category = categoriesInMatch[i];
           const result = answerHistory[i + 1];
 
-          if (!matchCategoryStats[category]) {
-            matchCategoryStats[category] = { correct: 0, total: 0 };
-          }
+          matchCategoryStats[category] ??= { correct: 0, total: 0 };
+          modeStats[category] ??= { correct: 0, total: 0 };
+          modeStats.overall ??= {
+            correct: 0,
+            total: 0,
+            score: 0,
+            totalMatches: 0,
+            wonMatches: 0
+          };
+          overallStats.overall ??= {
+            correct: 0,
+            total: 0,
+            score: 0,
+            totalMatches: 0,
+            wonMatches: 0
+          };
+          overallStats[category] ??= { correct: 0, total: 0 };
+
           matchCategoryStats[category].total++;
-          if (result === "correct") matchCategoryStats[category].correct++;
-
-          if (!modeStats[category]) {
-            modeStats[category] = { correct: 0, total: 0 };
-          }
           modeStats[category].total++;
-          if (result === "correct") modeStats[category].correct++;
+          overallStats[category].total++;
 
-          if (!modeStats.overall) {
-            modeStats.overall = { correct: 0, total: 0 };
+          if (result === "correct") {
+            matchCategoryStats[category].correct++;
+            modeStats[category].correct++;
+            overallStats[category].correct++;
           }
+
           if (category !== "Community") {
             modeStats.overall.total++;
-            if (result === "correct") modeStats.overall.correct++;
-          }
-
-          if (!overallStats.overall) {
-            overallStats.overall = { correct: 0, total: 0 };
-          }
-          if (category !== "Community") {
             overallStats.overall.total++;
-            if (result === "correct") overallStats.overall.correct++;
+            if (result === "correct") {
+              modeStats.overall.correct++;
+              overallStats.overall.correct++;
+            }
           }
+        }
 
-          if (!overallStats[category]) {
-            overallStats[category] = { correct: 0, total: 0 };
+        if (!categoriesInMatch.includes("Community")) {
+          modeStats.overall.score +=
+            gameMode === "coop"
+              ? Math.round(score / usernamesToUpdate.length)
+              : score;
+          overallStats.overall.score +=
+            gameMode === "coop"
+              ? Math.round(score / usernamesToUpdate.length)
+              : score;
+
+          if (gameMode === "versus") {
+            modeStats.overall.totalMatches++;
+            overallStats.overall.totalMatches++;
+            color = "lose";
+
+            if (
+              parseInt(ranks[username].charAt(0)) <=
+              usernamesToUpdate.length / 2
+            ) {
+              modeStats.overall.wonMatches++;
+              overallStats.overall.wonMatches++;
+              color = "win";
+            }
           }
-          overallStats[category].total++;
-          if (result === "correct") overallStats[category].correct++;
+        } else {
+          modeStats.Community.score ??= 0;
+          modeStats.Community.totalMatches ??= 0;
+          modeStats.Community.wonMatches ??= 0;
+          overallStats.Community.score ??= 0;
+          overallStats.Community.totalMatches ??= 0;
+          overallStats.Community.wonMatches ??= 0;
+
+          modeStats.Community.score +=
+            gameMode === "coop"
+              ? Math.round(score / usernamesToUpdate.length)
+              : score;
+          overallStats.Community.score +=
+            gameMode === "coop"
+              ? Math.round(score / usernamesToUpdate.length)
+              : score;
+
+          if (gameMode === "versus") {
+            modeStats.Community.totalMatches++;
+            overallStats.Community.totalMatches++;
+
+            if (
+              parseInt(ranks[username].charAt(0)) <=
+              usernamesToUpdate.length / 2
+            ) {
+              modeStats.Community.wonMatches++;
+              overallStats.Community.wonMatches++;
+            }
+          }
         }
 
         const matchEntry = {
           type: lobby.gameType,
-          state: gameMode,
+          state: gameMode === "versus" ? ranks[username] : gameMode,
           totalPlayed: numQuestions,
           correctNumber: correctCount,
           date: matchDate,
           difficulty: lobby.gameSettings.difficulty,
           categoryStats: matchCategoryStats,
           answerHistory,
-          playerScoreSummary
+          playerScoreSummary,
+          color
         };
 
         const updatedMatchHistory = [...profile.matchHistory, matchEntry];
