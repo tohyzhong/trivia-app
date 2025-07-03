@@ -48,7 +48,6 @@
 
 .match-history-item {
   list-style-type: none;
-  margin: 0px;
   padding: 0px;
   display: flex;
   flex-direction: row;
@@ -58,10 +57,10 @@
   height: 100px;
   margin: 1px;
   border-radius: 10px;
+  min-width: 720px;
 }
 
 .match-history-item.solo {
-  min-width: 720px;
   background-color: gray;
 }
 
@@ -157,19 +156,38 @@
 .match-details-expanded .player-scores .player-score-user {
   font-weight: bold;
   color: #1a73e8;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .match-details-expanded .player-scores .player-score {
   font-weight: normal;
   color: inherit;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .match-details-expanded .player-scores .player-name {
   text-decoration-line: none;
   color: inherit;
+  width: 100px;
+  display: inline-block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .match-details-expanded .player-scores .player-name:hover {
   text-decoration-line: underline;
   cursor: pointer;
+}
+
+.match-details-expanded .player-scores .player-score {
+  min-width: 80px;
+}
+
+.match-details-expanded .player-scores .player-correct {
+  min-width: 80px;
 }

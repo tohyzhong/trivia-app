@@ -12,6 +12,7 @@ interface MatchDetails {
   categoryStats: { [key: string]: { [key: string]: number } }; // categoryStats keys are categories, each value consists of 'correct' number and 'total' number
   answerHistory: { [key: number]: string }; // answerHistory keys are integers, each value is either "correct" or "wrong" or "missing"
   playerScoreSummary: { [key: string]: { [key: string]: number } }; // keys are usernames, each value has a key 'correct' with value the number of correct answers
+  color: string; // solo / rank (1st 2nd 3rd 4th...)
 }
 
 const MatchHistory: React.FC = () => {
@@ -109,7 +110,7 @@ const MatchHistory: React.FC = () => {
           return (
             <div key={`match-${index}`}>
               <ul
-                className={`match-history-item ${match.state}`}
+                className={`match-history-item ${match.color}`}
                 onClick={() => toggleDetails(index)}
               >
                 <div className="match-date">
@@ -188,7 +189,7 @@ const MatchHistory: React.FC = () => {
                     <h4>Player Scores:</h4>
                     <ul>
                       {Object.entries(match.playerScoreSummary)
-                        .sort(([, a], [, b]) => b.correct - a.correct)
+                        .sort(([, a], [, b]) => b.score - a.score)
                         .map(([player, stat]) => (
                           <li
                             className={
@@ -204,8 +205,12 @@ const MatchHistory: React.FC = () => {
                             >
                               {player}
                             </a>
-                            : &nbsp;
-                            {stat.correct} Correct
+                            <span className="player-score-value">
+                              {stat.score} Score
+                            </span>
+                            <span className="player-correct-value">
+                              {stat.correct} Correct
+                            </span>
                           </li>
                         ))}
                     </ul>
