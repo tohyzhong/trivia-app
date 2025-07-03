@@ -29,6 +29,29 @@ router.get("/search-profiles", authenticate, async (req, res) => {
   }
 });
 
+// Helper function to extract stats from leaderboard stats
+function extractStats(stats = {}) {
+  const correct = Number(stats.correct) || 0;
+  const total = Number(stats.total) || 0;
+  const wonMatches = Number(stats.wonMatches) || 0;
+  const totalMatches = Number(stats.totalMatches) || 0;
+  const score = Number(stats.score) || 0;
+
+  return {
+    correctAnswer: correct,
+    totalAnswer: total,
+    correctRate:
+      total === 0 ? "0.00%" : `${((correct / total) * 100).toFixed(2)}%`,
+    wonMatches: wonMatches,
+    totalMatches: totalMatches,
+    winRate:
+      totalMatches === 0
+        ? "0.00%"
+        : `${((wonMatches / totalMatches) * 100).toFixed(2)}%`,
+    score: score.toLocaleString("en-US")
+  };
+}
+
 // Retrieve friend info of user
 router.get("/:username", authenticate, async (req, res) => {
   const { username } = req.params;
@@ -172,13 +195,10 @@ router.get("/:username", authenticate, async (req, res) => {
         $project: {
           _id: 1,
           username: 1,
-          winRate: 1,
-          correctRate: 1,
-          correctAnswer: 1,
-          totalAnswer: 1,
           currency: 1,
           profilePicture: 1,
           role: 1,
+          leaderboardStats: 1,
           friends: "$mutualProfiles",
           addedFriend: 1,
           receivedFriendRequest: 1
@@ -190,7 +210,25 @@ router.get("/:username", authenticate, async (req, res) => {
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    res.json(results[0]);
+    const profile = results[0];
+
+    const classicStats =
+      profile.leaderboardStats?.classic?.overall?.overall ?? {};
+    const knowledgeStats =
+      profile.leaderboardStats?.knowledge?.overall?.overall ?? {};
+
+    res.status(200).json({
+      _id: profile._id,
+      username: profile.username,
+      currency: profile.currency,
+      profilePicture: profile.profilePicture,
+      role: profile.role,
+      friends: profile.friends,
+      addedFriend: profile.addedFriend,
+      receivedFriendRequest: profile.receivedFriendRequest,
+      classicStats: extractStats(classicStats),
+      knowledgeStats: extractStats(knowledgeStats)
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
