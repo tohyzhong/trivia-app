@@ -81,10 +81,15 @@
   margin-top: 20px;
 }
 
+.stats-container {
+  display: flex;
+  flex-direction: row;
+  width: 68%;
+}
+
 .profile-details {
   flex: 1;
   text-align: center;
-  margin-right: 20px;
 }
 
 .profile-details p {
@@ -101,10 +106,15 @@
   margin-bottom: 10px;
 }
 
-.friends-list {
+.friends-list-container {
+  display: flex;
+  justify-content: center;
   text-align: center;
-  flex: 1;
-  margin-left: 20px;
+  width: 32%;
+}
+
+.friends-list {
+  width: fit-content;
 }
 
 .friends-list h3:hover {
@@ -202,12 +212,24 @@
   background-color: #e53935;
 }
 
-.profile-details .see-match-history {
-  color: rgb(83, 82, 82);
+.see-match-history {
+  background-color: #1976d2;
+  color: #fff;
   font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.08);
 }
 
-.profile-details .see-match-history:hover {
-  text-decoration: underline;
-  cursor: pointer;
+.see-match-history:hover {
+  background-color: #1565c0;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+  text-decoration: none;
 }

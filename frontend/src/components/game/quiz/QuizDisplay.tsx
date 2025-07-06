@@ -74,10 +74,8 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   const timesUpCalledRef = useRef(false);
 
   // Option selection states
-  const playerId = Object.keys(gameState.playerStates).find(
-    (id) => gameState.playerStates[id].username === loggedInUser
-  );
-  const playerState = playerId ? gameState.playerStates[playerId] : null;
+  const username = useSelector((state: RootState) => state.user.username);
+  const playerState = username ? gameState.playerStates[username] : null;
   const optionSelected = playerState?.selectedOption ?? 0;
   const submitted = playerState?.submitted ?? false;
   let answerRevealed = gameState.answerRevealed ?? false;
@@ -187,7 +185,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 submitted={submitted || answerRevealed}
                 answerRevealed={answerRevealed}
                 answerHistory={
-                  gameState.playerStates[playerId]?.answerHistory || []
+                  gameState.playerStates[username]?.answerHistory || []
                 }
               />
             ) : (

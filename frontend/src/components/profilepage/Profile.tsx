@@ -15,10 +15,6 @@ interface Friend {
 
 interface UserProfile {
   username: string;
-  winRate: number;
-  correctRate: number;
-  correctAnswer: number;
-  totalAnswer: number;
   currency: number;
   profilePicture: string;
   role: string;
@@ -26,6 +22,8 @@ interface UserProfile {
   message?: string;
   addedFriend: Boolean;
   receivedFriendRequest: Boolean;
+  classicStats: { [key: string]: number };
+  knowledgeStats: { [key: string]: number };
 }
 
 interface ProfileProps {
@@ -66,6 +64,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         dispatch(setUser({ ...userFromRedux, role: data.role }));
       }
       setUserProfile(data);
+      console.log(data);
       setFriends(data.friends || []);
       setLoading(false);
     } catch (error) {
@@ -335,38 +334,79 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         </div>
       </div>
 
+      <button className="see-match-history" onClick={handleSeeMatchHistory}>
+        Match History
+      </button>
+
       <div className="profile-details-container">
-        <div className="profile-details">
-          <h3>Game Stats:</h3>
-          <p>
-            <strong>Win Rate:</strong> {user.winRate}%
-          </p>
-          <p>
-            <strong>Correct Rate:</strong> {user.correctRate}%
-          </p>
-          <p>
-            <strong>Correct Answers:</strong> {user.correctAnswer}
-          </p>
-          <p>
-            <strong>Total Answered:</strong> {user.totalAnswer}
-          </p>
-          <p className="see-match-history" onClick={handleSeeMatchHistory}>
-            See Game History...
-          </p>
+        <div className="stats-container">
+          <div className="profile-details">
+            <h3>Classic Stats:</h3>
+            <p>
+              <strong>Overall Score:</strong> {user.classicStats.score}
+            </p>
+            <p>
+              <strong>Win Rate:</strong> {user.classicStats.winRate}
+            </p>
+            <p>
+              <strong>Matches Won:</strong> {user.classicStats.wonMatches}
+            </p>
+            <p>
+              <strong>Total Matches:</strong> {user.classicStats.totalMatches}
+            </p>
+            <p>
+              <strong>Correct Rate:</strong> {user.classicStats.correctRate}
+            </p>
+            <p>
+              <strong>Correct Answers:</strong>{" "}
+              {user.classicStats.correctAnswer}
+            </p>
+            <p>
+              <strong>Total Answered:</strong> {user.classicStats.totalAnswer}
+            </p>
+          </div>
+          <div className="profile-details">
+            <h3>Knowledge Stats:</h3>
+            <p>
+              <strong>Overall Score:</strong> {user.knowledgeStats.score}
+            </p>
+            <p>
+              <strong>Win Rate:</strong> {user.knowledgeStats.winRate}
+            </p>
+            <p>
+              <strong>Matches Won:</strong> {user.knowledgeStats.wonMatches}
+            </p>
+            <p>
+              <strong>Total Matches:</strong> {user.knowledgeStats.totalMatches}
+            </p>
+            <p>
+              <strong>Correct Rate:</strong> {user.knowledgeStats.correctRate}
+            </p>
+            <p>
+              <strong>Correct Answers:</strong>{" "}
+              {user.knowledgeStats.correctAnswer}
+            </p>
+            <p>
+              <strong>Total Answered:</strong> {user.knowledgeStats.totalAnswer}
+            </p>
+          </div>
         </div>
-        <div className="friends-list">
-          <h3 onClick={() => handleFriendsClick()}>Friends:</h3>
-          <ul>
-            {friends.map((friend, index) => (
-              <li
-                key={friend.username}
-                onClick={() => handleFriendClick(friend.username)}
-              >
-                <span>{index + 1}. </span>
-                {friend.username}
-              </li>
-            ))}
-          </ul>
+
+        <div className="friends-list-container">
+          <div className="friends-list">
+            <h3 onClick={() => handleFriendsClick()}>Friends:</h3>
+            <ul>
+              {friends.map((friend, index) => (
+                <li
+                  key={friend.username}
+                  onClick={() => handleFriendClick(friend.username)}
+                >
+                  <span>{index + 1}. </span>
+                  {friend.username}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

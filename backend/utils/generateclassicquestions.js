@@ -44,11 +44,16 @@ export const generateUniqueQuestionIds = async (
   }
   const selectedQuestions = repeatedQuestions.slice(0, numQuestions);
 
-  const questionIds = selectedQuestions.map((q) => q._id);
+  const questionIds = [];
+  const questionCategories = [];
+  selectedQuestions.forEach((q) => {
+    questionIds.push(q._id);
+    questionCategories.push(q.category);
+  });
 
   const firstQuestion = selectedQuestions[0];
 
-  return { questionIds, question: firstQuestion };
+  return { questionIds, questionCategories, question: firstQuestion };
 };
 
 export default getRandomClassicQuestion;

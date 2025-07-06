@@ -15,11 +15,11 @@ interface User {
 
 interface GameUsersProps {
   lobbyId: string;
-  userIds: string[];
+  usernames: string[];
 }
 
 const GameUsers: React.FC<GameUsersProps> = (props) => {
-  const { lobbyId, userIds } = props;
+  const { lobbyId, usernames } = props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [users, setUsers] = useState<User[]>([]);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
@@ -35,7 +35,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ userIds })
+          body: JSON.stringify({ usernames })
         }
       );
       const data = await response.json();
@@ -56,8 +56,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
   };
 
   useEffect(() => {
-    if (userIds) renderUsers();
-  }, [userIds]);
+    if (usernames) renderUsers();
+  }, [usernames]);
 
   // Ready button
   const handleReady = () => {
