@@ -74,6 +74,15 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
 
           return { ...entry, correctRate, winRate };
         });
+
+        if (gridRef.current && gridRef.current.api) {
+          console.log("RESETTED");
+          gridRef.current.api.applyColumnState({
+            defaultState: { sort: null },
+            applyOrder: true
+          });
+        }
+
         setRawData(withRate);
         updateRanks(withRate);
       } catch (err: any) {
