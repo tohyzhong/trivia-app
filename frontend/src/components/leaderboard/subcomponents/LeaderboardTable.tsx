@@ -20,12 +20,12 @@ interface RowData {
   profilePicture: string;
   correctAnswer: number;
   totalAnswer: number;
-  correctRate?: string;
+  correctRate?: number;
   wonMatches?: number;
   totalMatches?: number;
-  winRate?: string;
+  winRate?: number;
   rank: number;
-  score: string;
+  score: number;
 }
 
 const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
@@ -56,9 +56,9 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
           const correct = entry.correctAnswer;
           const total = entry.totalAnswer;
           const correctRate =
-            total === 0 ? "0.00%" : `${((correct / total) * 100).toFixed(2)}%`;
+            total === 0 ? -1 : parseFloat(((correct / total) * 100).toFixed(2));
 
-          let winRate: string | undefined = undefined;
+          let winRate: number | undefined = undefined;
           if (
             (category === "Overall" || category === "Community") &&
             typeof entry.wonMatches === "number" &&
@@ -66,8 +66,10 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
           ) {
             winRate =
               entry.totalMatches === 0
-                ? "0.00%"
-                : `${((entry.wonMatches / entry.totalMatches) * 100).toFixed(2)}%`;
+                ? -1
+                : parseFloat(
+                    ((entry.wonMatches / entry.totalMatches) * 100).toFixed(2)
+                  );
           }
 
           return { ...entry, correctRate, winRate };
@@ -89,19 +91,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
     asc: boolean = false
   ) => {
     const sortedDesc = [...data].sort((a, b) => {
-      const aVal =
-        field === "correctRate" || field === "winRate"
-          ? parseFloat(a[field])
-          : field === "score"
-            ? parseInt(a[field])
-            : a[field];
-      const bVal =
-        field === "correctRate" || field === "winRate"
-          ? parseFloat(b[field])
-          : field === "score"
-            ? parseInt(b[field])
-            : b[field];
-      return bVal - aVal;
+      return b[field] - a[field];
     });
 
     sortedDesc.forEach((entry, idx) => (entry.rank = idx + 1));
@@ -199,21 +189,23 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       field: "correctAnswer",
       flex: 0.6,
       sortable: true,
-      sortingOrder: ["desc", "asc"]
+      sortingOrder: ["desc"]
     },
     {
       headerName: "Total",
       field: "totalAnswer",
       flex: 0.6,
       sortable: true,
-      sortingOrder: ["desc", "asc"]
+      sortingOrder: ["desc"]
     },
     {
       headerName: "Correct %",
       field: "correctRate",
       flex: 0.6,
       sortable: true,
-      sortingOrder: ["desc", "asc"]
+      sortingOrder: ["desc"],
+      valueFormatter: (params) =>
+        params.value === -1 ? "N.A." : params.value.toFixed(2) + "%"
     },
     ...(category === "Overall" || category === "Community"
       ? [
@@ -222,28 +214,31 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             field: "wonMatches",
             flex: 0.6,
             sortable: true,
-            sortingOrder: ["desc", "asc"] as SortDirection[]
+            sortingOrder: ["desc"] as SortDirection[]
           },
           {
             headerName: "Matches",
             field: "totalMatches",
             flex: 0.6,
             sortable: true,
-            sortingOrder: ["desc", "asc"] as SortDirection[]
+            sortingOrder: ["desc"] as SortDirection[]
           },
           {
             headerName: "Win %",
             field: "winRate",
             flex: 0.6,
             sortable: true,
-            sortingOrder: ["desc", "asc"] as SortDirection[]
+            sortingOrder: ["desc"] as SortDirection[],
+            valueFormatter: (params) =>
+              params.value === -1 ? "N.A." : params.value.toFixed(2) + "%"
           },
           {
             headerName: "Score",
             field: "score",
             flex: 0.6,
             sortable: true,
-            sortingOrder: ["desc", "asc"] as SortDirection[]
+            sortingOrder: ["desc"] as SortDirection[],
+            valueFormatter: (params) => params.value.toLocaleString("en-US")
           }
         ]
       : [])

@@ -34,7 +34,7 @@ router.get("/stats", authenticate, async (req, res) => {
             totalAnswer: stats.total || 0,
             wonMatches: stats.wonMatches || 0,
             totalMatches: stats.totalMatches || 0,
-            score: score.toLocaleString("en-US")
+            score: score
           }
         : {
             username: user.username,
