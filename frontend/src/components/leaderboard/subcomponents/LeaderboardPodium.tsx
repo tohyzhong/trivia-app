@@ -51,9 +51,6 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
                   : "";
   };
 
-  console.log(podiumData);
-  console.log(sortField);
-
   return (
     <div className="leaderboard-podium-container">
       {podiumDisplayData.map((data) =>

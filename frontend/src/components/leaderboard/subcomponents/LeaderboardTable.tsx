@@ -76,7 +76,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
         });
 
         if (gridRef.current && gridRef.current.api) {
-          console.log("RESETTED");
           gridRef.current.api.applyColumnState({
             defaultState: { sort: null },
             applyOrder: true
