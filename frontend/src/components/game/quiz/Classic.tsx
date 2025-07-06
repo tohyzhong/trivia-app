@@ -22,7 +22,7 @@ interface ClassicQuestionProps {
   optionSelected: number;
   submitted: boolean;
   answerRevealed: boolean;
-  answerHistory: { [key: string]: string };
+  playerStates: Object;
 }
 
 const Classic: React.FC<ClassicQuestionProps> = ({
@@ -33,9 +33,10 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   optionSelected,
   submitted,
   answerRevealed,
-  answerHistory
+  playerStates
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
+  const answerHistory = playerStates[loggedInUser]?.answerHistory || [];
 
   // Option submission
   const handleSubmit = async (option) => {
@@ -131,6 +132,12 @@ const Classic: React.FC<ClassicQuestionProps> = ({
       </div>
 
       <div className="answer-history-bar">{renderAnswerHistory()}</div>
+
+      <p className="score-display">
+        Score: {playerStates[loggedInUser]?.score ?? 0} (+
+        {playerStates[loggedInUser]?.correctScore ?? 0} (Correct Score) +
+        {playerStates[loggedInUser]?.streakBonus ?? 0} (Streak Bonus))
+      </p>
 
       <div className="question-question">
         {classicQuestion.question}

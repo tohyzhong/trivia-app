@@ -184,9 +184,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 optionSelected={optionSelected}
                 submitted={submitted || answerRevealed}
                 answerRevealed={answerRevealed}
-                answerHistory={
-                  gameState.playerStates[username]?.answerHistory || []
-                }
+                playerStates={gameState.playerStates}
               />
             ) : (
               <Knowledge />
@@ -210,7 +208,11 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
             />
           </div>
         </div>
-        <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
+        <GameChat
+          lobbyId={lobbyId}
+          chatMessages={lobbyChat}
+          playerStates={gameState.playerStates}
+        />
         <IoSettingsOutline
           onClick={() => {
             playClickSound();
