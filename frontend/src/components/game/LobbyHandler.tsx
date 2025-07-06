@@ -101,7 +101,7 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateState", (data) => {
       setGameState(data.gameState);
-      setTimeNow(data.serverTimeNow);
+      if (data.serverTimeNow) setTimeNow(data.serverTimeNow);
     });
 
     socket.on("updateStatus", (data) => {
