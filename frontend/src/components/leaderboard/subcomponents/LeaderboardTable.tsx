@@ -205,7 +205,9 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       sortable: true,
       sortingOrder: ["desc"],
       valueFormatter: (params) =>
-        params.value === -1 ? "N.A." : params.value.toFixed(2) + "%"
+        params.value === -1 || params.value === undefined
+          ? "N.A."
+          : params.value.toFixed(2) + "%"
     },
     ...(category === "Overall" || category === "Community"
       ? [
@@ -230,7 +232,9 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             sortable: true,
             sortingOrder: ["desc"] as SortDirection[],
             valueFormatter: (params) =>
-              params.value === -1 ? "N.A." : params.value.toFixed(2) + "%"
+              params.value === -1 || params.value === undefined
+                ? "N.A."
+                : params.value.toFixed(2) + "%"
           },
           {
             headerName: "Score",
@@ -238,7 +242,10 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             flex: 0.6,
             sortable: true,
             sortingOrder: ["desc"] as SortDirection[],
-            valueFormatter: (params) => params.value.toLocaleString("en-US")
+            valueFormatter: (params) =>
+              params.value === undefined
+                ? 0
+                : params.value.toLocaleString("en-US")
           }
         ]
       : [])
@@ -255,18 +262,20 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
           sortField={sortField}
         />
       )}
-      <div className="ag-theme-alpine">
-        <AgGridReact
-          ref={gridRef}
-          columnDefs={columnDefs}
-          rowData={rowData}
-          pagination={true}
-          paginationPageSize={20}
-          paginationPageSizeSelector={[20, 50, 100]}
-          domLayout="autoHeight"
-          onSortChanged={onSortChanged}
-        />
-      </div>
+      {!loading && rowData && (
+        <div className="ag-theme-alpine">
+          <AgGridReact
+            ref={gridRef}
+            columnDefs={columnDefs}
+            rowData={rowData}
+            pagination={true}
+            paginationPageSize={20}
+            paginationPageSizeSelector={[20, 50, 100]}
+            domLayout="autoHeight"
+            onSortChanged={onSortChanged}
+          />
+        </div>
+      )}
     </div>
   );
 };
