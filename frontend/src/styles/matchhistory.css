@@ -57,7 +57,7 @@
   height: 100px;
   margin: 1px;
   border-radius: 10px;
-  min-width: 720px;
+  min-width: 750px;
 }
 
 .match-history-item.solo {
@@ -136,6 +136,7 @@
   padding: 1rem;
   border-radius: 0 0 8px 8px;
   font-size: 0.95rem;
+  width: 100%;
 }
 
 .match-details-expanded .dots-container {
