@@ -23,6 +23,7 @@ interface ClassicQuestionProps {
   submitted: boolean;
   answerRevealed: boolean;
   playerStates: Object;
+  teamStates: Object;
 }
 
 const Classic: React.FC<ClassicQuestionProps> = ({
@@ -33,10 +34,13 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   optionSelected,
   submitted,
   answerRevealed,
-  playerStates
+  playerStates,
+  teamStates
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const answerHistory = playerStates[loggedInUser]?.answerHistory || [];
+  const answerHistory = teamStates
+    ? teamStates["teamAnswerHistory"]
+    : playerStates[loggedInUser]?.answerHistory || [];
 
   // Option submission
   const handleSubmit = async (option) => {
@@ -98,7 +102,9 @@ const Classic: React.FC<ClassicQuestionProps> = ({
       .slice(-5);
 
     return recentAnswers.map((questionId) => {
-      const status = answerHistory[questionId];
+      const status = teamStates
+        ? answerHistory[questionId][0]
+        : answerHistory[questionId];
 
       let color = "grey";
       if (status === "correct") color = "green";
@@ -134,9 +140,13 @@ const Classic: React.FC<ClassicQuestionProps> = ({
       <div className="answer-history-bar">{renderAnswerHistory()}</div>
 
       <p className="score-display">
-        Score: {playerStates[loggedInUser]?.score ?? 0} (+
-        {playerStates[loggedInUser]?.correctScore ?? 0} (Correct Score) +
-        {playerStates[loggedInUser]?.streakBonus ?? 0} (Streak Bonus))
+        {teamStates
+          ? `Score: ${teamStates["teamScore"] ?? 0} \
+        (+${teamStates["teamCorrectScore"] ?? 0} (Correct Score) \
+        +${teamStates["teamStreakBonus"] ?? 0} (Streak Bonus))`
+          : `Score: ${playerStates[loggedInUser]?.score ?? 0} \
+        (+${playerStates[loggedInUser]?.correctScore ?? 0} (Correct Score) \
+        +${playerStates[loggedInUser]?.streakBonus ?? 0} (Streak Bonus))`}
       </p>
 
       <div className="question-question">

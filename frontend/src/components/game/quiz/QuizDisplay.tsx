@@ -44,6 +44,7 @@ interface GameState {
   playerStates: any;
   answerRevealed: boolean;
   lastUpdate: Date;
+  team?: Object;
 }
 
 interface QuizDisplayProps {
@@ -54,6 +55,7 @@ interface QuizDisplayProps {
   serverTimeNow: Date;
   timeLimit: number;
   totalQuestions: number;
+  host: string;
 }
 
 const QuizDisplay: React.FC<QuizDisplayProps> = ({
@@ -63,7 +65,8 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   gameState,
   serverTimeNow,
   timeLimit,
-  totalQuestions
+  totalQuestions,
+  host
 }) => {
   useInitSound("Quiz");
   const { bgmBlocked, handleResume } = useBGMResumeOverlay("Quiz");
@@ -106,7 +109,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
     playClickSound();
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/leave/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -172,10 +175,10 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
               Leave
             </button>
             <p>Lobby ID: {lobbyId}</p>
-            <p>Host: you</p>
+            <p>Host: {host}</p>
           </div>
           {gameState.question ? (
-            gameType === "solo-classic" ? (
+            gameType.includes("classic") ? (
               <Classic
                 lobbyId={lobbyId}
                 currentQuestion={gameState.currentQuestion}
@@ -185,6 +188,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 submitted={submitted || answerRevealed}
                 answerRevealed={answerRevealed}
                 playerStates={gameState.playerStates}
+                teamStates={gameState.team}
               />
             ) : (
               <Knowledge />
@@ -212,6 +216,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           lobbyId={lobbyId}
           chatMessages={lobbyChat}
           playerStates={gameState.playerStates}
+          gameType={gameType}
         />
         <IoSettingsOutline
           onClick={() => {

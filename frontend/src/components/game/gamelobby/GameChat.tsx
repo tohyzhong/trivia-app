@@ -18,10 +18,11 @@ interface GameChatProps {
       answerHistory: { [questionNum: number]: string };
     };
   };
+  gameType?: string;
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
-  const { lobbyId, chatMessages, playerStates } = props;
+  const { lobbyId, chatMessages, playerStates, gameType } = props;
   const [chatInput, setChatInput] = useState<string>("");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
@@ -34,7 +35,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     playClickSound();
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/chat/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/chat/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -96,7 +97,11 @@ const GameChat: React.FC<GameChatProps> = (props) => {
             return (
               <div key={username} className="player-stat-row">
                 <span className="player-name">{username}</span>
-                <span className="player-score">{state.score ?? 0}</span>
+                {gameType.includes("coop") ? (
+                  <></>
+                ) : (
+                  <span className="player-score">{state.score ?? 0}</span>
+                )}
                 <div className="answer-dot-row">{last5}</div>
               </div>
             );
