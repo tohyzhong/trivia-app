@@ -15,11 +15,12 @@ interface User {
 
 interface GameUsersProps {
   lobbyId: string;
-  usernames: string[];
+  usernames: { [key: string]: { [key: string]: boolean } };
+  host?: string;
 }
 
 const GameUsers: React.FC<GameUsersProps> = (props) => {
-  const { lobbyId, usernames } = props;
+  const { lobbyId, usernames, host } = props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [users, setUsers] = useState<User[]>([]);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
@@ -35,7 +36,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ usernames })
+          body: JSON.stringify({ usernames: Object.keys(usernames) })
         }
       );
       const data = await response.json();
@@ -60,9 +61,26 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
   }, [usernames]);
 
   // Ready button
-  const handleReady = () => {
+  const handleReady = async () => {
     playClickSound();
-    // TODO for multiplayer
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/ready/${lobbyId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include"
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorPopupMessage(error.message || "Unable to change ready status");
+    }
   };
 
   // Start button
@@ -78,12 +96,13 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           credentials: "include"
         }
       );
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error();
+        throw new Error(data.message);
       }
     } catch (error) {
       console.error(error);
-      setErrorPopupMessage("Unable to start lobby");
+      setErrorPopupMessage(error.message || "Unable to start lobby");
     }
   };
 
@@ -92,7 +111,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
     playClickSound();
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/leave/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -137,7 +156,18 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                 src={user.profilePicture || defaultAvatar}
                 alt={user.username + "'s Profile Picture"}
               />
-              <h3>&nbsp;{user.username}</h3>
+              <h3 className="username-lobby">
+                {user.username === host ? host + " (Host)" : user.username}
+              </h3>
+              <h3
+                className={
+                  usernames[user.username]?.ready
+                    ? "state-ready"
+                    : "state-notready"
+                }
+              >
+                {usernames[user.username]?.ready ? "Ready" : "Not Ready"}
+              </h3>
             </ul>
           ))}
       </div>
