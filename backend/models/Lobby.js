@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const lobbySchema = new mongoose.Schema(
   {
     lobbyId: { type: String, required: true, unique: true },
-    players: [{ type: String }],
+    host: { type: String, required: true, unique: true },
+    players: { type: mongoose.Schema.Types.Mixed },
     gameType: {
       type: String,
       enum: ["solo-classic", "solo-knowledge"],
