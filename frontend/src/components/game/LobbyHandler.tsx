@@ -60,6 +60,9 @@ const LobbyHandler: React.FC = () => {
   const [gameType, setGameType] = useState<string>("");
   const [gameSettings, setGameSettings] = useState<GameSetting>(null);
   const [gameChat, setGameChat] = useState<ChatMessage[]>(null);
+  const [joinRequests, setJoinRequests] = useState<{ [key: string]: boolean }>(
+    null
+  );
 
   // Details needed for quiz display
   const [gameState, setGameState] = useState<GameState>(null);
@@ -122,14 +125,26 @@ const LobbyHandler: React.FC = () => {
     socket.on("updateUsers", (data) => {
       setUsers(data.players);
       if (data.host) setHost(data.host);
+      if (!Object.keys(data.players).includes(loggedInUser)) {
+        dispatch(clearLobby());
+        navigate("/", { state: { errorMessage: "You have been kicked." } });
+      }
+    });
+
+    socket.on("updateJoinRequests", (data) => {
+      setJoinRequests(data);
     });
 
     return () => {
       socket.emit("leaveLobby", lobbyId);
       disconnect();
+      socket.off("lobbyJoined");
+      socket.off("updateState");
+      socket.off("updateStatus");
       socket.off("updateSettings");
       socket.off("updateChat");
       socket.off("updateUsers");
+      socket.off("updateJoinRequests");
     };
   }, []);
 
@@ -152,6 +167,7 @@ const LobbyHandler: React.FC = () => {
 
         setStatus(lobbyDetails.status);
         setUsers(lobbyDetails.players);
+        setJoinRequests(lobbyDetails.joinRequests);
 
         setGameType(lobbyDetails.gameType);
         setGameSettings(lobbyDetails.gameSettings);
@@ -189,7 +205,9 @@ const LobbyHandler: React.FC = () => {
       lobbyId={lobbyId}
       lobbySettings={gameSettings}
       lobbyUsers={users}
+      joinRequests={joinRequests}
       lobbyChat={gameChat}
+      gameType={gameType}
       socket={socket}
       host={host}
     />

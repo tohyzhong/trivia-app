@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import GameMainpage from "./GameMainpage";
 import LobbyHandler from "./LobbyHandler";
+import JoinLobbyHandler from "./JoinLobbyHandler";
 import LobbyNotFound from "./gamelobby/LobbyNotFound";
 import { setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,6 +38,7 @@ const GameRoutes: React.FC = () => {
   return (
     <Routes>
       {lobby.lobbyId && <Route path="/:lobbyId" element={<LobbyHandler />} />}
+      <Route path="/join/:lobbyId" element={<JoinLobbyHandler />} />
       <Route path="/:lobbyId" element={<LobbyNotFound />} />
       <Route path="/*" element={<GameMainpage />} />
     </Routes>

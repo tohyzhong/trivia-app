@@ -31,7 +31,9 @@ interface GameLobbyProps {
   lobbyId: string;
   lobbySettings: GameSetting;
   lobbyUsers: { [key: string]: { [key: string]: boolean } };
+  joinRequests: { [key: string]: boolean };
   lobbyChat: ChatMessage[];
+  gameType: string;
   socket: any;
   host: string;
 }
@@ -47,7 +49,16 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   const navigate = useNavigate();
 
   // Lobby details
-  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat, socket, host } = props;
+  const {
+    lobbyId,
+    lobbySettings,
+    lobbyUsers,
+    joinRequests,
+    lobbyChat,
+    gameType,
+    socket,
+    host
+  } = props;
 
   useEffect(() => {
     if (lobbyId) {
@@ -87,7 +98,13 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
           gameSettings={lobbySettings}
           host={host}
         />
-        <GameUsers lobbyId={lobbyId} usernames={lobbyUsers} host={host} />
+        <GameUsers
+          lobbyId={lobbyId}
+          usernames={lobbyUsers}
+          joinRequests={joinRequests}
+          gameType={gameType}
+          host={host}
+        />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
       </div>
 

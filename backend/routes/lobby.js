@@ -297,6 +297,161 @@ router.post("/disconnect/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
+router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const username = req.user.username;
+
+    const lobby = await Lobby.collection.findOneAndUpdate(
+      { lobbyId, gameType: { $not: /solo/i } },
+      {
+        $set: {
+          [`joinRequests.${username}`]: true,
+          lastActivity: new Date()
+        }
+      },
+      {
+        returnDocument: "after",
+        projection: { joinRequests: 1 }
+      }
+    );
+
+    if (!lobby) {
+      return res.status(404).json({ message: "No valid lobby found." });
+    }
+
+    if (lobby.players?.[username]) {
+      return res.status(200).json({ message: "Already in lobby." });
+    }
+
+    const io = getSocketIO();
+    io.to(lobbyId).emit("updateJoinRequests", lobby.joinRequests);
+
+    return res.status(200).json({ message: "Join request sent." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error processing join request." });
+  }
+});
+
+router.post("/approve/:lobbyId", authenticate, async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { usernameToApprove } = req.body;
+    const hostUsername = req.user.username;
+
+    const chatMsg = {
+      sender: "System",
+      message: `${hostUsername} has approved the join request of ${usernameToApprove}.`,
+      timestamp: new Date()
+    };
+
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      {
+        lobbyId,
+        host: hostUsername,
+        [`joinRequests.${usernameToApprove}`]: true
+      },
+      {
+        $unset: { [`joinRequests.${usernameToApprove}`]: "" },
+        $set: {
+          [`players.${usernameToApprove}`]: { ready: false },
+          [`gameState.playerStates.${usernameToApprove}`]: {
+            score: 0,
+            correctScore: 0,
+            streakBonus: 0,
+            selectedOption: 0,
+            submitted: false,
+            answerHistory: {}
+          },
+          lastActivity: new Date()
+        },
+        $push: { chatMessages: chatMsg }
+      },
+      { returnDocument: "after" }
+    );
+
+    if (!updatedLobby) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized or invalid request." });
+    }
+
+    const io = getSocketIO();
+    io.to(lobbyId).emit("updateUsers", { players: updatedLobby.players });
+    io.to(lobbyId).emit("updateJoinRequests", updatedLobby.joinRequests);
+    io.to(lobbyId).emit("updateChat", {
+      chatMessages: updatedLobby.chatMessages
+    });
+
+    return res.status(200).json({ message: "User approved." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error approving user." });
+  }
+});
+
+router.post("/kick/:lobbyId", authenticate, async (req, res) => {
+  try {
+    const { lobbyId } = req.params;
+    const { usernameToKick } = req.body;
+    const hostUsername = req.user.username;
+
+    if (hostUsername === usernameToKick)
+      return res
+        .status(401)
+        .json({ message: "You are not allowed to kick yourself." });
+
+    const chatMsg = {
+      sender: "System",
+      message: `${hostUsername} has kicked ${usernameToKick} from the lobby.`,
+      timestamp: new Date()
+    };
+
+    // Try to remove from either players or joinRequests
+    const updatedLobby = await Lobby.collection.findOneAndUpdate(
+      {
+        lobbyId,
+        host: hostUsername,
+        $or: [
+          { [`players.${usernameToKick}`]: { $exists: true } },
+          { [`joinRequests.${usernameToKick}`]: { $exists: true } }
+        ]
+      },
+      {
+        $unset: {
+          [`players.${usernameToKick}`]: "",
+          [`joinRequests.${usernameToKick}`]: "",
+          [`gameState.playerStates.${usernameToKick}`]: ""
+        },
+        $push: { chatMessages: chatMsg },
+        $set: {
+          lastActivity: new Date()
+        }
+      },
+      { returnDocument: "after" }
+    );
+
+    if (!updatedLobby) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized or user not found." });
+    }
+
+    const io = getSocketIO();
+    io.to(lobbyId).emit("updateUsers", { players: updatedLobby.players });
+    io.to(lobbyId).emit("updateJoinRequests", updatedLobby.joinRequests);
+    io.to(lobbyId).emit("updateChat", {
+      chatMessages: updatedLobby.chatMessages
+    });
+
+    return res.status(200).json({ message: "User kicked." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error kicking user." });
+  }
+});
+
 router.post("/join/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
