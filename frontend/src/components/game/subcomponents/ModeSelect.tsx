@@ -10,6 +10,7 @@ import { setLobby } from "../../../redux/lobbySlice";
 
 interface SubMode {
   name: string;
+  gameType: string;
   description: string;
   image: string;
 }
@@ -47,16 +48,13 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
   const dispatch = useDispatch();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
-  const handleSubmodeClick = async (submode: string) => {
-    if (submode === "Coming Soon...") return; // No effect for clicking on coming soon tab
-    const mainMode = props.mode === "Solo Mode" ? "solo" : "multi";
-    const subMode = submode.toLowerCase();
-    const lobbyMode = mainMode + "-" + subMode;
+  const handleSubmodeClick = async (lobbyMode: string) => {
+    if (lobbyMode === "Coming Soon...") return; // No effect for clicking on coming soon tab
 
     // Create a lobby
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/create`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -104,7 +102,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
               <div
                 key={index}
                 className="submode-select-item"
-                onClick={() => handleSubmodeClick(submode.name)}
+                onClick={() => handleSubmodeClick(submode.gameType)}
               >
                 <h4 className="submode-item-header">{submode.name}</h4>
                 <img
