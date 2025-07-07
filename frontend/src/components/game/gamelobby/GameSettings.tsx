@@ -15,17 +15,20 @@ interface GameSetting {
 interface GameSettingsProps {
   gameSettings: GameSetting;
   lobbyId: string;
+  host: string;
 }
 
 const GameSettings: React.FC<GameSettingsProps> = ({
   gameSettings,
-  lobbyId
+  lobbyId,
+  host
 }) => {
   const [settings, setSettings] = useState<GameSetting>(gameSettings);
   const [successMessage, setSuccessMessage] = useState<string>("");
   const availableCategories = useSelector(
     (state: RootState) => state.lobby.categories
   );
+  const localUsername = useSelector((state: RootState) => state.user.username);
 
   // Keep community mode separate from default categories
   const [isCommunitySelected, setCommunitySelected] = useState<boolean>(
@@ -90,7 +93,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/updateSettings/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/updateSettings/${lobbyId}`,
         {
           method: "POST",
           headers: {
@@ -154,6 +157,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             onChange={handleChange}
             min={3}
             max={20}
+            disabled={host !== localUsername}
           />
         </div>
         <div className="game-lobby-settings-item">
@@ -165,6 +169,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             onChange={handleChange}
             min={5}
             max={60}
+            disabled={host !== localUsername}
           />
         </div>
         <div className="game-lobby-settings-item">
@@ -176,6 +181,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             onChange={handleChange}
             min={1}
             max={5}
+            disabled={host !== localUsername}
           />
         </div>
         <div className="game-lobby-settings-item">
@@ -190,7 +196,10 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   value={category}
                   checked={settings.categories.includes(category)}
                   onChange={handleChange}
-                  disabled={isCommunitySelected && category !== "Community"}
+                  disabled={
+                    (isCommunitySelected && category !== "Community") ||
+                    host !== localUsername
+                  }
                 />
                 <label htmlFor={category}>{category}</label>
               </div>
