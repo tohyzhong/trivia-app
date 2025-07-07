@@ -53,7 +53,10 @@ const LobbyHandler: React.FC = () => {
   const [joined, setJoined] = useState(false);
 
   // Details needed for lobby display
-  const [users, setUsers] = useState<string[]>(null);
+  const [users, setUsers] = useState<{
+    [key: string]: { [key: string]: boolean };
+  }>(null);
+  const [host, setHost] = useState<string>("");
   const [gameType, setGameType] = useState<string>("");
   const [gameSettings, setGameSettings] = useState<GameSetting>(null);
   const [gameChat, setGameChat] = useState<ChatMessage[]>(null);
@@ -74,7 +77,7 @@ const LobbyHandler: React.FC = () => {
   const disconnect = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/disconnect/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,6 +121,7 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateUsers", (data) => {
       setUsers(data.players);
+      if (data.host) setHost(data.host);
     });
 
     return () => {
@@ -133,7 +137,7 @@ const LobbyHandler: React.FC = () => {
   const checkAccess = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/connect/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/connect/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -187,6 +191,7 @@ const LobbyHandler: React.FC = () => {
       lobbyUsers={users}
       lobbyChat={gameChat}
       socket={socket}
+      host={host}
     />
   ) : (
     <QuizDisplay
@@ -197,6 +202,7 @@ const LobbyHandler: React.FC = () => {
       serverTimeNow={timeNow}
       timeLimit={gameSettings.timePerQuestion}
       totalQuestions={gameSettings.numQuestions}
+      host={host}
     />
   );
 };

@@ -18,6 +18,7 @@ import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 
 interface SubModes {
   name: string;
+  gameType: string;
   description: string;
   image: string;
 }
@@ -57,17 +58,20 @@ export const GameMainpage: React.FC = () => {
   const soloSubmodes: SubModes[] = [
     {
       name: "Classic",
+      gameType: "solo-classic",
       description:
         "Answer multiple-choice questions about memes in a timed format.",
       image: SoloModeLogo
     },
     {
       name: "Knowledge",
+      gameType: "solo-knowledge",
       description: "Test your knowledge with open-ended questions.",
       image: SoloModeLogo
     },
     {
       name: "Coming Soon...",
+      gameType: "Coming Soon...",
       description: "",
       image: SoloModeLogo
     }
@@ -75,9 +79,38 @@ export const GameMainpage: React.FC = () => {
 
   const multiplayerSubmodes: SubModes[] = [
     {
+      name: "Co-op - Classic",
+      gameType: "coop-classic",
+      description:
+        "Team up with your buddies in a quiz with multiple-choice questions about memes in a timed format.",
+      image: MultiplayerModeLogo
+    },
+    {
+      name: "Co-op - Knowledge",
+      gameType: "coop-knowledge",
+      description:
+        "Team up with your buddies in an open-ended test of meme knowledge",
+      image: MultiplayerModeLogo
+    },
+    {
+      name: "Versus - Classic",
+      gameType: "versus-classic",
+      description:
+        "Compete against your friends in a quiz with multiple-choice questions about memes in a timed format.",
+      image: MultiplayerModeLogo
+    },
+    {
+      name: "Versus - Knowledge",
+      gameType: "versus-knowledge",
+      description:
+        "Compete against your friends and test your knowledge with open-ended questions.",
+      image: MultiplayerModeLogo
+    },
+    {
       name: "Coming Soon...",
+      gameType: "Coming Soon...",
       description: "",
-      image: SoloModeLogo
+      image: MultiplayerModeLogo
     }
   ];
 

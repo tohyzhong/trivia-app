@@ -30,9 +30,10 @@ interface ChatMessage {
 interface GameLobbyProps {
   lobbyId: string;
   lobbySettings: GameSetting;
-  lobbyUsers: string[];
+  lobbyUsers: { [key: string]: { [key: string]: boolean } };
   lobbyChat: ChatMessage[];
   socket: any;
+  host: string;
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
@@ -46,7 +47,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   const navigate = useNavigate();
 
   // Lobby details
-  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat, socket } = props;
+  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat, socket, host } = props;
 
   useEffect(() => {
     if (lobbyId) {
@@ -81,8 +82,12 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     <div className="game-lobby-full">
       {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       <div className="game-lobby-container">
-        <GameSettings lobbyId={lobbyId} gameSettings={lobbySettings} />
-        <GameUsers lobbyId={lobbyId} usernames={lobbyUsers} />
+        <GameSettings
+          lobbyId={lobbyId}
+          gameSettings={lobbySettings}
+          host={host}
+        />
+        <GameUsers lobbyId={lobbyId} usernames={lobbyUsers} host={host} />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
       </div>
 
