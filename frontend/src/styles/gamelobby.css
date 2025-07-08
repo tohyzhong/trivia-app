@@ -146,14 +146,28 @@
 
 /* Stats + Chat */
 .stats-chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   height: 100%;
   width: 30%;
 }
 
 .stats-chat-container .player-stats-container {
+  display: flex;
+  flex-direction: column;
   height: 50%;
   width: 100%;
-  overflow-y: auto;
+  margin: 0;
+  padding: 10px;
+  background: #222;
+}
+
+.stats-chat-container .player-stats-container .stats-header {
+  margin: 0;
+  height: auto;
+  color: white;
 }
 
 .stats-chat-container .player-stats-container .player-stat-row {
@@ -214,6 +228,10 @@
   flex-grow: 1;
   height: fill;
   overflow-y: auto;
+}
+
+.chat-content {
+  word-break: break-all;
 }
 
 .chat-container {
@@ -435,6 +453,14 @@
   width: 90%;
   align-items: center;
   justify-content: space-between;
+  margin-top: 10px;
+}
+
+.question-number-container {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  position: relative;
 }
 
 .advance-lobby-button {
@@ -450,7 +476,7 @@
 
 .question-question {
   display: flex;
-  height: 30%;
+  height: 25%;
   width: 90%;
   align-items: center;
   justify-content: center;
@@ -480,18 +506,20 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 15px;
+  gap: 13px;
   width: 90%;
   height: 45%;
   padding: 0;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .option {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 100%;
+  width: 100%;
   font-size: 0.9rem;
   font-weight: bold;
   padding: 15px;
@@ -581,13 +609,15 @@
   align-items: center;
   margin-bottom: 10px;
   gap: 5px;
-  position: relative;
+  position: absolute;
   width: 90%;
+  left: 0;
+  bottom: -15px;
 }
 
 .answer-history-item {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
 }
 

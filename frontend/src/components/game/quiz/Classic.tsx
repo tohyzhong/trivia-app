@@ -118,9 +118,13 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         />
       )}
       <div className="question-header-details">
-        <p>
-          Question {currentQuestion} / {totalQuestions}
-        </p>
+        <div className="question-number-container">
+          <p>
+            Question {currentQuestion} / {totalQuestions}
+          </p>
+          <div className="answer-history-bar">{renderAnswerHistory()}</div>
+        </div>
+
         {answerRevealed && (
           <button className="advance-lobby-button" onClick={handleNextQuestion}>
             {currentQuestion === totalQuestions
@@ -130,8 +134,6 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         )}
         <p>Category: {classicQuestion.category}</p>
       </div>
-
-      <div className="answer-history-bar">{renderAnswerHistory()}</div>
 
       <p className="score-display">
         Score: {playerStates[loggedInUser]?.score ?? 0} (+

@@ -77,6 +77,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     <div className="stats-chat-container">
       {playerStates && (
         <div className="player-stats-container">
+          <h3 className="stats-header">Score Summary</h3>
           {Object.entries(playerStates).map(([username, state]) => {
             const last5 = Object.keys(state?.answerHistory || {})
               .sort((a, b) => parseInt(b) - parseInt(a))
