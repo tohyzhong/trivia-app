@@ -819,22 +819,8 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       });
     }
 
-    // Advance lobby
     const gameState = lobby.gameState;
     const playerStates = gameState.playerStates;
-
-    // Reset player states
-    const resetPlayerStates = {};
-    for (const username in playerStates) {
-      resetPlayerStates[username] = {
-        ...playerStates[username],
-        selectedOption: 0,
-        submitted: false,
-        streakBonus: 0,
-        correctScore: 0,
-        answerHistory: {}
-      };
-    }
 
     const socketIO = getSocketIO();
 
@@ -844,6 +830,19 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       const playerUpdates = await Profile.collection
         .find({ username: { $in: usernamesToUpdate } })
         .toArray();
+
+      // Reset player states
+      const resetPlayerStates = {};
+      for (const username in playerStates) {
+        resetPlayerStates[username] = {
+          ...playerStates[username],
+          selectedOption: 0,
+          submitted: false,
+          streakBonus: 0,
+          correctScore: 0,
+          answerHistory: {}
+        };
+      }
 
       const playerScoreSummary = {};
       usernamesToUpdate.forEach((username) => {
@@ -1086,6 +1085,18 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       const question = await getQuestionById(
         gameState.questionIds[gameState.currentQuestion]
       );
+
+      // Reset player states
+      const resetPlayerStates = {};
+      for (const username in playerStates) {
+        resetPlayerStates[username] = {
+          ...playerStates[username],
+          selectedOption: 0,
+          submitted: false,
+          streakBonus: 0,
+          correctScore: 0
+        };
+      }
       const updatedGameState = {
         ...gameState,
         currentQuestion: gameState.currentQuestion + 1,
