@@ -603,6 +603,11 @@
   background-color: #088b3f;
 }
 
+.advance-lobby-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(60%);
+}
+
 .question-question {
   display: flex;
   height: 25%;

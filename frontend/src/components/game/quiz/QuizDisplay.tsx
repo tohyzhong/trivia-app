@@ -45,6 +45,8 @@ interface GameState {
   answerRevealed: boolean;
   lastUpdate: Date;
   team?: any;
+  countdownStarted?: boolean;
+  countdownStartTime?: Date;
 }
 
 interface QuizDisplayProps {
@@ -193,6 +195,12 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 playerStates={gameState.playerStates}
                 teamStates={gameState.team}
                 profilePictures={profilePictures}
+                host={host}
+                serverTimeNow={serverTimeNow}
+                readyCountdown={{
+                  countdownStarted: gameState.countdownStarted,
+                  countdownStartTime: gameState.countdownStartTime
+                }}
               />
             ) : (
               <Knowledge />

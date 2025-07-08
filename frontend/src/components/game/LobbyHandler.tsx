@@ -65,14 +65,14 @@ const LobbyHandler: React.FC = () => {
   const [joinRequests, setJoinRequests] = useState<{ [key: string]: boolean }>(
     null
   );
-  const [profilePictures, setProfilePictures] = useState<{
-    [key: string]: string;
-  }>(null);
 
   // Details needed for quiz display
   const [gameState, setGameState] = useState<GameState>(null);
   const [timeNow, setTimeNow] = useState<Date>(null);
   const [status, setStatus] = useState<string>("");
+  const [profilePictures, setProfilePictures] = useState<{
+    [key: string]: string;
+  }>(null);
 
   // Access check variables
   const { lobbyId } = useParams();

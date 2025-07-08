@@ -30,6 +30,9 @@ interface ClassicQuestionProps {
     };
   };
   profilePictures: { [username: string]: string };
+  host: string;
+  serverTimeNow: Date;
+  readyCountdown: { [key: string]: boolean | Date };
 }
 
 const Classic: React.FC<ClassicQuestionProps> = ({
@@ -42,12 +45,51 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   answerRevealed,
   playerStates,
   teamStates,
-  profilePictures
+  profilePictures,
+  host,
+  serverTimeNow,
+  readyCountdown
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const answerHistory = teamStates
     ? teamStates["teamAnswerHistory"]
     : playerStates[loggedInUser]?.answerHistory || [];
+
+  // Next Question / Return to Lobby Countdown
+  const start =
+    readyCountdown.countdownStarted &&
+    typeof readyCountdown.countdownStartTime === "string"
+      ? new Date(readyCountdown.countdownStartTime).getTime()
+      : null;
+
+  const now = new Date(serverTimeNow).getTime();
+  const initialTimeLeft = start ? Math.max(0, 10 - (now - start) / 1000) : null;
+
+  const [countdownLeft, setCountdownLeft] = useState<number>(
+    Math.floor(initialTimeLeft ?? 10)
+  );
+
+  useEffect(() => {
+    if (initialTimeLeft === null) return;
+
+    const interval = setInterval(() => {
+      setCountdownLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          if (loggedInUser === host) handleNextQuestion();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [start]);
+
+  // Reset countdown on new question
+  useEffect(() => {
+    setCountdownLeft(Math.floor(initialTimeLeft ?? 10));
+  }, [currentQuestion]);
 
   // Option submission
   const handleSubmit = async (option) => {
@@ -85,13 +127,13 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Next question
   const handleNextQuestion = async () => {
-    if (playerStates[loggedInUser]?.ready) return;
+    if (loggedInUser !== host && playerStates[loggedInUser]?.ready) return;
     playClickSound();
     try {
       await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/advancelobby/${lobbyId}`,
         {
-          method: "GET",
+          method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include"
         }
@@ -127,7 +169,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     });
   };
 
-  const MAX_VISIBLE = 6;
+  const MAX_VISIBLE = 5;
   const renderVoteAvatars = (optionIndex: number) => {
     if (!teamStates || !answerRevealed) return null;
 
@@ -187,10 +229,10 @@ const Classic: React.FC<ClassicQuestionProps> = ({
             disabled={playerStates[loggedInUser]?.ready}
           >
             {playerStates[loggedInUser]?.ready
-              ? "Waiting..."
+              ? `Waiting... (${countdownLeft}s)`
               : currentQuestion === totalQuestions
-                ? "Back to Lobby →"
-                : "Next Question →"}
+                ? `Back to Lobby → ${readyCountdown.countdownStarted ? countdownLeft + "s" : ""}`
+                : `Next Question → ${readyCountdown.countdownStarted ? countdownLeft + "s" : ""}`}
           </button>
         )}
         <p>Category: {classicQuestion.category}</p>

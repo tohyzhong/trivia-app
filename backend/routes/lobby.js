@@ -1321,7 +1321,16 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
-router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
+function initLeaderboardStats(format, mode) {
+  return {
+    [format]: {
+      [mode]: {},
+      overall: {}
+    }
+  };
+}
+
+router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
 
@@ -1330,10 +1339,12 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       return res.status(404).json({ message: "Lobby not found" });
     }
 
+    const now = new Date();
+
     // Confirm eligibility for advancing lobby
     const timeLimit = lobby.gameSettings.timePerQuestion;
     const lastUpdate = lobby.gameState.lastUpdate;
-    const timePassed = (Date.now() - new Date(lastUpdate).getTime()) / 1000;
+    const timePassed = (now - new Date(lastUpdate).getTime()) / 1000;
 
     const eligible = timePassed > timeLimit || lobby.gameState.answerRevealed;
     if (!eligible) {
@@ -1353,36 +1364,59 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         .json({ message: "Player not found in game state" });
     }
 
+    const updateOps = {};
+
+    if (!lobby.gameState.countdownStarted) {
+      const startTime = now;
+      updateOps["gameState.countdownStarted"] = true;
+      updateOps["gameState.countdownStartTime"] = startTime;
+
+      socketIO.to(lobbyId).emit("startCountdown", {
+        serverStartTime: startTime
+      });
+    }
+
+    updateOps[`gameState.playerStates.${player}.ready`] = true;
     playerStates[player].ready = true;
 
-    // Check if all players are ready
-    const allReady = Object.values(playerStates).every((p) => p.ready === true);
+    // Calculate if everyone is ready or 10 seconds have passed
+    const countdownStartTime = lobby.gameState.countdownStartTime || now;
+    const allReady =
+      Object.values(playerStates).every((p) => p.ready === true) ||
+      (now - new Date(countdownStartTime)) / 1000 >= 10;
 
     if (!allReady) {
-      await Lobby.collection.updateOne(
-        { lobbyId },
-        {
-          $set: {
-            "gameState.playerStates": playerStates
-          }
-        }
-      );
+      await Lobby.collection.updateOne({ lobbyId }, { $set: updateOps });
 
       socketIO.to(lobbyId).emit("updateState", {
-        gameState: gameState,
-        serverTimeNow: new Date()
+        gameState: {
+          ...lobby.gameState,
+          countdownStarted: true,
+          countdownStartTime,
+          playerStates: {
+            ...playerStates,
+            [player]: {
+              ...playerStates[player],
+              ready: true
+            }
+          }
+        },
+        serverTimeNow: now
       });
 
-      return res
-        .status(200)
-        .json({ message: "Marked as ready. Waiting for others." });
+      return res.status(200).json({
+        message: "Marked as ready. Waiting for others."
+      });
     }
 
     if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
       // Update player states when lobby ends
       const usernamesToUpdate = Object.keys(playerStates);
       const playerUpdates = await Profile.collection
-        .find({ username: { $in: usernamesToUpdate } })
+        .find(
+          { username: { $in: usernamesToUpdate } },
+          { projection: { username: 1, matchHistory: 1, leaderboardStats: 1 } }
+        )
         .toArray();
 
       // Reset player states
@@ -1455,29 +1489,32 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         });
       }
 
+      const gameMode = lobby.gameType.split("-")[0];
+      const gameFormat = lobby.gameType.split("-")[1];
+      const numQuestions = lobby.gameSettings.numQuestions;
+      const matchDate = now;
+      const categoriesInMatch = gameState.questionCategories || [];
+      const initStats = () => ({ correct: 0, total: 0 });
+      const initOverallStats = () => ({
+        correct: 0,
+        total: 0,
+        score: 0,
+        totalMatches: 0,
+        wonMatches: 0
+      });
+
       const bulkOps = playerUpdates.map((profile) => {
         const username = profile.username;
         const answerHistory = playerStates[username]?.answerHistory || {};
-        const leaderboardStats = profile.leaderboardStats || {};
+        const leaderboardStats =
+          profile.leaderboardStats ||
+          initLeaderboardStats(gameFormat, gameMode);
         const matchCategoryStats = {};
         const correctCount = Object.values(answerHistory).filter(
           (v) => v === "correct"
         ).length;
         const score = playerStates[username].score;
         let color = "solo";
-
-        const gameMode = lobby.gameType.split("-")[0]; // solo/versus/coop
-        const gameFormat = lobby.gameType.split("-")[1]; // classic/knowledge
-        const numQuestions = lobby.gameSettings.numQuestions;
-        const matchDate = new Date();
-        const categoriesInMatch = gameState.questionCategories || [];
-
-        if (!leaderboardStats[gameFormat]) leaderboardStats[gameFormat] = {};
-        if (!leaderboardStats[gameFormat].overall)
-          leaderboardStats[gameFormat].overall = {};
-        if (!leaderboardStats[gameFormat][gameMode]) {
-          leaderboardStats[gameFormat][gameMode] = {};
-        }
 
         const formatStats = leaderboardStats[gameFormat];
         const modeStats = formatStats[gameMode];
@@ -1487,23 +1524,12 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           const category = categoriesInMatch[i];
           const result = answerHistory[i + 1];
 
-          matchCategoryStats[category] ??= { correct: 0, total: 0 };
-          modeStats[category] ??= { correct: 0, total: 0 };
-          modeStats.overall ??= {
-            correct: 0,
-            total: 0,
-            score: 0,
-            totalMatches: 0,
-            wonMatches: 0
-          };
-          overallStats.overall ??= {
-            correct: 0,
-            total: 0,
-            score: 0,
-            totalMatches: 0,
-            wonMatches: 0
-          };
-          overallStats[category] ??= { correct: 0, total: 0 };
+          matchCategoryStats[category] =
+            matchCategoryStats[category] || initStats();
+          modeStats[category] = modeStats[category] || initStats();
+          modeStats.overall = modeStats.overall || initOverallStats();
+          overallStats.overall = overallStats.overall || initOverallStats();
+          overallStats[category] = overallStats[category] || initStats();
 
           matchCategoryStats[category].total++;
           modeStats[category].total++;
@@ -1623,7 +1649,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         questionCategories: [],
         playerStates: resetPlayerStates,
         answerRevealed: false,
-        lastUpdate: new Date()
+        lastUpdate: now
       };
 
       await Lobby.collection.updateOne(
@@ -1632,7 +1658,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           $set: {
             gameState: updatedGameState,
             status: "waiting",
-            lastActivity: new Date()
+            lastActivity: now
           }
         }
       );
@@ -1641,7 +1667,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       socketIO.to(lobbyId).emit("updateStatus", { status: "waiting" });
       socketIO.to(lobbyId).emit("updateState", {
         gameState: updatedGameState,
-        serverTimeNow: new Date()
+        serverTimeNow: now
       });
 
       return res.status(200).json({ message: "Lobby finished." });
@@ -1664,37 +1690,36 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         };
       }
 
-      const updatedGameState = lobby.gameType.includes("coop")
-        ? {
-            ...gameState,
-            currentQuestion: gameState.currentQuestion + 1,
-            questionIds: gameState.questionIds,
-            question,
-            playerStates: resetPlayerStates,
-            answerRevealed: false,
-            lastUpdate: new Date(),
-            team: { ...gameState.team, teamCorrectScore: 0, teamStreakBonus: 0 }
-          }
-        : {
-            ...gameState,
-            currentQuestion: gameState.currentQuestion + 1,
-            questionIds: gameState.questionIds,
-            question,
-            playerStates: resetPlayerStates,
-            answerRevealed: false,
-            lastUpdate: new Date()
-          };
+      const updatedFields = {
+        "gameState.currentQuestion": gameState.currentQuestion + 1,
+        "gameState.question": question,
+        "gameState.playerStates": resetPlayerStates,
+        "gameState.answerRevealed": false,
+        "gameState.lastUpdate": now,
+        lastActivity: now,
+        "gameState.countdownStarted": false,
+        "gameState.countdownStartTime": null
+      };
 
-      await Lobby.collection.updateOne(
-        { lobbyId },
-        { $set: { gameState: updatedGameState, lastActivity: new Date() } }
-      );
+      if (lobby.gameType.includes("coop")) {
+        updatedFields["gameState.team.teamCorrectScore"] = 0;
+        updatedFields["gameState.team.teamStreakBonus"] = 0;
+      }
 
-      // Update frontend display through socket
-      updatedGameState.question.correctOption = null;
+      await Lobby.collection.updateOne({ lobbyId }, { $set: updatedFields });
+
       socketIO.to(lobbyId).emit("updateState", {
-        gameState: updatedGameState,
-        serverTimeNow: new Date()
+        gameState: {
+          ...gameState,
+          currentQuestion: updatedFields["gameState.currentQuestion"],
+          question: { ...question, correctOption: null },
+          playerStates: resetPlayerStates,
+          answerRevealed: false,
+          lastUpdate: now,
+          countdownStarted: false,
+          countdownStartTime: null
+        },
+        serverTimeNow: now
       });
 
       return res.status(200).json({ message: "Lobby advanced." });
