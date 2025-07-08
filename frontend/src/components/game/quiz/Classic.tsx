@@ -85,15 +85,20 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Next question
   const handleNextQuestion = async () => {
+    if (playerStates[loggedInUser]?.ready) return;
     playClickSound();
-    await fetch(
-      `${import.meta.env.VITE_API_URL}/api/lobby/advancelobby/${lobbyId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include"
-      }
-    );
+    try {
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/advancelobby/${lobbyId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include"
+        }
+      );
+    } catch (error) {
+      console.error("Failed to advance lobby", error);
+    }
   };
 
   // Explanation popup
@@ -172,10 +177,16 @@ const Classic: React.FC<ClassicQuestionProps> = ({
           Question {currentQuestion} / {totalQuestions}
         </p>
         {answerRevealed && (
-          <button className="advance-lobby-button" onClick={handleNextQuestion}>
+          <button
+            className="advance-lobby-button"
+            onClick={handleNextQuestion}
+            disabled={playerStates[loggedInUser]?.ready}
+          >
             {currentQuestion === totalQuestions
               ? "Back to Lobby →"
-              : "Next Question →"}
+              : playerStates[loggedInUser]?.ready
+                ? "Waiting..."
+                : "Next Question →"}
           </button>
         )}
         <p>Category: {classicQuestion.category}</p>

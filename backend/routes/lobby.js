@@ -242,6 +242,9 @@ router.post("/connect/:lobbyId", authenticate, async (req, res) => {
       players: updatedLobby.players,
       host: updatedLobby.host
     });
+    socketIO.to(lobbyId).emit("updateState", {
+      gameState: updatedLobby.gameState
+    });
 
     return res.status(200).json({
       message: "Player connected successfully",
@@ -1330,20 +1333,50 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
     // Confirm eligibility for advancing lobby
     const timeLimit = lobby.gameSettings.timePerQuestion;
     const lastUpdate = lobby.gameState.lastUpdate;
-    const timePassed = (Date.now() - lastUpdate.getTime()) / 1000;
+    const timePassed = (Date.now() - new Date(lastUpdate).getTime()) / 1000;
 
     const eligible = timePassed > timeLimit || lobby.gameState.answerRevealed;
     if (!eligible) {
       return res.status(401).json({
-        message: "Not allowed to advanced lobby while question is ongoing"
+        message: "Not allowed to advance lobby while question is ongoing"
       });
     }
 
-    // Advance lobby
     const gameState = lobby.gameState;
     const playerStates = gameState.playerStates;
-
+    const player = req.user.username;
     const socketIO = getSocketIO();
+
+    if (!playerStates[player]) {
+      return res
+        .status(400)
+        .json({ message: "Player not found in game state" });
+    }
+
+    playerStates[player].ready = true;
+
+    // Check if all players are ready
+    const allReady = Object.values(playerStates).every((p) => p.ready === true);
+
+    if (!allReady) {
+      await Lobby.collection.updateOne(
+        { lobbyId },
+        {
+          $set: {
+            "gameState.playerStates": playerStates
+          }
+        }
+      );
+
+      socketIO.to(lobbyId).emit("updateState", {
+        gameState: gameState,
+        serverTimeNow: new Date()
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Marked as ready. Waiting for others." });
+    }
 
     if (gameState.currentQuestion + 1 > lobby.gameSettings.numQuestions) {
       // Update player states when lobby ends
@@ -1362,7 +1395,8 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           streakBonus: 0,
           selectedOption: 0,
           submitted: false,
-          answerHistory: {}
+          answerHistory: {},
+          ready: false
         };
       }
 
@@ -1625,7 +1659,8 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           correctScore: 0,
           streakBonus: 0,
           selectedOption: 0,
-          submitted: false
+          submitted: false,
+          ready: false
         };
       }
 

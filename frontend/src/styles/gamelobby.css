@@ -181,6 +181,34 @@
   background-color: white;
 }
 
+.stats-chat-container .player-stats-container .avatar-wrapper {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.stats-chat-container .player-stats-container .greyscale-avatar {
+  filter: grayscale(60%);
+}
+
+.stats-chat-container .player-stats-container .ready-tick {
+  position: absolute;
+  bottom: 0%;
+  right: 5%;
+  background-color: #22c55e;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .stats-chat-container .player-stats-container .player-name {
   color: white;
   font-weight: bold;

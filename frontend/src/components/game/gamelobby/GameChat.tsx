@@ -18,7 +18,7 @@ interface GameChatProps {
     [username: string]: {
       score: number;
       answerHistory: { [questionNum: number]: string };
-      profilePicture: string;
+      ready?: boolean;
     };
   };
   gameType?: string;
@@ -112,11 +112,21 @@ const GameChat: React.FC<GameChatProps> = (props) => {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="player-name-with-avatar">
-                      <img
-                        src={profilePictures[username] || defaultAvatar}
-                        alt={username}
-                        className="player-avatar"
-                      />
+                      <div className="avatar-wrapper">
+                        <img
+                          src={profilePictures[username] || defaultAvatar}
+                          alt={username}
+                          className={`player-avatar ${
+                            playerStates?.[username]?.ready
+                              ? "greyscale-avatar"
+                              : ""
+                          }`}
+                        />
+                        {playerStates?.[username]?.ready && (
+                          <div className="ready-tick">✓</div>
+                        )}
+                      </div>
+
                       <span
                         className="player-name"
                         style={
