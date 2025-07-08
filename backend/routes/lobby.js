@@ -70,7 +70,8 @@ router.post("/create", authenticate, async (req, res) => {
           username: 1,
           lobbyExists: 1,
           playerExists: 1,
-          categories: "$categories.category"
+          categories: "$categories.category",
+          profilePicture: 1
         }
       }
     ]);
@@ -93,7 +94,9 @@ router.post("/create", authenticate, async (req, res) => {
       lobbyId,
       status: "waiting",
       host: username,
-      players: { [username]: { ready: false } },
+      players: {
+        [username]: { ready: false, profilePicture: playerDoc.profilePicture }
+      },
       gameType,
       gameSettings: {
         numQuestions: 10,
@@ -302,11 +305,19 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
     const { lobbyId } = req.params;
     const username = req.user.username;
 
+    const playerDoc = await Profile.findOne(
+      { username },
+      { profilePicture: 1 }
+    );
+    if (!playerDoc) {
+      return res.status(404).json({ message: "Player not found." });
+    }
+
     const lobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId, gameType: { $not: /solo/i } },
       {
         $set: {
-          [`joinRequests.${username}`]: true,
+          [`joinRequests.${username}`]: playerDoc.profilePicture || "",
           lastActivity: new Date()
         }
       },
@@ -350,24 +361,33 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
       {
         lobbyId,
         host: hostUsername,
-        [`joinRequests.${usernameToApprove}`]: true
+        [`joinRequests.${usernameToApprove}`]: { $exists: true }
       },
-      {
-        $unset: { [`joinRequests.${usernameToApprove}`]: "" },
-        $set: {
-          [`players.${usernameToApprove}`]: { ready: false },
-          [`gameState.playerStates.${usernameToApprove}`]: {
-            score: 0,
-            correctScore: 0,
-            streakBonus: 0,
-            selectedOption: 0,
-            submitted: false,
-            answerHistory: {}
-          },
-          lastActivity: new Date()
+      [
+        {
+          $set: {
+            [`players.${usernameToApprove}`]: {
+              ready: false,
+              profilePicture: `$joinRequests.${usernameToApprove}`
+            },
+            [`gameState.playerStates.${usernameToApprove}`]: {
+              score: 0,
+              correctScore: 0,
+              streakBonus: 0,
+              selectedOption: 0,
+              submitted: false,
+              answerHistory: {}
+            },
+            lastActivity: new Date(),
+            chatMessages: {
+              $concatArrays: ["$chatMessages", [chatMsg]]
+            }
+          }
         },
-        $push: { chatMessages: chatMsg }
-      },
+        {
+          $unset: [`joinRequests.${usernameToApprove}`]
+        }
+      ],
       { returnDocument: "after" }
     );
 
@@ -378,7 +398,10 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
     }
 
     const io = getSocketIO();
-    io.to(lobbyId).emit("updateUsers", { players: updatedLobby.players });
+    io.to(lobbyId).emit("updateUsers", {
+      players: updatedLobby.players,
+      host: updatedLobby.host
+    });
     io.to(lobbyId).emit("updateJoinRequests", updatedLobby.joinRequests);
     io.to(lobbyId).emit("updateChat", {
       chatMessages: updatedLobby.chatMessages
@@ -440,7 +463,10 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
 
     const io = getSocketIO();
     io.to(lobbyId).emit("updateKick", usernameToKick);
-    io.to(lobbyId).emit("updateUsers", { players: updatedLobby.players });
+    io.to(lobbyId).emit("updateUsers", {
+      players: updatedLobby.players,
+      host: updatedLobby.host
+    });
     io.to(lobbyId).emit("updateJoinRequests", updatedLobby.joinRequests);
     io.to(lobbyId).emit("updateChat", {
       chatMessages: updatedLobby.chatMessages
@@ -624,7 +650,10 @@ router.post("/ready/:lobbyId", authenticate, async (req, res) => {
     }
 
     const socketIO = getSocketIO();
-    socketIO.to(lobbyId).emit("updateUsers", { players: updateResult.players });
+    socketIO.to(lobbyId).emit("updateUsers", {
+      players: updateResult.players,
+      host: updateResult.host
+    });
 
     res.status(200).json({ message: "Ready status updated" });
   } catch (error) {
@@ -897,7 +926,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           .status(200)
           .json({ message: "All players submitted. Answer revealed." });
       } else {
-        const votes = {};
+        const voteDetails = {};
         const playerStates = updatedPlayerStates;
         const currentQuestion = lobby.gameState.currentQuestion;
         const correctOption = lobby.gameState.question.correctOption;
@@ -912,7 +941,10 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           state.streakBonus = 0;
 
           if (selected > 0) {
-            votes[selected] = (votes[selected] || 0) + 1;
+            voteDetails[selected] = voteDetails[selected] || [];
+            if (!voteDetails[selected].includes(username)) {
+              voteDetails[selected].push(username);
+            }
           } else {
             state.answerHistory[currentQuestion] = "missing";
           }
@@ -932,9 +964,12 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           playerStates[username] = state;
         }
 
-        const maxVotes = Math.max(...Object.values(votes), 0);
-        const topOptions = Object.entries(votes)
-          .filter(([_, count]) => count === maxVotes)
+        const maxVotes = Math.max(
+          ...Object.values(voteDetails).map((obj) => obj.length),
+          0
+        );
+        const topOptions = Object.entries(voteDetails)
+          .filter(([_, users]) => users.length === maxVotes)
           .map(([opt]) => parseInt(opt));
 
         const isCorrect =
@@ -947,10 +982,10 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
         const teamAnswerHistory = lobby.gameState.team?.teamAnswerHistory || {};
         teamAnswerHistory[currentQuestion] = isCorrect
-          ? ["correct", votes]
+          ? ["correct", voteDetails]
           : maxVotes === 0
             ? ["missing"]
-            : ["wrong", votes];
+            : ["wrong", voteDetails];
         for (let i = currentQuestion - 1; i >= 1; i--) {
           if (!teamAnswerHistory[i]) teamAnswerHistory[i] = ["missing"];
         }
@@ -1161,7 +1196,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
       return res.status(200).json({ message: "Answer revealed." });
     } else {
       // Co-op logic if not all players submit
-      const votes = {};
+      const voteDetails = {};
       const playerStates = { ...lobby.gameState.playerStates };
       const currentQuestion = lobby.gameState.currentQuestion;
       const correctOption = lobby.gameState.question.correctOption;
@@ -1176,7 +1211,10 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
         state.streakBonus = 0;
 
         if (selected > 0) {
-          votes[selected] = (votes[selected] || 0) + 1;
+          voteDetails[selected] = voteDetails[selected] || [];
+          if (!voteDetails[selected].includes(username)) {
+            voteDetails[selected].push(username);
+          }
           const isCorrect = selected === correctOption;
 
           if (isCorrect) {
@@ -1195,9 +1233,12 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
         playerStates[username] = state;
       }
 
-      const maxVotes = Math.max(...Object.values(votes), 0);
-      const topOptions = Object.entries(votes)
-        .filter(([_, count]) => count === maxVotes)
+      const maxVotes = Math.max(
+        ...Object.values(voteDetails).map((obj) => obj.length),
+        0
+      );
+      const topOptions = Object.entries(voteDetails)
+        .filter(([_, users]) => users.length === maxVotes)
         .map(([opt]) => parseInt(opt));
 
       const isCorrect =
@@ -1210,10 +1251,10 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
       const teamAnswerHistory = lobby.gameState.team?.teamAnswerHistory || {};
       teamAnswerHistory[currentQuestion] = isCorrect
-        ? ["correct", votes]
+        ? ["correct", voteDetails]
         : maxVotes === 0
           ? ["missing"]
-          : ["wrong", votes];
+          : ["wrong", voteDetails];
       for (let i = currentQuestion - 1; i >= 1; i--) {
         if (!teamAnswerHistory[i]) teamAnswerHistory[i] = ["missing"];
       }

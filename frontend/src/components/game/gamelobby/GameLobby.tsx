@@ -33,6 +33,7 @@ interface GameLobbyProps {
   lobbyUsers: { [key: string]: { [key: string]: boolean } };
   joinRequests: { [key: string]: boolean };
   lobbyChat: ChatMessage[];
+  profilePictures: { [username: string]: string };
   gameType: string;
   socket: any;
   handleLeave: Function;

@@ -44,12 +44,13 @@ interface GameState {
   playerStates: any;
   answerRevealed: boolean;
   lastUpdate: Date;
-  team?: Object;
+  team?: any;
 }
 
 interface QuizDisplayProps {
   lobbyId: string;
   lobbyChat: ChatMessage[];
+  profilePictures: { [username: string]: string };
   gameType: string;
   gameState: GameState;
   serverTimeNow: Date;
@@ -62,6 +63,7 @@ interface QuizDisplayProps {
 const QuizDisplay: React.FC<QuizDisplayProps> = ({
   lobbyId,
   lobbyChat,
+  profilePictures,
   gameType,
   gameState,
   serverTimeNow,
@@ -190,6 +192,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 answerRevealed={answerRevealed}
                 playerStates={gameState.playerStates}
                 teamStates={gameState.team}
+                profilePictures={profilePictures}
               />
             ) : (
               <Knowledge />
@@ -218,6 +221,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           chatMessages={lobbyChat}
           playerStates={gameState.playerStates}
           gameType={gameType}
+          profilePictures={profilePictures}
         />
         <IoSettingsOutline
           onClick={() => {

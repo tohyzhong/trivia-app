@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import GameMainpage from "./GameMainpage";
 import LobbyHandler from "./LobbyHandler";
 import JoinLobbyHandler from "./JoinLobbyHandler";
@@ -11,6 +11,7 @@ import { RootState } from "../../redux/store";
 const GameRoutes: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const lobby = useSelector((state: RootState) => state.lobby);
 
   useEffect(() => {
@@ -26,14 +27,14 @@ const GameRoutes: React.FC = () => {
             dispatch(
               setLobby({ lobbyId: data.lobbyId, categories: data.categories })
             );
-            navigate(`/play/${data.lobbyId}`);
+            navigate(`/play/${data.lobbyId}`, { state: location.state });
           }
         })
         .catch((error) => {
           console.error("Error fetching lobby:", error);
         });
     }
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, location.state]);
 
   return (
     <Routes>

@@ -4,6 +4,7 @@ import { RootState } from "../../../redux/store";
 import { playClickSound } from "../../../utils/soundManager";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { motion, AnimatePresence } from "framer-motion";
+import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 interface ChatMessage {
   sender: string;
@@ -17,13 +18,16 @@ interface GameChatProps {
     [username: string]: {
       score: number;
       answerHistory: { [questionNum: number]: string };
+      profilePicture: string;
     };
   };
   gameType?: string;
+  profilePictures?: { [username: string]: string };
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
-  const { lobbyId, chatMessages, playerStates, gameType } = props;
+  const { lobbyId, chatMessages, playerStates, gameType, profilePictures } =
+    props;
   const [chatInput, setChatInput] = useState<string>("");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
@@ -75,10 +79,6 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     }
   }, [chatMessages]);
 
-  const sortedPlayers = Object.entries(playerStates || {}).sort(
-    ([, a], [, b]) => (b.score ?? 0) - (a.score ?? 0)
-  );
-
   return (
     <div className="stats-chat-container">
       {playerStates && (
@@ -111,14 +111,23 @@ const GameChat: React.FC<GameChatProps> = (props) => {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <span
-                      className="player-name"
-                      style={
-                        username === loggedInUser ? { color: "lightblue" } : {}
-                      }
-                    >
-                      {username}
-                    </span>
+                    <div className="player-name-with-avatar">
+                      <img
+                        src={profilePictures[username] || defaultAvatar}
+                        alt={username}
+                        className="player-avatar"
+                      />
+                      <span
+                        className="player-name"
+                        style={
+                          username === loggedInUser
+                            ? { color: "lightblue" }
+                            : {}
+                        }
+                      >
+                        {username}
+                      </span>
+                    </div>
                     {!gameType?.includes("coop") && (
                       <span className="player-score">{state.score ?? 0}</span>
                     )}

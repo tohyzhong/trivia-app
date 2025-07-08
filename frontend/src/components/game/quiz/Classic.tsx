@@ -4,6 +4,7 @@ import { RootState } from "../../../redux/store";
 import { IoIosInformationCircle } from "react-icons/io";
 import Explanation from "./Explanation";
 import { playClickSound } from "../../../utils/soundManager";
+import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 interface ClassicQuestion {
   question: string;
@@ -23,7 +24,12 @@ interface ClassicQuestionProps {
   submitted: boolean;
   answerRevealed: boolean;
   playerStates: Object;
-  teamStates: Object;
+  teamStates: {
+    [key: string]: {
+      [key: string]: number | Array<string | { [key: number]: Array<string> }>;
+    };
+  };
+  profilePictures: { [username: string]: string };
 }
 
 const Classic: React.FC<ClassicQuestionProps> = ({
@@ -35,7 +41,8 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   submitted,
   answerRevealed,
   playerStates,
-  teamStates
+  teamStates,
+  profilePictures
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const answerHistory = teamStates
@@ -115,6 +122,43 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     });
   };
 
+  const MAX_VISIBLE = 6;
+  const renderVoteAvatars = (optionIndex: number) => {
+    if (!teamStates || !answerRevealed) return null;
+
+    const voteDetails = answerHistory[currentQuestion]?.[1] ?? {};
+    const voters = voteDetails[optionIndex + 1];
+
+    if (!voters) return null;
+
+    const usernames = voters;
+    const visibleVoters = usernames.slice(0, MAX_VISIBLE);
+    const extraCount = usernames.length - MAX_VISIBLE;
+
+    return (
+      <div className="vote-avatars">
+        {visibleVoters.map((username) => (
+          <div className="avatar-wrapper" key={username} title={username}>
+            <img
+              src={profilePictures[username] || defaultAvatar}
+              alt={username}
+              className="avatar-img"
+            />
+          </div>
+        ))}
+
+        {extraCount > 0 && (
+          <div
+            className="avatar-wrapper extra-voters"
+            title={usernames.slice(MAX_VISIBLE).join(", ")}
+          >
+            +{extraCount} more
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="question-details">
       {showExplanation && (
@@ -160,12 +204,15 @@ const Classic: React.FC<ClassicQuestionProps> = ({
       </div>
       <div className="question-options-grid">
         {classicQuestion.options.map((option, index) => (
-          <button
-            className={`option option-${index + 1} ${submitted ? "disabled" : ""}`}
-            onClick={!submitted ? () => handleSubmit(index + 1) : null}
-          >
-            {option}
-          </button>
+          <div key={index} className="option-container">
+            <button
+              className={`option option-${index + 1} ${submitted ? "disabled" : ""}`}
+              onClick={!submitted ? () => handleSubmit(index + 1) : null}
+            >
+              {option}
+            </button>
+            {renderVoteAvatars(index)}
+          </div>
         ))}
       </div>
     </div>

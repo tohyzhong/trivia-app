@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../redux/store";
@@ -52,6 +52,7 @@ const LobbyHandler: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [joined, setJoined] = useState(false);
   const hasManuallyLeftRef = useRef(false);
+  const location = useLocation();
 
   // Details needed for lobby display
   const [users, setUsers] = useState<{
@@ -64,6 +65,9 @@ const LobbyHandler: React.FC = () => {
   const [joinRequests, setJoinRequests] = useState<{ [key: string]: boolean }>(
     null
   );
+  const [profilePictures, setProfilePictures] = useState<{
+    [key: string]: string;
+  }>(null);
 
   // Details needed for quiz display
   const [gameState, setGameState] = useState<GameState>(null);
@@ -125,7 +129,14 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateUsers", (data) => {
       setUsers(data.players);
-      if (data.host) setHost(data.host);
+      setHost(data.host);
+      const pictures: { [username: string]: string } = {};
+      Object.entries(data.players).forEach(
+        ([username, player]: [string, any]) => {
+          pictures[username] = player.profilePicture || "";
+        }
+      );
+      setProfilePictures(pictures);
     });
 
     socket.on("updateKick", (data) => {
@@ -155,6 +166,16 @@ const LobbyHandler: React.FC = () => {
 
   // Handle access check and connection to lobby
   const checkAccess = async () => {
+    if (
+      location.state?.players &&
+      location.state?.host &&
+      location.state?.profilePictures
+    ) {
+      setUsers(location.state.players);
+      setHost(location.state.host);
+      setProfilePictures(location.state.profilePictures);
+    }
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/connect/${lobbyId}`,
@@ -213,6 +234,7 @@ const LobbyHandler: React.FC = () => {
       joinRequests={joinRequests}
       lobbyChat={gameChat}
       gameType={gameType}
+      profilePictures={profilePictures}
       handleLeave={() => {
         hasManuallyLeftRef.current = true;
         dispatch(clearLobby());
@@ -230,6 +252,7 @@ const LobbyHandler: React.FC = () => {
       serverTimeNow={timeNow}
       timeLimit={gameSettings.timePerQuestion}
       totalQuestions={gameSettings.numQuestions}
+      profilePictures={profilePictures}
       handleLeave={() => {
         hasManuallyLeftRef.current = true;
         dispatch(clearLobby());

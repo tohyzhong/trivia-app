@@ -60,7 +60,19 @@ const JoinLobbyHandler: React.FC = () => {
     socket.on("updateUsers", (data) => {
       if (Object.keys(data.players).includes(loggedInUser)) {
         setStatus("approved");
-        navigate(`/play/lobby/${lobbyId}`);
+        const pictures: { [username: string]: string } = {};
+        Object.entries(data.players).forEach(
+          ([username, player]: [string, any]) => {
+            pictures[username] = player.profilePicture || "";
+          }
+        );
+        navigate(`/play/lobby/${lobbyId}`, {
+          state: {
+            players: data.players,
+            host: data.host,
+            profilePictures: pictures
+          }
+        });
       }
     });
 
