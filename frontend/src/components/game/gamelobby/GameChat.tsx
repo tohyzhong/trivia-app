@@ -32,12 +32,14 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
 
-  for (let i = 0; i <= 15; i++) {
-    playerStates[String(i)] = {
-      score: i,
-      answerHistory: { 1: "correct", 2: "missing", 3: "wrong" },
-      ready: true
-    };
+  if (playerStates) {
+    for (let i = 0; i <= 15; i++) {
+      playerStates[String(i)] = {
+        score: i,
+        answerHistory: { 1: "correct", 2: "missing", 3: "wrong" },
+        ready: true
+      };
+    }
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -186,10 +186,10 @@ const Classic: React.FC<ClassicQuestionProps> = ({
             onClick={handleNextQuestion}
             disabled={playerStates[loggedInUser]?.ready}
           >
-            {currentQuestion === totalQuestions
-              ? "Back to Lobby →"
-              : playerStates[loggedInUser]?.ready
-                ? "Waiting..."
+            {playerStates[loggedInUser]?.ready
+              ? "Waiting..."
+              : currentQuestion === totalQuestions
+                ? "Back to Lobby →"
                 : "Next Question →"}
           </button>
         )}
