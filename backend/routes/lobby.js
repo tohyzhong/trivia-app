@@ -1640,15 +1640,26 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         };
       }
 
-      const updatedGameState = {
-        ...gameState,
-        currentQuestion: gameState.currentQuestion + 1,
-        questionIds: gameState.questionIds,
-        question,
-        playerStates: resetPlayerStates,
-        answerRevealed: false,
-        lastUpdate: new Date()
-      };
+      const updatedGameState = lobby.gameType.includes("coop")
+        ? {
+            ...gameState,
+            currentQuestion: gameState.currentQuestion + 1,
+            questionIds: gameState.questionIds,
+            question,
+            playerStates: resetPlayerStates,
+            answerRevealed: false,
+            lastUpdate: new Date(),
+            team: { ...gameState.team, teamCorrectScore: 0, teamStreakBonus: 0 }
+          }
+        : {
+            ...gameState,
+            currentQuestion: gameState.currentQuestion + 1,
+            questionIds: gameState.questionIds,
+            question,
+            playerStates: resetPlayerStates,
+            answerRevealed: false,
+            lastUpdate: new Date()
+          };
 
       await Lobby.collection.updateOne(
         { lobbyId },
