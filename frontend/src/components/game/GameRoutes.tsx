@@ -33,7 +33,7 @@ const GameRoutes: React.FC = () => {
           console.error("Error fetching lobby:", error);
         });
     }
-  }, [dispatch, lobby, navigate]);
+  }, [dispatch, navigate]);
 
   return (
     <Routes>

@@ -19,11 +19,13 @@ interface GameUsersProps {
   usernames: { [key: string]: { [key: string]: boolean } };
   joinRequests: { [key: string]: boolean };
   gameType: string;
+  handleLeave: Function;
   host?: string;
 }
 
 const GameUsers: React.FC<GameUsersProps> = (props) => {
-  const { lobbyId, usernames, joinRequests, gameType, host } = props;
+  const { lobbyId, usernames, joinRequests, gameType, handleLeave, host } =
+    props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [users, setUsers] = useState<User[]>([]);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
@@ -119,7 +121,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
   };
 
   // Leaving Lobby
-  const handleLeave = async () => {
+  const handleLeaveLocal = async () => {
     playClickSound();
     try {
       const response = await fetch(
@@ -133,8 +135,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       );
       const data = await response.json();
       if (response.ok) {
-        dispatch(clearLobby());
-        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+        handleLeave();
       } else {
         throw new Error();
       }
@@ -256,7 +257,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           ))}
       </div>
       <div className="game-lobby-buttons">
-        <button className="leave-button" onClick={handleLeave}>
+        <button className="leave-button" onClick={handleLeaveLocal}>
           Leave
         </button>
         <button className="ready-button" onClick={handleReady}>

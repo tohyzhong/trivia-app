@@ -35,6 +35,7 @@ interface GameLobbyProps {
   lobbyChat: ChatMessage[];
   gameType: string;
   socket: any;
+  handleLeave: Function;
   host: string;
 }
 
@@ -57,6 +58,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     lobbyChat,
     gameType,
     socket,
+    handleLeave,
     host
   } = props;
 
@@ -103,6 +105,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
           usernames={lobbyUsers}
           joinRequests={joinRequests}
           gameType={gameType}
+          handleLeave={handleLeave}
           host={host}
         />
         <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />

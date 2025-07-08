@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,6 +51,7 @@ const LobbyHandler: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
   const [joined, setJoined] = useState(false);
+  const hasManuallyLeftRef = useRef(false);
 
   // Details needed for lobby display
   const [users, setUsers] = useState<{
@@ -125,7 +126,10 @@ const LobbyHandler: React.FC = () => {
     socket.on("updateUsers", (data) => {
       setUsers(data.players);
       if (data.host) setHost(data.host);
-      if (!Object.keys(data.players).includes(loggedInUser)) {
+    });
+
+    socket.on("updateKick", (data) => {
+      if (loggedInUser === data) {
         dispatch(clearLobby());
         navigate("/", { state: { errorMessage: "You have been kicked." } });
       }
@@ -137,13 +141,14 @@ const LobbyHandler: React.FC = () => {
 
     return () => {
       socket.emit("leaveLobby", lobbyId);
-      disconnect();
+      if (!hasManuallyLeftRef.current) disconnect();
       socket.off("lobbyJoined");
       socket.off("updateState");
       socket.off("updateStatus");
       socket.off("updateSettings");
       socket.off("updateChat");
       socket.off("updateUsers");
+      socket.off("updateKick");
       socket.off("updateJoinRequests");
     };
   }, []);
@@ -208,6 +213,11 @@ const LobbyHandler: React.FC = () => {
       joinRequests={joinRequests}
       lobbyChat={gameChat}
       gameType={gameType}
+      handleLeave={() => {
+        hasManuallyLeftRef.current = true;
+        dispatch(clearLobby());
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+      }}
       socket={socket}
       host={host}
     />
@@ -220,6 +230,11 @@ const LobbyHandler: React.FC = () => {
       serverTimeNow={timeNow}
       timeLimit={gameSettings.timePerQuestion}
       totalQuestions={gameSettings.numQuestions}
+      handleLeave={() => {
+        hasManuallyLeftRef.current = true;
+        dispatch(clearLobby());
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+      }}
       host={host}
     />
   );

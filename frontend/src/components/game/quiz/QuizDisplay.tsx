@@ -55,6 +55,7 @@ interface QuizDisplayProps {
   serverTimeNow: Date;
   timeLimit: number;
   totalQuestions: number;
+  handleLeave: Function;
   host: string;
 }
 
@@ -66,6 +67,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   serverTimeNow,
   timeLimit,
   totalQuestions,
+  handleLeave,
   host
 }) => {
   useInitSound("Quiz");
@@ -105,7 +107,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   // Leaving Lobby
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLeave = async () => {
+  const handleLeaveLocal = async () => {
     playClickSound();
     try {
       const response = await fetch(
@@ -119,8 +121,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
       );
 
       if (response.ok) {
-        dispatch(clearLobby());
-        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+        handleLeave();
       } else {
         throw new Error();
       }
@@ -171,7 +172,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
       <div className="game-lobby-container">
         <div className="question-display-container">
           <div className="question-display-lobby-details">
-            <button className="leave-button" onClick={handleLeave}>
+            <button className="leave-button" onClick={handleLeaveLocal}>
               Leave
             </button>
             <p>Lobby ID: {lobbyId}</p>

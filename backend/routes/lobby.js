@@ -439,6 +439,7 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
     }
 
     const io = getSocketIO();
+    io.to(lobbyId).emit("updateKick", usernameToKick);
     io.to(lobbyId).emit("updateUsers", { players: updatedLobby.players });
     io.to(lobbyId).emit("updateJoinRequests", updatedLobby.joinRequests);
     io.to(lobbyId).emit("updateChat", {
@@ -736,11 +737,9 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
           .json({ message: "At least 50% must be ready to start." });
 
       if (!lobby.gameType.includes("solo") && players.length <= 1)
-        return res
-          .status(403)
-          .json({
-            message: "You can't start a multiplayer game with only 1 player."
-          });
+        return res.status(403).json({
+          message: "You can't start a multiplayer game with only 1 player."
+        });
 
       // Configure game state
       const { questionIds, questionCategories, question } =
