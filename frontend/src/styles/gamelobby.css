@@ -161,6 +161,7 @@
   align-items: center;
   gap: 1rem;
   margin-top: 20px;
+  margin-bottom: 20px;
   font-size: 16px;
 }
 
@@ -183,8 +184,8 @@
 .stats-chat-container .player-stats-container .player-name {
   color: white;
   font-weight: bold;
-  min-width: 140px;
-  max-width: 150px;
+  min-width: 160px;
+  max-width: 160px;
 }
 
 .stats-chat-container .player-stats-container .player-score {
