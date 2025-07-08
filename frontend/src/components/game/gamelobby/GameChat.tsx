@@ -32,6 +32,14 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
 
+  for (let i = 0; i <= 15; i++) {
+    playerStates[String(i)] = {
+      score: i,
+      answerHistory: { 1: "correct", 2: "missing", 3: "wrong" },
+      ready: true
+    };
+  }
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChatInput(event.target.value);
   };
@@ -83,6 +91,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     <div className="stats-chat-container">
       {playerStates && (
         <div className="player-stats-container">
+          <h3 className="stats-header">Score Summary</h3>
           <AnimatePresence mode="sync">
             {Object.entries(playerStates)
               .sort(([, a], [, b]) => (b.score ?? 0) - (a.score ?? 0))
