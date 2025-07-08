@@ -452,63 +452,6 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
-router.post("/join/:lobbyId", authenticate, async (req, res) => {
-  try {
-    const { lobbyId } = req.params;
-    const { username } = req.user;
-
-    const newChatMessage = {
-      sender: "System",
-      message: `${username} has joined.`,
-      timestamp: new Date()
-    };
-
-    const updateResult = await Lobby.collection.findOneAndUpdate(
-      { lobbyId, [`players.${username}`]: { $exists: false } },
-      {
-        $push: {
-          chatMessages: newChatMessage
-        },
-        $set: {
-          [`gameState.playerStates.${username}`]: {
-            score: 0,
-            correctScore: 0,
-            streakBonus: 0,
-            selectedOption: 0,
-            submitted: false,
-            answerHistory: {}
-          },
-          [`players.${username}`]: {
-            ready: false
-          },
-          lastActivity: new Date()
-        }
-      },
-      { returnDocument: "after" }
-    );
-
-    if (!updateResult) {
-      return res
-        .status(404)
-        .json({ message: "Lobby not found or player already in lobby." });
-    }
-
-    const socketIO = getSocketIO();
-    socketIO.to(lobbyId).emit("updateUsers", {
-      players: updateResult.players,
-      host: updateResult.host
-    });
-    socketIO
-      .to(lobbyId)
-      .emit("updateChat", { chatMessages: updateResult.chatMessages });
-
-    res.status(200).json({ message: "Joined lobby" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error joining lobby" });
-  }
-});
-
 router.post("/leave/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
@@ -791,6 +734,13 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
         return res
           .status(403)
           .json({ message: "At least 50% must be ready to start." });
+
+      if (!lobby.gameType.includes("solo") && players.length <= 1)
+        return res
+          .status(403)
+          .json({
+            message: "You can't start a multiplayer game with only 1 player."
+          });
 
       // Configure game state
       const { questionIds, questionCategories, question } =
@@ -1372,8 +1322,7 @@ router.get("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           streakBonus: 0,
           selectedOption: 0,
           submitted: false,
-          answerHistory: {},
-          ready: false
+          answerHistory: {}
         };
       }
 

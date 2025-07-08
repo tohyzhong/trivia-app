@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { playClickSound } from "../../../utils/soundManager";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatMessage {
   sender: string;
@@ -74,38 +75,58 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     }
   }, [chatMessages]);
 
+  const sortedPlayers = Object.entries(playerStates || {}).sort(
+    ([, a], [, b]) => (b.score ?? 0) - (a.score ?? 0)
+  );
+
   return (
     <div className="stats-chat-container">
       {playerStates && (
         <div className="player-stats-container">
-          {Object.entries(playerStates).map(([username, state]) => {
-            const last5 = Object.keys(state?.answerHistory || {})
-              .sort((a, b) => parseInt(b) - parseInt(a))
-              .slice(0, 5)
-              .reverse()
-              .map((qNum) => {
-                const status = state.answerHistory[qNum];
-                let colorClass = "dot-grey";
-                if (status === "correct") colorClass = "dot-green";
-                else if (status === "wrong") colorClass = "dot-red";
+          <AnimatePresence mode="sync">
+            {Object.entries(playerStates)
+              .sort(([, a], [, b]) => (b.score ?? 0) - (a.score ?? 0))
+              .map(([username, state]) => {
+                const last5 = Object.keys(state?.answerHistory || {})
+                  .sort((a, b) => parseInt(b) - parseInt(a))
+                  .slice(0, 5)
+                  .reverse()
+                  .map((qNum) => {
+                    const status = state.answerHistory[qNum];
+                    let colorClass = "dot-grey";
+                    if (status === "correct") colorClass = "dot-green";
+                    else if (status === "wrong") colorClass = "dot-red";
+                    return (
+                      <div key={qNum} className={`answer-dot ${colorClass}`} />
+                    );
+                  });
 
                 return (
-                  <div key={qNum} className={`answer-dot ${colorClass}`} />
+                  <motion.div
+                    layout
+                    key={username}
+                    className="player-stat-row"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span
+                      className="player-name"
+                      style={
+                        username === loggedInUser ? { color: "lightblue" } : {}
+                      }
+                    >
+                      {username}
+                    </span>
+                    {!gameType?.includes("coop") && (
+                      <span className="player-score">{state.score ?? 0}</span>
+                    )}
+                    <div className="answer-dot-row">{last5}</div>
+                  </motion.div>
                 );
-              });
-
-            return (
-              <div key={username} className="player-stat-row">
-                <span className="player-name">{username}</span>
-                {gameType.includes("coop") ? (
-                  <></>
-                ) : (
-                  <span className="player-score">{state.score ?? 0}</span>
-                )}
-                <div className="answer-dot-row">{last5}</div>
-              </div>
-            );
-          })}
+              })}
+          </AnimatePresence>
         </div>
       )}
 
