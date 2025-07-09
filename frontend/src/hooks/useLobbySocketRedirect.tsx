@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useSocket } from "../context/SocketContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function useLobbySocketRedirect(username: string) {
   const socket = useSocket();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!socket) return;
@@ -16,9 +17,11 @@ export function useLobbySocketRedirect(username: string) {
 
     const handleKick = (lobbyId: string) => {
       console.log("Kicked from lobby", lobbyId);
-      navigate(`/`, {
-        state: { errorMessage: "You were kicked from the lobby." }
-      });
+      if (!location.pathname.startsWith("/play/")) {
+        navigate(`/`, {
+          state: { errorMessage: "You were kicked from the lobby." }
+        });
+      }
     };
 
     socket.on("approveUser", handleApprove);

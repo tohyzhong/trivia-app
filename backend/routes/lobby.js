@@ -370,6 +370,18 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
     const { usernameToApprove } = req.body;
     const hostUsername = req.user.username;
 
+    // Check if the user is already in another lobby
+    const existingLobby = await Lobby.findOne({
+      lobbyId: { $ne: lobbyId },
+      [`players.${usernameToApprove}`]: { $exists: true }
+    });
+
+    if (existingLobby) {
+      return res.status(400).json({
+        message: `${usernameToApprove} is already in another lobby.`
+      });
+    }
+
     const chatMsg = {
       sender: "System",
       message: `${hostUsername} has approved the join request of ${usernameToApprove}.`,

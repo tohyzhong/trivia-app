@@ -257,17 +257,32 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                 <button
                   className="approve-join"
                   onClick={async () => {
-                    await fetch(
-                      `${import.meta.env.VITE_API_URL}/api/lobby/approve/${lobbyId}`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        credentials: "include",
-                        body: JSON.stringify({
-                          usernameToApprove: user.username
-                        })
+                    try {
+                      const res = await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/lobby/approve/${lobbyId}`,
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({
+                            usernameToApprove: user.username
+                          })
+                        }
+                      );
+
+                      const data = await res.json();
+                      if (!res.ok) {
+                        setErrorPopupMessage(
+                          `Error Approving User: ${data.message ?? "Unknown"}`
+                        );
+                        setSuccessMessage(false);
                       }
-                    );
+                    } catch (err) {
+                      setErrorPopupMessage(
+                        `Error Approving User: ${String(err) ?? "Unknown"}`
+                      );
+                      setSuccessMessage(false);
+                    }
                   }}
                 >
                   Approve
