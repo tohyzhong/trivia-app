@@ -1365,10 +1365,18 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
-function initLeaderboardStats(format, mode) {
+function initLeaderboardStats() {
   return {
-    [format]: {
-      [mode]: {},
+    classic: {
+      solo: {},
+      coop: {},
+      versus: {},
+      overall: {}
+    },
+    knowledge: {
+      solo: {},
+      coop: {},
+      versus: {},
       overall: {}
     }
   };
@@ -1550,9 +1558,9 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       const bulkOps = playerUpdates.map((profile) => {
         const username = profile.username;
         const answerHistory = playerStates[username]?.answerHistory || {};
+
         const leaderboardStats =
-          profile.leaderboardStats ||
-          initLeaderboardStats(gameFormat, gameMode);
+          profile.leaderboardStats || initLeaderboardStats();
         const matchCategoryStats = {};
         const correctCount = Object.values(answerHistory).filter(
           (v) => v === "correct"
@@ -1561,12 +1569,14 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         let color = "solo";
 
         const formatStats = leaderboardStats[gameFormat];
+        console.log(formatStats);
         const modeStats = formatStats[gameMode];
         const overallStats = formatStats.overall;
 
         for (let i = 0; i < numQuestions; i++) {
           const category = categoriesInMatch[i];
           const result = answerHistory[i + 1];
+          console.log(category);
 
           matchCategoryStats[category] =
             matchCategoryStats[category] || initStats();
