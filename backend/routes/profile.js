@@ -1,8 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
+import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
 import authenticate from "./authMiddleware.js";
 import User from "../models/User.js";
+import sendEmail from "../utils/email.js";
 
 const router = express.Router();
 
@@ -334,6 +336,121 @@ router.get("/matchhistory/:username", authenticate, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/report", authenticate, async (req, res) => {
+  try {
+    const { reported, source, lobbyId } = req.body;
+    const { username, email } = req.user;
+
+    if (reported === username) {
+      return res.status(400).json({ message: "You cannot report yourself." });
+    }
+
+    const updatedUser = await Profile.findOneAndUpdate(
+      { username: reported, reports: { $ne: username } },
+      { $addToSet: { reports: username } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found or you have already reported this user."
+      });
+    }
+
+    // Filter out messages sent by reported user
+    let chatContent = "";
+    if (source !== "profile" && lobbyId) {
+      const lobby = await Lobby.findOne({ lobbyId });
+      if (lobby?.chatMessages) {
+        const messages =
+          lobby.chatMessages
+            .filter((m) => m.sender === reported)
+            .map(
+              (m) =>
+                `<div><b>[${new Date(m.timestamp).toLocaleString(undefined, {
+                  weekday: "short",
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true
+                })}]</b> ${m.message}</div>`
+            )
+            .join("") || "<div>(No messages found)</div>";
+        chatContent = messages;
+      }
+    }
+
+    const htmlContentAdmin = `
+      <div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>New Report Submitted</h2>
+        <p><strong>Reported User:</strong> ${reported}</p>
+        <p><strong>Reporter:</strong> ${username}</p>
+        <p><strong>Source:</strong> ${String(source).charAt(0).toUpperCase() + String(source).slice(1)}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+        <p><strong>Total Reports:</strong> ${updatedUser.reports.length}</p>
+        <h3>Chat History:</h3>
+        <div style="background-color: #f2f2f2; padding: 12px; border-radius: 6px;">
+          ${chatContent || "<div>(No messages found)</div>"}
+        </div>
+      </div>
+    `;
+
+    const htmlContentUser = `
+      <div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>New Report Submitted</h2>
+        <p><strong>Reported User:</strong> ${reported}</p>
+        <p><strong>Reporter:</strong> ${username}</p>
+        <p><strong>Source:</strong> ${String(source).charAt(0).toUpperCase() + String(source).slice(1)}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+        <h3>Chat History:</h3>
+        <div style="background-color: #f2f2f2; padding: 12px; border-radius: 6px;">
+          ${chatContent || "<div>(No messages found)</div>"}
+        </div>
+        <p style="margin-top: 24px; font-style: italic; color: #4caf50;">
+          Thank you for keeping our community safe!
+        </p>
+      </div>
+    `;
+
+    await sendEmail(
+      "therizzquiz@gmail.com",
+      `User Report: ${reported}`,
+      "",
+      htmlContentAdmin
+    );
+
+    await sendEmail(
+      email,
+      `User Report Confirmation: ${reported}`,
+      "",
+      htmlContentUser
+    );
+
+    return res.status(200).json({ message: "Report submitted successfully." });
+  } catch (err) {
+    console.error("Error handling report:", err);
+    return res.status(500).json({ message: "Server error." });
   }
 });
 

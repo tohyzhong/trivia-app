@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
-import { clearLobby } from "../../../redux/lobbySlice";
 
 import { playClickSound } from "../../../utils/soundManager";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
-import { getNameOfJSDocTypedef } from "typescript";
 
 interface User {
   username: string;
@@ -35,7 +33,6 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   // Render all users and avatars
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const renderUsers = async () => {
     try {
       const response = await fetch(
@@ -150,6 +147,37 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
     }
   };
 
+  const handleReport = async (usernameToReport: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/profile/report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            reported: usernameToReport,
+            source: "lobby",
+            lobbyId
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        setSuccessMessage(true);
+        setErrorPopupMessage("User reported successfully.");
+      } else {
+        setSuccessMessage(false);
+        setErrorPopupMessage("Failed to report user: " + data.message);
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      setSuccessMessage(false);
+      setErrorPopupMessage("Error reporting user:" + String(err));
+    }
+  };
+
   return (
     <div className="game-lobby-users">
       {errorPopupMessage !== "" && (
@@ -199,7 +227,18 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
               />
               <h3 className="username-lobby">
                 {user.username === host ? host + " (Host)" : user.username}
+                {user.username !== loggedInUser && (
+                  <span
+                    className="report-button"
+                    onClick={() => handleReport(user.username)}
+                    title="Report User"
+                    style={{ cursor: "pointer" }}
+                  >
+                    ❗
+                  </span>
+                )}
               </h3>
+
               {!alreadyIn.includes(user.username) ? (
                 <></>
               ) : (

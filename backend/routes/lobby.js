@@ -2,7 +2,6 @@ import express from "express";
 import * as crypto from "node:crypto";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
-import ClassicQuestion from "../models/ClassicQuestion.js";
 import { getSocketIO } from "../socket.js";
 import authenticate from "./authMiddleware.js";
 import {

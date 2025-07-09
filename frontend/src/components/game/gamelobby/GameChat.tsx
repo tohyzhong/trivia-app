@@ -31,6 +31,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   const [chatInput, setChatInput] = useState<string>("");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   if (playerStates) {
     for (let i = 0; i <= 15; i++) {
@@ -63,12 +64,14 @@ const GameChat: React.FC<GameChatProps> = (props) => {
       } else {
         const data = await response.json();
         console.error("Error sending chat message: ", data.message);
+        setIsSuccess(false);
         setErrorPopupMessage(
           `Error sending chat message: ${String(data.message)}`
         );
       }
     } catch (error) {
       console.error("Error sending chat message:", error);
+      setIsSuccess(false);
       setErrorPopupMessage(`Error sending chat message: ${String(error)}`);
     }
   };
@@ -88,6 +91,37 @@ const GameChat: React.FC<GameChatProps> = (props) => {
         chatContainerRef.current.scrollHeight;
     }
   }, [chatMessages]);
+
+  const handleReport = async (usernameToReport: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/profile/report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            reported: usernameToReport,
+            source: "lobby",
+            lobbyId
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        setIsSuccess(true);
+        setErrorPopupMessage("User reported successfully.");
+      } else {
+        setIsSuccess(false);
+        setErrorPopupMessage("Failed to report user: " + data.message);
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      setIsSuccess(false);
+      setErrorPopupMessage("Error reporting user:" + String(err));
+    }
+  };
 
   return (
     <div className="stats-chat-container">
@@ -147,6 +181,16 @@ const GameChat: React.FC<GameChatProps> = (props) => {
                         }
                       >
                         {username}
+                        {username !== loggedInUser && (
+                          <span
+                            className="report-button"
+                            onClick={() => handleReport(username)}
+                            title="Report User"
+                            style={{ cursor: "pointer" }}
+                          >
+                            ❗
+                          </span>
+                        )}
                       </span>
                     </div>
                     {!gameType?.includes("coop") && (
@@ -168,6 +212,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
           <ErrorPopup
             message={errorPopupMessage}
             setMessage={setErrorPopupMessage}
+            success={isSuccess}
           />
         )}
         <div className="game-lobby-chat-messages" ref={chatContainerRef}>

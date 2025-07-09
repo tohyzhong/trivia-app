@@ -165,6 +165,37 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     navigate(`/profile/${username}/matchhistory`);
   };
 
+  const handleReport = async (usernameToReport: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/profile/report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            reported: usernameToReport,
+            source: "profile",
+            lobbyId: null
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        setIsSuccess(true);
+        setMessage("User reported successfully.");
+      } else {
+        setIsSuccess(false);
+        setMessage("Failed to report user: " + data.message);
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      setIsSuccess(false);
+      setMessage("Error reporting user:" + String(err));
+    }
+  };
+
   if (
     !user ||
     user.message === "Profile not found" ||
@@ -200,6 +231,15 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                 ? "🛡️ Admin"
                 : ""}
           </p>
+
+          {user.username !== usernameFromRedux && (
+            <button
+              className="report-button"
+              onClick={() => handleReport(user.username)}
+            >
+              Report User
+            </button>
+          )}
         </div>
 
         <div className="friend-buttons-container">
