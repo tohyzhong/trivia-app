@@ -10,6 +10,8 @@ interface GameSetting {
   timePerQuestion: number;
   difficulty: number;
   categories: string[];
+  name: string;
+  publicVisible: boolean;
 }
 
 interface GameSettingsProps {
@@ -43,7 +45,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   }, [gameSettings]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
+    const { name, value, checked, type } = e.target;
 
     if (name === "categories") {
       if (value === "Community") {
@@ -56,6 +58,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           ? [...prevSettings.categories, value]
           : prevSettings.categories.filter((category) => category !== value)
       }));
+    } else if (type === "checkbox") {
+      setSettings((prev) => ({ ...prev, [name]: checked }));
     } else {
       setSettings((prevSettings) => ({
         ...prevSettings,
@@ -88,6 +92,11 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       return;
     } else if (settings.difficulty < 1 || settings.difficulty > 5) {
       setSuccessMessage("Difficulty must be between 1 and 5 (inclusive).");
+      return;
+    } else if (settings.name.length < 5 || settings.name.length > 30) {
+      setSuccessMessage(
+        "Lobby name must be between 5 and 30 characters (inclusive)."
+      );
       return;
     }
 
@@ -148,6 +157,33 @@ const GameSettings: React.FC<GameSettingsProps> = ({
         <h1>Game Settings</h1>
       </div>
       <div className="game-lobby-settings-content">
+        <div className="game-lobby-settings-item">
+          <label>Lobby Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={settings.name || ""}
+            onChange={handleChange}
+            disabled={host !== localUsername}
+            minLength={5}
+            maxLength={30}
+          />
+        </div>
+        <div className="game-lobby-settings-item">
+          <label>Lobby Visibility:</label>
+          <div className="game-lobby-public-checkbox">
+            <label>
+              <input
+                type="checkbox"
+                name="publicVisible"
+                checked={settings.publicVisible || false}
+                onChange={handleChange}
+                disabled={host !== localUsername}
+              />
+              Public
+            </label>
+          </div>
+        </div>
         <div className="game-lobby-settings-item">
           <label>Number of Questions:</label>
           <input

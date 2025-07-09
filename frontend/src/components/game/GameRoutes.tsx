@@ -4,6 +4,7 @@ import GameMainpage from "./GameMainpage";
 import LobbyHandler from "./LobbyHandler";
 import JoinLobbyHandler from "./JoinLobbyHandler";
 import LobbyNotFound from "./gamelobby/LobbyNotFound";
+import LobbyBrowser from "./LobbyBrowser";
 import { setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
@@ -40,6 +41,7 @@ const GameRoutes: React.FC = () => {
     <Routes>
       {lobby.lobbyId && <Route path="/:lobbyId" element={<LobbyHandler />} />}
       <Route path="/join/:lobbyId" element={<JoinLobbyHandler />} />
+      <Route path="/lobbies" element={<LobbyBrowser />} />
       <Route path="/:lobbyId" element={<LobbyNotFound />} />
       <Route path="/*" element={<GameMainpage />} />
     </Routes>

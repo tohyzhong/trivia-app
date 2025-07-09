@@ -1,6 +1,9 @@
 import { Server } from "socket.io";
+import cookie from "cookie";
+import jwt from "jsonwebtoken";
 
 let io;
+const userSocketMap = new Map();
 
 export function initSocket(server) {
   io = new Server(server, {
@@ -11,11 +14,34 @@ export function initSocket(server) {
     }
   });
 
+  io.use((socket, next) => {
+    const cookies = socket.handshake.headers.cookie;
+    const parsed = cookie.parse(cookies || "");
+
+    const token = parsed["token"];
+    if (!token) return next(new Error("Authentication error"));
+
+    try {
+      const user = jwt.verify(token, process.env.JWT_SECRET);
+      socket.user = user;
+      next();
+    } catch (err) {
+      next(new Error("Invalid token"));
+    }
+  });
+
   io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
+    const username = socket.user?.username;
+    if (username) {
+      userSocketMap.set(username, socket.id);
+      console.log(`User ${username} connected with socket ${socket.id}`);
+    }
 
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+      if (username) {
+        userSocketMap.delete(username);
+      }
+      console.log(`User ${username} (${socket.id}) disconnected`);
     });
 
     socket.on("joinLobby", (lobbyId) => {
@@ -38,4 +64,8 @@ export function getSocketIO() {
     throw new Error("Socket.IO not initialized. Call initSocket first.");
   }
   return io;
+}
+
+export function getUserSocketMap() {
+  return userSocketMap;
 }

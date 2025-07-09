@@ -1,0 +1,314 @@
+.lobby-browser-container {
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding-top: 120px;
+  width: 70%;
+  align-self: center;
+  margin: 0 auto;
+
+  min-height: 100vh;
+}
+
+.lobby-browser-container .ag-center-cols-container {
+  height: min-content;
+  min-height: 0px;
+  height: auto;
+}
+
+.lobby-browser-container .ag-filter-body-wrapper,
+.lobby-browser-container .ag-simple-filter-body-wrapper,
+.lobby-browser-container .ag-filter,
+.lobby-browser-container .ag-filter-menu {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-floating-filter-full-body {
+  overflow: visible !important;
+}
+
+.lobby-browser-container .ag-theme-alpine,
+.lobby-browser-container .ag-root-wrapper {
+  overflow: visible !important;
+}
+
+.lobby-browser-container .ag-header-cell-label {
+  justify-content: center;
+}
+
+.lobby-browser-container .ag-center-cols-container,
+.lobby-browser-container .ag-viewport,
+.lobby-browser-container .ag-center-cols-viewport {
+  margin-bottom: 0px;
+  min-height: 0px !important;
+}
+
+.lobby-browser-container .ag-theme-alpine {
+  height: auto;
+  width: 100%;
+  min-height: 0;
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-header {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid white;
+  font-size: 15px;
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-header-cell {
+  width: 100%;
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  text-align: center !important;
+  align-content: center;
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-row {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 15px;
+  text-shadow: 1px 1px #000000;
+  align-items: center;
+  display: flex;
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-cell {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid white;
+  background-color: rgba(0, 0, 0, 0.55);
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-root-wrapper {
+  background-color: transparent;
+  border-radius: 3px;
+  overflow: hidden;
+  color: white;
+}
+
+.lobby-browser-container .ag-cell-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pagination Styling */
+.lobby-browser-container .ag-paging-panel {
+  display: flex;
+  gap: 10px;
+  margin-top: 0px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.lobby-browser-container .ag-theme-alpine .ag-paging-panel .ag-paging-button {
+  padding: 8px 12px;
+  border: none;
+  background: rgb(255, 255, 255, 1);
+  color: rgb(0, 0, 0);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.lobby-browser-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.lobby-browser-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button:disabled,
+.ag-disabled {
+  opacity: 0.5 !important ;
+  cursor: not-allowed !important;
+}
+
+.lobby-browser-container
+  .ag-theme-alpine
+  .ag-paging-panel
+  .ag-paging-button.ag-active {
+  background: white;
+  color: black;
+  font-weight: bold;
+}
+
+.ag-picker-field-wrapper {
+  color: black;
+}
+
+.table-gap {
+  margin: 50px 0;
+}
+
+/* Leaderboard Header */
+.lobby-browser-container-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  min-height: 100vh;
+  padding-top: 80px;
+  background-color: #3b2f2f;
+}
+
+.lobby-browser-container .ag-cell {
+  font-family: "Inter", sans-serif;
+}
+
+.hover-text-2 {
+  opacity: 0;
+  position: fixed;
+  bottom: 7px;
+  right: 70px !important;
+  background-color: black;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid white;
+  transition: opacity 0.3s;
+}
+
+.sound-settings-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 40px;
+  color: #4caf50;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.sound-settings-icon:hover {
+  color: #45a049;
+}
+
+.sound-settings-icon:hover ~ .sound-settings-icon-text {
+  opacity: 1;
+}
+
+.sound-settings-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.close-sound-popup-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+.close-sound-popup-btn:hover {
+  background-color: #e41c1c;
+}
+
+.sound-settings-popup .save-settings {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.sound-settings-popup .save-settings:hover {
+  background-color: #45a049;
+}
+
+.sound-settings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.sound-settings h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.volume-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 5px;
+}
+
+.volumebar-muteicon {
+  display: flex;
+  align-items: center;
+  translate: -20px;
+  margin-left: 30px;
+  margin-right: 10px;
+}
+
+.volume-control label {
+  font-weight: bold;
+  color: #333;
+}
+
+.volume-control input[type="range"] {
+  width: 200px;
+}
+
+.volume-control span {
+  font-size: 14px;
+  color: #666;
+}
+
+.volume-control .unmuted {
+  padding: 5px 10px;
+  font-size: 20px;
+  background-color: transparent;
+  color: #4caf50;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  align-items: center;
+}
+
+.volume-control .unmuted:hover {
+  color: #45a049;
+}
+
+.volume-control .muted {
+  padding: 5px 10px;
+  font-size: 20px;
+  background-color: transparent;
+  color: #f44336;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  align-items: center;
+}
+
+.volume-control .muted:hover {
+  color: #e41c1c;
+}

@@ -205,3 +205,20 @@ h2 {
 .actions-button-container .decline-button:hover {
   background-color: rgb(205, 0, 0);
 }
+
+.friendslist-container .ag-filter-body-wrapper,
+.friendslist-container .ag-simple-filter-body-wrapper,
+.friendslist-container .ag-filter,
+.friendslist-container .ag-filter-menu {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.friendslist-container .ag-theme-alpine .ag-floating-filter-full-body {
+  overflow: visible !important;
+}
+
+.friendslist-container .ag-theme-alpine,
+.friendslist-container .ag-root-wrapper {
+  overflow: visible !important;
+}

@@ -170,6 +170,8 @@ const FriendsList: React.FC = () => {
     {
       headerName: "Username",
       field: "username",
+      sortable: true,
+      filter: true,
       flex: 3,
       cellRenderer: (params: any) => {
         return (

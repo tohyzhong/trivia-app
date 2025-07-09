@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { useLobbySocketRedirect } from "../../hooks/useLobbySocketRedirect";
 
 const JoinLobbyHandler: React.FC = () => {
   const [status, setStatus] = useState<
@@ -16,6 +17,8 @@ const JoinLobbyHandler: React.FC = () => {
   const navigate = useNavigate();
   const { lobbyId } = useParams();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
+
+  useLobbySocketRedirect(loggedInUser);
 
   useEffect(() => {
     if (!lobbyId) return;
@@ -57,35 +60,11 @@ const JoinLobbyHandler: React.FC = () => {
 
     socket.emit("joinLobby", lobbyId);
 
-    socket.on("updateUsers", (data) => {
-      if (Object.keys(data.players).includes(loggedInUser)) {
-        setStatus("approved");
-        const pictures: { [username: string]: string } = {};
-        Object.entries(data.players).forEach(
-          ([username, player]: [string, any]) => {
-            pictures[username] = player.profilePicture || "";
-          }
-        );
-        navigate(`/play/lobby/${lobbyId}`, {
-          state: {
-            players: data.players,
-            host: data.host,
-            profilePictures: pictures
-          }
-        });
-      }
-    });
-
-    socket.on("updateJoinRequests", (data) => {
-      if (status !== "approved" && !Object.keys(data).includes(loggedInUser)) {
-        setStatus("rejected");
-      }
-    });
+    socket.on("kickUser", setStatus("rejected"));
 
     return () => {
       socket.emit("leaveLobby", lobbyId);
-      socket.off("updateUsers");
-      socket.off("updateJoinRequests");
+      socket.off("kickUser");
     };
   }, [lobbyId]);
 

@@ -49,7 +49,12 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
   const handleSubmodeClick = async (lobbyMode: string) => {
-    if (lobbyMode === "Coming Soon...") return; // No effect for clicking on coming soon tab
+    if (lobbyMode === "Coming Soon...")
+      return; // No effect for clicking on coming soon tab
+    else if (lobbyMode === "Browse") {
+      navigate("/play/lobbies");
+      return;
+    }
 
     // Create a lobby
     try {

@@ -8,6 +8,7 @@ import NavigationBar from "./components/navigationbar/NavigationBar";
 
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
+import { useLobbySocketRedirect } from "./hooks/useLobbySocketRedirect";
 
 const HomePage = lazy(() => import("./components/homepage/HomePage"));
 const GameRoutes = lazy(() => import("./components/game/GameRoutes"));
@@ -84,6 +85,9 @@ function App() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const loggedInUser = useSelector((state: RootState) => state.user.username);
+  useLobbySocketRedirect(loggedInUser);
 
   const Components = [
     { component: HomePage, path: "/" },

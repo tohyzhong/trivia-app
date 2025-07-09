@@ -107,6 +107,13 @@ export const GameMainpage: React.FC = () => {
       image: MultiplayerModeLogo
     },
     {
+      name: "Browse Lobbies",
+      gameType: "Browse",
+      description:
+        "Look for public multiplayer lobbies to join and make new friends!",
+      image: MultiplayerModeLogo
+    },
+    {
       name: "Coming Soon...",
       gameType: "Coming Soon...",
       description: "",

@@ -22,7 +22,9 @@ const lobbySchema = new mongoose.Schema(
         numQuestions: 10,
         timePerQuestion: 30,
         difficulty: 3, // 1-5 scale
-        categories: []
+        categories: [],
+        publicVisible: true,
+        name: "Lobby"
       },
       required: true
     },

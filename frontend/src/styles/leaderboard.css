@@ -118,9 +118,10 @@
 .leaderboard-container
   .ag-theme-alpine
   .ag-paging-panel
-  .ag-paging-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  .ag-paging-button:disabled,
+.ag-disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
 .leaderboard-container
@@ -482,4 +483,21 @@
 
 .volume-control .muted:hover {
   color: #e41c1c;
+}
+
+.leaderboard-container .ag-filter-body-wrapper,
+.leaderboard-container .ag-simple-filter-body-wrapper,
+.leaderboard-container .ag-filter,
+.leaderboard-container .ag-filter-menu {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-floating-filter-full-body {
+  overflow: visible !important;
+}
+
+.leaderboard-container .ag-theme-alpine,
+.leaderboard-container .ag-root-wrapper {
+  overflow: visible !important;
 }

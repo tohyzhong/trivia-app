@@ -2,7 +2,7 @@ import express from "express";
 import * as crypto from "node:crypto";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
-import { getSocketIO } from "../socket.js";
+import { getSocketIO, getUserSocketMap } from "../socket.js";
 import authenticate from "./authMiddleware.js";
 import {
   generateUniqueQuestionIds,
@@ -101,7 +101,9 @@ router.post("/create", authenticate, async (req, res) => {
         numQuestions: 10,
         timePerQuestion: 30,
         difficulty: 3, // 1-5 scale
-        categories: [defaultCategory]
+        categories: [defaultCategory],
+        publicVisible: true,
+        name: `${username}'s Lobby`
       },
       gameState: {
         currentQuestion: 0,
@@ -302,6 +304,21 @@ router.post("/disconnect/:lobbyId", authenticate, async (req, res) => {
   }
 });
 
+router.get("/public", authenticate, async (req, res) => {
+  try {
+    const publicLobbies = await Lobby.find({
+      status: "waiting",
+      "gameSettings.publicVisible": true,
+      gameType: { $not: /solo/i }
+    }).select("lobbyId host players gameType gameSettings");
+
+    res.status(200).json({ lobbies: publicLobbies });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching lobbies." });
+  }
+});
+
 router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
@@ -400,6 +417,11 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
     }
 
     const io = getSocketIO();
+    const userSocketMap = getUserSocketMap();
+    const targetSocketId = userSocketMap.get(usernameToApprove);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("approveUser", lobbyId);
+    }
     io.to(lobbyId).emit("updateUsers", {
       players: updatedLobby.players,
       host: updatedLobby.host
@@ -464,6 +486,11 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
     }
 
     const io = getSocketIO();
+    const userSocketMap = getUserSocketMap();
+    const targetSocketId = userSocketMap.get(usernameToKick);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("kickUser", lobbyId);
+    }
     io.to(lobbyId).emit("updateKick", usernameToKick);
     io.to(lobbyId).emit("updateUsers", {
       players: updatedLobby.players,
@@ -670,8 +697,14 @@ router.post("/updateSettings/:lobbyId", authenticate, async (req, res) => {
     const { gameSettings } = req.body;
     const { username } = req.user;
 
-    const { numQuestions, timePerQuestion, difficulty, categories } =
+    const { numQuestions, timePerQuestion, difficulty, categories, name } =
       gameSettings;
+
+    if (name.length > 30 || name.length < 5) {
+      return res.status(400).json({
+        message: "Lobby name must be between 5 and 30 characters (inclusive)."
+      });
+    }
 
     if (numQuestions < 3 || numQuestions > 20) {
       return res.status(400).json({

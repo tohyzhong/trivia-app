@@ -175,6 +175,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       headerName: "Username",
       field: "username",
       sortable: false,
+      filter: true,
       flex: 1.5,
       cellRenderer: (params: any) => {
         return (
