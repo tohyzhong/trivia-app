@@ -250,7 +250,6 @@ const GameSettings: React.FC<GameSettingsProps> = ({
               {getGameDescription(gameType)
                 .split("\n")
                 .map((line, index) => {
-                  // Check if the line contains "Stats Earnable" or "Coins Earnable" to bold them
                   if (line.includes("Mode")) {
                     return <h2>{line}</h2>;
                   }
@@ -266,7 +265,6 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                     );
                   }
 
-                  // Add tabbed indentation for the subitems (like Profile & Leaderboard)
                   if (line.startsWith("  ")) {
                     return (
                       <p key={index} className="tabbed-text">
