@@ -71,7 +71,12 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
 
       if (response.ok) {
         dispatch(
-          setLobby({ lobbyId: data.lobbyId, categories: data.categories })
+          setLobby({
+            lobbyId: data.lobbyId,
+            categories: data.categories,
+            currency: data.currency,
+            powerups: data.powerups
+          })
         );
         navigate(`/play/${data.lobbyId}`);
       } else {

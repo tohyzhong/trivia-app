@@ -5,9 +5,10 @@ import LobbyHandler from "./LobbyHandler";
 import JoinLobbyHandler from "./JoinLobbyHandler";
 import LobbyNotFound from "./gamelobby/LobbyNotFound";
 import LobbyBrowser from "./LobbyBrowser";
-import { setLobby } from "../../redux/lobbySlice";
+import { setCurrency, setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import CurrencyBar from "./subcomponents/CurrencyBar";
 
 const GameRoutes: React.FC = () => {
   const navigate = useNavigate();
@@ -24,10 +25,16 @@ const GameRoutes: React.FC = () => {
       })
         .then((response) => response.json())
         .then((data) => {
+          dispatch(
+            setLobby({
+              lobbyId: data.lobbyId,
+              categories: data.categories,
+              currency: data.currency,
+              powerups: data.powerups
+            })
+          );
+
           if (data.lobbyId) {
-            dispatch(
-              setLobby({ lobbyId: data.lobbyId, categories: data.categories })
-            );
             navigate(`/play/${data.lobbyId}`, { state: location.state });
           }
         })
@@ -38,13 +45,16 @@ const GameRoutes: React.FC = () => {
   }, [dispatch, navigate, location.state]);
 
   return (
-    <Routes>
-      {lobby.lobbyId && <Route path="/:lobbyId" element={<LobbyHandler />} />}
-      <Route path="/join/:lobbyId" element={<JoinLobbyHandler />} />
-      <Route path="/lobbies" element={<LobbyBrowser />} />
-      <Route path="/:lobbyId" element={<LobbyNotFound />} />
-      <Route path="/*" element={<GameMainpage />} />
-    </Routes>
+    <>
+      <CurrencyBar />
+      <Routes>
+        {lobby.lobbyId && <Route path="/:lobbyId" element={<LobbyHandler />} />}
+        <Route path="/join/:lobbyId" element={<JoinLobbyHandler />} />
+        <Route path="/lobbies" element={<LobbyBrowser />} />
+        <Route path="/:lobbyId" element={<LobbyNotFound />} />
+        <Route path="/*" element={<GameMainpage />} />
+      </Routes>
+    </>
   );
 };
 

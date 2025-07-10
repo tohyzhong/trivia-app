@@ -14,6 +14,11 @@ const profileSchema = new mongoose.Schema(
     reports: {
       type: [String],
       default: []
+    },
+    powerups: {
+      hintBoosts: { type: Number, default: 0 },
+      timeFreezes: { type: Number, default: 0 },
+      doublePoints: { type: Number, default: 0 }
     }
   },
   { timestamps: true }

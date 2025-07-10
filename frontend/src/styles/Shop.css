@@ -1,0 +1,134 @@
+.shop-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.shop-window {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: #555;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: red;
+  transform: scale(1.1);
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.shop-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
+  align-items: center;
+  align-self: center;
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: black;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fef9c3;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.shop-item:hover {
+  background-color: #fde68a;
+}
+
+.topup {
+  width: 170px;
+}
+
+.powerup {
+  background-color: #f3f4f6;
+}
+
+.powerup-icon {
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #555;
+}
+
+.powerup-info {
+  flex: 1;
+}
+
+.desc {
+  font-size: 12px;
+  color: #555;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.powerup:hover {
+  cursor: auto;
+}
+
+.powerup-button {
+  background-color: #fde68a;
+  color: #92400e;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  min-width: 70px;
+}
+
+.powerup-button .coin-icon {
+  color: #f59e0b;
+  margin: 0px;
+}
+
+.powerup-button:hover {
+  background-color: #fcd34d;
+}

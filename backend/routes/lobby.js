@@ -70,7 +70,9 @@ router.post("/create", authenticate, async (req, res) => {
           lobbyExists: 1,
           playerExists: 1,
           categories: "$categories.category",
-          profilePicture: 1
+          profilePicture: 1,
+          currency: 1,
+          powerups: 1
         }
       }
     ]);
@@ -135,7 +137,9 @@ router.post("/create", authenticate, async (req, res) => {
     return res.status(201).json({
       lobbyId,
       message: "Lobby created successfully",
-      categories: playerDoc.categories
+      categories: playerDoc.categories,
+      currency: playerDoc.currency,
+      powerups: playerDoc.powerups
     });
   } catch (error) {
     console.error(error);
@@ -147,26 +151,34 @@ router.get("/check", authenticate, async (req, res) => {
   try {
     const username = req.user.username;
 
-    const [result] = await Lobby.collection
+    const [result] = await Profile.collection
       .aggregate([
+        { $match: { username } },
+
         {
           $facet: {
             lobby: [
               {
-                $match: {
-                  $expr: {
-                    $ne: [{ $type: `$players.${username}` }, "missing"]
-                  }
+                $lookup: {
+                  from: "lobbies",
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $ne: [{ $type: `$players.${username}` }, "missing"]
+                        }
+                      }
+                    },
+                    { $project: { lobbyId: 1 } }
+                  ],
+                  as: "lobby"
                 }
               },
-              { $project: { lobbyId: 1 } }
+              { $unwind: { path: "$lobby", preserveNullAndEmptyArrays: true } },
+              { $match: { lobby: { $ne: null } } },
+              { $replaceRoot: { newRoot: "$lobby" } }
             ],
             categories: [
-              {
-                $group: {
-                  _id: "$gameSettings.categories" // placeholder value for categories
-                }
-              },
               {
                 $lookup: {
                   from: "classicquestions",
@@ -177,27 +189,31 @@ router.get("/check", authenticate, async (req, res) => {
                   as: "categories"
                 }
               },
-              { $unwind: "$categories" },
+              {
+                $unwind: {
+                  path: "$categories",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              { $match: { categories: { $ne: null } } },
               { $replaceRoot: { newRoot: "$categories" } }
-            ]
+            ],
+            profile: [{ $project: { _id: 0, currency: 1, powerups: 1 } }]
           }
         }
       ])
       .toArray();
 
-    const lobby = result.lobby[0];
-    const categories = result.categories.map((c) => c.category);
-
-    if (!lobby) {
-      return res.status(200).json({ message: "Player not in any lobby." });
-    }
-    if (categories.length === 0) {
-      return res.status(400).json({ message: "No categories found." });
-    }
+    const lobby = result.lobby[0] ?? null;
+    const categories = result.categories?.map((c) => c.category) ?? [];
+    const currency = result.profile[0]?.currency ?? 0;
+    const powerups = result.profile[0]?.powerups ?? {};
 
     return res.status(200).json({
-      lobbyId: lobby.lobbyId,
-      categories
+      lobbyId: lobby?.lobbyId ?? null,
+      categories,
+      currency,
+      powerups
     });
   } catch (error) {
     console.error(error);

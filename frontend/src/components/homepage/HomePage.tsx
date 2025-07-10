@@ -8,13 +8,22 @@ import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const shopSuccess = params.get("shopSuccess");
   const [errorMessage, setErrorMessage] = useState<string>(
-    location.state?.errorMessage || ""
+    location.state?.errorMessage ||
+      (shopSuccess === "1" && "Purchase successful!") ||
+      ""
   );
+  const [isSuccess, setIsSuccess] = useState(shopSuccess === "1");
 
   return (
     <>
-      <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />
+      <ErrorPopup
+        message={errorMessage}
+        setMessage={setErrorMessage}
+        success={isSuccess}
+      />
       <div className="home-container">
         <header>
           <h1>The Rizz Quiz</h1>
