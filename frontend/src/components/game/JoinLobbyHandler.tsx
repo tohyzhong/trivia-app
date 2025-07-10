@@ -6,8 +6,19 @@ import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { useLobbySocketRedirect } from "../../hooks/useLobbySocketRedirect";
+import { useInitSound } from "../../hooks/useInitSound";
+import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
+import PauseOverlay from "./PauseOverlay";
+import { IoClose, IoSettingsOutline } from "react-icons/io5";
+import { playClickSound } from "../../utils/soundManager";
+import SoundSettings from "./subcomponents/SoundSettings";
+import "../../styles/game.css";
 
 const JoinLobbyHandler: React.FC = () => {
+  useInitSound("Lobby");
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
+  const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
+
   const [status, setStatus] = useState<
     "pending" | "approved" | "rejected" | "error"
   >("pending");
@@ -76,12 +87,58 @@ const JoinLobbyHandler: React.FC = () => {
 
   if (status === "pending") {
     return (
-      <GameLoading message="Waiting for host to approve your request..." />
+      <>
+        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+        <IoSettingsOutline
+          onClick={() => {
+            playClickSound();
+            setIsSoundPopupOpen(true);
+          }}
+          className="sound-settings-icon"
+        />
+        <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+
+        {isSoundPopupOpen && (
+          <div className="sound-settings-popup">
+            <IoClose
+              className="submode-select-close"
+              onClick={() => {
+                playClickSound();
+                setIsSoundPopupOpen(false);
+              }}
+            />
+            <SoundSettings />
+          </div>
+        )}
+        <GameLoading message="Waiting for host to approve your request..." />
+      </>
     );
   }
 
   return (
     <div>
+      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+      <IoSettingsOutline
+        onClick={() => {
+          playClickSound();
+          setIsSoundPopupOpen(true);
+        }}
+        className="sound-settings-icon"
+      />
+      <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+
+      {isSoundPopupOpen && (
+        <div className="sound-settings-popup">
+          <IoClose
+            className="submode-select-close"
+            onClick={() => {
+              playClickSound();
+              setIsSoundPopupOpen(false);
+            }}
+          />
+          <SoundSettings />
+        </div>
+      )}
       <ErrorPopup message={error} setMessage={setError} />
     </div>
   );

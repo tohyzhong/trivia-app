@@ -4,8 +4,18 @@ import { ColDef } from "ag-grid-community";
 import { useNavigate } from "react-router-dom";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import "../../styles/LobbyBrowser.css";
+import PauseOverlay from "./PauseOverlay";
+import { IoClose, IoSettingsOutline } from "react-icons/io5";
+import { playClickSound } from "../../utils/soundManager";
+import SoundSettings from "./subcomponents/SoundSettings";
+import { useInitSound } from "../../hooks/useInitSound";
+import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
 
 const LobbyBrowser: React.FC = () => {
+  useInitSound("Lobby");
+  const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
+  const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
+
   const [rowData, setRowData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -108,6 +118,31 @@ const LobbyBrowser: React.FC = () => {
 
   return (
     <div className="lobby-browser-container">
+      <>
+        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+        <IoSettingsOutline
+          onClick={() => {
+            playClickSound();
+            setIsSoundPopupOpen(true);
+          }}
+          className="sound-settings-icon"
+        />
+        <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+
+        {isSoundPopupOpen && (
+          <div className="sound-settings-popup">
+            <IoClose
+              className="submode-select-close"
+              onClick={() => {
+                playClickSound();
+                setIsSoundPopupOpen(false);
+              }}
+            />
+            <SoundSettings />
+          </div>
+        )}
+      </>
+
       <h1>Multiplayer Lobby Browser</h1>
       <ErrorPopup message={error} setMessage={setError} />
       {!loading && rowData && rowData.length >= 1 ? (

@@ -20,6 +20,8 @@ interface GameSetting {
   timePerQuestion: number;
   difficulty: number;
   categories: string[];
+  name: string;
+  publicVisible: boolean;
 }
 
 interface ChatMessage {
