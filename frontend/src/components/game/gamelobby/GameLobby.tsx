@@ -102,6 +102,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
           lobbyId={lobbyId}
           gameSettings={lobbySettings}
           host={host}
+          gameType={gameType}
         />
         <GameUsers
           lobbyId={lobbyId}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
+import { IoClose, IoInformationCircleOutline } from "react-icons/io5";
 
 import { playClickSound } from "../../../utils/soundManager";
 
@@ -18,12 +19,14 @@ interface GameSettingsProps {
   gameSettings: GameSetting;
   lobbyId: string;
   host: string;
+  gameType: string;
 }
 
 const GameSettings: React.FC<GameSettingsProps> = ({
   gameSettings,
   lobbyId,
-  host
+  host,
+  gameType
 }) => {
   const [settings, setSettings] = useState<GameSetting>(gameSettings);
   const [successMessage, setSuccessMessage] = useState<string>("");
@@ -145,6 +148,75 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     );
   }, [settings, gameSettings]);
 
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+
+  const getGameDescription = (gameType: string) => {
+    switch (gameType) {
+      case "solo-classic":
+        return `Solo Classic Mode: Classic MCQ with 4 Options
+                Rules:
+                  1. Select the correct option before the time run out
+                  2. Answer as fast as possible for maximum score
+                  3. The lowest attainable score is 40
+                  4. Consecutive correct answers will grant additional bonus score (10 - 50)
+                Stats Earnable:
+                  Profile & Leaderboard: 100% Score, 100% Question Answered + Total Count (Questions and Match)
+                  Match History: Answer History, Categorical Breakdown, Score, Correct Number
+                Coins Earnable:
+                  1% of Score Earned`;
+      case "coop-classic":
+        return `Co-op Classic Mode: 4 Option MCQ with Friends
+                Rules:
+                  1. Select the correct option before the time run out
+                  2. Answer as fast as possible for maximum score
+                  3. The lowest attainable score is 40
+                  4. Consecutive correct answers will grant additional bonus score (10 - 50)
+                  5. Every player will get one chance to vote for their preferred option - the team's final answer will be the option with the most votes
+                  6. Ties between 2 options will be considered "Correct" if the correct option is one of them; 3/4 tied options will be considered "Wrong"
+                Stats Earnable:
+                  Profile & Leaderboard: Score = Team Score ÷ Number of Players, 100% Question Answered + Total Count (Questions and Match)
+                  Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
+                Coins Earnable:
+                  1% of Score Credited to Profile & Leaderboard`;
+      case "versus-classic":
+        return `Versus Classic Mode: Battle against other players!
+                Rules:
+                  1. Select the correct option before the time run out
+                  2. Answer as fast as possible for maximum score
+                  3. The lowest attainable score is 40
+                  4. Consecutive correct answers will grant additional bonus score (10 - 50)
+                  5. The Top 50% of players (by score) will win
+                Stats Earnable:
+                  Profile & Leaderboard: 100% Score, 100% Question Answered + Total Count (Questions and Match), Wins
+                  Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
+                Coins Earnable:
+                  1% of Score`;
+      case "solo-knowledge":
+        return `Solo Knowledge Mode: Test your knowledge in a open-ended solo challenge!
+                Stats Earnable:
+                  Profile & Leaderboard: 100% Score, 100% Question Answered + Total Count (Questions and Match)
+                  Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
+                Coins Earnable:
+                  1% of Score`;
+      case "coop-knowledge":
+        return `Co-op Knowledge Mode: Collaborate with friends in this knowledge-based open-ended challenge!
+                Stats Earnable:
+                  Profile & Leaderboard: Score = Team Score ÷ Number of Players, 100% Question Answered + Total Count (Questions and Match)
+                  Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
+                Coins Earnable:
+                  1% of Score Credited to Profile & Leaderboard`;
+      case "versus-knowledge":
+        return `Versus Knowledge Mode: Compete against other players in an open-ended battle of knowledge!
+                Stats Earnable:
+                  Profile & Leaderboard: Score = Team Score ÷ Number of Players, 100% Question Answered + Total Count (Questions and Match)
+                  Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
+                Coins Earnable:
+                  1% of Score Credited to Profile & Leaderboard`;
+      default:
+        return `Select a mode to see the description.`;
+    }
+  };
+
   return (
     <div className="game-lobby-settings">
       <ErrorPopup
@@ -154,8 +226,62 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       />
 
       <div className="game-lobby-settings-header">
-        <h1>Game Settings</h1>
+        <h1>
+          Game Settings{" "}
+          <IoInformationCircleOutline
+            size={20}
+            style={{ cursor: "pointer", marginLeft: "10px" }}
+            onClick={() => setIsPopupOpen(true)}
+          />
+        </h1>
       </div>
+
+      {isPopupOpen && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <IoClose
+              className="close-popup-overlay"
+              onClick={() => {
+                playClickSound();
+                setIsPopupOpen(false);
+              }}
+            />
+            <div className="game-description">
+              {getGameDescription(gameType)
+                .split("\n")
+                .map((line, index) => {
+                  // Check if the line contains "Stats Earnable" or "Coins Earnable" to bold them
+                  if (line.includes("Mode")) {
+                    return <h2>{line}</h2>;
+                  }
+                  if (
+                    line.includes("Stats Earnable") ||
+                    line.includes("Coins Earnable") ||
+                    line.includes("Rules")
+                  ) {
+                    return (
+                      <p key={index} className="bold-text">
+                        {line}
+                      </p>
+                    );
+                  }
+
+                  // Add tabbed indentation for the subitems (like Profile & Leaderboard)
+                  if (line.startsWith("  ")) {
+                    return (
+                      <p key={index} className="tabbed-text">
+                        {line}
+                      </p>
+                    );
+                  }
+
+                  return <p key={index}>{line}</p>;
+                })}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="game-lobby-settings-content">
         <div className="game-lobby-settings-item">
           <label>Lobby Name:</label>
