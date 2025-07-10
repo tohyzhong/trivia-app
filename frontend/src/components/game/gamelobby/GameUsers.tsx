@@ -119,7 +119,10 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
     } catch (error) {
       console.error(error);
       dispatch(
-        setError({ errorMessage: "Unable to start lobby", success: false })
+        setError({
+          errorMessage: error.message || "Unable to start lobby.",
+          success: false
+        })
       );
     }
   };
