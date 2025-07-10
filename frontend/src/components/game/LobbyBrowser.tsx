@@ -57,7 +57,10 @@ const LobbyBrowser: React.FC = () => {
       cellRenderer: (params: any) => (
         <span
           style={{ color: "#3498db", cursor: "pointer" }}
-          onClick={() => navigate(`/play/join/${params.data.lobbyId}`)}
+          onClick={() => {
+            navigate(`/play/join/${params.data.lobbyId}`);
+            playClickSound();
+          }}
         >
           {params.value || `${params.data.host}'s Lobby`}
         </span>

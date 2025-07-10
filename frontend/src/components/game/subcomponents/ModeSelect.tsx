@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { setLobby } from "../../../redux/lobbySlice";
+import { playClickSound } from "../../../utils/soundManager";
 
 interface SubMode {
   name: string;
@@ -49,6 +50,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
   const handleSubmodeClick = async (lobbyMode: string) => {
+    playClickSound();
     if (lobbyMode === "Coming Soon...")
       return; // No effect for clicking on coming soon tab
     else if (lobbyMode === "Browse") {
