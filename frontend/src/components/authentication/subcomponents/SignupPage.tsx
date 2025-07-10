@@ -46,7 +46,6 @@ const SignupPage: React.FC = () => {
     const data = await res.json();
 
     if (res.ok) {
-      console.log("test");
       alert("Registered successfully. Redirecting...");
       window.location.href = "/auth/login";
     } else {

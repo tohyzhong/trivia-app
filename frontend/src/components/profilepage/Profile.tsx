@@ -60,7 +60,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         dispatch(setUser({ ...userFromRedux, role: data.role }));
       }
       setUserProfile(data);
-      console.log(data);
       setFriends(data.friends || []);
       setLoading(false);
     } catch (error) {

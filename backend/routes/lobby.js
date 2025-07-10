@@ -507,7 +507,6 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
         io.to(socketId).emit(isRejection ? "rejectUser" : "kickUser", lobbyId);
       });
     }
-    console.log(isRejection);
     io.to(lobbyId).emit("updateKick", usernameToKick);
     io.to(lobbyId).emit("updateUsers", {
       players: updatedLobby.players,

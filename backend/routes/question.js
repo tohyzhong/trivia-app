@@ -90,8 +90,6 @@ router.put("/approve/:questionId", authenticate, async (req, res) => {
       { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } }
     ]);
 
-    console.log(result);
-
     if (result.length === 0) {
       return res.status(404).send("Question not found");
     }
