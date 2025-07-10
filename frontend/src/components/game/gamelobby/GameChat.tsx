@@ -5,6 +5,7 @@ import { playClickSound } from "../../../utils/soundManager";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
+import { FaExclamation } from "react-icons/fa";
 
 interface ChatMessage {
   sender: string;
@@ -178,7 +179,10 @@ const GameChat: React.FC<GameChatProps> = (props) => {
                             title="Report User"
                             style={{ cursor: "pointer" }}
                           >
-                            ❗
+                            <FaExclamation
+                              color="red"
+                              style={{ verticalAlign: "middle" }}
+                            />
                           </span>
                         )}
                       </span>

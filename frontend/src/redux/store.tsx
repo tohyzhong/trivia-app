@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
 import lobbyReducer from "./lobbySlice";
 import soundSettingsReducer from "./soundSettingsSlice";
+import errorReducer from "./errorSlice";
 import { Middleware } from "redux";
 
 const loadUserState = () => {
@@ -38,7 +39,8 @@ const store = configureStore({
   reducer: {
     user: userReducer,
     lobby: lobbyReducer,
-    soundSettings: soundSettingsReducer
+    soundSettings: soundSettingsReducer,
+    error: errorReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(saveUserState),
