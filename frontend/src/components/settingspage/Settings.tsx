@@ -12,13 +12,14 @@ interface UserProfile {
   username: string;
   profilePicture: string;
   message?: string;
+  email: string;
+  verified: boolean;
 }
 
 const Settings: React.FC = () => {
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
-  const currentEmail = stateUser.email || "";
-  const verified = stateUser.verified || false;
+
   const [user, setUser] = useState<UserProfile | null>(null);
   const count = useRef(0);
   const [errorPopupMessage, setErrorPopupMessage] = useState("");
@@ -236,16 +237,18 @@ const Settings: React.FC = () => {
   };
 
   useEffect(() => {
-    if (stateUser.verified === false && count.current === 0) {
+    if (user?.verified === false && count.current === 0) {
       count.current += 1;
       setIsResponseSuccess(false);
       setErrorPopupMessage(
         "Your account is not verified. Please check your email to verify your account."
       );
     }
-  }, [user, verified]);
+  }, [user]);
 
-  return (
+  return !user ? (
+    <></>
+  ) : (
     <div className="settings-container">
       <ErrorPopup
         message={errorPopupMessage}
@@ -264,21 +267,21 @@ const Settings: React.FC = () => {
             <strong>Username:</strong> {username}
           </p>
           <p>
-            <strong>Email:</strong> {currentEmail}
+            <strong>Email:</strong> {user.email ?? "Unknown"}
           </p>
           <p>
             <strong>Status: </strong>
             <span
               className={`verification-status ${
-                verified ? "verified" : "not-verified"
+                user.verified ? "verified" : "not-verified"
               }`}
             >
-              {verified ? "Verified" : "Not Verified"}
+              {user.verified ? "Verified" : "Not Verified"}
             </span>
           </p>
         </div>
         <div className="verification-email">
-          {!verified && (
+          {!user.verified && (
             <button
               onClick={handleVerificationEmail}
               disabled={verificationCooldown > 0 || sendingVerification}

@@ -430,9 +430,11 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
 
     const io = getSocketIO();
     const userSocketMap = getUserSocketMap();
-    const targetSocketId = userSocketMap.get(usernameToApprove);
-    if (targetSocketId) {
-      io.to(targetSocketId).emit("approveUser", lobbyId);
+    const targetSocketIds = userSocketMap.get(usernameToApprove);
+    if (targetSocketIds && Array.isArray(targetSocketIds)) {
+      targetSocketIds.forEach((socketId) => {
+        io.to(socketId).emit("approveUser", lobbyId);
+      });
     }
     io.to(lobbyId).emit("updateUsers", {
       players: updatedLobby.players,
@@ -499,9 +501,11 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
 
     const io = getSocketIO();
     const userSocketMap = getUserSocketMap();
-    const targetSocketId = userSocketMap.get(usernameToKick);
-    if (targetSocketId) {
-      io.to(targetSocketId).emit("kickUser", lobbyId);
+    const targetSocketIds = userSocketMap.get(usernameToKick);
+    if (targetSocketIds && Array.isArray(targetSocketIds)) {
+      targetSocketIds.forEach((socketId) => {
+        io.to(socketId).emit("kickUser", lobbyId);
+      });
     }
     io.to(lobbyId).emit("updateKick", usernameToKick);
     io.to(lobbyId).emit("updateUsers", {
@@ -973,6 +977,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           .status(200)
           .json({ message: "All players submitted. Answer revealed." });
       } else {
+        // Co-op
         const voteDetails = {};
         const playerStates = updatedPlayerStates;
         const currentQuestion = lobby.gameState.currentQuestion;
@@ -1022,7 +1027,9 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
         const isCorrect =
           topOptions.length === 1
             ? topOptions[0] === correctOption
-            : topOptions.includes(correctOption) && maxVotes > 0;
+            : topOptions.length === 2 &&
+              topOptions.includes(correctOption) &&
+              maxVotes > 0;
 
         let teamCorrectScore = 0;
         let teamStreakBonus = 0;
@@ -1291,7 +1298,9 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
       const isCorrect =
         topOptions.length === 1
           ? topOptions[0] === correctOption
-          : topOptions.includes(correctOption) && maxVotes > 0;
+          : topOptions.length === 2 &&
+            topOptions.includes(correctOption) &&
+            maxVotes > 0;
 
       let teamCorrectScore = 0;
       let teamStreakBonus = 0;

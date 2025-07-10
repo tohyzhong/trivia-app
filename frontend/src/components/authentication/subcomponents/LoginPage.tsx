@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/");
+      window.location.href = "/";
     }
   }, [isLoggedIn, navigate]);
 

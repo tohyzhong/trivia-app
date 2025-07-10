@@ -33,13 +33,21 @@ export function initSocket(server) {
   io.on("connection", (socket) => {
     const username = socket.user?.username;
     if (username) {
-      userSocketMap.set(username, socket.id);
+      if (!userSocketMap.has(username)) {
+        userSocketMap.set(username, []);
+      }
+
+      userSocketMap.get(username).push(socket.id);
       console.log(`User ${username} connected with socket ${socket.id}`);
     }
 
     socket.on("disconnect", () => {
-      if (username) {
-        userSocketMap.delete(username);
+      const socketIds = userSocketMap.get(username);
+      if (socketIds) {
+        userSocketMap.set(
+          username,
+          socketIds.filter((id) => id !== socket.id)
+        );
       }
       console.log(`User ${username} (${socket.id}) disconnected`);
     });

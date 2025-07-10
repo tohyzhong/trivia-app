@@ -132,7 +132,9 @@ router.get("/:username", authenticate, async (req, res) => {
       },
       {
         $addFields: {
-          role: { $arrayElemAt: ["$userInfo.role", 0] }
+          role: { $arrayElemAt: ["$userInfo.role", 0] },
+          email: { $arrayElemAt: ["$userInfo.email", 0] },
+          verified: { $arrayElemAt: ["$userInfo.verified", 0] }
         }
       },
 
@@ -197,6 +199,8 @@ router.get("/:username", authenticate, async (req, res) => {
         $project: {
           _id: 1,
           username: 1,
+          email: 1,
+          verified: 1,
           currency: 1,
           profilePicture: 1,
           role: 1,
@@ -222,6 +226,8 @@ router.get("/:username", authenticate, async (req, res) => {
     res.status(200).json({
       _id: profile._id,
       username: profile.username,
+      email: profile.email,
+      verified: profile.verified,
       currency: profile.currency,
       profilePicture: profile.profilePicture,
       role: profile.role,
