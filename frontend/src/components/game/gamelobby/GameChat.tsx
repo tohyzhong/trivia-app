@@ -33,16 +33,6 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
-  if (playerStates) {
-    for (let i = 0; i <= 15; i++) {
-      playerStates[String(i)] = {
-        score: i,
-        answerHistory: { 1: "correct", 2: "missing", 3: "wrong" },
-        ready: true
-      };
-    }
-  }
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChatInput(event.target.value);
   };

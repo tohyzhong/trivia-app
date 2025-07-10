@@ -1578,14 +1578,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         let color = "solo";
 
         const formatStats = leaderboardStats[gameFormat];
-        console.log(formatStats);
         const modeStats = formatStats[gameMode];
         const overallStats = formatStats.overall;
 
         for (let i = 0; i < numQuestions; i++) {
           const category = categoriesInMatch[i];
           const result = answerHistory[i + 1];
-          console.log(category);
 
           matchCategoryStats[category] =
             matchCategoryStats[category] || initStats();
