@@ -71,7 +71,11 @@ const JoinLobbyHandler: React.FC = () => {
 
     socket.emit("joinLobby", lobbyId);
 
-    socket.on("kickUser", setStatus("rejected"));
+    socket.on("kickUser", () =>
+      navigate("/play", {
+        state: { errorMessage: "You have been rejected from the lobby." }
+      })
+    );
 
     return () => {
       socket.emit("leaveLobby", lobbyId);
