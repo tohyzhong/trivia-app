@@ -5,8 +5,17 @@ import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ErrorPopup from "./ErrorPopup";
+import {
+  RegExpMatcher,
+  englishDataset,
+  englishRecommendedTransformers
+} from "obscenity";
 
 const SignupPage: React.FC = () => {
+  const matcher = new RegExpMatcher({
+    ...englishDataset.build(),
+    ...englishRecommendedTransformers
+  });
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -27,6 +36,11 @@ const SignupPage: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // if (matcher.hasMatch(username)) {
+    //   setErrors(["Username contains profanities."]);
+    //   return;
+    // }
 
     if (password !== passwordConfirmation) {
       setErrors(["Passwords do not match"]);

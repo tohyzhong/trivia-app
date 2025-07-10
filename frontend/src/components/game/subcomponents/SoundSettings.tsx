@@ -29,6 +29,10 @@ const SoundSettings: React.FC = () => {
   const [lastBgmVolume, setLastBgmVolume] = useState<number>(bgmVolume);
   const [lastSfxVolume, setLastSfxVolume] = useState<number>(sfxVolume);
 
+  const [profanityEnabled, setProfanityEnabled] = useState<boolean>(
+    soundSettings.profanityEnabled ?? false
+  );
+
   useEffect(() => {
     setOverallSound(soundSettings.overallSound);
     setBgmVolume(soundSettings.bgmVolume);
@@ -46,7 +50,8 @@ const SoundSettings: React.FC = () => {
           updateSoundSettings({
             overallSound: lastOverallSound,
             bgmVolume,
-            sfxVolume
+            sfxVolume,
+            profanityEnabled
           })
         );
       } else {
@@ -56,7 +61,8 @@ const SoundSettings: React.FC = () => {
           updateSoundSettings({
             overallSound: 0,
             bgmVolume,
-            sfxVolume
+            sfxVolume,
+            profanityEnabled
           })
         );
       }
@@ -67,7 +73,8 @@ const SoundSettings: React.FC = () => {
           updateSoundSettings({
             overallSound,
             bgmVolume: lastBgmVolume,
-            sfxVolume
+            sfxVolume,
+            profanityEnabled
           })
         );
       } else {
@@ -77,7 +84,8 @@ const SoundSettings: React.FC = () => {
           updateSoundSettings({
             overallSound,
             bgmVolume: 0,
-            sfxVolume
+            sfxVolume,
+            profanityEnabled
           })
         );
       }
@@ -88,7 +96,8 @@ const SoundSettings: React.FC = () => {
           updateSoundSettings({
             overallSound,
             bgmVolume,
-            sfxVolume: lastSfxVolume
+            sfxVolume: lastSfxVolume,
+            profanityEnabled
           })
         );
       } else {
@@ -98,16 +107,30 @@ const SoundSettings: React.FC = () => {
           updateSoundSettings({
             overallSound,
             bgmVolume,
-            sfxVolume: 0
+            sfxVolume: 0,
+            profanityEnabled
           })
         );
       }
     }
   };
 
+  const handleToggleProfanity = () => {
+    const newValue = !profanityEnabled;
+    setProfanityEnabled(newValue);
+    dispatch(
+      updateSoundSettings({
+        overallSound,
+        bgmVolume,
+        sfxVolume,
+        profanityEnabled: newValue
+      })
+    );
+  };
+
   return (
     <div className="sound-settings">
-      <h3>Sound Settings</h3>
+      <h3>Game Settings</h3>
 
       <div className="volume-control">
         <label>Overall Sound</label>
@@ -129,7 +152,8 @@ const SoundSettings: React.FC = () => {
                 updateSoundSettings({
                   overallSound: Number(e.target.value),
                   bgmVolume,
-                  sfxVolume
+                  sfxVolume,
+                  profanityEnabled
                 })
               );
             }}
@@ -158,7 +182,8 @@ const SoundSettings: React.FC = () => {
                 updateSoundSettings({
                   overallSound,
                   bgmVolume: Number(e.target.value),
-                  sfxVolume
+                  sfxVolume,
+                  profanityEnabled
                 })
               );
             }}
@@ -187,13 +212,29 @@ const SoundSettings: React.FC = () => {
                 updateSoundSettings({
                   overallSound,
                   bgmVolume,
-                  sfxVolume: Number(e.target.value)
+                  sfxVolume: Number(e.target.value),
+                  profanityEnabled
                 })
               );
             }}
           />
         </div>
         <span>{sfxVolume}%</span>
+      </div>
+
+      <div className="profanity-control">
+        <label style={{ fontWeight: "bold" }}>Show Profanities</label>
+        <div className="profanity-toggle">
+          <input
+            type="checkbox"
+            checked={profanityEnabled}
+            onChange={handleToggleProfanity}
+            id="profanity-toggle"
+          />
+          <label htmlFor="profanity-toggle">
+            {profanityEnabled ? "Enabled" : "Disabled"}
+          </label>
+        </div>
       </div>
     </div>
   );

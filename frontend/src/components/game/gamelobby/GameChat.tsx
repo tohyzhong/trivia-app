@@ -5,6 +5,14 @@ import { playClickSound } from "../../../utils/soundManager";
 import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
+import {
+  RegExpMatcher,
+  TextCensor,
+  asteriskCensorStrategy,
+  englishDataset,
+  englishRecommendedTransformers,
+  keepStartCensorStrategy
+} from "obscenity";
 
 interface ChatMessage {
   sender: string;
@@ -26,6 +34,22 @@ interface GameChatProps {
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
+  const profanityEnabled = useSelector(
+    (state: RootState) => state.soundSettings.profanityEnabled
+  );
+  const matcher = new RegExpMatcher({
+    ...englishDataset.build(),
+    ...englishRecommendedTransformers
+  });
+  const censor = new TextCensor().setStrategy(
+    keepStartCensorStrategy(asteriskCensorStrategy())
+  );
+  function getFilteredMessage(message: string, enabled: boolean): string {
+    if (enabled) return message;
+    const matches = matcher.getAllMatches(message);
+    return censor.applyTo(message, matches);
+  }
+
   const { lobbyId, chatMessages, playerStates, gameType, profilePictures } =
     props;
   const [chatInput, setChatInput] = useState<string>("");
@@ -210,7 +234,9 @@ const GameChat: React.FC<GameChatProps> = (props) => {
             chatMessages.map((msg, index) => (
               <ul key={msg.sender + index} className="chat-container">
                 <p className="chat-sender">{msg.sender}:&nbsp;</p>
-                <p className="chat-content">{msg.message}</p>
+                <p className="chat-content">
+                  {getFilteredMessage(msg.message, profanityEnabled)}
+                </p>
               </ul>
             ))}
         </div>

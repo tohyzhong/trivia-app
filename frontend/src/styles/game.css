@@ -358,3 +358,9 @@
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
+
+.profanity-control {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
