@@ -218,7 +218,8 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
           ? "N.A."
           : params.value.toFixed(2) + "%"
     },
-    ...(category === "Overall" || category === "Community"
+    ...((category === "Overall" || category === "Community") &&
+    (mode === "Overall" || mode === "Versus")
       ? [
           {
             headerName: "Wins",
@@ -257,7 +258,29 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
                 : params.value.toLocaleString("en-US")
           }
         ]
-      : [])
+      : category === "Overall" || category === "Community"
+        ? [
+            {
+              headerName: "Matches",
+              field: "totalMatches",
+              flex: 0.6,
+              sortable: true,
+              sortingOrder: ["desc"] as SortDirection[]
+            },
+
+            {
+              headerName: "Score",
+              field: "score",
+              flex: 0.6,
+              sortable: true,
+              sortingOrder: ["desc"] as SortDirection[],
+              valueFormatter: (params) =>
+                params.value === undefined
+                  ? 0
+                  : params.value.toLocaleString("en-US")
+            }
+          ]
+        : [])
   ];
 
   return (
