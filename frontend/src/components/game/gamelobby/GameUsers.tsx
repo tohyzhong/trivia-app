@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 import { playClickSound } from "../../../utils/soundManager";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
+import { setError } from "../../../redux/errorSlice";
 
 interface User {
   username: string;
@@ -26,13 +26,13 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
     props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [users, setUsers] = useState<User[]>([]);
-  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
   const [successMessage, setSuccessMessage] = React.useState(false);
 
   const alreadyIn = Object.keys(usernames || {});
 
   // Render all users and avatars
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const renderUsers = async () => {
     try {
       const response = await fetch(
@@ -56,12 +56,14 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       }
     } catch (error) {
       console.error(error);
-      navigate("/", {
-        state: {
+      navigate("/");
+      dispatch(
+        setError({
           errorMessage:
-            "Error loading lobby. A report has been sent to the admins"
-        }
-      });
+            "Error loading lobby. A report has been sent to the admins",
+          success: false
+        })
+      );
     }
   };
 
@@ -88,8 +90,12 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       }
     } catch (error) {
       console.error(error);
-      setErrorPopupMessage(error.message || "Unable to change ready status");
-      setSuccessMessage(false);
+      dispatch(
+        setError({
+          errorMessage: "Unable to change ready status",
+          success: false
+        })
+      );
     }
   };
 
@@ -112,8 +118,9 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       }
     } catch (error) {
       console.error(error);
-      setErrorPopupMessage(error.message || "Unable to start lobby");
-      setSuccessMessage(false);
+      dispatch(
+        setError({ errorMessage: "Unable to start lobby", success: false })
+      );
     }
   };
 
@@ -138,12 +145,9 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       }
     } catch (error) {
       console.error(error);
-      navigate("/", {
-        state: {
-          errorMessage:
-            "Error loading lobby. A report has been sent to the admins"
-        }
-      });
+      dispatch(
+        setError({ errorMessage: "Error leaving lobby.", success: false })
+      );
     }
   };
 
@@ -165,29 +169,33 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
       const data = await response.json();
       if (response.ok) {
-        setSuccessMessage(true);
-        setErrorPopupMessage("User reported successfully.");
+        dispatch(
+          setError({
+            errorMessage: "User reported successfully.",
+            success: true
+          })
+        );
       } else {
-        setSuccessMessage(false);
-        setErrorPopupMessage("Failed to report user: " + data.message);
+        dispatch(
+          setError({
+            errorMessage: `Failed to report user: ${data.message}`,
+            success: false
+          })
+        );
       }
     } catch (err) {
       console.error("Error reporting user:", err);
-      setSuccessMessage(false);
-      setErrorPopupMessage("Error reporting user:" + String(err));
+      dispatch(
+        setError({
+          errorMessage: `Error reporting user: ${String(err)}`,
+          success: false
+        })
+      );
     }
   };
 
   return (
     <div className="game-lobby-users">
-      {errorPopupMessage !== "" && (
-        <ErrorPopup
-          message={errorPopupMessage}
-          setMessage={setErrorPopupMessage}
-          success={successMessage}
-        />
-      )}
-
       {!gameType.includes("solo") ? (
         <div className="game-lobby-users-header">
           <h1>Players</h1>
@@ -197,8 +205,9 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
               navigator.clipboard.writeText(
                 `${window.location.origin}/play/join/${lobbyId}`
               );
-              setErrorPopupMessage("Invite Link Copied!");
-              setSuccessMessage(true);
+              dispatch(
+                setError({ errorMessage: "Invite Link Copied!", success: true })
+              );
             }}
           >
             Copy Invite Link
@@ -254,59 +263,91 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
               )}
 
               {loggedInUser === host && !alreadyIn.includes(user.username) && (
-                <button
-                  className="approve-join"
-                  onClick={async () => {
-                    try {
-                      const res = await fetch(
-                        `${import.meta.env.VITE_API_URL}/api/lobby/approve/${lobbyId}`,
+                <>
+                  <button
+                    className="approve-join"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(
+                          `${import.meta.env.VITE_API_URL}/api/lobby/approve/${lobbyId}`,
+                          {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            credentials: "include",
+                            body: JSON.stringify({
+                              usernameToApprove: user.username
+                            })
+                          }
+                        );
+
+                        const data = await res.json();
+                        if (!res.ok) {
+                          throw new Error(data.message);
+                        } else {
+                          dispatch(
+                            setError({
+                              errorMessage: "User approved.",
+                              success: true
+                            })
+                          );
+                        }
+                      } catch (err) {
+                        dispatch(
+                          setError({
+                            errorMessage: `Error approving user: ${String(err) ?? "Unknown"}`,
+                            success: false
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="kick-user"
+                    onClick={async () => {
+                      await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/lobby/kick/${lobbyId}`,
                         {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           credentials: "include",
                           body: JSON.stringify({
-                            usernameToApprove: user.username
+                            usernameToKick: user.username,
+                            isRejection: true
                           })
                         }
                       );
+                    }}
+                  >
+                    Reject
+                  </button>
+                </>
+              )}
 
-                      const data = await res.json();
-                      if (!res.ok) {
-                        setErrorPopupMessage(
-                          `Error Approving User: ${data.message ?? "Unknown"}`
-                        );
-                        setSuccessMessage(false);
-                      }
-                    } catch (err) {
-                      setErrorPopupMessage(
-                        `Error Approving User: ${String(err) ?? "Unknown"}`
+              {loggedInUser === host &&
+                user.username !== host &&
+                alreadyIn.includes(user.username) && (
+                  <button
+                    className="kick-user"
+                    onClick={async () => {
+                      await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/lobby/kick/${lobbyId}`,
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({
+                            usernameToKick: user.username,
+                            isRejection: false
+                          })
+                        }
                       );
-                      setSuccessMessage(false);
-                    }
-                  }}
-                >
-                  Approve
-                </button>
-              )}
-
-              {loggedInUser === host && user.username !== host && (
-                <button
-                  className="kick-user"
-                  onClick={async () => {
-                    await fetch(
-                      `${import.meta.env.VITE_API_URL}/api/lobby/kick/${lobbyId}`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        credentials: "include",
-                        body: JSON.stringify({ usernameToKick: user.username })
-                      }
-                    );
-                  }}
-                >
-                  Kick
-                </button>
-              )}
+                    }}
+                  >
+                    Kick
+                  </button>
+                )}
             </ul>
           ))}
       </div>

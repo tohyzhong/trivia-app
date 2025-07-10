@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/userSlice";
 import { clearLobby } from "../../redux/lobbySlice";
 import { useDispatch } from "react-redux";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { setError } from "../../redux/errorSlice";
 
 const LogoutButton: React.FC = () => {
-  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleLogout = async () => {
@@ -18,7 +17,6 @@ const LogoutButton: React.FC = () => {
           credentials: "include"
         }
       );
-
       if (res.ok) {
         dispatch(logout());
         dispatch(clearLobby());
@@ -27,24 +25,26 @@ const LogoutButton: React.FC = () => {
       } else {
         const data = await res.json();
         console.error("Logout failed:", data.message || "An error occurred");
-        setErrorPopupMessage(
-          "Logout failed:" + data.message || "An error occurred"
+        dispatch(
+          setError({
+            errorMessage: "Logout failed: " + data.message,
+            success: false
+          })
         );
       }
     } catch (err) {
       console.error("Error logging out:", err);
-      setErrorPopupMessage("Error logging out: " + String(err));
+      dispatch(
+        setError({
+          errorMessage: "Error logging out: " + String(err),
+          success: false
+        })
+      );
     }
   };
 
   return (
     <button onClick={handleLogout} className="logout-button">
-      {errorPopupMessage !== "" && (
-        <ErrorPopup
-          message={errorPopupMessage}
-          setMessage={setErrorPopupMessage}
-        />
-      )}
       Logout
     </button>
   );

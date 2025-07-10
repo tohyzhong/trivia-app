@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import "../../styles/questionsubmissionform.css";
+import { setError } from "../../redux/errorSlice";
 
 const QuestionSubmissionForm: React.FC = () => {
-  const [approvalMessage, setApprovalMessage] = useState("");
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState(false);
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctOption, setCorrectOption] = useState<number | null>(null);
@@ -16,6 +14,7 @@ const QuestionSubmissionForm: React.FC = () => {
   const [difficulty, setDifficulty] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user);
   const username = user.username;
@@ -47,8 +46,7 @@ const QuestionSubmissionForm: React.FC = () => {
   const handleSubmit = async () => {
     const error = validateForm();
     if (error) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage(error);
+      dispatch(setError({ errorMessage: error, success: false }));
       return;
     }
 
@@ -80,8 +78,9 @@ const QuestionSubmissionForm: React.FC = () => {
         throw new Error("Failed to submit question");
       }
 
-      setIsApprovalSuccess(true);
-      setApprovalMessage("Question submitted!");
+      dispatch(
+        setError({ errorMessage: "Question submitted!", success: true })
+      );
       setQuestion("");
       setOptions(["", "", "", ""]);
       setCorrectOption(null);
@@ -89,9 +88,12 @@ const QuestionSubmissionForm: React.FC = () => {
       setDifficulty(1);
     } catch (error) {
       console.error("Error submitting question:", error);
-      setIsApprovalSuccess(false);
-      setApprovalMessage(
-        "An error occurred while submitting your question. Please try again later."
+      dispatch(
+        setError({
+          errorMessage:
+            "An error occurred while submitting your question. Please try again later.",
+          success: false
+        })
       );
     } finally {
       setIsSubmitting(false);
@@ -100,12 +102,6 @@ const QuestionSubmissionForm: React.FC = () => {
 
   return (
     <div className="question-submission-page">
-      <ErrorPopup
-        message={approvalMessage}
-        setMessage={setApprovalMessage}
-        success={isApprovalSuccess}
-      />
-
       {role.includes("admin") && (
         <button
           className="admin-dashboard-btn"

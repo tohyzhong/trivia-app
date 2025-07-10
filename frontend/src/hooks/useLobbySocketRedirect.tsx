@@ -14,30 +14,25 @@ export function useLobbySocketRedirect(username: string) {
     if (!socket) return;
 
     const handleApprove = (lobbyId: string) => {
-      console.log("Approved to join lobby", lobbyId);
       navigate(`/play/lobby/${lobbyId}`);
+      dispatch(
+        setError({
+          errorMessage: "Your lobby join request was approved.",
+          success: true
+        })
+      );
     };
 
-    const handleKick = (lobbyId: string) => {
-      console.log("Kicked from lobby", lobbyId);
+    const handleKick = () => {
       dispatch(
         setError({
           errorMessage: "You were kicked from the lobby.",
           success: false
         })
       );
-
-      /*
-      if (!location.pathname.startsWith("/play/")) {
-        navigate(`/`, {
-          state: { errorMessage: "You were kicked from the lobby." }
-        });
-      }
-        */
     };
 
-    const handleReject = (lobbyId: string) => {
-      console.log("Rejected from lobby", lobbyId);
+    const handleReject = () => {
       dispatch(
         setError({
           errorMessage: "You were rejected from the lobby.",

@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { playClickSound } from "../../../utils/soundManager";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { FaExclamation } from "react-icons/fa";
+import { setError } from "../../../redux/errorSlice";
 
 interface ChatMessage {
   sender: string;
@@ -31,8 +31,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     props;
   const [chatInput, setChatInput] = useState<string>("");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
+  const dispatch = useDispatch();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChatInput(event.target.value);
@@ -55,15 +54,13 @@ const GameChat: React.FC<GameChatProps> = (props) => {
       } else {
         const data = await response.json();
         console.error("Error sending chat message: ", data.message);
-        setIsSuccess(false);
-        setErrorPopupMessage(
-          `Error sending chat message: ${String(data.message)}`
+        dispatch(
+          setError({ errorMessage: String(data.message), success: false })
         );
       }
     } catch (error) {
       console.error("Error sending chat message:", error);
-      setIsSuccess(false);
-      setErrorPopupMessage(`Error sending chat message: ${String(error)}`);
+      dispatch(setError({ errorMessage: String(error), success: false }));
     }
   };
 
@@ -101,16 +98,23 @@ const GameChat: React.FC<GameChatProps> = (props) => {
 
       const data = await response.json();
       if (response.ok) {
-        setIsSuccess(true);
-        setErrorPopupMessage("User reported successfully.");
+        dispatch(setError({ errorMessage: "User reported.", success: true }));
       } else {
-        setIsSuccess(false);
-        setErrorPopupMessage("Failed to report user: " + data.message);
+        dispatch(
+          setError({
+            errorMessage: "Failed to report user: " + data.message,
+            success: false
+          })
+        );
       }
     } catch (err) {
       console.error("Error reporting user:", err);
-      setIsSuccess(false);
-      setErrorPopupMessage("Error reporting user:" + String(err));
+      dispatch(
+        setError({
+          errorMessage: "Error reporting user: " + String(err),
+          success: false
+        })
+      );
     }
   };
 
@@ -202,13 +206,6 @@ const GameChat: React.FC<GameChatProps> = (props) => {
         className="game-lobby-chat-container"
         style={playerStates ? { height: "50%" } : { height: "100%" }}
       >
-        {errorPopupMessage !== "" && (
-          <ErrorPopup
-            message={errorPopupMessage}
-            setMessage={setErrorPopupMessage}
-            success={isSuccess}
-          />
-        )}
         <div className="game-lobby-chat-messages" ref={chatContainerRef}>
           {chatMessages &&
             chatMessages.map((msg, index) => (

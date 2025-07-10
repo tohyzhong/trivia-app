@@ -7,10 +7,9 @@ import useAuth from "./hooks/useAuth";
 import NavigationBar from "./components/navigationbar/NavigationBar";
 import ErrorPopup from "./components/authentication/subcomponents/ErrorPopup";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import { useLobbySocketRedirect } from "./hooks/useLobbySocketRedirect";
-import { clearError } from "./redux/errorSlice";
 
 const HomePage = lazy(() => import("./components/homepage/HomePage"));
 const GameRoutes = lazy(() => import("./components/game/GameRoutes"));
@@ -38,7 +37,6 @@ function App() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const verified = useSelector((state: RootState) => state.user.verified);
   const username = useSelector((state: RootState) => state.user.username);
   const error = useSelector((state: RootState) => state.error.errorMessage);
@@ -114,13 +112,7 @@ function App() {
 
   return (
     <>
-      {error && (
-        <ErrorPopup
-          message={error}
-          setMessage={() => dispatch(clearError())}
-          success={isError}
-        />
-      )}
+      {error && <ErrorPopup message={error} success={isError} />}
       <NavigationBar />
       <Suspense fallback={<></>}>
         <Routes>

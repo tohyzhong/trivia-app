@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Settings.css";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { useCooldown } from "../../hooks/useCooldown";
 import { motion } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { setError } from "../../redux/errorSlice";
 
 interface UserProfile {
   username: string;
@@ -19,11 +19,10 @@ interface UserProfile {
 const Settings: React.FC = () => {
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
+  const dispatch = useDispatch();
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const count = useRef(0);
-  const [errorPopupMessage, setErrorPopupMessage] = useState("");
-  const [isResponseSuccess, setIsResponseSuccess] = useState(false);
 
   const [sendingVerification, setSendingVerification] =
     useState<boolean>(false);
@@ -58,8 +57,12 @@ const Settings: React.FC = () => {
         setUser(data);
       } catch (error) {
         console.error("Error fetching profile data", error);
-        setErrorPopupMessage("Error fetching profile data: " + String(error));
-        setIsResponseSuccess(false);
+        dispatch(
+          setError({
+            errorMessage: "Error fetching profile data" + String(error),
+            success: false
+          })
+        );
       }
     };
 
@@ -94,13 +97,19 @@ const Settings: React.FC = () => {
       }
 
       await response.json();
-      setErrorPopupMessage("Profile picture updated!");
-      setIsResponseSuccess(true);
-
-      window.location.reload();
+      dispatch(
+        setError({
+          errorMessage: "Profile picture updated! Reload to see the changes.",
+          success: true
+        })
+      );
     } catch (err) {
-      setErrorPopupMessage(err.message || "Error updating profile picture");
-      setIsResponseSuccess(false);
+      dispatch(
+        setError({
+          errorMessage: err.message || "Error updating profile picture",
+          success: false
+        })
+      );
     }
   };
 
@@ -125,15 +134,20 @@ const Settings: React.FC = () => {
       }
 
       triggerPasswordResetCooldown();
-      setErrorPopupMessage(
-        "Password reset request sent! Please check your email for further instructions."
+      dispatch(
+        setError({
+          errorMessage:
+            "Password reset request sent! Please check your email for further instructions.",
+          success: true
+        })
       );
-      setIsResponseSuccess(true);
     } catch (err) {
-      setErrorPopupMessage(
-        err.message || "Error sending password reset request"
+      dispatch(
+        setError({
+          errorMessage: err.message || "Error sending password reset request",
+          success: false
+        })
       );
-      setIsResponseSuccess(false);
     }
 
     setSendingPassword(false);
@@ -160,13 +174,20 @@ const Settings: React.FC = () => {
       }
 
       triggerEmailChangeCooldown();
-      setErrorPopupMessage(
-        "Email change request sent! Please check your new email to verify the change."
+      dispatch(
+        setError({
+          errorMessage:
+            "Email change request sent! Please check your new email to verify the change.",
+          success: true
+        })
       );
-      setIsResponseSuccess(true);
     } catch (err) {
-      setErrorPopupMessage(err.message || "Error changing email");
-      setIsResponseSuccess(false);
+      dispatch(
+        setError({
+          errorMessage: err.message || "Error changing email",
+          success: false
+        })
+      );
     }
 
     setSendingEmail(false);
@@ -191,13 +212,19 @@ const Settings: React.FC = () => {
       const data = await response.json();
 
       triggerDeleteCooldown();
-      setErrorPopupMessage(
-        "Please check your email to confirm account deletion."
+      dispatch(
+        setError({
+          errorMessage: "Please check your email to confirm account deletion.",
+          success: true
+        })
       );
-      setIsResponseSuccess(true);
     } catch (err) {
-      setErrorPopupMessage(err.message || "Error deleting account");
-      setIsResponseSuccess(false);
+      dispatch(
+        setError({
+          errorMessage: err.message || "Error deleting account",
+          success: false
+        })
+      );
     }
 
     setSendingDelete(false);
@@ -224,13 +251,20 @@ const Settings: React.FC = () => {
       }
 
       triggerVerificationCooldown();
-      setErrorPopupMessage(
-        "Verification email sent! Please check your inbox to verify your account."
+      dispatch(
+        setError({
+          errorMessage:
+            "Verification email sent! Please check your email to verify your account.",
+          success: true
+        })
       );
-      setIsResponseSuccess(true);
     } catch (err) {
-      setErrorPopupMessage(err.message || "Error sending verification email");
-      setIsResponseSuccess(false);
+      dispatch(
+        setError({
+          errorMessage: err.message || "Error sending verification email",
+          success: false
+        })
+      );
     }
 
     setSendingVerification(false);
@@ -239,9 +273,12 @@ const Settings: React.FC = () => {
   useEffect(() => {
     if (user?.verified === false && count.current === 0) {
       count.current += 1;
-      setIsResponseSuccess(false);
-      setErrorPopupMessage(
-        "Your account is not verified. Please check your email to verify your account."
+      dispatch(
+        setError({
+          errorMessage:
+            "Your account is not verified. Please check your email to verify your account.",
+          success: false
+        })
       );
     }
   }, [user]);
@@ -250,11 +287,6 @@ const Settings: React.FC = () => {
     <></>
   ) : (
     <div className="settings-container">
-      <ErrorPopup
-        message={errorPopupMessage}
-        setMessage={setErrorPopupMessage}
-        success={isResponseSuccess}
-      />
       <h1>Profile Settings</h1>
       <div className="user-info">
         <img

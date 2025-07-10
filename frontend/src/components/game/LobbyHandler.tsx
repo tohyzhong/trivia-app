@@ -152,7 +152,7 @@ const LobbyHandler: React.FC = () => {
     socket.on("updateKick", (data) => {
       if (loggedInUser === data) {
         dispatch(clearLobby());
-        navigate("/play", { state: { errorMessage: "You have been kicked." } });
+        navigate("/play");
       }
     });
 

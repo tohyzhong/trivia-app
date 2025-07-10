@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../../styles/game.css";
 import ModeSelect from "./subcomponents/ModeSelect";
@@ -14,7 +14,6 @@ import { useInitSound } from "../../hooks/useInitSound";
 import PauseOverlay from "./PauseOverlay";
 import { useBGMResumeOverlay } from "../../hooks/useBGMResumeOverlay";
 import { playClickSound } from "../../utils/soundManager";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 
 interface SubModes {
   name: string;
@@ -27,9 +26,6 @@ export const GameMainpage: React.FC = () => {
   useInitSound("Lobby");
   const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
   const location = useLocation();
-  const [errorMessage, setErrorMessage] = useState<string>(
-    location.state?.errorMessage || ""
-  );
 
   const modes = [
     {
@@ -139,7 +135,6 @@ export const GameMainpage: React.FC = () => {
     <div
       className={`game-mainpage ${isSoundPopupOpen ? "dimmed-background" : ""}`}
     >
-      <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />
       {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       {isPopupOpen && (
         <ModeSelect
