@@ -6,6 +6,7 @@ import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 import { playClickSound } from "../../../utils/soundManager";
 import { setError } from "../../../redux/errorSlice";
+import { FaExclamation } from "react-icons/fa";
 
 interface User {
   username: string;
@@ -26,7 +27,6 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
     props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [users, setUsers] = useState<User[]>([]);
-  const [successMessage, setSuccessMessage] = React.useState(false);
 
   const alreadyIn = Object.keys(usernames || {});
 
@@ -244,9 +244,12 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                     className="report-button"
                     onClick={() => handleReport(user.username)}
                     title="Report User"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", marginLeft: "10px" }}
                   >
-                    ❗
+                    <FaExclamation
+                      color="red"
+                      style={{ verticalAlign: "middle" }}
+                    />
                   </span>
                 )}
               </h3>

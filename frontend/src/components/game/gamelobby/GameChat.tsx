@@ -181,7 +181,7 @@ const GameChat: React.FC<GameChatProps> = (props) => {
                             className="report-button"
                             onClick={() => handleReport(username)}
                             title="Report User"
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: "pointer", marginLeft: "10px" }}
                           >
                             <FaExclamation
                               color="red"

@@ -364,6 +364,16 @@
   cursor: pointer;
   width: 150px;
   justify-content: center;
+  border-radius: 4px;
+}
+
+.game-lobby-users-header .invite-link:hover {
+  background-color: #1a5a96;
+  transition: background-color 0.2s;
+}
+
+.game-lobby-users-header .invite-link:active {
+  background-color: #3478b8;
 }
 
 .game-lobby-users h1 {
