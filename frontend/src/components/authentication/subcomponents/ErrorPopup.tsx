@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "motion/react";
 import { IoIosInformationCircle } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
@@ -7,6 +7,7 @@ import { clearError } from "../../../redux/errorSlice";
 import { useDispatch } from "react-redux";
 
 interface Props {
+  key: number;
   message: string;
   success?: boolean;
 }
@@ -16,6 +17,15 @@ const ErrorPopup: React.FC<Props> = ({ message, success = false }) => {
     return null;
   } else {
     const dispatch = useDispatch();
+
+    useEffect(() => {
+      if (!message) return;
+      const timer = setTimeout(() => {
+        dispatch(clearError());
+      }, 2000);
+      return () => clearTimeout(timer);
+    }, [message, dispatch]);
+
     return (
       <motion.div
         className={`invalid-token ${success ? "success" : ""}`}

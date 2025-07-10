@@ -39,8 +39,11 @@ function App() {
   const navigate = useNavigate();
   const verified = useSelector((state: RootState) => state.user.verified);
   const username = useSelector((state: RootState) => state.user.username);
+
+  // Error popup
   const error = useSelector((state: RootState) => state.error.errorMessage);
-  const isError = useSelector((state: RootState) => state.error.success);
+  const isSuccess = useSelector((state: RootState) => state.error.success);
+  const timestampKey = useSelector((state: RootState) => state.error.timestamp);
 
   const authFreeRoutes = [
     "/auth",
@@ -112,7 +115,9 @@ function App() {
 
   return (
     <>
-      {error && <ErrorPopup message={error} success={isError} />}
+      {error && (
+        <ErrorPopup key={timestampKey} message={error} success={isSuccess} />
+      )}
       <NavigationBar />
       <Suspense fallback={<></>}>
         <Routes>
