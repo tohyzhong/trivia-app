@@ -1476,7 +1476,14 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       const playerUpdates = await Profile.collection
         .find(
           { username: { $in: usernamesToUpdate } },
-          { projection: { username: 1, matchHistory: 1, leaderboardStats: 1 } }
+          {
+            projection: {
+              username: 1,
+              matchHistory: 1,
+              leaderboardStats: 1,
+              currency: 1
+            }
+          }
         )
         .toArray();
 
@@ -1567,6 +1574,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       const bulkOps = playerUpdates.map((profile) => {
         const username = profile.username;
         const answerHistory = playerStates[username]?.answerHistory || {};
+        let currency = profile.currency;
 
         const leaderboardStats =
           profile.leaderboardStats || initLeaderboardStats();
@@ -1578,14 +1586,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         let color = "solo";
 
         const formatStats = leaderboardStats[gameFormat];
-        console.log(formatStats);
         const modeStats = formatStats[gameMode];
         const overallStats = formatStats.overall;
 
         for (let i = 0; i < numQuestions; i++) {
           const category = categoriesInMatch[i];
           const result = answerHistory[i + 1];
-          console.log(category);
 
           matchCategoryStats[category] =
             matchCategoryStats[category] || initStats();
@@ -1687,13 +1693,19 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         const updatedMatchHistory = [...profile.matchHistory, matchEntry];
         while (updatedMatchHistory.length > 10) updatedMatchHistory.shift();
 
+        currency +=
+          gameMode === "coop"
+            ? Math.floor(teamScore / usernamesToUpdate.length / 100)
+            : Math.floor(score / 100);
+
         return {
           updateOne: {
             filter: { username },
             update: {
               $set: {
                 leaderboardStats,
-                matchHistory: updatedMatchHistory
+                matchHistory: updatedMatchHistory,
+                currency
               }
             }
           }
