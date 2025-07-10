@@ -159,6 +159,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   2. Answer as fast as possible for maximum score
                   3. The lowest attainable score is 40
                   4. Consecutive correct answers will grant additional bonus score (10 - 50)
+                  5. Stats and Coins are only credited upon returning to Lobby
                 Stats Earnable:
                   Profile & Leaderboard: 100% Score, 100% Question Answered + Total Count (Questions and Match)
                   Match History: Answer History, Categorical Breakdown, Score, Correct Number
@@ -171,8 +172,9 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   2. Answer as fast as possible for maximum score
                   3. The lowest attainable score is 40
                   4. Consecutive correct answers will grant additional bonus score (10 - 50)
-                  5. Every player will get one chance to vote for their preferred option - the team's final answer will be the option with the most votes
-                  6. Ties between 2 options will be considered "Correct" if the correct option is one of them; 3/4 tied options will be considered "Wrong"
+                  5. Stats and Coins are only credited upon returning to Lobby
+                  6. Every player will get one chance to vote for their preferred option - the team's final answer will be the option with the most votes
+                  7. Ties between 2 options will be considered "Correct" if the correct option is one of them; 3/4 tied options will be considered "Wrong"
                 Stats Earnable:
                   Profile & Leaderboard: Score = Team Score ÷ Number of Players, 100% Question Answered + Total Count (Questions and Match)
                   Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
@@ -185,7 +187,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   2. Answer as fast as possible for maximum score
                   3. The lowest attainable score is 40
                   4. Consecutive correct answers will grant additional bonus score (10 - 50)
-                  5. The Top 50% of players (by score) will win
+                  5. Stats and Coins are only credited upon returning to Lobby
+                  6. The Top 50% of players (by score) will win
                 Stats Earnable:
                   Profile & Leaderboard: 100% Score, 100% Question Answered + Total Count (Questions and Match), Wins
                   Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
@@ -193,6 +196,13 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   1% of Score`;
       case "solo-knowledge":
         return `Solo Knowledge Mode: Test your knowledge in a open-ended solo challenge!
+                Rules:
+                  1. Enter your answer before the time run out
+                  2. Possible options will appear in a dropdown as you type
+                  3. Answer as fast as possible for maximum score
+                  4. The lowest attainable score is 40
+                  5. Consecutive correct answers will grant additional bonus score (10 - 50)
+                  6. Stats and Coins are only credited upon returning to Lobby
                 Stats Earnable:
                   Profile & Leaderboard: 100% Score, 100% Question Answered + Total Count (Questions and Match)
                   Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
@@ -200,6 +210,15 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   1% of Score`;
       case "coop-knowledge":
         return `Co-op Knowledge Mode: Collaborate with friends in this knowledge-based open-ended challenge!
+                Rules:
+                  1. Enter your answer before the time run out
+                  2. Possible options will appear in a dropdown as you type
+                  2. Answer as fast as possible for maximum score
+                  3. The lowest attainable score is 40
+                  4. Consecutive correct answers will grant additional bonus score (10 - 50)
+                  5. Stats and Coins are only credited upon returning to Lobby
+                  6. Every player will get one chance to vote for their preferred option - the team's final answer will be the option with the most votes
+                  7. Ties between 2 options will be considered "Correct" if the correct option is one of them; Other numbers of tied options will be considered "Wrong"
                 Stats Earnable:
                   Profile & Leaderboard: Score = Team Score ÷ Number of Players, 100% Question Answered + Total Count (Questions and Match)
                   Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
@@ -207,6 +226,14 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                   1% of Score Credited to Profile & Leaderboard`;
       case "versus-knowledge":
         return `Versus Knowledge Mode: Compete against other players in an open-ended battle of knowledge!
+                Rules:
+                  1. Enter your answer before the time run out
+                  2. Possible options will appear in a dropdown as you type
+                  3. Answer as fast as possible for maximum score
+                  4. The lowest attainable score is 40
+                  5. Consecutive correct answers will grant additional bonus score (10 - 50)
+                  6. Stats and Coins are only credited upon returning to Lobby
+                  7. The Top 50% of players (by score) will win
                 Stats Earnable:
                   Profile & Leaderboard: Score = Team Score ÷ Number of Players, 100% Question Answered + Total Count (Questions and Match)
                   Match History: Individual Answer History, Team Answer History, Individual Categorical Breakdown, Score, Correct Number
