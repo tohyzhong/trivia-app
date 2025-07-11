@@ -947,7 +947,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
               if (timeElapsed <= 3.0) {
                 state.correctScore = 100;
-              } else if (timeElapsed > timeLimit + 0.5) {
+              } else if (timeElapsed > timeLimit + 5.0) {
                 state.correctScore = 0;
               } else {
                 const timeAfter30 = timeElapsed - 3.0;
@@ -1092,7 +1092,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
           if (timeElapsed <= 3.0) {
             teamCorrectScore = 100;
-          } else if (timeElapsed > timeLimit + 0.5) {
+          } else if (timeElapsed > timeLimit + 5.0) {
             teamCorrectScore = 0;
           } else {
             const timeAfter30 = timeElapsed - 3.0;
@@ -1254,7 +1254,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
             if (timeElapsed <= 3.0) {
               state.correctScore = 100;
-            } else if (timeElapsed > timeLimit + 0.5) {
+            } else if (timeElapsed > timeLimit + 5.0) {
               state.correctScore = 0;
             } else {
               const timeAfter30 = timeElapsed - 3.0;
@@ -1395,7 +1395,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
         if (timeElapsed <= 3.0) {
           teamCorrectScore = 100;
-        } else if (timeElapsed > timeLimit + 0.5) {
+        } else if (timeElapsed > timeLimit + 5.0) {
           teamCorrectScore = 0;
         } else {
           const timeAfter30 = timeElapsed - 3.0;
