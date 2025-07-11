@@ -9,38 +9,44 @@
   z-index: 100;
 }
 
-.powerup-bar {
+.bar-container {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: space-between;
+  border-radius: 9999px;
+  border: 1px;
+  padding: 4px 4px 4px 12px;
   height: 35px;
-  gap: 10px;
+  min-width: 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  font-weight: 600;
+  gap: 6px;
 }
 
-.powerup-item {
+.icon-value {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 3px;
-  font-size: 19px;
-  color: #fff;
+  gap: 8px;
 }
 
-.powerup-item.hint {
-  background-color: rgba(255, 223, 100, 0.2);
-  border-radius: 8px;
-  padding: 4px 6px;
+.powerup-hint {
+  background-color: #fff7d6;
+  border-color: #ffe58f;
+  color: #92400e;
 }
 
-.powerup-item.freeze {
-  background-color: rgba(100, 200, 255, 0.2);
-  border-radius: 8px;
-  padding: 4px 6px;
+.powerup-freeze {
+  background-color: #e0f7ff;
+  border-color: #90e0ff;
+  color: #035388;
 }
 
-.powerup-item.double {
-  background-color: rgba(180, 255, 180, 0.2);
-  border-radius: 8px;
-  padding: 4px 6px;
+.powerup-double {
+  background-color: #e6ffe6;
+  border-color: #8df78d;
+  color: #166534;
 }
 
 .currency-bar {
@@ -68,8 +74,7 @@
 .plus-button {
   height: 20px;
   width: 20px;
-  background-color: #fde68a;
-  color: #78350f;
+  font-weight: bold;
   font-weight: bold;
   padding: 4px 6px;
   border-radius: 9999px;
@@ -77,6 +82,9 @@
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .plus-button:hover {

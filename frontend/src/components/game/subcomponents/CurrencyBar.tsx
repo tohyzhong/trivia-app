@@ -15,27 +15,54 @@ const CurrencyBar: React.FC = () => {
 
   return (
     <div className="currency-bar-container">
-      <div className="currency-bar">
+      <div className="bar-container currency-bar">
         <FaCoins className="coin-icon" />
         <span className="currency-value">{currency}</span>
-        <button className="plus-button" onClick={() => setShowShop(true)}>
+        <button
+          className="plus-button currency-value"
+          onClick={() => setShowShop(true)}
+        >
           <FaPlus size={12} />
         </button>
       </div>
 
-      <div className="powerup-bar">
-        <div className="powerup-item hint" title="Hint Boost">
-          <HiOutlineLightBulb />
+      <div className="bar-container powerup-hint" title="Hint Boost">
+        <div className="icon-value">
+          <HiOutlineLightBulb style={{ fontSize: "20px" }} />
           <span>{powerups.hintBoosts}</span>
         </div>
-        <div className="powerup-item freeze" title="Time Freeze">
-          <TiMediaPauseOutline />
+        <button
+          className="plus-button powerup-hint"
+          onClick={() => setShowShop(true)}
+        >
+          <FaPlus size={12} />
+        </button>
+      </div>
+
+      <div className="bar-container powerup-freeze" title="Time Freeze">
+        <div className="icon-value">
+          <TiMediaPauseOutline style={{ fontSize: "20px" }} />
           <span>{powerups.timeFreezes}</span>
         </div>
-        <div className="powerup-item double" title="Double Points">
-          <TbMultiplier2X style={{ fontSize: "23" }} />
+        <button
+          className="plus-button powerup-freeze"
+          onClick={() => setShowShop(true)}
+        >
+          <FaPlus size={12} />
+        </button>
+      </div>
+
+      <div className="bar-container powerup-double" title="Double Points">
+        <div className="icon-value">
+          <TbMultiplier2X style={{ fontSize: "20px" }} />
           <span>{powerups.doublePoints}</span>
         </div>
+        <button
+          className="plus-button powerup-double"
+          onClick={() => setShowShop(true)}
+        >
+          <FaPlus size={12} />
+        </button>
       </div>
 
       {showShop && <Shop onClose={() => setShowShop(false)} />}
