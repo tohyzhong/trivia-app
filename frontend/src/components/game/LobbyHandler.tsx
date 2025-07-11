@@ -7,7 +7,7 @@ import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
 import GameLobby from "./gamelobby/GameLobby";
 import QuizDisplay from "./quiz/QuizDisplay";
-import { clearLobby } from "../../redux/lobbySlice";
+import { clearLobby, setStatusRedux } from "../../redux/lobbySlice";
 import { useSocket } from "../../context/SocketContext";
 
 interface GameSetting {
@@ -113,12 +113,13 @@ const LobbyHandler: React.FC = () => {
     });
 
     socket.on("updateState", (data) => {
-      setGameState(data.gameState);
+      if (data.gameState) setGameState(data.gameState);
       if (data.serverTimeNow) setTimeNow(data.serverTimeNow);
     });
 
     socket.on("updateStatus", (data) => {
       setStatus(data.status);
+      dispatch(setStatusRedux(data.status));
     });
 
     socket.on("updateChat", (data) => {
@@ -194,6 +195,7 @@ const LobbyHandler: React.FC = () => {
         const lobbyDetails = data.lobbyDetails;
 
         setStatus(lobbyDetails.status);
+        dispatch(setStatusRedux(lobbyDetails.status));
         setUsers(lobbyDetails.players);
         setJoinRequests(lobbyDetails.joinRequests);
 

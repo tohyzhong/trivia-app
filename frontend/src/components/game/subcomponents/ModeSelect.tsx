@@ -75,7 +75,8 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
             lobbyId: data.lobbyId,
             categories: data.categories,
             currency: data.currency,
-            powerups: data.powerups
+            powerups: data.powerups,
+            status: data.status
           })
         );
         navigate(`/play/${data.lobbyId}`);
@@ -86,6 +87,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     } catch (error) {
       setErrorMessage("An error occurred while creating the lobby");
       setShowError(true);
+      console.error(error);
     }
   };
 

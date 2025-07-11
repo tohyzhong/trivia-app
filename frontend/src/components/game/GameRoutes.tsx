@@ -30,7 +30,8 @@ const GameRoutes: React.FC = () => {
               lobbyId: data.lobbyId,
               categories: data.categories,
               currency: data.currency,
-              powerups: data.powerups
+              powerups: data.powerups,
+              status: data.status
             })
           );
 
