@@ -4,7 +4,6 @@ import GameLoading from "../gamelobby/GameLoading";
 import Classic from "./Classic";
 import Knowledge from "./Knowledge";
 import { useDispatch, useSelector } from "react-redux";
-import { clearLobby } from "../../../redux/lobbySlice";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../redux/store";
 import { motion } from "motion/react";
@@ -91,7 +90,6 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
 
   // Question time states
   const [timeLeft, setTimeLeft] = useState(timeLimit);
-  const [animationId, setAnimationId] = useState(0);
   useEffect(() => {
     if (!answerRevealed && gameState && serverTimeNow && gameState.lastUpdate) {
       const getSecondsDifference = (date1: Date, date2: Date) => {
@@ -108,12 +106,44 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
       );
 
       setTimeLeft(calculatedTimeLeft);
-      setAnimationId((prev) => prev + 1);
     }
   }, [gameState.currentQuestion, answerRevealed, serverTimeNow]);
 
+  const [displayTime, setDisplayTime] = useState(timeLeft.toFixed(1));
+  const [barWidthPercent, setBarWidthPercent] = useState(100);
+
+  useEffect(() => {
+    let animationFrameId: number;
+    let startTimestamp: number | null = null;
+    const startTime = timeLeft;
+
+    if (answerRevealed) {
+      setDisplayTime("0");
+      setBarWidthPercent(0);
+      return;
+    }
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = (timestamp - startTimestamp) / 1000;
+      const remainingTime = Math.max(startTime - elapsed, 0);
+
+      setDisplayTime(remainingTime.toFixed(1));
+      setBarWidthPercent((remainingTime / timeLimit) * 100);
+
+      if (remainingTime > 0) {
+        animationFrameId = requestAnimationFrame(step);
+      } else if (!timesUpCalledRef.current) {
+        handleTimesUp();
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(step);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [timeLeft, answerRevealed]);
+
   // Leaving Lobby
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLeaveLocal = async () => {
     playClickSound();
@@ -153,8 +183,6 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   useEffect(() => {
     timesUpCalledRef.current = false;
   }, [gameState.currentQuestion]);
-
-  const percentageLeft = (timeLeft / timeLimit) * 100;
 
   const handleTimesUp = async () => {
     if (timesUpCalledRef.current || !gameState || gameState.answerRevealed)
@@ -214,18 +242,11 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           )}
           <div className="question-timer-border">
             <motion.div
-              key={`timer-${animationId}-${answerRevealed}`}
+              key={`timer-${answerRevealed}`}
               className="question-timer"
-              initial={{ width: `${(timeLeft / timeLimit) * 100}%` }}
-              animate={{
-                width: 0,
-                transition: {
-                  duration: answerRevealed ? 0 : timeLeft,
-                  ease: "linear"
-                }
-              }}
-              onAnimationComplete={handleTimesUp}
+              style={{ width: `${barWidthPercent}%` }}
             />
+            <div className="numeric-timer">{displayTime}s</div>
           </div>
         </div>
         <GameChat
