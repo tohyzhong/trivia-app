@@ -32,7 +32,7 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
     },
     {
       name: "Double Points",
-      description: "Doubles the score for 1 question",
+      description: "Doubles the score for 1 question (Does not stack)",
       cost: 40,
       image: <TbMultiplier2X />
     }

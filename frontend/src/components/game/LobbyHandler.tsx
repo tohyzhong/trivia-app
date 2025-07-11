@@ -7,7 +7,11 @@ import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
 import GameLobby from "./gamelobby/GameLobby";
 import QuizDisplay from "./quiz/QuizDisplay";
-import { clearLobby, setStatusRedux } from "../../redux/lobbySlice";
+import {
+  clearLobby,
+  setCurrency,
+  setStatusRedux
+} from "../../redux/lobbySlice";
 import { useSocket } from "../../context/SocketContext";
 
 interface GameSetting {
@@ -151,6 +155,10 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateJoinRequests", (data) => {
       setJoinRequests(data);
+    });
+
+    socket.on("updateCurrency", (data) => {
+      dispatch(setCurrency(data));
     });
 
     return () => {

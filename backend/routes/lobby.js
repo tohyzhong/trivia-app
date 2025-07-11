@@ -907,7 +907,8 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
       submitted: true,
       answerHistory: lobby.gameState.playerStates[user]?.answerHistory || {},
       score: lobby.gameState.playerStates[user]?.score || 0,
-      timeSubmitted: timeNow
+      timeSubmitted: timeNow,
+      powerups: lobby.gameState.playerStates[user]?.powerups || {}
     };
 
     const updatedPlayerStates = {
@@ -933,6 +934,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           const state = updatedPlayerStates[username];
           const selected = state.selectedOption;
           const isCorrect = selected === question.correctOption;
+          const bonusScoreEnabled = state.powerups?.["Double Points"] ?? false;
 
           state.answerHistory = state.answerHistory || {};
           state.correctScore = 0;
@@ -955,6 +957,10 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
                 state.correctScore = Math.max(40, Math.round(score));
               }
 
+              state.correctScore = bonusScoreEnabled
+                ? 2 * state.correctScore
+                : state.correctScore;
+
               state.score += state.correctScore;
               state.answerHistory[currentQuestion] = "correct";
             } else {
@@ -971,8 +977,11 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
             state.answerHistory[i] = "missing";
           }
 
-          // Max bonus is 50 for 5 correct in a row
-          if (state.answerHistory[currentQuestion] === "correct") {
+          // Max bonus is 50 for 5 correct in a row, if correctScore === 0 player is cheating
+          if (
+            state.answerHistory[currentQuestion] === "correct" &&
+            state.correctScore !== 0
+          ) {
             let bonusCount = 0;
             for (
               let i = currentQuestion - 1;
@@ -1013,6 +1022,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
         const currentQuestion = lobby.gameState.currentQuestion;
         const correctOption = lobby.gameState.question.correctOption;
         const timeLimit = lobby.gameSettings.timePerQuestion;
+        let bonusScoreEnabled = false;
 
         for (const username of Object.keys(lobby.players)) {
           const state = playerStates[username] ?? {};
@@ -1044,6 +1054,9 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           }
 
           playerStates[username] = state;
+
+          bonusScoreEnabled =
+            bonusScoreEnabled || (state.powerups?.["Double Points"] ?? false);
         }
 
         const maxVotes = Math.max(
@@ -1089,14 +1102,20 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
             teamCorrectScore = Math.max(40, Math.round(score));
           }
 
+          teamCorrectScore = bonusScoreEnabled
+            ? 2 * teamCorrectScore
+            : teamCorrectScore;
+
           let streak = 0;
-          for (
-            let i = currentQuestion - 1;
-            i >= currentQuestion - 5 && i > 0;
-            i--
-          ) {
-            if (teamAnswerHistory[i][0] === "correct") streak++;
-            else break;
+          if (teamCorrectScore !== 0) {
+            for (
+              let i = currentQuestion - 1;
+              i >= currentQuestion - 5 && i > 0;
+              i--
+            ) {
+              if (teamAnswerHistory[i][0] === "correct") streak++;
+              else break;
+            }
           }
 
           teamStreakBonus = streak * 10;
@@ -1213,6 +1232,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
         } else {
           const selected = state.selectedOption;
           const isCorrect = selected === lobby.gameState.question.correctOption;
+          const bonusScoreEnabled = state.powerups["Double Points"];
 
           state.answerHistory = state.answerHistory || {};
           state.correctScore = 0;
@@ -1224,6 +1244,8 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
             if (timeElapsed <= 3.0) {
               state.correctScore = 100;
+            } else if (timeElapsed > timeLimit + 0.5) {
+              state.correctScore = 0;
             } else {
               const timeAfter30 = timeElapsed - 3.0;
               const remainingTime = timeLimit - 3.0;
@@ -1231,6 +1253,10 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
               let score = 100 * Math.exp(-k * (timeAfter30 / remainingTime));
               state.correctScore = Math.max(40, Math.round(score));
             }
+
+            state.correctScore = bonusScoreEnabled
+              ? 2 * state.correctScore
+              : state.correctScore;
 
             state.score += state.correctScore;
             state.answerHistory[currentQuestion] = "correct";
@@ -1246,7 +1272,10 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
           }
 
           // Max bonus is 50 for 5 correct in a row
-          if (state.answerHistory[currentQuestion] === "correct") {
+          if (
+            state.answerHistory[currentQuestion] === "correct" &&
+            state.correctScore !== 0
+          ) {
             let bonusCount = 0;
             for (
               let i = currentQuestion - 1;
@@ -1287,6 +1316,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
       const currentQuestion = lobby.gameState.currentQuestion;
       const correctOption = lobby.gameState.question.correctOption;
       const timeLimit = lobby.gameSettings.timePerQuestion;
+      let bonusScoreEnabled = false;
 
       for (const username of Object.keys(lobby.players)) {
         const state = playerStates[username] ?? {};
@@ -1317,6 +1347,9 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
         }
 
         playerStates[username] = state;
+
+        bonusScoreEnabled =
+          bonusScoreEnabled || (state?.powerups["Double Points"] ?? false);
       }
 
       const maxVotes = Math.max(
@@ -1352,6 +1385,8 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
         if (timeElapsed <= 3.0) {
           teamCorrectScore = 100;
+        } else if (timeElapsed > timeLimit + 0.5) {
+          teamCorrectScore = 0;
         } else {
           const timeAfter30 = timeElapsed - 3.0;
           const remainingTime = timeLimit - 3.0;
@@ -1360,14 +1395,20 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
           teamCorrectScore = Math.max(40, Math.round(score));
         }
 
+        teamCorrectScore = bonusScoreEnabled
+          ? 2 * teamCorrectScore
+          : teamCorrectScore;
+
         let streak = 0;
-        for (
-          let i = currentQuestion - 1;
-          i >= currentQuestion - 5 && i > 0;
-          i--
-        ) {
-          if (teamAnswerHistory[i][0] === "correct") streak++;
-          else break;
+        if (teamCorrectScore !== 0) {
+          for (
+            let i = currentQuestion - 1;
+            i >= currentQuestion - 5 && i > 0;
+            i--
+          ) {
+            if (teamAnswerHistory[i][0] === "correct") streak++;
+            else break;
+          }
         }
 
         teamStreakBonus = streak * 10;
@@ -1608,6 +1649,8 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         wonMatches: 0
       });
 
+      const userSocketMap = getUserSocketMap();
+
       const bulkOps = playerUpdates.map((profile) => {
         const username = profile.username;
         const answerHistory = playerStates[username]?.answerHistory || {};
@@ -1734,6 +1777,13 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           gameMode === "coop"
             ? Math.floor(teamScore / usernamesToUpdate.length / 100)
             : Math.floor(score / 100);
+
+        const targetSocketIds = userSocketMap.get(username);
+        if (targetSocketIds && Array.isArray(targetSocketIds)) {
+          targetSocketIds.forEach((socketId) => {
+            socketIO.to(socketId).emit("updateCurrency", currency);
+          });
+        }
 
         return {
           updateOne: {
