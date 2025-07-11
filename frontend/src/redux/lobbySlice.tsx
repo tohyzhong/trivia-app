@@ -6,9 +6,10 @@ interface LobbyState {
   currency: number;
   powerups: {
     hintBoosts: number;
-    timeFreezes: number;
+    addTimes: number;
     doublePoints: number;
   };
+  status: string;
 }
 
 const initialState: LobbyState = {
@@ -17,9 +18,10 @@ const initialState: LobbyState = {
   currency: 0,
   powerups: {
     hintBoosts: 0,
-    timeFreezes: 0,
+    addTimes: 0,
     doublePoints: 0
-  }
+  },
+  status: ""
 };
 
 const lobbySlice = createSlice({
@@ -32,9 +34,10 @@ const lobbySlice = createSlice({
       state.currency = action.payload.currency ?? 0;
       state.powerups = {
         hintBoosts: action.payload.powerups.hintBoosts ?? 0,
-        timeFreezes: action.payload.powerups.timeFreezes ?? 0,
+        addTimes: action.payload.powerups.addTimes ?? 0,
         doublePoints: action.payload.powerups.doublePoints ?? 0
       };
+      state.status = action.payload.status ?? "";
     },
     setCurrency: (state, action) => {
       state.currency = action.payload;
@@ -42,9 +45,12 @@ const lobbySlice = createSlice({
     setPowerups: (state, action) => {
       state.powerups = {
         hintBoosts: action.payload.hintBoosts ?? 0,
-        timeFreezes: action.payload.timeFreezes ?? 0,
+        addTimes: action.payload.addTimes ?? 0,
         doublePoints: action.payload.doublePoints ?? 0
       };
+    },
+    setStatusRedux: (state, action) => {
+      state.status = action.payload;
     },
     clearLobby: (state) => {
       state.lobbyId = null;
@@ -53,7 +59,12 @@ const lobbySlice = createSlice({
   }
 });
 
-export const { setLobby, setCurrency, setPowerups, clearLobby } =
-  lobbySlice.actions;
+export const {
+  setLobby,
+  setCurrency,
+  setPowerups,
+  setStatusRedux,
+  clearLobby
+} = lobbySlice.actions;
 
 export default lobbySlice.reducer;
