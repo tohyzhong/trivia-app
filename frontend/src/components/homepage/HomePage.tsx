@@ -15,7 +15,7 @@ const HomePage: React.FC = () => {
       (shopSuccess === "1" && "Purchase successful!") ||
       ""
   );
-  const [isSuccess, setIsSuccess] = useState(shopSuccess === "1");
+  const isSuccess = shopSuccess === "1";
 
   return (
     <>
@@ -31,11 +31,11 @@ const HomePage: React.FC = () => {
           <p>
             The ultimate trivia game that lets you test your knowledge of meme
             culture. Whether you want to play solo, compete with friends, or
-            team up for co-op challenges, there's something for everyone.
+            team up for co-op challenges, there&apos;s something for everyone.
           </p>
           <p>
-            Track your stats, earn rewards, and climb the leaderboard. Let’s see
-            who’s the ultimate meme master!
+            Track your stats, earn rewards, and climb the leaderboard.
+            Let&apos;s see who&apos;s the ultimate meme master!
           </p>
         </header>
         <main>

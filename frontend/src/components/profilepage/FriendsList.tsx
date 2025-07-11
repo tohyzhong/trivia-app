@@ -26,7 +26,6 @@ const FriendsList: React.FC = () => {
   const [incomingFriends, setIncomingFriends] = useState<Friend[]>([]);
 
   // Loading and error utils
-  const [loading, setLoading] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
   const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
@@ -34,7 +33,6 @@ const FriendsList: React.FC = () => {
   // Fetching friends information
   const fetchFriends = async () => {
     try {
-      setLoading(true);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/friends/${username}/all`,
         {
@@ -53,10 +51,9 @@ const FriendsList: React.FC = () => {
       setFriends(data.mutual);
       setIncomingFriends(data.incoming);
     } catch (err) {
+      console.error(err);
       setMessage("Could not fetch friends");
       setIsSuccess(false);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -93,10 +90,9 @@ const FriendsList: React.FC = () => {
         setMessage(`You are now friends with ${friendUsername}`);
       }
     } catch (error) {
+      console.error(error);
       setMessage("Unable to accept friend requests. Please reload the page.");
       setIsSuccess(false);
-    } finally {
-      setLoading(false);
     }
     fetchFriends(); // Reset friends info
   };
@@ -125,10 +121,9 @@ const FriendsList: React.FC = () => {
         setIsSuccess(true);
       }
     } catch (error) {
+      console.error(error);
       setMessage("Unable to decline friend requests. Please reload the page.");
       setIsSuccess(false);
-    } finally {
-      setLoading(false);
     }
     fetchFriends(); // Reset friends info
   };
@@ -218,7 +213,7 @@ const FriendsList: React.FC = () => {
         success={isSuccess}
       />
 
-      <h2> {username}'s Friends</h2>
+      <h2> {username}&apos;s Friends</h2>
       {loggedInUser === username && (
         <ToggleButton
           onClick={handleButtonClick}

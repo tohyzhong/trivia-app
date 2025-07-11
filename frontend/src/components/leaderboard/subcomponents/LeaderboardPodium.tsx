@@ -55,7 +55,7 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
     <div className="leaderboard-podium-container">
       {podiumDisplayData.map((data) =>
         data ? (
-          <div className={`podium-item podium-${data.rank}`}>
+          <div className={`podium-item podium-${data.rank}`} key={data.rank}>
             <div className="podium-user-detail">
               <strong>{getUserDetail(data)}</strong>
             </div>

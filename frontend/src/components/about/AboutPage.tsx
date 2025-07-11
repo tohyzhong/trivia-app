@@ -12,9 +12,9 @@ const AboutPage: React.FC = () => {
           <h2>Our Mission</h2>
           <p>
             In a world flooded with information overload and daily stress, The
-            Rizz Quiz offers a fun, engaging way to take a break. Whether you're
-            a teenager looking to escape school stress or an adult wanting a
-            quick game break, we've got something for you!
+            Rizz Quiz offers a fun, engaging way to take a break. Whether
+            you&apos;re a teenager looking to escape school stress or an adult
+            wanting a quick game break, we&apos;ve got something for you!
           </p>
           <br></br>
           <h2>Core Features</h2>

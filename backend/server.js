@@ -56,7 +56,7 @@ const connectMongo = async () => {
       }
     );
     isConnected = true;
-    console.log("MongoDB connected");
+    console.info("MongoDB connected");
   } catch (err) {
     console.error("MongoDB connection error:", err);
     process.exit(1);
@@ -94,7 +94,7 @@ app.use("/api/shop", shopRoutes);
 // Connection
 server.listen(process.env.PORT, () => {
   // uncomment for local production testing
-  console.log(`Server is running on port ${process.env.PORT}`);
+  console.info(`Server is running on port ${process.env.PORT}`);
 });
 
 // Run scheduled tasks

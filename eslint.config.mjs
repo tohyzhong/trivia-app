@@ -3,9 +3,6 @@ import globals from "globals";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import reactPlugin from "eslint-plugin-react";
-import jsonPlugin from "eslint-plugin-json";
-import markdownPlugin from "eslint-plugin-markdown";
-import cssPlugin from "eslint-plugin-css";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
 export default [
@@ -20,10 +17,8 @@ export default [
         sourceType: "module"
       }
     },
-    plugins: { js: {} }, // @eslint/js exports default config objects, you may omit or import js if needed
-    rules: {
-      // Add js recommended rules here if you want, or leave empty
-    }
+    plugins: { js: {} },
+    rules: {}
   },
 
   // JSX files
@@ -64,34 +59,6 @@ export default [
     }
   },
 
-  // // JSON files
-  // {
-  //   files: ["**/*.json", "**/*.jsonc", "**/*.json5"],
-  //   plugins: { json: jsonPlugin },
-  //   rules: {
-  //     ...jsonPlugin.configs.recommended.rules
-  //   }
-  // },
-
-  // // Markdown files
-  // {
-  //   files: ["**/*.md"],
-  //   plugins: { markdown: markdownPlugin },
-  //   rules: {
-  //     ...markdownPlugin.configs.recommended.rules
-  //   }
-  // },
-
-  // CSS files
-  // {
-  //   files: ["**/*.css"],
-  //   plugins: { css: cssPlugin },
-  //   rules: {
-  //     ...cssPlugin.configs.recommended.rules
-  //   }
-  // },
-
-  // Unused imports + no-console warnings for JS/TS/JSX/TSX
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     plugins: { "unused-imports": unusedImportsPlugin },

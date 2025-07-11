@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "../../styles/matchhistory.css";
 
 interface MatchDetails {
@@ -20,7 +20,6 @@ interface MatchDetails {
 const MatchHistory: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
 
   // User details
   const { username } = useParams<{ username: string }>();
@@ -30,12 +29,6 @@ const MatchHistory: React.FC = () => {
   const [expandedIndexes, setExpandedIndexes] = useState<Set<number>>(
     new Set()
   );
-
-  // Navigate back to profile
-  const navigate = useNavigate();
-  const handleBackClick = () => {
-    navigate(`/profile/${username}`);
-  };
 
   const toggleDetails = (index: number) => {
     setExpandedIndexes((prev) => {
@@ -67,7 +60,6 @@ const MatchHistory: React.FC = () => {
       setMatchHistory(data.matchHistory);
     } catch (error) {
       console.error("Error fetching match history:", error);
-      setError(true);
     } finally {
       setLoading(false);
     }
@@ -84,7 +76,7 @@ const MatchHistory: React.FC = () => {
       <div className="match-history-div-header">
         <h1>
           <a className="user-name" href={`/profile/${username}`}>
-            {username}'s
+            {username}&apos;s
           </a>{" "}
           Game History (Last 10)
         </h1>
@@ -204,7 +196,7 @@ const MatchHistory: React.FC = () => {
                   </div>
 
                   <div className="category-stats">
-                    <h4>{username}'s Stats:</h4>
+                    <h4>{username}&apos;s Stats:</h4>
                     <ul>
                       {Object.entries(match.categoryStats).map(
                         ([cat, stat]) => (

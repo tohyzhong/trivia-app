@@ -14,7 +14,7 @@ const getRandomClassicQuestion = async (categories) => {
       allQuestions[Math.floor(Math.random() * allQuestions.length)];
     return question;
   } catch (error) {
-    console.error("Error fetching questions.");
+    console.error(error);
     return new Error({ message: "Error fetching questions." });
   }
 };

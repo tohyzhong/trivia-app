@@ -278,7 +278,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
                 .split("\n")
                 .map((line, index) => {
                   if (line.includes("Mode")) {
-                    return <h2>{line}</h2>;
+                    return <h2 key={index}>{line}</h2>;
                   }
                   if (
                     line.includes("Stats Earnable") ||

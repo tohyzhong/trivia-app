@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
           <p className="register-message">
-            Don't have an account? <a href="/auth/signup">Sign up here!</a>
+            Don&apos;t have an account? <a href="/auth/signup">Sign up here!</a>
           </p>
         </form>
       </div>

@@ -31,7 +31,6 @@ interface ClassicQuestionProps {
     };
   };
   profilePictures: { [username: string]: string };
-  host: string;
   serverTimeNow: Date;
   readyCountdown: { [key: string]: boolean | Date };
 }
@@ -47,7 +46,6 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   playerStates,
   teamStates,
   profilePictures,
-  host,
   serverTimeNow,
   readyCountdown
 }) => {

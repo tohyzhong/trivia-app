@@ -8,13 +8,12 @@ const PlayButton = () => {
   const lobby = useSelector((state: RootState) => state.lobby);
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleClick = () =>
     username
       ? lobby.lobbyId
         ? navigate(`/play/${lobby.lobbyId}`)
         : navigate("/play")
       : navigate("/auth/login?error=login_required");
-  };
 
   return (
     <div>

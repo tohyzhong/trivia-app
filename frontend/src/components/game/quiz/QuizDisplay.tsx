@@ -57,7 +57,7 @@ interface QuizDisplayProps {
   serverTimeNow: Date;
   timeLimit: number;
   totalQuestions: number;
-  handleLeave: Function;
+  handleLeave: () => void;
   host: string;
 }
 
@@ -227,7 +227,6 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 playerStates={gameState.playerStates}
                 teamStates={gameState.team}
                 profilePictures={profilePictures}
-                host={host}
                 serverTimeNow={serverTimeNow}
                 readyCountdown={{
                   countdownStarted: gameState.countdownStarted,

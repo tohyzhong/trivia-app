@@ -34,7 +34,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [error, setError] = useState("");
   const [sortField, setSortField] = useState<string>("correctAnswer");
-  const [sortAsc, setSortAsc] = useState<boolean>(false);
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const gridRef = useRef<any>(null);
   const navigate = useNavigate();
@@ -93,11 +92,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
     fetchData();
   }, [gameFormat, mode, category]);
 
-  const updateRanks = (
-    data: RowData[],
-    field: string = "correctAnswer",
-    asc: boolean = false
-  ) => {
+  const updateRanks = (data: RowData[], field: string = "correctAnswer") => {
     const sortedDesc = [...data].sort((a, b) => {
       return b[field] - a[field];
     });
@@ -108,7 +103,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
 
     setRowData(sortedByRank);
     setSortField(field);
-    setSortAsc(asc);
   };
 
   const onSortChanged = (event: any) => {
@@ -117,9 +111,8 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
     if (!sortModel) return updateRanks(rowData);
 
     const colId = sortModel.colId;
-    const sortAsc = sortModel.sort === "asc";
 
-    updateRanks(rawData, colId, sortAsc);
+    updateRanks(rawData, colId);
   };
 
   const columnDefs: ColDef[] = [

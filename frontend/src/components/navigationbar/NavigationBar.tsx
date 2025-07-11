@@ -84,6 +84,7 @@ export const NavigationBar = () => {
       const data = await response.json();
       setMatchingProfiles(data);
     } catch (err) {
+      console.error(err);
       setMatchingProfiles([]);
     }
   };
