@@ -172,6 +172,7 @@ const LobbyHandler: React.FC = () => {
       socket.off("updateUsers");
       socket.off("updateKick");
       socket.off("updateJoinRequests");
+      socket.off("updateCurrency");
     };
   }, []);
 
