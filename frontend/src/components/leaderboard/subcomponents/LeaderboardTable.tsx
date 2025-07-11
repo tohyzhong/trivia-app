@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ColDef, SortDirection } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import "../../../styles/leaderboard.css";
 import { useSelector } from "react-redux";

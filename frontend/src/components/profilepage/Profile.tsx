@@ -6,7 +6,6 @@ import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
 import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { setUser } from "../../redux/userSlice";
-import { BooleanLiteral } from "typescript";
 
 interface Friend {
   username: string;
@@ -20,8 +19,8 @@ interface UserProfile {
   role: string;
   friends: Friend[];
   message?: string;
-  addedFriend: Boolean;
-  receivedFriendRequest: Boolean;
+  addedFriend: boolean;
+  receivedFriendRequest: boolean;
   classicStats: { [key: string]: number };
   knowledgeStats: { [key: string]: number };
 }
@@ -38,7 +37,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUserProfile] = useState<UserProfile | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const [message, setMessage] = useState<string>("");
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -64,9 +62,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         dispatch(setUser({ ...userFromRedux, role: data.role }));
       }
       setUserProfile(data);
-      console.log(data);
       setFriends(data.friends || []);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching profile data", error);
     }
@@ -121,6 +117,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     } catch (error) {
       setIsSuccess(false);
       setMessage("An error occurred while adding the friend.");
+      console.error(error);
     }
   };
 
@@ -214,7 +211,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       <div className="header-buttons">
         <div className="profile-header-container">
           <div className="profile-header">
-            <h1 className="profile-name">{user.username}'s Profile</h1>
+            <h1 className="profile-name">{user.username}&apos;s Profile</h1>
             <img
               src={user.profilePicture || defaultAvatar}
               alt={`${user.username}'s profile`}

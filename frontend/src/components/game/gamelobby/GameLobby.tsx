@@ -4,8 +4,6 @@ import "../../../styles/gamelobby.css";
 import GameSettings from "./GameSettings";
 import GameUsers from "./GameUsers";
 import GameChat from "./GameChat";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 
 import { useInitSound } from "../../../hooks/useInitSound";

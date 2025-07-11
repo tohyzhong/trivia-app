@@ -3,7 +3,7 @@ import GameChat from "../gamelobby/GameChat";
 import GameLoading from "../gamelobby/GameLoading";
 import Classic from "./Classic";
 import Knowledge from "./Knowledge";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../redux/store";
 import { motion } from "motion/react";

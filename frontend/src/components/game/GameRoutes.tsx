@@ -5,7 +5,7 @@ import LobbyHandler from "./LobbyHandler";
 import JoinLobbyHandler from "./JoinLobbyHandler";
 import LobbyNotFound from "./gamelobby/LobbyNotFound";
 import LobbyBrowser from "./LobbyBrowser";
-import { setCurrency, setLobby } from "../../redux/lobbySlice";
+import { setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import CurrencyBar from "./subcomponents/CurrencyBar";

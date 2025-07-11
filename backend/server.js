@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
 import { initSocket } from "./socket.js";
-import generateQuestions from "./utils/questionbank.js";
 
 import authRoutes from "./routes/auth.js";
 import profileRoutes from "./routes/profile.js";

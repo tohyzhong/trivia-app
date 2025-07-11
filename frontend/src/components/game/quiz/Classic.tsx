@@ -24,7 +24,7 @@ interface ClassicQuestionProps {
   optionSelected: number;
   submitted: boolean;
   answerRevealed: boolean;
-  playerStates: Object;
+  playerStates: object;
   teamStates: {
     [key: string]: {
       [key: string]: number | Array<string | { [key: number]: Array<string> }>;

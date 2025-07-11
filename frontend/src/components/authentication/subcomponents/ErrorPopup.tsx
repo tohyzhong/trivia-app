@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "motion/react";
 import { IoIosInformationCircle } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";

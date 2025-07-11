@@ -198,7 +198,7 @@ const Settings: React.FC = () => {
         }
       );
 
-      const data = await response.json();
+      await response.json();
 
       triggerDeleteCooldown();
       setErrorPopupMessage(
