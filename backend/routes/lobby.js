@@ -1163,10 +1163,20 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
       // Hide correct answer from frontend
       updatedLobby.gameState.question.correctOption = null;
+      const { playerStates, ...restGameState } = updatedLobby.gameState;
+
+      for (const state of Object.values(playerStates)) {
+        delete state.powerups;
+      }
 
       getSocketIO()
         .to(lobbyId)
-        .emit("updateState", { gameState: updatedLobby.gameState });
+        .emit("updateState", {
+          gameState: {
+            ...restGameState,
+            playerStates
+          }
+        });
 
       return res
         .status(200)
@@ -1946,10 +1956,19 @@ router.post("/use-powerup/:lobbyId", authenticate, async (req, res) => {
     return res.status(400).json({ message: "Not enough powerups." });
   }
 
+  const timeNow = new Date();
+
   // Update lobby player state to track powerup usage and apply powerup
   const update = {
     $set: {
-      lastActivity: new Date()
+      lastActivity: timeNow
+    },
+    $push: {
+      chatMessages: {
+        sender: "System",
+        message: `${username} used ${powerupName}.`,
+        timestamp: timeNow
+      }
     }
   };
 
@@ -1976,13 +1995,26 @@ router.post("/use-powerup/:lobbyId", authenticate, async (req, res) => {
     new: true
   });
 
+  const socketIO = getSocketIO();
   if (powerupName === "Add Time") {
-    const socketIO = getSocketIO();
+    const { playerStates, ...restGameState } = updatedLobby.gameState;
+
+    for (const state of Object.values(playerStates)) {
+      delete state.powerups;
+    }
+
     socketIO.to(lobbyId).emit("updateState", {
-      gameState: updatedLobby.gameState,
-      serverTimeNow: new Date()
+      gameState: {
+        ...restGameState,
+        playerStates
+      },
+      serverTimeNow: timeNow
     });
   }
+
+  socketIO
+    .to(lobbyId)
+    .emit("updateChat", { chatMessages: updatedLobby.chatMessages });
 
   res.json({
     hintBoost: revealed,
