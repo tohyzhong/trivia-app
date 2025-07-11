@@ -90,23 +90,27 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   let answerRevealed = gameState.answerRevealed ?? false;
 
   // Question time states
-  let timeLeft = 0;
-  if (!answerRevealed) {
-    const getSecondsDifference = (date1: Date, date2: Date) => {
-      return (date1.getTime() - date2.getTime()) / 1000;
-    };
-    timeLeft = Math.max(
-      Math.min(
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [animationId, setAnimationId] = useState(0);
+  useEffect(() => {
+    if (!answerRevealed && gameState && serverTimeNow && gameState.lastUpdate) {
+      const getSecondsDifference = (date1: Date, date2: Date) => {
+        return (date1.getTime() - date2.getTime()) / 1000;
+      };
+
+      const calculatedTimeLeft = Math.max(
         timeLimit -
           getSecondsDifference(
             new Date(serverTimeNow),
             new Date(gameState.lastUpdate)
           ),
-        timeLimit
-      ),
-      0
-    );
-  }
+        0
+      );
+
+      setTimeLeft(calculatedTimeLeft);
+      setAnimationId((prev) => prev + 1);
+    }
+  }, [gameState.currentQuestion, answerRevealed, serverTimeNow]);
 
   // Leaving Lobby
   const dispatch = useDispatch();
@@ -210,13 +214,13 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           )}
           <div className="question-timer-border">
             <motion.div
-              key={gameState.currentQuestion + "-" + answerRevealed}
-              className={"question-timer"}
-              initial={{ width: `${percentageLeft}%` }}
+              key={`timer-${animationId}-${answerRevealed}`}
+              className="question-timer"
+              initial={{ width: `${(timeLeft / timeLimit) * 100}%` }}
               animate={{
                 width: 0,
                 transition: {
-                  duration: answerRevealed ? 0 : Math.max(timeLeft, 0),
+                  duration: answerRevealed ? 0 : timeLeft,
                   ease: "linear"
                 }
               }}
