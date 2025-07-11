@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { IoIosInformationCircle } from "react-icons/io";
@@ -54,6 +54,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   const answerHistory = teamStates
     ? teamStates["teamAnswerHistory"]
     : playerStates[loggedInUser]?.answerHistory || [];
+  const currentQuestionRef = useRef(currentQuestion);
 
   // Next Question / Return to Lobby Countdown
   const start =
@@ -73,10 +74,15 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     if (initialTimeLeft === null) return;
 
     const interval = setInterval(() => {
+      if (currentQuestionRef.current !== currentQuestion) {
+        clearInterval(interval);
+        return 0;
+      }
+
       setCountdownLeft((prev) => {
-        if (prev <= 1) {
+        if (prev <= 0) {
           clearInterval(interval);
-          if (loggedInUser === host) handleNextQuestion();
+          handleNextQuestion();
           return 0;
         }
         return prev - 1;
@@ -88,6 +94,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Reset countdown on new question
   useEffect(() => {
+    currentQuestionRef.current = currentQuestion;
     setCountdownLeft(Math.floor(initialTimeLeft ?? 10));
   }, [currentQuestion]);
 
@@ -127,7 +134,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Next question
   const handleNextQuestion = async () => {
-    if (loggedInUser !== host && playerStates[loggedInUser]?.ready) return;
+    if (currentQuestionRef.current !== currentQuestion) return;
     playClickSound();
     try {
       await fetch(
