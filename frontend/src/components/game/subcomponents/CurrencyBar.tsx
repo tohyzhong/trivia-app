@@ -6,7 +6,11 @@ import { HiOutlineLightBulb } from "react-icons/hi2";
 import { MdOutlineTimer } from "react-icons/md";
 import { TbMultiplier2X } from "react-icons/tb";
 import Shop from "./Shop";
-import { setCurrency, setPowerups } from "../../../redux/lobbySlice";
+import {
+  setCurrency,
+  setHintRevealed,
+  setPowerups
+} from "../../../redux/lobbySlice";
 import "../../../styles/CurrencyBar.css";
 import { useLocation } from "react-router-dom";
 
@@ -74,9 +78,7 @@ const CurrencyBar: React.FC = () => {
       alert(data.message);
       dispatch(setPowerups(data.powerups));
       if (powerupName === "Hint Boost") {
-        // TODO: Update display to mark out the 2 wrong options revealde
-        let revealed = data.hintBoost;
-        console.log("WRONG ANSWERS:", revealed);
+        dispatch(setHintRevealed(data.hintBoost));
       }
     } else {
       alert(data.message);

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { IoIosInformationCircle } from "react-icons/io";
 import Explanation from "./Explanation";
 import { playClickSound } from "../../../utils/soundManager";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
+import { resetHintRevealed } from "../../../redux/lobbySlice";
 
 interface ClassicQuestion {
   question: string;
@@ -55,6 +56,10 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     ? teamStates["teamAnswerHistory"]
     : playerStates[loggedInUser]?.answerHistory || [];
   const currentQuestionRef = useRef(currentQuestion);
+  const hintRevealedOptions = useSelector(
+    (state: RootState) => state.lobby.hintRevealed
+  );
+  const dispatch = useDispatch();
 
   // Next Question / Return to Lobby Countdown
   const start =
@@ -94,6 +99,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Reset countdown on new question
   useEffect(() => {
+    dispatch(resetHintRevealed());
     currentQuestionRef.current = currentQuestion;
     setCountdownLeft(Math.floor(initialTimeLeft ?? 10));
   }, [currentQuestion]);
@@ -268,8 +274,11 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         {classicQuestion.options.map((option, index) => (
           <div key={index} className="option-container">
             <button
-              className={`option option-${index + 1} ${submitted ? "disabled" : ""}`}
+              className={`option option-${index + 1} ${submitted ? "disabled" : ""} ${
+                hintRevealedOptions.includes(index + 1) ? "hint-wrong" : ""
+              }`}
               onClick={!submitted ? () => handleSubmit(index + 1) : null}
+              disabled={hintRevealedOptions.includes(index + 1)}
             >
               {option}
             </button>

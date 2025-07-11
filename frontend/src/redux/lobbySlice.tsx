@@ -10,6 +10,7 @@ interface LobbyState {
     doublePoints: number;
   };
   status: string;
+  hintRevealed: number[];
 }
 
 const initialState: LobbyState = {
@@ -21,7 +22,8 @@ const initialState: LobbyState = {
     addTimes: 0,
     doublePoints: 0
   },
-  status: ""
+  status: "",
+  hintRevealed: []
 };
 
 const lobbySlice = createSlice({
@@ -52,6 +54,12 @@ const lobbySlice = createSlice({
     setStatusRedux: (state, action) => {
       state.status = action.payload;
     },
+    setHintRevealed: (state, action) => {
+      state.hintRevealed = action.payload;
+    },
+    resetHintRevealed: (state) => {
+      state.hintRevealed = [];
+    },
     clearLobby: (state) => {
       state.lobbyId = null;
       state.categories = null;
@@ -64,6 +72,8 @@ export const {
   setCurrency,
   setPowerups,
   setStatusRedux,
+  setHintRevealed,
+  resetHintRevealed,
   clearLobby
 } = lobbySlice.actions;
 
