@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Settings.css";
@@ -7,6 +7,7 @@ import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { useCooldown } from "../../hooks/useCooldown";
 import { motion } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { setUser } from "../../redux/userSlice";
 
 interface UserProfile {
   username: string;
@@ -17,10 +18,11 @@ interface UserProfile {
 }
 
 const Settings: React.FC = () => {
+  const dispatch = useDispatch();
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
 
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUserLocal] = useState<UserProfile | null>(null);
   const count = useRef(0);
   const [errorPopupMessage, setErrorPopupMessage] = useState("");
   const [isResponseSuccess, setIsResponseSuccess] = useState(false);
@@ -55,7 +57,15 @@ const Settings: React.FC = () => {
           }
         );
         const data: UserProfile = await response.json();
-        setUser(data);
+        setUserLocal(data);
+        dispatch(
+          setUser({
+            username: data.username,
+            email: data.email,
+            verified: data.verified,
+            role: stateUser.role
+          })
+        );
       } catch (error) {
         console.error("Error fetching profile data", error);
         setErrorPopupMessage("Error fetching profile data: " + String(error));
