@@ -85,7 +85,7 @@ router.post("/buy-powerup", authenticate, async (req, res) => {
 
     const powerupMap = {
       "Hint Boost": "hintBoosts",
-      "Time Freeze": "timeFreezes",
+      "Add Time": "addTimes",
       "Double Points": "doublePoints"
     };
 

@@ -117,7 +117,12 @@ router.post("/create", authenticate, async (req, res) => {
             streakBonus: 0,
             selectedOption: 0,
             submitted: false,
-            answerHistory: {}
+            answerHistory: {},
+            powerups: {
+              "Hint Boost": [],
+              "Add Time": false,
+              "Double Points": false
+            }
           }
         },
         answerRevealed: false,
@@ -139,7 +144,8 @@ router.post("/create", authenticate, async (req, res) => {
       message: "Lobby created successfully",
       categories: playerDoc.categories,
       currency: playerDoc.currency,
-      powerups: playerDoc.powerups
+      powerups: playerDoc.powerups,
+      status: lobby.status ?? ""
     });
   } catch (error) {
     console.error(error);
@@ -169,7 +175,7 @@ router.get("/check", authenticate, async (req, res) => {
                         }
                       }
                     },
-                    { $project: { lobbyId: 1 } }
+                    { $project: { lobbyId: 1, status: 1 } }
                   ],
                   as: "lobby"
                 }
@@ -213,7 +219,8 @@ router.get("/check", authenticate, async (req, res) => {
       lobbyId: lobby?.lobbyId ?? null,
       categories,
       currency,
-      powerups
+      powerups,
+      status: lobby?.status ?? ""
     });
   } catch (error) {
     console.error(error);
@@ -423,7 +430,12 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
               streakBonus: 0,
               selectedOption: 0,
               submitted: false,
-              answerHistory: {}
+              answerHistory: {},
+              powerups: {
+                "Hint Boost": [],
+                "Add Time": false,
+                "Double Points": false
+              }
             },
             lastActivity: new Date(),
             chatMessages: {
@@ -933,6 +945,8 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
               if (timeElapsed <= 3.0) {
                 state.correctScore = 100;
+              } else if (timeElapsed > timeLimit + 0.5) {
+                state.correctScore = 0;
               } else {
                 const timeAfter30 = timeElapsed - 3.0;
                 const remainingTime = timeLimit - 3.0;
@@ -1065,6 +1079,8 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
 
           if (timeElapsed <= 3.0) {
             teamCorrectScore = 100;
+          } else if (timeElapsed > timeLimit + 0.5) {
+            teamCorrectScore = 0;
           } else {
             const timeAfter30 = timeElapsed - 3.0;
             const remainingTime = timeLimit - 3.0;
@@ -1460,7 +1476,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
     const countdownStartTime = lobby.gameState.countdownStartTime || now;
     const allReady =
       Object.values(playerStates).every((p) => p.ready === true) ||
-      (now - new Date(countdownStartTime)) / 1000 >= 10;
+      (now - new Date(countdownStartTime)) / 1000 >= 9;
 
     if (!allReady) {
       await Lobby.collection.updateOne({ lobbyId }, { $set: updateOps });
@@ -1514,7 +1530,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           selectedOption: 0,
           submitted: false,
           answerHistory: {},
-          ready: false
+          ready: false,
+          powerups: {
+            "Hint Boost": [],
+            "Add Time": false,
+            "Double Points": false
+          }
         };
       }
 
@@ -1777,7 +1798,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           streakBonus: 0,
           selectedOption: 0,
           submitted: false,
-          ready: false
+          ready: false,
+          powerups: {
+            "Hint Boost": [],
+            "Add Time": false,
+            "Double Points": false
+          }
         };
       }
 
@@ -1819,6 +1845,100 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Error starting lobby." });
   }
+});
+
+const powerupMap = {
+  "Hint Boost": "hintBoosts",
+  "Add Time": "addTimes",
+  "Double Points": "doublePoints"
+};
+
+router.post("/use-powerup/:lobbyId", authenticate, async (req, res) => {
+  const { lobbyId } = req.params;
+  const { powerupName } = req.body;
+  const username = req.user.username;
+
+  const lobby = await Lobby.findOne({ lobbyId });
+
+  if (!lobby) {
+    return res.status(404).json({ message: "Lobby not found." });
+  }
+
+  const player = lobby.gameState.playerStates[username];
+  if (!player) {
+    return res.status(400).json({ message: "Player not in game." });
+  }
+
+  const alreadyUsed =
+    lobby.gameState.playerStates[username].powerups?.[powerupName];
+  if (
+    (powerupName === "Hint Boost" && alreadyUsed?.length > 0) ||
+    (powerupName !== "Hint Boost" && alreadyUsed)
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Powerup already used this round." });
+  }
+
+  // Deduct powerup from Profile tracking
+  const profile = await Profile.findOneAndUpdate(
+    {
+      username,
+      [`powerups.${powerupMap[powerupName]}`]: { $gt: 0 }
+    },
+    {
+      $inc: { [`powerups.${powerupMap[powerupName]}`]: -1 }
+    },
+    { new: true }
+  );
+
+  if (!profile) {
+    return res.status(400).json({ message: "Not enough powerups." });
+  }
+
+  // Update lobby player state to track powerup usage and apply powerup
+  const update = {
+    $set: {
+      lastActivity: new Date()
+    }
+  };
+
+  const path = `gameState.playerStates.${username}.powerups`;
+
+  let revealed = [];
+
+  if (powerupName === "Hint Boost") {
+    const correctOption = lobby.gameState.question.correctOption;
+    const all = [1, 2, 3, 4];
+    const wrongOptions = all.filter((o) => o !== correctOption);
+    revealed = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 2);
+    update.$set[`${path}.Hint Boost`] = revealed;
+  } else if (powerupName === "Add Time") {
+    update.$set[`${path}.Add Time`] = true;
+    update.$set[`gameState.lastUpdate`] = new Date(
+      new Date(lobby.gameState.lastUpdate).getTime() + 5000
+    );
+  } else if (powerupName === "Double Points") {
+    update.$set[`${path}.Double Points`] = true;
+  }
+
+  const updatedLobby = await Lobby.findOneAndUpdate({ lobbyId }, update, {
+    new: true
+  });
+
+  if (powerupName === "Add Time") {
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit("updateState", {
+      gameState: updatedLobby.gameState,
+      serverTimeNow: new Date()
+    });
+  }
+
+  res.json({
+    hintBoost: revealed,
+    powerups: profile.powerups,
+    message: `${powerupName} used successfully.`
+  });
 });
 
 export default router;

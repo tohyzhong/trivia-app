@@ -17,7 +17,7 @@ const profileSchema = new mongoose.Schema(
     },
     powerups: {
       hintBoosts: { type: Number, default: 0 },
-      timeFreezes: { type: Number, default: 0 },
+      addTimes: { type: Number, default: 0 },
       doublePoints: { type: Number, default: 0 }
     }
   },
