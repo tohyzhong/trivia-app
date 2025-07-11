@@ -4,7 +4,7 @@ import { GiShoppingCart } from "react-icons/gi";
 import "../../../styles/Shop.css";
 import { IoClose } from "react-icons/io5";
 import { HiOutlineLightBulb } from "react-icons/hi2";
-import { TiMediaPauseOutline } from "react-icons/ti";
+import { MdOutlineTimer } from "react-icons/md";
 import { TbMultiplier2X } from "react-icons/tb";
 import { setCurrency, setPowerups } from "../../../redux/lobbySlice";
 import { useDispatch } from "react-redux";
@@ -25,10 +25,10 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
       image: <HiOutlineLightBulb />
     },
     {
-      name: "Time Freeze",
-      description: "Pauses the timer for 5 seconds",
+      name: "Add Time",
+      description: "Adds 5 seconds for the entire lobby",
       cost: 40,
-      image: <TiMediaPauseOutline />
+      image: <MdOutlineTimer />
     },
     {
       name: "Double Points",
