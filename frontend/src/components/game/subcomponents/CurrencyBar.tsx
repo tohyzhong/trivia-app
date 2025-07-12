@@ -7,7 +7,6 @@ import { MdOutlineTimer } from "react-icons/md";
 import { TbMultiplier2X } from "react-icons/tb";
 import Shop from "./Shop";
 import {
-  setCurrency,
   setHintRevealed,
   setPowerups
 } from "../../../redux/lobbySlice";

@@ -111,7 +111,7 @@ const LobbyHandler: React.FC = () => {
   };
 
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+    const handleBeforeUnload = () => {
       if (!hasManuallyLeftRef.current) {
         disconnect();
       }

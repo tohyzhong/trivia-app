@@ -37,10 +37,10 @@ const SignupPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // if (matcher.hasMatch(username)) {
-    //   setErrors(["Username contains profanities."]);
-    //   return;
-    // }
+    if (matcher.hasMatch(username)) {
+      setErrorMessages(["Username contains profanities."]);
+      return;
+    }
 
     if (password !== passwordConfirmation) {
       setErrorMessages(["Passwords do not match"]);

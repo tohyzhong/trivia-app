@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../styles/game.css";
 import ModeSelect from "./subcomponents/ModeSelect";
 import SoundSettings from "./subcomponents/SoundSettings";
@@ -25,7 +25,6 @@ interface SubModes {
 export const GameMainpage: React.FC = () => {
   useInitSound("Lobby");
   const { bgmBlocked, handleResume } = useBGMResumeOverlay("Lobby");
-  const location = useLocation();
 
   const modes = [
     {

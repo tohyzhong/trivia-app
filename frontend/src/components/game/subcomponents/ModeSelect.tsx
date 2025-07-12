@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { motion } from "motion/react";
 import "../../../styles/modeselect.css";
 import { IoClose } from "react-icons/io5";
@@ -93,6 +93,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
           success: false
         })
       );
+      console.log(error);
     }
   };
 

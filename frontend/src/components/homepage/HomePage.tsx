@@ -1,20 +1,11 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import "../../styles/homepage.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 
 const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const shopSuccess = params.get("shopSuccess");
-  const [errorMessage, setErrorMessage] = useState<string>(
-    location.state?.errorMessage ||
-      (shopSuccess === "1" && "Purchase successful!") ||
-      ""
-  );
-  const isSuccess = shopSuccess === "1";
 
   return (
     <>

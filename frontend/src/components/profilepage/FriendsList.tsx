@@ -26,7 +26,6 @@ const FriendsList: React.FC = () => {
   const [incomingFriends, setIncomingFriends] = useState<Friend[]>([]);
 
   // Loading and error utils
-  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -54,8 +53,7 @@ const FriendsList: React.FC = () => {
       dispatch(
         setError({ errorMessage: "Could not fetch friends", success: false })
       );
-    } finally {
-      setLoading(false);
+      console.log(err);
     }
   };
 
@@ -103,8 +101,7 @@ const FriendsList: React.FC = () => {
           success: false
         })
       );
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
     fetchFriends(); // Reset friends info
   };
@@ -141,8 +138,7 @@ const FriendsList: React.FC = () => {
           success: false
         })
       );
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
     fetchFriends(); // Reset friends info
   };
