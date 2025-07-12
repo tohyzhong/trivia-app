@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
 import { useNavigate } from "react-router-dom";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import "../../styles/LobbyBrowser.css";
 import PauseOverlay from "./PauseOverlay";
 import { IoClose, IoSettingsOutline } from "react-icons/io5";
@@ -10,6 +9,8 @@ import { playClickSound } from "../../utils/soundManager";
 import SoundSettings from "./subcomponents/SoundSettings";
 import { useInitSound } from "../../hooks/useInitSound";
 import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
+import { useDispatch } from "react-redux";
+import { setError } from "../../redux/errorSlice";
 
 const LobbyBrowser: React.FC = () => {
   useInitSound("Lobby");
@@ -18,9 +19,9 @@ const LobbyBrowser: React.FC = () => {
 
   const [rowData, setRowData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const gridRef = useRef<AgGridReact>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchLobbies = async () => {
@@ -39,7 +40,7 @@ const LobbyBrowser: React.FC = () => {
         setRowData(data.lobbies);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        dispatch(setError({ errorMessage: err.message, success: false }));
         setLoading(false);
       }
     };
@@ -57,7 +58,10 @@ const LobbyBrowser: React.FC = () => {
       cellRenderer: (params: any) => (
         <span
           style={{ color: "#3498db", cursor: "pointer" }}
-          onClick={() => navigate(`/play/join/${params.data.lobbyId}`)}
+          onClick={() => {
+            navigate(`/play/join/${params.data.lobbyId}`);
+            playClickSound();
+          }}
         >
           {params.value || `${params.data.host}'s Lobby`}
         </span>
@@ -127,7 +131,7 @@ const LobbyBrowser: React.FC = () => {
           }}
           className="sound-settings-icon"
         />
-        <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
         {isSoundPopupOpen && (
           <div className="sound-settings-popup">
@@ -144,7 +148,6 @@ const LobbyBrowser: React.FC = () => {
       </>
 
       <h1>Multiplayer Lobby Browser</h1>
-      <ErrorPopup message={error} setMessage={setError} />
       {!loading && rowData && rowData.length >= 1 ? (
         <div className="ag-theme-alpine">
           <AgGridReact

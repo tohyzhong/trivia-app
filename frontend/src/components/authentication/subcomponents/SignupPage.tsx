@@ -2,19 +2,28 @@ import React, { useEffect, useState } from "react";
 import "../../../styles/signuppage.css";
 import ReturnButton from "./ReturnButton";
 import { RootState } from "../../../redux/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import ErrorPopup from "./ErrorPopup";
+import { setError } from "../../../redux/errorSlice";
+import {
+  RegExpMatcher,
+  englishDataset,
+  englishRecommendedTransformers
+} from "obscenity";
 
 const SignupPage: React.FC = () => {
+  const matcher = new RegExpMatcher({
+    ...englishDataset.build(),
+    ...englishRecommendedTransformers
+  });
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
-  const [errors, setErrors] = useState<string[]>([]);
-  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isLoggedIn = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
@@ -28,8 +37,13 @@ const SignupPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // if (matcher.hasMatch(username)) {
+    //   setErrors(["Username contains profanities."]);
+    //   return;
+    // }
+
     if (password !== passwordConfirmation) {
-      setErrors(["Passwords do not match"]);
+      setErrorMessages(["Passwords do not match"]);
       return;
     }
 
@@ -53,25 +67,24 @@ const SignupPage: React.FC = () => {
         const errorMessages = data.errors.map(
           (error: { msg: string }) => error.msg
         );
-        setErrors(errorMessages);
+        setErrorMessages(errorMessages);
       } else {
-        setErrorPopupMessage(data.error || "Registration failed");
+        dispatch(
+          setError({
+            errorMessage: data.error || "Registration failed",
+            success: false
+          })
+        );
       }
     }
   };
 
   return (
     <div className="signup-form-container">
-      {errorPopupMessage !== "" && (
-        <ErrorPopup
-          message={errorPopupMessage}
-          setMessage={setErrorPopupMessage}
-        />
-      )}
       <form onSubmit={handleRegister}>
-        {errors.length > 0 && (
+        {errorMessages.length > 0 && (
           <div className="error-message">
-            {errors.map((error, index) => (
+            {errorMessages.map((error, index) => (
               <p key={index}>{error}</p>
             ))}
           </div>

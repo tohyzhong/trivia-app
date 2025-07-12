@@ -2,10 +2,12 @@ import React, { useEffect } from "react";
 import "../../../styles/forgotpassword.css";
 import ReturnButton from "./ReturnButton";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import ErrorPopup from "./ErrorPopup";
+import { useDispatch } from "react-redux";
+import { setError } from "../../../redux/errorSlice";
 
 const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [email, setEmail] = React.useState("");
   const [messageEmail, setMessageEmail] = React.useState("");
 
@@ -14,7 +16,6 @@ const PasswordReset: React.FC = () => {
   const [countdown, setCountdown] = React.useState(30);
 
   // Post-verification
-  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
   const [errorMessages, setErrorMessages] = React.useState<string[]>([]);
   const [verified, setVerified] = React.useState(false);
   const [searchParams] = useSearchParams();
@@ -39,7 +40,9 @@ const PasswordReset: React.FC = () => {
         setVerified(true);
         setEmail(data.email);
       } else {
-        setErrorPopupMessage(data.error || "Invalid or expired token");
+        dispatch(
+          setError({ errorMessage: "Invalid or expired token", success: false })
+        );
       }
     }
   };
@@ -68,7 +71,12 @@ const PasswordReset: React.FC = () => {
       setEmailSent(true);
       setCountdown(60);
     } else {
-      setErrorPopupMessage(data.error || "Failed to send OTP");
+      dispatch(
+        setError({
+          errorMessage: `${data.error || "Failed to send OTP"}`,
+          success: false
+        })
+      );
     }
   };
 
@@ -160,12 +168,6 @@ const PasswordReset: React.FC = () => {
     </div>
   ) : (
     <>
-      {errorPopupMessage !== "" && (
-        <ErrorPopup
-          message={errorPopupMessage}
-          setMessage={setErrorPopupMessage}
-        />
-      )}
       <div className="password-reset-page">
         <div className="form-container">
           <form onSubmit={handleSendEmail}>

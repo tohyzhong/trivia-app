@@ -4,10 +4,10 @@ import { AgGridReact } from "ag-grid-react";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/friendslist.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import ToggleButton from "./ToggleButton";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { setError } from "../../redux/errorSlice";
 
 interface Friend {
   username: string;
@@ -26,9 +26,9 @@ const FriendsList: React.FC = () => {
   const [incomingFriends, setIncomingFriends] = useState<Friend[]>([]);
 
   // Loading and error utils
-  const [message, setMessage] = useState<string>("");
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Fetching friends information
   const fetchFriends = async () => {
@@ -51,9 +51,11 @@ const FriendsList: React.FC = () => {
       setFriends(data.mutual);
       setIncomingFriends(data.incoming);
     } catch (err) {
-      console.error(err);
-      setMessage("Could not fetch friends");
-      setIsSuccess(false);
+      dispatch(
+        setError({ errorMessage: "Could not fetch friends", success: false })
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,13 +88,23 @@ const FriendsList: React.FC = () => {
       if (!response.ok)
         throw new Error("Failed to accept incoming friend request");
       else {
-        setIsSuccess(true);
-        setMessage(`You are now friends with ${friendUsername}`);
+        dispatch(
+          setError({
+            errorMessage: `You are now friends with ${friendUsername}`,
+            success: true
+          })
+        );
       }
     } catch (error) {
-      console.error(error);
-      setMessage("Unable to accept friend requests. Please reload the page.");
-      setIsSuccess(false);
+      dispatch(
+        setError({
+          errorMessage:
+            "Unable to accept friend requests. Please reload the page.",
+          success: false
+        })
+      );
+    } finally {
+      setLoading(false);
     }
     fetchFriends(); // Reset friends info
   };
@@ -117,13 +129,20 @@ const FriendsList: React.FC = () => {
       if (!response.ok)
         throw new Error("Failed to decline incoming friend request");
       else {
-        setMessage("Friend request ignored.");
-        setIsSuccess(true);
+        dispatch(
+          setError({ errorMessage: "Friend request ignored.", success: true })
+        );
       }
     } catch (error) {
-      console.error(error);
-      setMessage("Unable to decline friend requests. Please reload the page.");
-      setIsSuccess(false);
+      dispatch(
+        setError({
+          errorMessage:
+            "Unable to decline friend requests. Please reload the page.",
+          success: false
+        })
+      );
+    } finally {
+      setLoading(false);
     }
     fetchFriends(); // Reset friends info
   };
@@ -207,12 +226,6 @@ const FriendsList: React.FC = () => {
 
   return (
     <div className="friendslist-container">
-      <ErrorPopup
-        message={message}
-        setMessage={setMessage}
-        success={isSuccess}
-      />
-
       <h2> {username}&apos;s Friends</h2>
       {loggedInUser === username && (
         <ToggleButton

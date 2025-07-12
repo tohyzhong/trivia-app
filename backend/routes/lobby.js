@@ -483,7 +483,7 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
 router.post("/kick/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
-    const { usernameToKick } = req.body;
+    const { usernameToKick, isRejection } = req.body;
     const hostUsername = req.user.username;
 
     if (hostUsername === usernameToKick)
@@ -493,7 +493,7 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
 
     const chatMsg = {
       sender: "System",
-      message: `${hostUsername} has kicked ${usernameToKick} from the lobby.`,
+      message: `${hostUsername} has ${isRejection ? "rejected" : "kicked"} ${usernameToKick} from the lobby.`,
       timestamp: new Date()
     };
 
@@ -532,7 +532,7 @@ router.post("/kick/:lobbyId", authenticate, async (req, res) => {
     const targetSocketIds = userSocketMap.get(usernameToKick);
     if (targetSocketIds && Array.isArray(targetSocketIds)) {
       targetSocketIds.forEach((socketId) => {
-        io.to(socketId).emit("kickUser", lobbyId);
+        io.to(socketId).emit(isRejection ? "rejectUser" : "kickUser", lobbyId);
       });
     }
     io.to(lobbyId).emit("updateKick", usernameToKick);

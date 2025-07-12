@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import "../../styles/homepage.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 
 const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
@@ -19,11 +18,6 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <ErrorPopup
-        message={errorMessage}
-        setMessage={setErrorMessage}
-        success={isSuccess}
-      />
       <div className="home-container">
         <header>
           <h1>The Rizz Quiz</h1>

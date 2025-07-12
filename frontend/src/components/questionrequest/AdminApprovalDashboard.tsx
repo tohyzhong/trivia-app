@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import "../../styles/adminapprovaldashboard.css";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import NoAccess from "../noaccess/NoAccess";
 import { motion } from "framer-motion";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { setError } from "../../redux/errorSlice";
 
 interface Question {
   _id: string;
@@ -23,11 +23,10 @@ interface Question {
 }
 
 const AdminApprovalDashboard: React.FC = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const role = user.role;
 
-  const [approvalMessage, setApprovalMessage] = useState("");
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [manualCategories, setManualCategories] = useState<{
@@ -150,8 +149,9 @@ const AdminApprovalDashboard: React.FC = () => {
     }
 
     if (!selectedCat?.trim()) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Please select a category.");
+      dispatch(
+        setError({ errorMessage: "Please select a category.", success: false })
+      );
       return;
     }
 
@@ -170,8 +170,12 @@ const AdminApprovalDashboard: React.FC = () => {
       difficultyToUse < 1 ||
       difficultyToUse > 5
     ) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Please enter a valid difficulty between 1 and 5.");
+      dispatch(
+        setError({
+          errorMessage: "Please enter a valid difficulty between 1 and 5.",
+          success: false
+        })
+      );
       return;
     }
 
@@ -209,12 +213,20 @@ const AdminApprovalDashboard: React.FC = () => {
 
       setShowManualPopup(false);
       setPendingApprovalId(null);
-      setIsApprovalSuccess(true);
-      setApprovalMessage("Question approved successfully!");
+      dispatch(
+        setError({
+          errorMessage: "Question approved successfully!",
+          success: true
+        })
+      );
     } catch (error) {
       console.error("Error approving:", error);
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Failed to approve question. Please try again.");
+      dispatch(
+        setError({
+          errorMessage: "Failed to approve question. Please try again.",
+          success: false
+        })
+      );
     } finally {
       setApprovingIds((prev) => {
         const updated = { ...prev };
@@ -251,12 +263,20 @@ const AdminApprovalDashboard: React.FC = () => {
       }
 
       setQuestions((prev) => prev.filter((q) => q._id !== questionId));
-      setIsApprovalSuccess(true);
-      setApprovalMessage("Question rejected successfully.");
+      dispatch(
+        setError({
+          errorMessage: "Question rejected successfully.",
+          success: true
+        })
+      );
     } catch (error) {
       console.error("Error rejecting question:", error);
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Failed to reject question.");
+      dispatch(
+        setError({
+          errorMessage: "Failed to reject question. Please try again.",
+          success: false
+        })
+      );
     } finally {
       setRejectingIds((prev) => {
         const updated = { ...prev };
@@ -411,11 +431,6 @@ const AdminApprovalDashboard: React.FC = () => {
 
   return role.includes("admin") ? (
     <div className="admin-approval-dashboard">
-      <ErrorPopup
-        message={approvalMessage}
-        setMessage={setApprovalMessage}
-        success={isApprovalSuccess}
-      />
       <h2 className="admin-header">Admin Question Approval</h2>
 
       <input
@@ -489,8 +504,12 @@ const AdminApprovalDashboard: React.FC = () => {
                   onClick={() => {
                     const value = manualCategories[pendingApprovalId]?.trim();
                     if (!value) {
-                      setIsApprovalSuccess(false);
-                      setApprovalMessage("Please enter a category.");
+                      dispatch(
+                        setError({
+                          errorMessage: "Please enter a category.",
+                          success: false
+                        })
+                      );
                       return;
                     }
                     setShowManualPopup(false);

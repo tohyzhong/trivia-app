@@ -4,10 +4,10 @@ import { AgGridReact } from "ag-grid-react";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import "../../../styles/leaderboard.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
+import { setError } from "../../../redux/errorSlice";
 
 interface Props {
   gameFormat: string;
@@ -32,11 +32,11 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
   const [loading, setLoading] = useState(true);
   const [rawData, setRawData] = useState<RowData[]>([]);
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [error, setError] = useState("");
   const [sortField, setSortField] = useState<string>("correctAnswer");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const gridRef = useRef<any>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,7 +84,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
         setRawData(withRate);
         updateRanks(withRate);
       } catch (err: any) {
-        setError(err.message);
+        dispatch(setError({ errorMessage: err.message, success: false }));
       } finally {
         setLoading(false);
       }
@@ -278,7 +278,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
 
   return (
     <div className="leaderboard-container">
-      <ErrorPopup message={error} setMessage={setError} />
       {!loading && rowData && (
         <LeaderboardPodium
           podiumData={rowData

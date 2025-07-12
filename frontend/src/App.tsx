@@ -5,6 +5,7 @@ import "./styles/App.css";
 import useAuth from "./hooks/useAuth";
 
 import NavigationBar from "./components/navigationbar/NavigationBar";
+import ErrorPopup from "./components/authentication/subcomponents/ErrorPopup";
 
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
@@ -38,6 +39,11 @@ function App() {
   const navigate = useNavigate();
   const verified = useSelector((state: RootState) => state.user.verified);
   const username = useSelector((state: RootState) => state.user.username);
+
+  // Error popup
+  const error = useSelector((state: RootState) => state.error.errorMessage);
+  const isSuccess = useSelector((state: RootState) => state.error.success);
+  const timestampKey = useSelector((state: RootState) => state.error.timestamp);
 
   const authFreeRoutes = [
     "/auth",
@@ -109,6 +115,9 @@ function App() {
 
   return (
     <>
+      {error && (
+        <ErrorPopup key={timestampKey} message={error} success={isSuccess} />
+      )}
       <NavigationBar />
       <Suspense fallback={<></>}>
         <Routes>

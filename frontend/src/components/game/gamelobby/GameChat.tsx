@@ -1,10 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { playClickSound } from "../../../utils/soundManager";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
+import { FaExclamation } from "react-icons/fa";
+import { setError } from "../../../redux/errorSlice";
+import ReportUser from "./ReportUser";
+import {
+  RegExpMatcher,
+  TextCensor,
+  asteriskCensorStrategy,
+  englishDataset,
+  englishRecommendedTransformers,
+  keepStartCensorStrategy
+} from "obscenity";
 
 interface ChatMessage {
   sender: string;
@@ -26,22 +36,43 @@ interface GameChatProps {
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
+  const profanityEnabled = useSelector(
+    (state: RootState) => state.soundSettings.profanityEnabled
+  );
+  const matcher = new RegExpMatcher({
+    ...englishDataset.build(),
+    ...englishRecommendedTransformers
+  });
+  const censor = new TextCensor().setStrategy(
+    keepStartCensorStrategy(asteriskCensorStrategy())
+  );
+  function getFilteredMessage(message: string, enabled: boolean): string {
+    if (enabled) return message;
+
+    const noSpacesMessage = message.split(" ").join("");
+    const matches = matcher.getAllMatches(noSpacesMessage);
+    let filteredMessage = censor.applyTo(noSpacesMessage, matches);
+
+    // Build original message with spaces
+    let finalMessage = "";
+    let filterIndex = 0;
+    for (let i = 0; i < message.length; i++) {
+      if (message[i] === " ") {
+        finalMessage += " ";
+      } else {
+        finalMessage += filteredMessage[filterIndex] || "";
+        filterIndex++;
+      }
+    }
+
+    return finalMessage;
+  }
+
   const { lobbyId, chatMessages, playerStates, gameType, profilePictures } =
     props;
   const [chatInput, setChatInput] = useState<string>("");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const [errorPopupMessage, setErrorPopupMessage] = React.useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  if (playerStates) {
-    for (let i = 0; i <= 15; i++) {
-      playerStates[String(i)] = {
-        score: i,
-        answerHistory: { 1: "correct", 2: "missing", 3: "wrong" },
-        ready: true
-      };
-    }
-  }
+  const dispatch = useDispatch();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChatInput(event.target.value);
@@ -64,15 +95,13 @@ const GameChat: React.FC<GameChatProps> = (props) => {
       } else {
         const data = await response.json();
         console.error("Error sending chat message: ", data.message);
-        setIsSuccess(false);
-        setErrorPopupMessage(
-          `Error sending chat message: ${String(data.message)}`
+        dispatch(
+          setError({ errorMessage: String(data.message), success: false })
         );
       }
     } catch (error) {
       console.error("Error sending chat message:", error);
-      setIsSuccess(false);
-      setErrorPopupMessage(`Error sending chat message: ${String(error)}`);
+      dispatch(setError({ errorMessage: String(error), success: false }));
     }
   };
 
@@ -92,39 +121,24 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     }
   }, [chatMessages]);
 
-  const handleReport = async (usernameToReport: string) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/profile/report`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            reported: usernameToReport,
-            source: "lobby",
-            lobbyId
-          })
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok) {
-        setIsSuccess(true);
-        setErrorPopupMessage("User reported successfully.");
-      } else {
-        setIsSuccess(false);
-        setErrorPopupMessage("Failed to report user: " + data.message);
-      }
-    } catch (err) {
-      console.error("Error reporting user:", err);
-      setIsSuccess(false);
-      setErrorPopupMessage("Error reporting user:" + String(err));
-    }
+  // User report handlers
+  const [reportPopupActive, setReportPopupActive] = useState(false);
+  const [usernameToReport, setUsernameToReport] = useState("");
+  const handleReport = async (username: string) => {
+    setReportPopupActive(true);
+    setUsernameToReport(username);
   };
 
   return (
     <div className="stats-chat-container">
+      {reportPopupActive && (
+        <ReportUser
+          username={usernameToReport}
+          setActive={setReportPopupActive}
+          lobbyId={lobbyId}
+        />
+      )}
+
       {playerStates && (
         <div className="player-stats-container">
           <h3 className="stats-header">Score Summary</h3>
@@ -186,9 +200,12 @@ const GameChat: React.FC<GameChatProps> = (props) => {
                             className="report-button"
                             onClick={() => handleReport(username)}
                             title="Report User"
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: "pointer", marginLeft: "10px" }}
                           >
-                            ❗
+                            <FaExclamation
+                              color="red"
+                              style={{ verticalAlign: "middle" }}
+                            />
                           </span>
                         )}
                       </span>
@@ -208,19 +225,14 @@ const GameChat: React.FC<GameChatProps> = (props) => {
         className="game-lobby-chat-container"
         style={playerStates ? { height: "50%" } : { height: "100%" }}
       >
-        {errorPopupMessage !== "" && (
-          <ErrorPopup
-            message={errorPopupMessage}
-            setMessage={setErrorPopupMessage}
-            success={isSuccess}
-          />
-        )}
         <div className="game-lobby-chat-messages" ref={chatContainerRef}>
           {chatMessages &&
             chatMessages.map((msg, index) => (
               <ul key={msg.sender + index} className="chat-container">
                 <p className="chat-sender">{msg.sender}:&nbsp;</p>
-                <p className="chat-content">{msg.message}</p>
+                <p className="chat-content">
+                  {getFilteredMessage(msg.message, profanityEnabled)}
+                </p>
               </ul>
             ))}
         </div>

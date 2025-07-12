@@ -72,6 +72,9 @@
 
 .role-container .report-button {
   background-color: #f44336;
+  justify-content: center;
+  width: fit-content;
+  align-self: center;
 }
 
 .profile-image {

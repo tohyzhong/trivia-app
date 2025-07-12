@@ -7,6 +7,16 @@ import UsedToken from "../models/UsedToken.js";
 import Profile from "../models/Profile.js";
 import authenticate from "./authMiddleware.js";
 import sendEmail from "../utils/email.js";
+import {
+  RegExpMatcher,
+  englishDataset,
+  englishRecommendedTransformers
+} from "obscenity";
+
+const matcher = new RegExpMatcher({
+  ...englishDataset.build(),
+  ...englishRecommendedTransformers
+});
 
 const router = express.Router();
 
@@ -127,6 +137,12 @@ router.post(
     }
 
     const { email, username, password } = req.body;
+    if (matcher.hasMatch(username)) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "Username contains profanities." }] });
+    }
+
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       await User.create({

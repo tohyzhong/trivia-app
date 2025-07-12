@@ -5,8 +5,9 @@ import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { setLobby } from "../../../redux/lobbySlice";
+import { playClickSound } from "../../../utils/soundManager";
+import { setError } from "../../../redux/errorSlice";
 
 interface SubMode {
   name: string;
@@ -40,15 +41,12 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     };
   }, []);
 
-  // For error popup
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [showError, setShowError] = useState<boolean>(false);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
   const handleSubmodeClick = async (lobbyMode: string) => {
+    playClickSound();
     if (lobbyMode === "Coming Soon...")
       return; // No effect for clicking on coming soon tab
     else if (lobbyMode === "Browse") {
@@ -81,21 +79,25 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
         );
         navigate(`/play/${data.lobbyId}`);
       } else {
-        setErrorMessage(data.message || "Failed to create lobby");
-        setShowError(true);
+        dispatch(
+          setError({
+            errorMessage: data.message || "Failed to create lobby.",
+            success: false
+          })
+        );
       }
     } catch (error) {
-      setErrorMessage("An error occurred while creating the lobby");
-      setShowError(true);
-      console.error(error);
+      dispatch(
+        setError({
+          errorMessage: "An error occured while creating the lobby",
+          success: false
+        })
+      );
     }
   };
 
   return (
     <>
-      {showError && (
-        <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />
-      )}
       <motion.div
         className="submode-select-container-full"
         initial={{ opacity: 0, y: "-20%" }}

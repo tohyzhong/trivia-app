@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { useLobbySocketRedirect } from "../../hooks/useLobbySocketRedirect";
 import { useInitSound } from "../../hooks/useInitSound";
 import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
@@ -13,6 +12,7 @@ import { IoClose, IoSettingsOutline } from "react-icons/io5";
 import { playClickSound } from "../../utils/soundManager";
 import SoundSettings from "./subcomponents/SoundSettings";
 import "../../styles/game.css";
+import { setError } from "../../redux/errorSlice";
 
 const JoinLobbyHandler: React.FC = () => {
   useInitSound("Lobby");
@@ -22,10 +22,10 @@ const JoinLobbyHandler: React.FC = () => {
   const [status, setStatus] = useState<
     "pending" | "approved" | "rejected" | "error"
   >("pending");
-  const [error, setError] = useState("");
 
   const socket = useSocket();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { lobbyId } = useParams();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
@@ -63,7 +63,7 @@ const JoinLobbyHandler: React.FC = () => {
       } catch (err) {
         console.error(err);
         setStatus("error");
-        setError(err.message);
+        dispatch(setError({ errorMessage: err.message, success: false }));
       }
     };
 
@@ -71,17 +71,24 @@ const JoinLobbyHandler: React.FC = () => {
 
     socket.emit("joinLobby", lobbyId);
 
-    socket.on("kickUser", setStatus("rejected"));
+    socket.on("kickUser", () => navigate("/play"));
+    socket.on("rejectUser", () => navigate("/play"));
 
     return () => {
       socket.emit("leaveLobby", lobbyId);
       socket.off("kickUser");
+      socket.off("rejectUser");
     };
   }, [lobbyId]);
 
   useEffect(() => {
     if (status === "rejected") {
-      setError("You were rejected from the lobby.");
+      dispatch(
+        setError({
+          errorMessage: "You were rejected from the lobby.",
+          success: false
+        })
+      );
     }
   }, [status]);
 
@@ -96,7 +103,7 @@ const JoinLobbyHandler: React.FC = () => {
           }}
           className="sound-settings-icon"
         />
-        <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
         {isSoundPopupOpen && (
           <div className="sound-settings-popup">
@@ -125,7 +132,7 @@ const JoinLobbyHandler: React.FC = () => {
         }}
         className="sound-settings-icon"
       />
-      <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+      <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
       {isSoundPopupOpen && (
         <div className="sound-settings-popup">
@@ -139,7 +146,6 @@ const JoinLobbyHandler: React.FC = () => {
           <SoundSettings />
         </div>
       )}
-      <ErrorPopup message={error} setMessage={setError} />
     </div>
   );
 };

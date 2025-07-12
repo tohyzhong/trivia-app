@@ -111,6 +111,14 @@ const LobbyHandler: React.FC = () => {
   };
 
   useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hasManuallyLeftRef.current) {
+        disconnect();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     socket.emit("joinLobby", lobbyId);
 
     socket.on("lobbyJoined", () => {
@@ -150,7 +158,7 @@ const LobbyHandler: React.FC = () => {
     socket.on("updateKick", (data) => {
       if (loggedInUser === data) {
         dispatch(clearLobby());
-        navigate("/", { state: { errorMessage: "You have been kicked." } });
+        navigate("/play");
       }
     });
 
@@ -163,8 +171,8 @@ const LobbyHandler: React.FC = () => {
     });
 
     return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       socket.emit("leaveLobby", lobbyId);
-      if (!hasManuallyLeftRef.current) disconnect();
       socket.off("lobbyJoined");
       socket.off("updateState");
       socket.off("updateStatus");
