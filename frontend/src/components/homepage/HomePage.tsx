@@ -1,11 +1,27 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "../../styles/homepage.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { setError } from "../../redux/errorSlice";
 
 const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const params = new URLSearchParams(location.search);
+  const shopSuccess = params.get("shopSuccess");
+
+  useEffect(() => {
+    if (shopSuccess === "1") {
+      dispatch(
+        setError({
+          errorMessage: "Purchase Successful!",
+          success: true
+        })
+      );
+    }
+  }, [shopSuccess]);
 
   return (
     <>

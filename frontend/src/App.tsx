@@ -93,7 +93,7 @@ function App() {
   }, []);
 
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  useLobbySocketRedirect(loggedInUser);
+  useLobbySocketRedirect();
 
   const Components = [
     { component: HomePage, path: "/" },

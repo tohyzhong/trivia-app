@@ -29,7 +29,7 @@ const JoinLobbyHandler: React.FC = () => {
   const { lobbyId } = useParams();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
-  useLobbySocketRedirect(loggedInUser);
+  useLobbySocketRedirect();
 
   useEffect(() => {
     if (!lobbyId) return;
