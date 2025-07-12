@@ -36,6 +36,7 @@ interface GameChatProps {
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
+  const isChatBanned = useSelector((state: RootState) => state.user.chatBan);
   const profanityEnabled = useSelector(
     (state: RootState) => state.soundSettings.profanityEnabled
   );
@@ -237,6 +238,11 @@ const GameChat: React.FC<GameChatProps> = (props) => {
             ))}
         </div>
         <div className="game-lobby-chat-entry">
+          {isChatBanned && (
+            <div className="disabled-overlay">
+              <h3 className="disabled-text">You are currently chat banned.</h3>
+            </div>
+          )}
           <input
             type="text"
             className="chat-input"

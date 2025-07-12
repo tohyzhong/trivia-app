@@ -56,7 +56,7 @@
   box-sizing: border-box;
 }
 
-.game-lobby-settings .disabled-overlay {
+.disabled-overlay {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -321,6 +321,7 @@
   align-items: center;
   width: 100%;
   height: 60px;
+  position: relative;
 }
 
 .chat-input {
@@ -350,6 +351,12 @@
 
 .chat-send-button:active {
   background-color: #3478b8;
+}
+
+.chat-disabled.overlay {
+}
+
+.chat-disabled-text {
 }
 
 /* Game Users */

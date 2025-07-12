@@ -8,6 +8,7 @@ import {
   generateUniqueQuestionIds,
   getQuestionById
 } from "../utils/generateclassicquestions.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -670,6 +671,13 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
       timestamp: new Date()
     };
 
+    const userDoc = await User.findOne({ username });
+    if (userDoc.chatBan) {
+      return res
+        .status(400)
+        .json({ message: "User not authorised to send chat messages." });
+    }
+
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId, [`players.${username}`]: { $exists: true } },
       {
@@ -678,10 +686,9 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
       },
       { returnDocument: "after" }
     );
+
     if (!updatedLobby) {
-      return res
-        .status(404)
-        .json({ message: "Lobby not found or user unauthorised" });
+      return res.status(404).json({ message: "Lobby not found" });
     }
     // Notify all players in the lobby
     const socketIO = getSocketIO();
