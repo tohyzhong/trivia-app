@@ -46,8 +46,24 @@ const GameChat: React.FC<GameChatProps> = (props) => {
   );
   function getFilteredMessage(message: string, enabled: boolean): string {
     if (enabled) return message;
-    const matches = matcher.getAllMatches(message);
-    return censor.applyTo(message, matches);
+
+    const noSpacesMessage = message.split(" ").join("");
+    const matches = matcher.getAllMatches(noSpacesMessage);
+    let filteredMessage = censor.applyTo(noSpacesMessage, matches);
+
+    // Build original message with spaces
+    let finalMessage = "";
+    let filterIndex = 0;
+    for (let i = 0; i < message.length; i++) {
+      if (message[i] === " ") {
+        finalMessage += " ";
+      } else {
+        finalMessage += filteredMessage[filterIndex] || "";
+        filterIndex++;
+      }
+    }
+
+    return finalMessage;
   }
 
   const { lobbyId, chatMessages, playerStates, gameType, profilePictures } =
