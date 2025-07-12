@@ -18,7 +18,6 @@ interface UserProfile {
 }
 
 const Settings: React.FC = () => {
-  const dispatch = useDispatch();
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
   const dispatch = useDispatch();
