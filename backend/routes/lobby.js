@@ -1929,6 +1929,28 @@ router.post("/use-powerup/:lobbyId", authenticate, async (req, res) => {
     return res.status(400).json({ message: "Player not in game." });
   }
 
+  // Disable unnecessary usage of powerup
+  if (powerupName === "Double Points") {
+    const lobbyType = lobby.gameType.split("-")[0];
+    const doubleUsed = Object.values(lobby.gameState.playerStates)
+      .map((value) => value.powerups["Double Points"])
+      .includes(true);
+
+    if (lobbyType === "coop" && doubleUsed) {
+      return res
+        .status(400)
+        .json({ message: "One of your teammates already used this powerup." });
+    }
+  }
+
+  // Round ended
+  if (lobby.gameState.answerRevealed) {
+    return res
+      .status(400)
+      .json({ message: "You cannot use powerups after the round has ended." });
+  }
+
+  // Powerup already used
   const alreadyUsed =
     lobby.gameState.playerStates[username].powerups?.[powerupName];
   if (
