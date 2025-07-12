@@ -15,48 +15,6 @@ import "../../../styles/CurrencyBar.css";
 import { useLocation } from "react-router-dom";
 import { setError } from "../../../redux/errorSlice";
 
-const confirmAndBuyPowerup = async (powerupName: string, dispatch: any) => {
-  const confirmed = window.confirm(`Purchase ${powerupName} for 40 coins?`);
-  if (!confirmed) return;
-
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/shop/buy-powerup`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ powerupName })
-      }
-    );
-
-    const data = await res.json();
-
-    if (res.ok) {
-      dispatch(setCurrency(data.currency));
-      dispatch(setPowerups(data.powerups));
-      dispatch(
-        setError({
-          errorMessage: `${powerupName} purchased successfully!`,
-          success: true
-        })
-      );
-    } else {
-      dispatch(
-        setError({
-          errorMessage: data.message || "Purchase failed.",
-          success: false
-        })
-      );
-    }
-  } catch (error) {
-    console.error("Error purchasing powerup:", error);
-    dispatch(
-      setError({ errorMessage: "Error purchasing powerup.", success: false })
-    );
-  }
-};
-
 const CurrencyBar: React.FC = () => {
   const currency = useSelector((state: RootState) => state.lobby.currency);
   const powerups = useSelector((state: RootState) => state.lobby.powerups);
@@ -127,7 +85,7 @@ const CurrencyBar: React.FC = () => {
           className="plus-button powerup-hint"
           onClick={(e) => {
             e.stopPropagation();
-            confirmAndBuyPowerup("Hint Boost", dispatch);
+            setShowShop(true);
           }}
         >
           <FaPlus size={12} />
@@ -147,7 +105,7 @@ const CurrencyBar: React.FC = () => {
           className="plus-button powerup-freeze"
           onClick={(e) => {
             e.stopPropagation();
-            confirmAndBuyPowerup("Add Time", dispatch);
+            setShowShop(true);
           }}
         >
           <FaPlus size={12} />
@@ -167,7 +125,7 @@ const CurrencyBar: React.FC = () => {
           className="plus-button powerup-double"
           onClick={(e) => {
             e.stopPropagation();
-            confirmAndBuyPowerup("Double Points", dispatch);
+            setShowShop(true);
           }}
         >
           <FaPlus size={12} />
