@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
 import { setUser } from "../../redux/userSlice";
-import { BooleanLiteral } from "typescript";
+import { setError } from "../../redux/errorSlice";
 
 interface Friend {
   username: string;
@@ -40,9 +39,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string>("");
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-
   const dispatch = useDispatch();
 
   // Retrieve profile details
@@ -64,7 +60,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         dispatch(setUser({ ...userFromRedux, role: data.role }));
       }
       setUserProfile(data);
-      console.log(data);
       setFriends(data.friends || []);
       setLoading(false);
     } catch (error) {
@@ -109,18 +104,24 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setIsSuccess(true);
-        setMessage(data.message);
+        dispatch(setError({ errorMessage: data.message, success: true }));
         fetchProfile();
       } else {
-        setIsSuccess(false);
-        setMessage(
-          "Failed to add friend: " + (data.message || "Unknown error.")
+        dispatch(
+          setError({
+            errorMessage:
+              "Failed to add friend: " + (data.message || "Unknown error."),
+            success: false
+          })
         );
       }
     } catch (error) {
-      setIsSuccess(false);
-      setMessage("An error occurred while adding the friend.");
+      dispatch(
+        setError({
+          errorMessage: "An error occurred while adding the friend.",
+          success: false
+        })
+      );
     }
   };
 
@@ -145,24 +146,73 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setIsSuccess(true);
-        setMessage(data.message);
+        dispatch(setError({ errorMessage: data.message, success: true }));
         fetchProfile();
       } else {
-        setIsSuccess(false);
-        setMessage(
-          "Failed to remove friend: " + (data.message || "Unknown error.")
+        dispatch(
+          setError({
+            errorMessage:
+              "Failed to remove friend: " + (data.message || "Unknown error."),
+            success: false
+          })
         );
       }
     } catch (error) {
       console.error("Error removing friend:", error);
-      setIsSuccess(false);
-      setMessage("An error occurred while removing the friend.");
+      dispatch(
+        setError({
+          errorMessage: "An error occurred while removing the friend.",
+          success: false
+        })
+      );
     }
   };
 
   const handleSeeMatchHistory = () => {
     navigate(`/profile/${username}/matchhistory`);
+  };
+
+  const handleReport = async (usernameToReport: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/profile/report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            reported: usernameToReport,
+            source: "profile",
+            lobbyId: null
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        dispatch(
+          setError({
+            errorMessage: "User reported successfully.",
+            success: true
+          })
+        );
+      } else {
+        dispatch(
+          setError({
+            errorMessage: "Failed to report user: " + data.message,
+            success: false
+          })
+        );
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      dispatch(
+        setError({
+          errorMessage: "Error reporting user:" + String(err),
+          success: false
+        })
+      );
+    }
   };
 
   if (
@@ -175,11 +225,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
   return (
     <div className="profile-container">
-      <ErrorPopup
-        message={message}
-        setMessage={setMessage}
-        success={isSuccess}
-      />
       <div className="header-buttons">
         <div className="profile-header-container">
           <div className="profile-header">
@@ -200,6 +245,15 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                 ? "🛡️ Admin"
                 : ""}
           </p>
+
+          {user.username !== usernameFromRedux && (
+            <button
+              className="report-button"
+              onClick={() => handleReport(user.username)}
+            >
+              Report User
+            </button>
+          )}
         </div>
 
         <div className="friend-buttons-container">
@@ -309,19 +363,32 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                         const data = await response.json();
 
                         if (response.ok) {
-                          setMessage(
-                            data.message || `User role updated to ${newRole}`
+                          dispatch(
+                            setError({
+                              errorMessage:
+                                data.message ||
+                                `User role updated to ${newRole}`,
+                              success: true
+                            })
                           );
-                          setIsSuccess(true);
                           fetchProfile();
                         } else {
-                          setMessage(data.message || "Failed to update role.");
-                          setIsSuccess(false);
+                          dispatch(
+                            setError({
+                              errorMessage:
+                                data.message || "Failed to update role.",
+                              success: false
+                            })
+                          );
                         }
                       } catch (err) {
                         console.error("Error updating user role:", err);
-                        setMessage("Server error while updating role.");
-                        setIsSuccess(false);
+                        dispatch(
+                          setError({
+                            errorMessage: "Server error while updating role.",
+                            success: false
+                          })
+                        );
                       }
                     }}
                   >

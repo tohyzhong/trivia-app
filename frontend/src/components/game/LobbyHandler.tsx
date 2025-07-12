@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../redux/store";
@@ -15,6 +15,8 @@ interface GameSetting {
   timePerQuestion: number;
   difficulty: number;
   categories: string[];
+  name: string;
+  publicVisible: boolean;
 }
 
 interface ChatMessage {
@@ -51,17 +53,28 @@ const LobbyHandler: React.FC = () => {
   // Loading state
   const [loading, setLoading] = useState<boolean>(true);
   const [joined, setJoined] = useState(false);
+  const hasManuallyLeftRef = useRef(false);
+  const location = useLocation();
 
   // Details needed for lobby display
-  const [users, setUsers] = useState<string[]>(null);
+  const [users, setUsers] = useState<{
+    [key: string]: { [key: string]: boolean };
+  }>(null);
+  const [host, setHost] = useState<string>("");
   const [gameType, setGameType] = useState<string>("");
   const [gameSettings, setGameSettings] = useState<GameSetting>(null);
   const [gameChat, setGameChat] = useState<ChatMessage[]>(null);
+  const [joinRequests, setJoinRequests] = useState<{ [key: string]: boolean }>(
+    null
+  );
 
   // Details needed for quiz display
   const [gameState, setGameState] = useState<GameState>(null);
   const [timeNow, setTimeNow] = useState<Date>(null);
   const [status, setStatus] = useState<string>("");
+  const [profilePictures, setProfilePictures] = useState<{
+    [key: string]: string;
+  }>(null);
 
   // Access check variables
   const { lobbyId } = useParams();
@@ -74,7 +87,7 @@ const LobbyHandler: React.FC = () => {
   const disconnect = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/disconnect/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/disconnect/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -93,6 +106,14 @@ const LobbyHandler: React.FC = () => {
   };
 
   useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hasManuallyLeftRef.current) {
+        disconnect();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     socket.emit("joinLobby", lobbyId);
 
     socket.on("lobbyJoined", () => {
@@ -101,7 +122,7 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateState", (data) => {
       setGameState(data.gameState);
-      setTimeNow(data.serverTimeNow);
+      if (data.serverTimeNow) setTimeNow(data.serverTimeNow);
     });
 
     socket.on("updateStatus", (data) => {
@@ -118,22 +139,56 @@ const LobbyHandler: React.FC = () => {
 
     socket.on("updateUsers", (data) => {
       setUsers(data.players);
+      setHost(data.host);
+      const pictures: { [username: string]: string } = {};
+      Object.entries(data.players).forEach(
+        ([username, player]: [string, any]) => {
+          pictures[username] = player.profilePicture || "";
+        }
+      );
+      setProfilePictures(pictures);
+    });
+
+    socket.on("updateKick", (data) => {
+      if (loggedInUser === data) {
+        dispatch(clearLobby());
+        navigate("/play");
+      }
+    });
+
+    socket.on("updateJoinRequests", (data) => {
+      setJoinRequests(data);
     });
 
     return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       socket.emit("leaveLobby", lobbyId);
-      disconnect();
+      socket.off("lobbyJoined");
+      socket.off("updateState");
+      socket.off("updateStatus");
       socket.off("updateSettings");
       socket.off("updateChat");
       socket.off("updateUsers");
+      socket.off("updateKick");
+      socket.off("updateJoinRequests");
     };
   }, []);
 
   // Handle access check and connection to lobby
   const checkAccess = async () => {
+    if (
+      location.state?.players &&
+      location.state?.host &&
+      location.state?.profilePictures
+    ) {
+      setUsers(location.state.players);
+      setHost(location.state.host);
+      setProfilePictures(location.state.profilePictures);
+    }
+
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/connect/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/connect/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -148,6 +203,7 @@ const LobbyHandler: React.FC = () => {
 
         setStatus(lobbyDetails.status);
         setUsers(lobbyDetails.players);
+        setJoinRequests(lobbyDetails.joinRequests);
 
         setGameType(lobbyDetails.gameType);
         setGameSettings(lobbyDetails.gameSettings);
@@ -185,8 +241,17 @@ const LobbyHandler: React.FC = () => {
       lobbyId={lobbyId}
       lobbySettings={gameSettings}
       lobbyUsers={users}
+      joinRequests={joinRequests}
       lobbyChat={gameChat}
+      gameType={gameType}
+      profilePictures={profilePictures}
+      handleLeave={() => {
+        hasManuallyLeftRef.current = true;
+        dispatch(clearLobby());
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+      }}
       socket={socket}
+      host={host}
     />
   ) : (
     <QuizDisplay
@@ -197,6 +262,13 @@ const LobbyHandler: React.FC = () => {
       serverTimeNow={timeNow}
       timeLimit={gameSettings.timePerQuestion}
       totalQuestions={gameSettings.numQuestions}
+      profilePictures={profilePictures}
+      handleLeave={() => {
+        hasManuallyLeftRef.current = true;
+        dispatch(clearLobby());
+        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+      }}
+      host={host}
     />
   );
 };

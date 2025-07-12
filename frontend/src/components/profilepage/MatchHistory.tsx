@@ -13,6 +13,8 @@ interface MatchDetails {
   answerHistory: { [key: number]: string }; // answerHistory keys are integers, each value is either "correct" or "wrong" or "missing"
   playerScoreSummary: { [key: string]: { [key: string]: number } }; // keys are usernames, each value has a key 'correct' with value the number of correct answers
   color: string; // solo / rank (1st 2nd 3rd 4th...)
+  teamScore: number;
+  teamAnswerHistory: { [key: number]: any[] };
 }
 
 const MatchHistory: React.FC = () => {
@@ -129,7 +131,11 @@ const MatchHistory: React.FC = () => {
                     <h3>Game Stats:</h3>
                     <p>
                       <strong>Correctly Answered: </strong>
-                      {match.correctNumber}
+                      {match.type.includes("coop")
+                        ? Object.values(match.teamAnswerHistory).filter(
+                            (entry) => entry[0] === "correct"
+                          ).length
+                        : match.correctNumber}
                       <br />
                       <strong>Total Questions: </strong>
                       {match.totalPlayed}
@@ -146,6 +152,32 @@ const MatchHistory: React.FC = () => {
                   <div className="difficulty">
                     <h4>Difficulty: {match.difficulty}</h4>
                   </div>
+
+                  {match.type.includes("coop") && (
+                    <div className="answer-history">
+                      <h4>Team Answer History:</h4>
+                      <div className="dots-container">
+                        {Object.entries(match.teamAnswerHistory).map(
+                          ([q, result]) => {
+                            const color =
+                              result[0] === "correct"
+                                ? "green"
+                                : result[0] === "wrong"
+                                  ? "red"
+                                  : "gray";
+                            return (
+                              <span
+                                key={`dot-${index}-${q}`}
+                                className="dot"
+                                style={{ backgroundColor: color }}
+                                title={`Q${q}: ${result}`}
+                              ></span>
+                            );
+                          }
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="answer-history">
                     <h4>Answer History:</h4>
@@ -206,7 +238,10 @@ const MatchHistory: React.FC = () => {
                               {player}
                             </a>
                             <span className="player-score-value">
-                              {stat.score} Score
+                              {match.type.includes("coop")
+                                ? match.teamScore
+                                : stat.score}{" "}
+                              Score
                             </span>
                             <span className="player-correct-value">
                               {stat.correct} Correct

@@ -5,11 +5,13 @@ import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
 import { setLobby } from "../../../redux/lobbySlice";
+import { playClickSound } from "../../../utils/soundManager";
+import { setError } from "../../../redux/errorSlice";
 
 interface SubMode {
   name: string;
+  gameType: string;
   description: string;
   image: string;
 }
@@ -39,24 +41,23 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     };
   }, []);
 
-  // For error popup
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [showError, setShowError] = useState<boolean>(false);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loggedInUser = useSelector((state: RootState) => state.user.username);
 
-  const handleSubmodeClick = async (submode: string) => {
-    if (submode === "Coming Soon...") return; // No effect for clicking on coming soon tab
-    const mainMode = props.mode === "Solo Mode" ? "solo" : "multi";
-    const subMode = submode.toLowerCase();
-    const lobbyMode = mainMode + "-" + subMode;
+  const handleSubmodeClick = async (lobbyMode: string) => {
+    playClickSound();
+    if (lobbyMode === "Coming Soon...")
+      return; // No effect for clicking on coming soon tab
+    else if (lobbyMode === "Browse") {
+      navigate("/play/lobbies");
+      return;
+    }
 
     // Create a lobby
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/create`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -72,20 +73,25 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
         );
         navigate(`/play/${data.lobbyId}`);
       } else {
-        setErrorMessage(data.message || "Failed to create lobby");
-        setShowError(true);
+        dispatch(
+          setError({
+            errorMessage: data.message || "Failed to create lobby.",
+            success: false
+          })
+        );
       }
     } catch (error) {
-      setErrorMessage("An error occurred while creating the lobby");
-      setShowError(true);
+      dispatch(
+        setError({
+          errorMessage: "An error occured while creating the lobby",
+          success: false
+        })
+      );
     }
   };
 
   return (
     <>
-      {showError && (
-        <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />
-      )}
       <motion.div
         className="submode-select-container-full"
         initial={{ opacity: 0, y: "-20%" }}
@@ -104,7 +110,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
               <div
                 key={index}
                 className="submode-select-item"
-                onClick={() => handleSubmodeClick(submode.name)}
+                onClick={() => handleSubmodeClick(submode.gameType)}
               >
                 <h4 className="submode-item-header">{submode.name}</h4>
                 <img

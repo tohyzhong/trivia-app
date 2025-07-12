@@ -4,8 +4,8 @@ import { setUser } from "../../../redux/userSlice";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "../../../styles/loginpage.css";
 import ReturnButton from "./ReturnButton";
-import ErrorPopup from "./ErrorPopup";
 import { RootState } from "../../../redux/store";
+import { setError } from "../../../redux/errorSlice";
 
 const LoginPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -13,13 +13,19 @@ const LoginPage: React.FC = () => {
   const ErrorPopupMessages = {
     login_required: "You must be logged in to view this page."
   };
-  const [errorPopup, setErrorPopup] = useState<string>(
-    ErrorPopupMessages[errorPopupParam] || ""
-  );
+
+  useEffect(() => {
+    dispatch(
+      setError({
+        errorMessage: ErrorPopupMessages[errorPopupParam],
+        success: false
+      })
+    );
+  }, [errorPopupParam]);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [loginError, setLoginError] = useState<string>("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -29,13 +35,13 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/");
+      window.location.href = "/";
     }
   }, [isLoggedIn, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setLoginError("");
 
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
       method: "POST",
@@ -58,18 +64,15 @@ const LoginPage: React.FC = () => {
       );
       // navigate('/');
     } else {
-      setError(data.error || "Login failed");
+      setLoginError(data.error || "Login failed");
     }
   };
 
   return (
     <div className="login-page">
-      {errorPopup && (
-        <ErrorPopup message={errorPopup} setMessage={setErrorPopup} />
-      )}
       <div className="form-container">
         <form onSubmit={handleLogin}>
-          {error && <div className="error">{error}</div>}
+          {loginError && <div className="error">{loginError}</div>}
           <input
             type="text"
             value={username}

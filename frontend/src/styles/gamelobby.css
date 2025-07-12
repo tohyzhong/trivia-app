@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   background-color: black;
   align-items: center;
   justify-content: center;
@@ -54,6 +54,20 @@
   color: white;
   padding: 20px;
   box-sizing: border-box;
+}
+
+.game-lobby-settings .disabled-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0;
 }
 
 .game-lobby-users {
@@ -144,11 +158,126 @@
   background-color: #555 !important;
 }
 
+/* Stats + Chat */
+.stats-chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 30%;
+}
+
+.stats-chat-container .player-stats-container {
+  display: flex;
+  flex-direction: column;
+  height: 50%;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  background: #222;
+  overflow-y: auto;
+}
+
+.stats-chat-container .player-stats-container .stats-header {
+  margin: 0;
+  height: auto;
+  color: white;
+}
+
+.stats-chat-container .player-stats-container .player-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.stats-chat-container .player-stats-container .player-name-with-avatar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.stats-chat-container .player-stats-container .player-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.stats-chat-container .player-stats-container .avatar-wrapper {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.stats-chat-container .player-stats-container .greyscale-avatar {
+  filter: grayscale(60%);
+}
+
+.stats-chat-container .player-stats-container .ready-tick {
+  position: absolute;
+  bottom: 0%;
+  right: 5%;
+  background-color: #22c55e;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-chat-container .player-stats-container .player-name {
+  color: white;
+  font-weight: bold;
+  min-width: 160px;
+  max-width: 160px;
+}
+
+.stats-chat-container .player-stats-container .player-score {
+  color: white;
+  min-width: 50px;
+}
+
+.stats-chat-container .player-stats-container .answer-dot-row {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.stats-chat-container .player-stats-container .answer-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot-green {
+  background-color: green;
+}
+
+.dot-red {
+  background-color: red;
+}
+
+.dot-grey {
+  background-color: grey;
+}
+
 /* Game Chat */
 .game-lobby-chat-container {
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: 100%;
   height: 100%;
   background-color: #555;
   color: white;
@@ -157,8 +286,12 @@
 
 .game-lobby-chat-messages {
   flex-grow: 1;
-  height: 92%;
+  height: fill;
   overflow-y: auto;
+}
+
+.chat-content {
+  word-break: break-all;
 }
 
 .chat-container {
@@ -187,7 +320,7 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
-  height: 8%;
+  height: 60px;
 }
 
 .chat-input {
@@ -220,12 +353,41 @@
 }
 
 /* Game Users */
+.game-lobby-users-header-solo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 0 15px;
+  gap: 60px;
+}
+
 .game-lobby-users-header {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   margin: 0 15px;
+  gap: 60px;
+  translate: 105px;
+}
+
+.game-lobby-users-header .invite-link {
+  background-color: #055096;
+  color: white;
+  cursor: pointer;
+  width: 150px;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.game-lobby-users-header .invite-link:hover {
+  background-color: #1a5a96;
+  transition: background-color 0.2s;
+}
+
+.game-lobby-users-header .invite-link:active {
+  background-color: #3478b8;
 }
 
 .game-lobby-users h1 {
@@ -246,6 +408,18 @@
   border: 1px solid #666;
   height: 80%;
   width: 100%;
+  gap: 3px;
+}
+
+.game-lobby-users-list .username-lobby {
+  min-width: 240px;
+}
+
+.game-lobby-users-list .state-ready {
+  color: #45a049;
+}
+.game-lobby-users-list .state-notready {
+  color: rgb(243, 62, 62);
 }
 
 .game-lobby-user {
@@ -256,13 +430,65 @@
   margin: 0;
   width: 100%;
   height: 10%;
+  gap: 20px;
+  padding-inline-start: 20px;
+}
+
+.game-lobby-user-pending-approval {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin: 0;
+  width: 100%;
+  height: 10%;
+  gap: 20px;
+  color: grey;
+  padding-inline-start: 20px;
 }
 
 .game-lobby-user img {
-  object-fit: contain;
-  height: 100%;
+  object-fit: cover;
+  height: 50px;
+  width: 50px;
   padding: 2px;
   border-radius: 50%;
+}
+
+.game-lobby-user-pending-approval img {
+  object-fit: cover;
+  height: 50px;
+  width: 50px;
+  padding: 2px;
+  border-radius: 50%;
+  background-color: grey;
+  filter: grayscale(100%);
+}
+
+.game-lobby-users-list .approve-join {
+  background-color: #088b3f;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.game-lobby-users-list .kick-user {
+  background-color: #ff4d4d;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
 }
 
 .game-lobby-buttons {
@@ -380,6 +606,14 @@
   width: 90%;
   align-items: center;
   justify-content: space-between;
+  margin-top: 10px;
+}
+
+.question-number-container {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  position: relative;
 }
 
 .advance-lobby-button {
@@ -393,9 +627,14 @@
   background-color: #088b3f;
 }
 
+.advance-lobby-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(60%);
+}
+
 .question-question {
   display: flex;
-  height: 30%;
+  height: 25%;
   width: 90%;
   align-items: center;
   justify-content: center;
@@ -425,18 +664,20 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 15px;
+  gap: 13px;
   width: 90%;
   height: 45%;
   padding: 0;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .option {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 100%;
+  width: 100%;
   font-size: 0.9rem;
   font-weight: bold;
   padding: 15px;
@@ -466,6 +707,53 @@
 
 .disabled {
   cursor: not-allowed !important;
+}
+
+.option-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.vote-avatars {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: auto;
+  height: 25px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: default;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #fff;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.extra-voters {
+  background-color: transparent;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: normal;
+  padding-left: 4px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  cursor: default;
 }
 
 /* Question Timer Bar */
@@ -526,13 +814,15 @@
   align-items: center;
   margin-bottom: 10px;
   gap: 5px;
-  position: relative;
+  position: absolute;
   width: 90%;
+  left: 0;
+  bottom: -15px;
 }
 
 .answer-history-item {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
 }
 

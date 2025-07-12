@@ -51,6 +51,15 @@ const runSchedulers = () => {
       console.error("Error deleting inactive lobbies:", error);
     }
   });
+
+  cron.schedule("0 0 * * *", async () => {
+    try {
+      await User.updateMany({}, { $set: { reports: [] } });
+      console.log("Cleared all user reports at midnight.");
+    } catch (err) {
+      console.error("Failed to reset reports:", err);
+    }
+  });
 };
 
 export default runSchedulers;

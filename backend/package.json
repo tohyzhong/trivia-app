@@ -25,6 +25,7 @@
     "morgan": "^1.10.0",
     "node-cron": "^4.0.7",
     "nodemailer": "^7.0.3",
+    "obscenity": "^0.4.4",
     "response-time": "^2.3.3",
     "socket.io": "^4.8.1",
     "uuid": "^11.1.0"

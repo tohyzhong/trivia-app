@@ -3,7 +3,11 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "motion/react";
 import "../../../styles/gamelobby.css";
 
-const GameLoading: React.FC = () => {
+interface Props {
+  message?: string;
+}
+
+const GameLoading: React.FC<Props> = ({ message = "Loading Lobby . . ." }) => {
   return (
     <div className="loader-full">
       <motion.div
@@ -13,7 +17,7 @@ const GameLoading: React.FC = () => {
       >
         <AiOutlineLoading3Quarters className="loading-icon" />
       </motion.div>
-      <h1>Loading Lobby . . .</h1>
+      <h1>{message}</h1>
     </div>
   );
 };

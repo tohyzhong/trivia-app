@@ -44,26 +44,35 @@ interface GameState {
   playerStates: any;
   answerRevealed: boolean;
   lastUpdate: Date;
+  team?: any;
+  countdownStarted?: boolean;
+  countdownStartTime?: Date;
 }
 
 interface QuizDisplayProps {
   lobbyId: string;
   lobbyChat: ChatMessage[];
+  profilePictures: { [username: string]: string };
   gameType: string;
   gameState: GameState;
   serverTimeNow: Date;
   timeLimit: number;
   totalQuestions: number;
+  handleLeave: Function;
+  host: string;
 }
 
 const QuizDisplay: React.FC<QuizDisplayProps> = ({
   lobbyId,
   lobbyChat,
+  profilePictures,
   gameType,
   gameState,
   serverTimeNow,
   timeLimit,
-  totalQuestions
+  totalQuestions,
+  handleLeave,
+  host
 }) => {
   useInitSound("Quiz");
   const { bgmBlocked, handleResume } = useBGMResumeOverlay("Quiz");
@@ -102,11 +111,11 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   // Leaving Lobby
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLeave = async () => {
+  const handleLeaveLocal = async () => {
     playClickSound();
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/solo/leave/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/lobby/leave/${lobbyId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -116,8 +125,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
       );
 
       if (response.ok) {
-        dispatch(clearLobby());
-        navigate("/play", { state: { errorMessage: "You left the lobby." } });
+        handleLeave();
       } else {
         throw new Error();
       }
@@ -168,14 +176,14 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
       <div className="game-lobby-container">
         <div className="question-display-container">
           <div className="question-display-lobby-details">
-            <button className="leave-button" onClick={handleLeave}>
+            <button className="leave-button" onClick={handleLeaveLocal}>
               Leave
             </button>
             <p>Lobby ID: {lobbyId}</p>
-            <p>Host: you</p>
+            <p>Host: {host}</p>
           </div>
           {gameState.question ? (
-            gameType === "solo-classic" ? (
+            gameType.includes("classic") ? (
               <Classic
                 lobbyId={lobbyId}
                 currentQuestion={gameState.currentQuestion}
@@ -184,9 +192,15 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 optionSelected={optionSelected}
                 submitted={submitted || answerRevealed}
                 answerRevealed={answerRevealed}
-                answerHistory={
-                  gameState.playerStates[username]?.answerHistory || []
-                }
+                playerStates={gameState.playerStates}
+                teamStates={gameState.team}
+                profilePictures={profilePictures}
+                host={host}
+                serverTimeNow={serverTimeNow}
+                readyCountdown={{
+                  countdownStarted: gameState.countdownStarted,
+                  countdownStartTime: gameState.countdownStartTime
+                }}
               />
             ) : (
               <Knowledge />
@@ -210,7 +224,13 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
             />
           </div>
         </div>
-        <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
+        <GameChat
+          lobbyId={lobbyId}
+          chatMessages={lobbyChat}
+          playerStates={gameState.playerStates}
+          gameType={gameType}
+          profilePictures={profilePictures}
+        />
         <IoSettingsOutline
           onClick={() => {
             playClickSound();
@@ -218,7 +238,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
           }}
           className="sound-settings-icon"
         />
-        <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
         {isSoundPopupOpen && (
           <div className="sound-settings-popup">
