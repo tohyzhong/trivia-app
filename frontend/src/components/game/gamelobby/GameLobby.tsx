@@ -36,7 +36,7 @@ interface GameLobbyProps {
   profilePictures: { [username: string]: string };
   gameType: string;
   socket: any;
-  handleLeave: Function;
+  handleLeave: () => void;
   host: string;
 }
 

@@ -7,7 +7,11 @@ import { RootState } from "../../redux/store";
 import GameLoading from "./gamelobby/GameLoading";
 import GameLobby from "./gamelobby/GameLobby";
 import QuizDisplay from "./quiz/QuizDisplay";
-import { clearLobby } from "../../redux/lobbySlice";
+import {
+  clearLobby,
+  setCurrency,
+  setStatusRedux
+} from "../../redux/lobbySlice";
 import { useSocket } from "../../context/SocketContext";
 
 interface GameSetting {
@@ -86,7 +90,7 @@ const LobbyHandler: React.FC = () => {
   const dispatch = useDispatch();
   const disconnect = async () => {
     try {
-      const response = await fetch(
+      await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/disconnect/${lobbyId}`,
         {
           method: "POST",
@@ -96,6 +100,7 @@ const LobbyHandler: React.FC = () => {
         }
       );
     } catch (error) {
+      console.error(error);
       navigate("/", {
         state: {
           errorMessage:
@@ -121,12 +126,13 @@ const LobbyHandler: React.FC = () => {
     });
 
     socket.on("updateState", (data) => {
-      setGameState(data.gameState);
+      if (data.gameState) setGameState(data.gameState);
       if (data.serverTimeNow) setTimeNow(data.serverTimeNow);
     });
 
     socket.on("updateStatus", (data) => {
       setStatus(data.status);
+      dispatch(setStatusRedux(data.status));
     });
 
     socket.on("updateChat", (data) => {
@@ -160,6 +166,10 @@ const LobbyHandler: React.FC = () => {
       setJoinRequests(data);
     });
 
+    socket.on("updateCurrency", (data) => {
+      dispatch(setCurrency(data));
+    });
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       socket.emit("leaveLobby", lobbyId);
@@ -171,6 +181,7 @@ const LobbyHandler: React.FC = () => {
       socket.off("updateUsers");
       socket.off("updateKick");
       socket.off("updateJoinRequests");
+      socket.off("updateCurrency");
     };
   }, []);
 
@@ -202,6 +213,7 @@ const LobbyHandler: React.FC = () => {
         const lobbyDetails = data.lobbyDetails;
 
         setStatus(lobbyDetails.status);
+        dispatch(setStatusRedux(lobbyDetails.status));
         setUsers(lobbyDetails.players);
         setJoinRequests(lobbyDetails.joinRequests);
 
@@ -217,6 +229,7 @@ const LobbyHandler: React.FC = () => {
         navigate("/", { state: { errorMessage: data.message || "" } });
       }
     } catch (error) {
+      console.error(error);
       dispatch(clearLobby());
       navigate("/", {
         state: {

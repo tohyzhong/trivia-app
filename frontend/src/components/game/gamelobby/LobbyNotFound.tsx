@@ -13,7 +13,8 @@ const LobbyNotFound = () => {
     <div className="lobby-not-found-container">
       <h1 className="lobby-not-found-title">Oops! Lobby Not Found</h1>
       <p className="lobby-not-found-message">
-        The lobby you're trying to access doesn't exist or has expired.
+        The lobby you&apos;re trying to access doesn&apos;t exist or has
+        expired.
       </p>
       <button onClick={handleBackToHome} className="lobby-not-found-button">
         Back to Home

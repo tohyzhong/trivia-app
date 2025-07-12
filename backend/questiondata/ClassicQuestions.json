@@ -1335,5 +1335,16 @@
     "explanation": "'BFF' stands for 'Best Friends Forever'.",
     "category": "Slang & Acronyms",
     "difficulty": 1
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Fill in the blank: I was lightning, before the _________",
+    "options": ["Storm", "Thunder", "Earthquake", "Blackout"],
+    "correctOption": 2,
+    "explanation": "From the song \"Thunder\" by Imagine Dragons",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler",
+    "__v": 0
   }
 ]

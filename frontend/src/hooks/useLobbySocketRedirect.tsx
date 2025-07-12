@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setError } from "../redux/errorSlice";
 
-export function useLobbySocketRedirect(username: string) {
+export function useLobbySocketRedirect() {
   const socket = useSocket();
   const navigate = useNavigate();
   const location = useLocation();

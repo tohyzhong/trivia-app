@@ -26,6 +26,7 @@ export function initSocket(server) {
       socket.user = user;
       next();
     } catch (err) {
+      console.error(err);
       next(new Error("Invalid token"));
     }
   });

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { IoIosInformationCircle } from "react-icons/io";
 import Explanation from "./Explanation";
 import { playClickSound } from "../../../utils/soundManager";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
+import { resetHintRevealed } from "../../../redux/lobbySlice";
 
 interface ClassicQuestion {
   question: string;
@@ -23,14 +24,13 @@ interface ClassicQuestionProps {
   optionSelected: number;
   submitted: boolean;
   answerRevealed: boolean;
-  playerStates: Object;
+  playerStates: object;
   teamStates: {
     [key: string]: {
       [key: string]: number | Array<string | { [key: number]: Array<string> }>;
     };
   };
   profilePictures: { [username: string]: string };
-  host: string;
   serverTimeNow: Date;
   readyCountdown: { [key: string]: boolean | Date };
 }
@@ -46,7 +46,6 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   playerStates,
   teamStates,
   profilePictures,
-  host,
   serverTimeNow,
   readyCountdown
 }) => {
@@ -54,6 +53,11 @@ const Classic: React.FC<ClassicQuestionProps> = ({
   const answerHistory = teamStates
     ? teamStates["teamAnswerHistory"]
     : playerStates[loggedInUser]?.answerHistory || [];
+  const currentQuestionRef = useRef(currentQuestion);
+  const hintRevealedOptions = useSelector(
+    (state: RootState) => state.lobby.hintRevealed
+  );
+  const dispatch = useDispatch();
 
   // Next Question / Return to Lobby Countdown
   const start =
@@ -73,10 +77,15 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     if (initialTimeLeft === null) return;
 
     const interval = setInterval(() => {
+      if (currentQuestionRef.current !== currentQuestion) {
+        clearInterval(interval);
+        return 0;
+      }
+
       setCountdownLeft((prev) => {
-        if (prev <= 1) {
+        if (prev <= 0) {
           clearInterval(interval);
-          if (loggedInUser === host) handleNextQuestion();
+          handleNextQuestion();
           return 0;
         }
         return prev - 1;
@@ -88,6 +97,8 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Reset countdown on new question
   useEffect(() => {
+    dispatch(resetHintRevealed());
+    currentQuestionRef.current = currentQuestion;
     setCountdownLeft(Math.floor(initialTimeLeft ?? 10));
   }, [currentQuestion]);
 
@@ -127,7 +138,7 @@ const Classic: React.FC<ClassicQuestionProps> = ({
 
   // Next question
   const handleNextQuestion = async () => {
-    if (loggedInUser !== host && playerStates[loggedInUser]?.ready) return;
+    if (currentQuestionRef.current !== currentQuestion) return;
     playClickSound();
     try {
       await fetch(
@@ -261,8 +272,11 @@ const Classic: React.FC<ClassicQuestionProps> = ({
         {classicQuestion.options.map((option, index) => (
           <div key={index} className="option-container">
             <button
-              className={`option option-${index + 1} ${submitted ? "disabled" : ""}`}
+              className={`option option-${index + 1} ${submitted ? "disabled" : ""} ${
+                hintRevealedOptions.includes(index + 1) ? "hint-wrong" : ""
+              }`}
               onClick={!submitted ? () => handleSubmit(index + 1) : null}
+              disabled={hintRevealedOptions.includes(index + 1)}
             >
               {option}
             </button>

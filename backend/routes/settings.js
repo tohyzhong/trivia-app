@@ -51,7 +51,7 @@ router.post("/update-profile-picture", authenticate, async (req, res) => {
 
     res.json({ message: "Profile picture updated successfully", user });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", err });
   }
 });
 
@@ -80,7 +80,7 @@ router.post("/change-password", authenticate, async (req, res) => {
 
     res.json({ message: "Verification email sent to change password" });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", err });
   }
 });
 
@@ -127,7 +127,7 @@ router.post(
         message: "Verification email sent to the new email for change"
       });
     } catch (err) {
-      res.status(500).json({ error: "Server error" });
+      res.status(500).json({ error: "Server error", err });
     }
   }
 );
@@ -158,7 +158,7 @@ router.post("/delete-account", authenticate, async (req, res) => {
       message: "Verification email sent to confirm account deletion"
     });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", err });
   }
 });
 
@@ -272,7 +272,7 @@ router.post("/verify-action", async (req, res) => {
       }
     }
   } catch (err) {
-    res.status(400).json({ error: "Invalid or expired token" });
+    res.status(400).json({ error: "Invalid or expired token", err });
   }
 });
 

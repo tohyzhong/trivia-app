@@ -693,6 +693,20 @@
   background-color: #222;
 }
 
+.option.hint-wrong {
+  background-color: #f8d7da;
+  border: 2px solid #f5c2c7;
+  color: #842029;
+  opacity: 0.7;
+  cursor: not-allowed;
+  transition: background-color 0.3s ease;
+}
+
+.option.hint-wrong:hover {
+  background-color: #f5c2c7;
+  cursor: not-allowed;
+}
+
 .selected {
   background-color: #001ea1 !important;
 }
@@ -770,6 +784,18 @@
   background-color: white;
   border-radius: 10px;
   height: 100%;
+}
+
+.numeric-timer {
+  position: absolute;
+  top: 31%;
+  right: 39%;
+  transform: translateY(-50%);
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  font-size: 18px;
+  user-select: none;
 }
 
 /* Question Explanation */

@@ -33,7 +33,6 @@ const FriendsList: React.FC = () => {
   // Fetching friends information
   const fetchFriends = async () => {
     try {
-      setLoading(true);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/friends/${username}/all`,
         {
@@ -227,7 +226,7 @@ const FriendsList: React.FC = () => {
 
   return (
     <div className="friendslist-container">
-      <h2> {username}'s Friends</h2>
+      <h2> {username}&apos;s Friends</h2>
       {loggedInUser === username && (
         <ToggleButton
           onClick={handleButtonClick}

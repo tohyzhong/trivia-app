@@ -186,7 +186,7 @@ const PasswordReset: React.FC = () => {
                 </p>
                 {countdown > 0 && (
                   <p className="email-resend-message">
-                    Didn't receive it?{" "}
+                    Didn&apos;t receive it?{" "}
                     <a className="email-resend-button">Send again </a>in{" "}
                     {countdown} seconds
                   </p>

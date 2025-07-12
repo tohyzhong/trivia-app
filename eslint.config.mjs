@@ -1,72 +1,79 @@
-import js from "@eslint/js";
+import * as espree from "espree";
 import globals from "globals";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
-import json from "@eslint/json";
-import markdown from "@eslint/markdown";
-import css from "@eslint/css";
-import { defineConfig } from "eslint/config";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactPlugin from "eslint-plugin-react";
+import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
-export default defineConfig([
+export default [
+  // JS files
   {
     files: ["**/*.{js,mjs,cjs}"],
-    plugins: { js },
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node }
+      parser: espree,
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module"
+      }
     },
-    extends: ["js/recommended"]
+    plugins: { js: {} },
+    rules: {}
   },
 
+  // JSX files
   {
     files: ["**/*.jsx"],
-    plugins: { js, react: pluginReact },
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node }
+      parser: espree,
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true }
+      }
     },
-    extends: ["js/recommended", pluginReact.configs.flat.recommended]
+    plugins: { react: reactPlugin },
+    rules: {
+      ...reactPlugin.configs.recommended.rules
+    }
+  },
+
+  // TS and TSX files
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true },
+        project: "./frontend/tsconfig.json"
+      }
+    },
+    plugins: { "@typescript-eslint": tsPlugin, react: reactPlugin },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      ...reactPlugin.configs.recommended.rules
+    }
   },
 
   {
-    files: ["**/*.{ts,mts,cts}"],
-    ...tseslint.configs.recommended
-  },
-
-  {
-    files: ["**/*.tsx"],
-    ...tseslint.configs.recommended,
-    extends: [
-      ...tseslint.configs.recommended.extends,
-      pluginReact.configs.flat.recommended
-    ]
-  },
-  {
-    files: ["**/*.json"],
-    plugins: { json },
-    language: "json/json",
-    extends: ["json/recommended"]
-  },
-  {
-    files: ["**/*.jsonc"],
-    plugins: { json },
-    language: "json/jsonc",
-    extends: ["json/recommended"]
-  },
-  {
-    files: ["**/*.json5"],
-    plugins: { json },
-    language: "json/json5",
-    extends: ["json/recommended"]
-  },
-  {
-    files: ["**/*.md"],
-    plugins: { markdown },
-    language: "markdown/gfm",
-    extends: ["markdown/recommended"]
-  },
-  {
-    files: ["**/*.css"],
-    plugins: { css },
-    language: "css/css",
-    extends: ["css/recommended"]
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    plugins: { "unused-imports": unusedImportsPlugin },
+    rules: {
+      "unused-imports/no-unused-imports": "warn",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_"
+        }
+      ],
+      "no-console": ["warn", { allow: ["warn", "error"] }]
+    }
   }
-]);
+];

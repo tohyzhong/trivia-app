@@ -52,9 +52,11 @@ const AdminApprovalDashboard: React.FC = () => {
     [key: string]: string;
   }>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null
+  );
 
   // Fetching questions that are not approved, and categories for admin to select
   useEffect(() => {
@@ -124,7 +126,7 @@ const AdminApprovalDashboard: React.FC = () => {
     }
   };
 
-  const handleQuestionClick = (question: any) => {
+  const handleQuestionClick = (question: Question) => {
     setSelectedQuestion((prevState) =>
       prevState?._id === question._id ? null : question
     );
@@ -376,7 +378,6 @@ const AdminApprovalDashboard: React.FC = () => {
     },
     {
       headerName: "Actions",
-      field: "actions" as any,
       maxWidth: 250,
       sortable: false,
       flex: 1,

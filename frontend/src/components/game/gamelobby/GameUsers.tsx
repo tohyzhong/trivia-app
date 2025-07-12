@@ -19,7 +19,7 @@ interface GameUsersProps {
   usernames: { [key: string]: { [key: string]: boolean } };
   joinRequests: { [key: string]: boolean };
   gameType: string;
-  handleLeave: Function;
+  handleLeave: () => void;
   host?: string;
 }
 
@@ -141,7 +141,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
           body: JSON.stringify({ player: loggedInUser })
         }
       );
-      const data = await response.json();
+      await response.json();
       if (response.ok) {
         handleLeave();
       } else {

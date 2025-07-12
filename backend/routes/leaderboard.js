@@ -11,7 +11,7 @@ router.get("/categories", authenticate, async (req, res) => {
     const categories = await ClassicQuestion.distinct("category");
     res.json(categories);
   } catch (err) {
-    res.status(500).json({ error: "Failed to load categories" });
+    res.status(500).json({ error: "Failed to load categories", err });
   }
 });
 
@@ -46,7 +46,7 @@ router.get("/stats", authenticate, async (req, res) => {
 
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: "Failed to load stats" });
+    res.status(500).json({ error: "Failed to load stats", err });
   }
 });
 

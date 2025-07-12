@@ -19,8 +19,8 @@ interface UserProfile {
   role: string;
   friends: Friend[];
   message?: string;
-  addedFriend: Boolean;
-  receivedFriendRequest: Boolean;
+  addedFriend: boolean;
+  receivedFriendRequest: boolean;
   classicStats: { [key: string]: number };
   knowledgeStats: { [key: string]: number };
 }
@@ -37,7 +37,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUserProfile] = useState<UserProfile | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -61,7 +60,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       }
       setUserProfile(data);
       setFriends(data.friends || []);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching profile data", error);
     }
@@ -228,7 +226,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       <div className="header-buttons">
         <div className="profile-header-container">
           <div className="profile-header">
-            <h1 className="profile-name">{user.username}'s Profile</h1>
+            <h1 className="profile-name">{user.username}&apos;s Profile</h1>
             <img
               src={user.profilePicture || defaultAvatar}
               alt={`${user.username}'s profile`}

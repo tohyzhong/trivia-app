@@ -7,6 +7,7 @@ import { useCooldown } from "../../hooks/useCooldown";
 import { motion } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { setError } from "../../redux/errorSlice";
+import { setUser } from "../../redux/userSlice";
 
 interface UserProfile {
   username: string;
@@ -17,11 +18,12 @@ interface UserProfile {
 }
 
 const Settings: React.FC = () => {
+  const dispatch = useDispatch();
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUserLocal] = useState<UserProfile | null>(null);
   const count = useRef(0);
 
   const [sendingVerification, setSendingVerification] =
@@ -54,7 +56,15 @@ const Settings: React.FC = () => {
           }
         );
         const data: UserProfile = await response.json();
-        setUser(data);
+        setUserLocal(data);
+        dispatch(
+          setUser({
+            username: data.username,
+            email: data.email,
+            verified: data.verified,
+            role: stateUser.role
+          })
+        );
       } catch (error) {
         console.error("Error fetching profile data", error);
         dispatch(
@@ -209,7 +219,7 @@ const Settings: React.FC = () => {
         }
       );
 
-      const data = await response.json();
+      await response.json();
 
       triggerDeleteCooldown();
       dispatch(

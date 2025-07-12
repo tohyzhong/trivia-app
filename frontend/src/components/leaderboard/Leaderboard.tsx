@@ -50,6 +50,7 @@ const Leaderboard: React.FC = () => {
         }
         setFetchedCategories(categories);
       } catch (err) {
+        console.error(err);
         setFetchedCategories(["Overall", "Community"]);
       }
     };

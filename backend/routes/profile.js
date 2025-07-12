@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
 import authenticate from "./authMiddleware.js";

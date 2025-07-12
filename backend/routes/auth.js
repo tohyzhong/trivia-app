@@ -36,7 +36,7 @@ router.get("/verify-token", authenticate, (req, res) => {
 // Ping every 2 minutes to check if frontend user data matches DB data
 router.get("/ping", authenticate, async (req, res) => {
   try {
-    const { id, username, email, verified, role } = req.user;
+    const { id, username, role } = req.user;
 
     const user = await User.findById(id);
 
@@ -102,7 +102,7 @@ router.post("/refresh-token", authenticate, async (req, res) => {
 
     res.json({ message: "Token refreshed" });
   } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Invalid or expired token", err });
   }
 });
 
@@ -351,7 +351,7 @@ router.post("/verifyreset", async (req, res) => {
       return res.status(200).json({ email });
     }
   } catch (err) {
-    return res.status(400).json({ error: "Invalid or expired token" });
+    return res.status(400).json({ error: "Invalid or expired token", err });
   }
 });
 
@@ -421,7 +421,7 @@ router.post(
       await user.save();
       return res.status(200).json({ message: "Password reset successfully." });
     } catch (err) {
-      return res.status(400).json({ error: "Invalid or expired token." });
+      return res.status(400).json({ error: "Invalid or expired token.", err });
     }
   }
 );
@@ -501,7 +501,7 @@ router.get("/verify", async (req, res) => {
 });
 
 // Helper function to send email verification token
-const emailVerificationToken = async (username, req, res) => {
+const emailVerificationToken = async (username, _req, _res) => {
   const user = await User.findOne({ username });
 
   if (!user) {
