@@ -106,12 +106,15 @@ const Settings: React.FC = () => {
       }
 
       await response.json();
+
+      setUserLocal({ ...user, profilePicture: newProfilePictureUrl });
       dispatch(
         setError({
-          errorMessage: "Profile picture updated! Reload to see the changes.",
+          errorMessage: "Profile picture updated successfully!",
           success: true
         })
       );
+      setNewProfilePictureUrl("");
     } catch (err) {
       dispatch(
         setError({
