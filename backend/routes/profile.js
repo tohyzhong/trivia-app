@@ -346,24 +346,36 @@ router.get("/matchhistory/:username", authenticate, async (req, res) => {
 
 router.post("/report", authenticate, async (req, res) => {
   try {
-    const { reported, source, lobbyId } = req.body;
+    const { reported, source, lobbyId, reasons } = req.body;
     const { username, email } = req.user;
 
     if (reported === username) {
       return res.status(400).json({ message: "You cannot report yourself." });
     }
 
-    const updatedUser = await Profile.findOneAndUpdate(
-      { username: reported, reports: { $ne: username } },
-      { $addToSet: { reports: username } },
-      { new: true }
-    );
+    const profileDocument = await Profile.findOne({ username: reported });
+    if (!profileDocument) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const newReasons = new Set(profileDocument.reports?.[username] || []);
+    let newReport = false;
+    for (const reason of reasons) {
+      const prevSize = newReasons.size;
+      newReasons.add(reason);
+      if (newReasons.size !== prevSize) newReport = true;
+    }
 
-    if (!updatedUser) {
-      return res.status(404).json({
-        message: "User not found or you have already reported this user."
+    if (!newReport) {
+      return res.status(400).json({
+        message: "You have already reported this user for the selected reasons"
       });
     }
+
+    const updatedUser = await Profile.findOneAndUpdate(
+      { username: reported },
+      { $set: { [`reports.${username}`]: Array.from(newReasons) } },
+      { returnDocument: "after" }
+    );
 
     // Filter out messages sent by reported user
     let chatContent = "";
@@ -390,12 +402,24 @@ router.post("/report", authenticate, async (req, res) => {
       }
     }
 
+    const allReasons = [
+      "Inappropriate Username",
+      "Cheating",
+      "Harassment or Abusive Communications",
+      "Spam"
+    ];
+    const reports = Object.values(updatedUser.reports);
+    const reportCount = allReasons.map(
+      (reason) =>
+        `${reason}: ${reports.filter((report) => report.includes(reason)).length}`
+    );
     const htmlContentAdmin = `
       <div style="font-family: Arial, sans-serif; padding: 16px;">
         <h2>New Report Submitted</h2>
         <p><strong>Reported User:</strong> ${reported}</p>
         <p><strong>Reporter:</strong> ${username}</p>
         <p><strong>Source:</strong> ${String(source).charAt(0).toUpperCase() + String(source).slice(1)}</p>
+        <p><strong>Reasons:</strong> ${reasons.join(", ")}</p>
         <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
           weekday: "short",
           day: "2-digit",
@@ -405,7 +429,7 @@ router.post("/report", authenticate, async (req, res) => {
           minute: "2-digit",
           hour12: true
         })}</p>
-        <p><strong>Total Reports:</strong> ${updatedUser.reports.length}</p>
+        <p><strong>Total Reports:</strong><br/>${reportCount.join("<br/>")}</p>
         <h3>Chat History:</h3>
         <div style="background-color: #f2f2f2; padding: 12px; border-radius: 6px;">
           ${chatContent || "<div>(No messages found)</div>"}
@@ -419,6 +443,7 @@ router.post("/report", authenticate, async (req, res) => {
         <p><strong>Reported User:</strong> ${reported}</p>
         <p><strong>Reporter:</strong> ${username}</p>
         <p><strong>Source:</strong> ${String(source).charAt(0).toUpperCase() + String(source).slice(1)}</p>
+        <p><strong>Reasons:</strong> ${reasons.join(", ")}</p>
         <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
           weekday: "short",
           day: "2-digit",
