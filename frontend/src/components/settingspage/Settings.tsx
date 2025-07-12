@@ -26,7 +26,6 @@ const Settings: React.FC = () => {
 
   const [user, setUserLocal] = useState<UserProfile | null>(null);
   const count = useRef(0);
-  console.log(user);
 
   const [sendingVerification, setSendingVerification] =
     useState<boolean>(false);

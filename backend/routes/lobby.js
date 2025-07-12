@@ -54,6 +54,21 @@ router.post("/create", authenticate, async (req, res) => {
           as: "categories"
         }
       },
+      {
+        $lookup: {
+          from: "users",
+          pipeline: [
+            { $match: { username: username } },
+            { $project: { chatBan: 1, _id: 0 } }
+          ],
+          as: "chatBanInfo"
+        }
+      },
+      {
+        $addFields: {
+          chatBan: { $first: "$chatBanInfo.chatBan" }
+        }
+      },
       { $unwind: "$lobbyStatus" },
       {
         $addFields: {
@@ -73,7 +88,8 @@ router.post("/create", authenticate, async (req, res) => {
           categories: "$categories.category",
           profilePicture: 1,
           currency: 1,
-          powerups: 1
+          powerups: 1,
+          chatBan: 1
         }
       }
     ]);
@@ -97,7 +113,11 @@ router.post("/create", authenticate, async (req, res) => {
       status: "waiting",
       host: username,
       players: {
-        [username]: { ready: false, profilePicture: playerDoc.profilePicture }
+        [username]: {
+          ready: false,
+          profilePicture: playerDoc.profilePicture,
+          chatBan: playerDoc.chatBan
+        }
       },
       gameType,
       gameSettings: {
@@ -352,6 +372,8 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
       { username },
       { profilePicture: 1 }
     );
+
+    const userDoc = await User.findOne({ username }, { chatBan: 1 });
     if (!playerDoc) {
       return res.status(404).json({ message: "Player not found." });
     }
@@ -360,7 +382,10 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
       { lobbyId, gameType: { $not: /solo/i } },
       {
         $set: {
-          [`joinRequests.${username}`]: playerDoc.profilePicture || "",
+          [`joinRequests.${username}`]: {
+            profilePicture: playerDoc.profilePicture || "",
+            chatBan: userDoc.chatBan || false
+          },
           lastActivity: new Date()
         }
       },
@@ -423,7 +448,8 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
           $set: {
             [`players.${usernameToApprove}`]: {
               ready: false,
-              profilePicture: `$joinRequests.${usernameToApprove}`
+              profilePicture: `$joinRequests.${usernameToApprove}.profilePicture`,
+              chatBan: `$joinRequests.${usernameToApprove}.chatBan`
             },
             [`gameState.playerStates.${usernameToApprove}`]: {
               score: 0,
@@ -671,15 +697,12 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
       timestamp: new Date()
     };
 
-    const userDoc = await User.findOne({ username });
-    if (userDoc.chatBan) {
-      return res
-        .status(400)
-        .json({ message: "User not authorised to send chat messages." });
-    }
-
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId, [`players.${username}`]: { $exists: true } },
+      {
+        lobbyId,
+        [`players.${username}`]: { $exists: true },
+        [`players.${username}.chatBan`]: false
+      },
       {
         $push: { chatMessages: newChatMessage },
         $set: { lastActivity: new Date() }
@@ -688,7 +711,9 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
     );
 
     if (!updatedLobby) {
-      return res.status(404).json({ message: "Lobby not found" });
+      return res.status(404).json({
+        message: "Lobby not found or user not authorised to send messages."
+      });
     }
     // Notify all players in the lobby
     const socketIO = getSocketIO();
