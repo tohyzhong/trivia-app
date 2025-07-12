@@ -21,7 +21,12 @@ const loadUserState = () => {
         },
     soundSettings: soundSettings
       ? JSON.parse(soundSettings)
-      : { overallSound: 100, bgmVolume: 100, sfxVolume: 100 }
+      : {
+          overallSound: 100,
+          bgmVolume: 100,
+          sfxVolume: 100,
+          profanityEnabled: false
+        }
   };
 };
 

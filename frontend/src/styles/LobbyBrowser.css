@@ -312,3 +312,9 @@
 .volume-control .muted:hover {
   color: #e41c1c;
 }
+
+.profanity-control {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}

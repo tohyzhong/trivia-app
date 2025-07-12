@@ -7,6 +7,14 @@ import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { FaExclamation } from "react-icons/fa";
 import { setError } from "../../../redux/errorSlice";
 import ReportUser from "./ReportUser";
+import {
+  RegExpMatcher,
+  TextCensor,
+  asteriskCensorStrategy,
+  englishDataset,
+  englishRecommendedTransformers,
+  keepStartCensorStrategy
+} from "obscenity";
 
 interface ChatMessage {
   sender: string;
@@ -28,6 +36,38 @@ interface GameChatProps {
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
+  const profanityEnabled = useSelector(
+    (state: RootState) => state.soundSettings.profanityEnabled
+  );
+  const matcher = new RegExpMatcher({
+    ...englishDataset.build(),
+    ...englishRecommendedTransformers
+  });
+  const censor = new TextCensor().setStrategy(
+    keepStartCensorStrategy(asteriskCensorStrategy())
+  );
+  function getFilteredMessage(message: string, enabled: boolean): string {
+    if (enabled) return message;
+
+    const noSpacesMessage = message.split(" ").join("");
+    const matches = matcher.getAllMatches(noSpacesMessage);
+    let filteredMessage = censor.applyTo(noSpacesMessage, matches);
+
+    // Build original message with spaces
+    let finalMessage = "";
+    let filterIndex = 0;
+    for (let i = 0; i < message.length; i++) {
+      if (message[i] === " ") {
+        finalMessage += " ";
+      } else {
+        finalMessage += filteredMessage[filterIndex] || "";
+        filterIndex++;
+      }
+    }
+
+    return finalMessage;
+  }
+
   const { lobbyId, chatMessages, playerStates, gameType, profilePictures } =
     props;
   const [chatInput, setChatInput] = useState<string>("");
@@ -190,7 +230,9 @@ const GameChat: React.FC<GameChatProps> = (props) => {
             chatMessages.map((msg, index) => (
               <ul key={msg.sender + index} className="chat-container">
                 <p className="chat-sender">{msg.sender}:&nbsp;</p>
-                <p className="chat-content">{msg.message}</p>
+                <p className="chat-content">
+                  {getFilteredMessage(msg.message, profanityEnabled)}
+                </p>
               </ul>
             ))}
         </div>

@@ -103,7 +103,7 @@ const JoinLobbyHandler: React.FC = () => {
           }}
           className="sound-settings-icon"
         />
-        <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
         {isSoundPopupOpen && (
           <div className="sound-settings-popup">
@@ -132,7 +132,7 @@ const JoinLobbyHandler: React.FC = () => {
         }}
         className="sound-settings-icon"
       />
-      <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+      <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
       {isSoundPopupOpen && (
         <div className="sound-settings-popup">
