@@ -370,7 +370,8 @@ router.post("/report", authenticate, async (req, res) => {
 
     if (!newReport) {
       return res.status(400).json({
-        message: "You have already reported this user for the selected reasons"
+        message:
+          "You have already reported this user for the selected reason(s)"
       });
     }
 

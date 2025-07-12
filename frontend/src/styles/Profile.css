@@ -67,7 +67,7 @@
   font-size: 20px;
   color: #ff0000;
   margin: 22px 0px 0px 0px;
-  text-align: center;
+  text-align: left;
 }
 
 .role-container .report-button {
@@ -75,6 +75,23 @@
   justify-content: center;
   width: fit-content;
   align-self: center;
+}
+
+.role-container .report-button.disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.loading-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  color: white;
+  font-size: 2rem;
 }
 
 .profile-image {

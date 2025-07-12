@@ -6,6 +6,8 @@ import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
 import { setUser } from "../../redux/userSlice";
 import { setError } from "../../redux/errorSlice";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { motion } from "framer-motion";
 
 interface Friend {
   username: string;
@@ -171,7 +173,9 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     navigate(`/profile/${username}/matchhistory`);
   };
 
+  const [reportSending, setReportSending] = useState<boolean>(false);
   const handleReport = async (usernameToReport: string) => {
+    setReportSending(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/profile/report`,
@@ -182,7 +186,8 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           body: JSON.stringify({
             reported: usernameToReport,
             source: "profile",
-            lobbyId: null
+            lobbyId: null,
+            reasons: ["Inappropriate Username"]
           })
         }
       );
@@ -212,6 +217,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         })
       );
     }
+    setReportSending(false);
   };
 
   if (
@@ -246,12 +252,30 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           </p>
 
           {user.username !== usernameFromRedux && (
-            <button
-              className="report-button"
-              onClick={() => handleReport(user.username)}
-            >
-              Report User
-            </button>
+            <>
+              <button
+                className={`report-button ${reportSending && "disabled"}`}
+                onClick={() => handleReport(user.username)}
+              >
+                Report Username
+                {reportSending && (
+                  <>
+                    &nbsp;
+                    <motion.div
+                      className="loading-icon-container"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "linear"
+                      }}
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  </>
+                )}
+              </button>
+            </>
           )}
         </div>
 
