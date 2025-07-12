@@ -9,6 +9,8 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   previousPasswords: { type: Array, required: true, default: [] },
   verified: { type: Boolean, default: false },
+  chatBan: { type: Boolean, default: false },
+  gameBan: { type: Boolean, default: false },
   role: {
     type: String,
     enum: ["user", "admin", "superadmin"],

@@ -16,6 +16,8 @@ const authenticate = (req, res, next) => {
         username: decoded.username,
         email: decoded.email,
         verified: decoded.verified,
+        chatBan: decoded.chatBan,
+        gameBan: decoded.gameBan,
         role: decoded.role
       },
       process.env.JWT_SECRET,
