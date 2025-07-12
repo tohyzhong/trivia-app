@@ -82,9 +82,6 @@ const CurrencyBar: React.FC = () => {
       return;
     }
 
-    const confirmed = window.confirm(`Use ${powerupName}?`);
-    if (!confirmed) return;
-
     const res = await fetch(`/api/lobby/use-powerup/${lobbyId}`, {
       method: "POST",
       credentials: "include",
