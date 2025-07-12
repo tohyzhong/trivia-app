@@ -94,6 +94,10 @@
   color: red;
 }
 
+.verification-status.banned {
+  color: red;
+}
+
 .verification-email {
   margin-left: auto;
 }

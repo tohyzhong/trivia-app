@@ -26,6 +26,7 @@ const Settings: React.FC = () => {
 
   const [user, setUserLocal] = useState<UserProfile | null>(null);
   const count = useRef(0);
+  console.log(user);
 
   const [sendingVerification, setSendingVerification] =
     useState<boolean>(false);
@@ -321,10 +322,18 @@ const Settings: React.FC = () => {
             <strong>Status: </strong>
             <span
               className={`verification-status ${
-                user.verified ? "verified" : "not-verified"
+                user.gameBan
+                  ? "banned"
+                  : user.verified
+                    ? "verified"
+                    : "not-verified"
               }`}
             >
-              {user.verified ? "Verified" : "Not Verified"}
+              {user.gameBan
+                ? "Banned"
+                : user.verified
+                  ? "Verified"
+                  : "Not Verified"}
             </span>
           </p>
         </div>
