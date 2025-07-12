@@ -206,7 +206,8 @@ router.get("/:username", authenticate, async (req, res) => {
           leaderboardStats: 1,
           friends: "$mutualProfiles",
           addedFriend: 1,
-          receivedFriendRequest: 1
+          receivedFriendRequest: 1,
+          userInfo: 1
         }
       }
     ]);
@@ -233,6 +234,8 @@ router.get("/:username", authenticate, async (req, res) => {
       friends: profile.friends,
       addedFriend: profile.addedFriend,
       receivedFriendRequest: profile.receivedFriendRequest,
+      chatBan: profile.userInfo[0].chatBan,
+      gameBan: profile.userInfo[0].gameBan,
       classicStats: extractStats(classicStats),
       knowledgeStats: extractStats(knowledgeStats)
     });
