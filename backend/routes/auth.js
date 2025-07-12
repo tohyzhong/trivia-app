@@ -91,6 +91,8 @@ router.post("/refresh-token", authenticate, async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -266,6 +268,8 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role || "user"
       },
       process.env.JWT_SECRET,
@@ -487,7 +491,9 @@ router.get("/verify", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: true,
-        role: user.role
+        role: user.role,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }

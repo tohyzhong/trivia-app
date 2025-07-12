@@ -15,6 +15,8 @@ interface UserProfile {
   message?: string;
   email: string;
   verified: boolean;
+  chatBan: boolean;
+  gameBan: boolean;
 }
 
 const Settings: React.FC = () => {
@@ -61,6 +63,8 @@ const Settings: React.FC = () => {
             username: data.username,
             email: data.email,
             verified: data.verified,
+            chatBan: data.chatBan,
+            gameBan: data.gameBan,
             role: stateUser.role
           })
         );
