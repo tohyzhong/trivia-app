@@ -36,12 +36,15 @@ const CurrencyBar: React.FC = () => {
       return;
     }
 
-    const res = await fetch(`/api/lobby/use-powerup/${lobbyId}`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ powerupName })
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/lobby/use-powerup/${lobbyId}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ powerupName })
+      }
+    );
     const data = await res.json();
     if (res.ok) {
       dispatch(setError({ errorMessage: data.message, success: true }));
