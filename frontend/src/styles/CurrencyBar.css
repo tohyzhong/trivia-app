@@ -55,18 +55,24 @@
   background-color: #fff7d6;
   border-color: #ffe58f;
   color: #92400e;
+  padding: 4px 12px;
+  min-width: 80px;
 }
 
 .powerup-freeze {
   background-color: #e0f7ff;
   border-color: #90e0ff;
   color: #035388;
+  padding: 4px 12px;
+  min-width: 80px;
 }
 
 .powerup-double {
   background-color: #e6ffe6;
   border-color: #8df78d;
   color: #166534;
+  padding: 4px 12px;
+  min-width: 80px;
 }
 
 .currency-bar {
@@ -90,6 +96,7 @@
   font-size: 14px;
   font-weight: 600;
   color: #92400e;
+  cursor: default;
 }
 
 .plus-button {

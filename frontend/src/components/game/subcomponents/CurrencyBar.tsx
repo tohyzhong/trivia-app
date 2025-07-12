@@ -6,10 +6,7 @@ import { HiOutlineLightBulb } from "react-icons/hi2";
 import { MdOutlineTimer } from "react-icons/md";
 import { TbMultiplier2X } from "react-icons/tb";
 import Shop from "./Shop";
-import {
-  setHintRevealed,
-  setPowerups
-} from "../../../redux/lobbySlice";
+import { setHintRevealed, setPowerups } from "../../../redux/lobbySlice";
 import "../../../styles/CurrencyBar.css";
 import { useLocation } from "react-router-dom";
 import { setError } from "../../../redux/errorSlice";
@@ -80,15 +77,6 @@ const CurrencyBar: React.FC = () => {
           <HiOutlineLightBulb style={{ fontSize: "20px" }} />
           <span>{powerups.hintBoosts}</span>
         </div>
-        <button
-          className="plus-button powerup-hint"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowShop(true);
-          }}
-        >
-          <FaPlus size={12} />
-        </button>
       </div>
 
       <div
@@ -100,15 +88,6 @@ const CurrencyBar: React.FC = () => {
           <MdOutlineTimer style={{ fontSize: "20px" }} />
           <span>{powerups.addTimes}</span>
         </div>
-        <button
-          className="plus-button powerup-freeze"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowShop(true);
-          }}
-        >
-          <FaPlus size={12} />
-        </button>
       </div>
 
       <div
@@ -120,15 +99,6 @@ const CurrencyBar: React.FC = () => {
           <TbMultiplier2X style={{ fontSize: "20px" }} />
           <span>{powerups.doublePoints}</span>
         </div>
-        <button
-          className="plus-button powerup-double"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowShop(true);
-          }}
-        >
-          <FaPlus size={12} />
-        </button>
       </div>
 
       {showShop && <Shop onClose={() => setShowShop(false)} />}
