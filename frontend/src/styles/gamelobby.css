@@ -56,6 +56,20 @@
   box-sizing: border-box;
 }
 
+.game-lobby-settings .disabled-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0;
+}
+
 .game-lobby-users {
   display: flex;
   flex-direction: column;

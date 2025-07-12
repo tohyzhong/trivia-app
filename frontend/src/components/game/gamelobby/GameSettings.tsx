@@ -360,6 +360,13 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       )}
 
       <div className="game-lobby-settings-content">
+        {host !== localUsername && (
+          <div className="disabled-overlay">
+            <h3 className="disabled-text">
+              Only the host can change the settings.
+            </h3>
+          </div>
+        )}
         <div className="game-lobby-settings-item">
           <label>Lobby Name:</label>
           <input
