@@ -8,6 +8,7 @@ import { MdOutlineTimer } from "react-icons/md";
 import { TbMultiplier2X } from "react-icons/tb";
 import { setCurrency, setPowerups } from "../../../redux/lobbySlice";
 import { useDispatch } from "react-redux";
+import { setError } from "../../../redux/errorSlice";
 
 const Shop = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useDispatch();
@@ -54,11 +55,21 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
       if (data.url) {
         window.open(data.url, "_blank");
       } else {
-        alert("Failed to start checkout.");
+        dispatch(
+          setError({
+            errorMessage: "Failed to start checkout.",
+            success: false
+          })
+        );
       }
     } catch (err) {
       console.error(err);
-      alert("Error creating checkout session.");
+      dispatch(
+        setError({
+          errorMessage: "Error creating checkout session.",
+          success: false
+        })
+      );
     }
   };
 
@@ -81,13 +92,25 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
       if (res.ok) {
         dispatch(setCurrency(data.currency));
         dispatch(setPowerups(data.powerups));
-        alert(`${item.name} purchased successfully!`);
+        dispatch(
+          setError({
+            errorMessage: `${item.name} purchased successfully!`,
+            success: true
+          })
+        );
       } else {
-        alert(data.message || "Purchase failed.");
+        dispatch(
+          setError({
+            errorMessage: data.message || "Purchase failed.",
+            success: false
+          })
+        );
       }
     } catch (error) {
       console.error("Error purchasing powerup:", error);
-      alert("Error purchasing powerup.");
+      dispatch(
+        setError({ errorMessage: "Error purchasing powerup.", success: false })
+      );
     }
   };
 

@@ -13,6 +13,7 @@ import {
 } from "../../../redux/lobbySlice";
 import "../../../styles/CurrencyBar.css";
 import { useLocation } from "react-router-dom";
+import { setError } from "../../../redux/errorSlice";
 
 const confirmAndBuyPowerup = async (powerupName: string, dispatch: any) => {
   const confirmed = window.confirm(`Purchase ${powerupName} for 40 coins?`);
@@ -34,13 +35,25 @@ const confirmAndBuyPowerup = async (powerupName: string, dispatch: any) => {
     if (res.ok) {
       dispatch(setCurrency(data.currency));
       dispatch(setPowerups(data.powerups));
-      alert(`${powerupName} purchased successfully!`);
+      dispatch(
+        setError({
+          errorMessage: `${powerupName} purchased successfully!`,
+          success: true
+        })
+      );
     } else {
-      alert(data.message || "Purchase failed.");
+      dispatch(
+        setError({
+          errorMessage: data.message || "Purchase failed.",
+          success: false
+        })
+      );
     }
   } catch (error) {
     console.error("Error purchasing powerup:", error);
-    alert("Error purchasing powerup.");
+    dispatch(
+      setError({ errorMessage: "Error purchasing powerup.", success: false })
+    );
   }
 };
 
@@ -60,7 +73,12 @@ const CurrencyBar: React.FC = () => {
     const isGameActive = status === "in-progress";
 
     if (!isCorrectPage || !isGameActive) {
-      alert("You can only use powerups during an active game.");
+      dispatch(
+        setError({
+          errorMessage: "You can only use powerups during an active game.",
+          success: false
+        })
+      );
       return;
     }
 
@@ -75,13 +93,13 @@ const CurrencyBar: React.FC = () => {
     });
     const data = await res.json();
     if (res.ok) {
-      alert(data.message);
+      dispatch(setError({ errorMessage: data.message, success: true }));
       dispatch(setPowerups(data.powerups));
       if (powerupName === "Hint Boost") {
         dispatch(setHintRevealed(data.hintBoost));
       }
     } else {
-      alert(data.message);
+      dispatch(setError({ errorMessage: data.message, success: false }));
     }
   };
 
