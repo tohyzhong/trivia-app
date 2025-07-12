@@ -7,6 +7,7 @@ import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { playClickSound } from "../../../utils/soundManager";
 import { setError } from "../../../redux/errorSlice";
 import { FaExclamation } from "react-icons/fa";
+import ReportUser from "./ReportUser";
 
 interface User {
   username: string;
@@ -154,47 +155,12 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
     }
   };
 
-  const handleReport = async (usernameToReport: string) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/profile/report`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            reported: usernameToReport,
-            source: "lobby",
-            lobbyId
-          })
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok) {
-        dispatch(
-          setError({
-            errorMessage: "User reported successfully.",
-            success: true
-          })
-        );
-      } else {
-        dispatch(
-          setError({
-            errorMessage: `Failed to report user: ${data.message}`,
-            success: false
-          })
-        );
-      }
-    } catch (err) {
-      console.error("Error reporting user:", err);
-      dispatch(
-        setError({
-          errorMessage: `Error reporting user: ${String(err)}`,
-          success: false
-        })
-      );
-    }
+  // User report handlers
+  const [reportPopupActive, setReportPopupActive] = useState(false);
+  const [usernameToReport, setUsernameToReport] = useState("");
+  const handleReport = async (username: string) => {
+    setReportPopupActive(true);
+    setUsernameToReport(username);
   };
 
   return (
@@ -222,6 +188,14 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
         </div>
       )}
 
+      {reportPopupActive && (
+        <ReportUser
+          username={usernameToReport}
+          setActive={setReportPopupActive}
+          lobbyId={lobbyId}
+        />
+      )}
+
       <div className="game-lobby-users-list">
         {users.length > 0 &&
           users.map((user, index) => (
@@ -242,7 +216,9 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                 {user.username !== loggedInUser && (
                   <span
                     className="report-button"
-                    onClick={() => handleReport(user.username)}
+                    onClick={() => {
+                      handleReport(user.username);
+                    }}
                     title="Report User"
                     style={{ cursor: "pointer", marginLeft: "10px" }}
                   >

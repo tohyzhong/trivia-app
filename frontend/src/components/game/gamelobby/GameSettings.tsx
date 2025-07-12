@@ -280,14 +280,36 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     }
   };
 
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        target.closest(".popup-overlay") &&
+        !target.closest(".popup-content")
+      ) {
+        setIsPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   return (
     <div className="game-lobby-settings">
       <div className="game-lobby-settings-header">
         <h1>
-          Game Settings{" "}
+          Lobby Settings{" "}
           <IoInformationCircleOutline
             size={20}
-            style={{ cursor: "pointer", marginLeft: "10px" }}
+            style={{
+              cursor: "pointer",
+              marginLeft: "10px",
+              verticalAlign: "middle"
+            }}
             onClick={() => setIsPopupOpen(true)}
           />
         </h1>

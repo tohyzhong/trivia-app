@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { FaExclamation } from "react-icons/fa";
 import { setError } from "../../../redux/errorSlice";
+import ReportUser from "./ReportUser";
 
 interface ChatMessage {
   sender: string;
@@ -80,46 +81,24 @@ const GameChat: React.FC<GameChatProps> = (props) => {
     }
   }, [chatMessages]);
 
-  const handleReport = async (usernameToReport: string) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/profile/report`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            reported: usernameToReport,
-            source: "lobby",
-            lobbyId
-          })
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok) {
-        dispatch(setError({ errorMessage: "User reported.", success: true }));
-      } else {
-        dispatch(
-          setError({
-            errorMessage: "Failed to report user: " + data.message,
-            success: false
-          })
-        );
-      }
-    } catch (err) {
-      console.error("Error reporting user:", err);
-      dispatch(
-        setError({
-          errorMessage: "Error reporting user: " + String(err),
-          success: false
-        })
-      );
-    }
+  // User report handlers
+  const [reportPopupActive, setReportPopupActive] = useState(false);
+  const [usernameToReport, setUsernameToReport] = useState("");
+  const handleReport = async (username: string) => {
+    setReportPopupActive(true);
+    setUsernameToReport(username);
   };
 
   return (
     <div className="stats-chat-container">
+      {reportPopupActive && (
+        <ReportUser
+          username={usernameToReport}
+          setActive={setReportPopupActive}
+          lobbyId={lobbyId}
+        />
+      )}
+
       {playerStates && (
         <div className="player-stats-container">
           <h3 className="stats-header">Score Summary</h3>
