@@ -982,6 +982,14 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
       });
     }
 
+    const players = Object.keys(lobby.players);
+    const readyCount = players.filter((u) => lobby.players[u].ready).length;
+
+    if (readyCount / players.length < 0.5)
+      return res
+        .status(403)
+        .json({ message: "At least 50% must be ready to start." });
+
     if (!lobby.gameType.includes("solo") && players.length <= 1)
       return res.status(403).json({
         message: "You can't start a multiplayer game with only 1 player."
