@@ -55,15 +55,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       );
       const data: UserProfile = await response.json();
 
-      dispatch(
-        setUser({
-          ...userFromRedux,
-          role: data.role,
-          gameBan: data.gameBan,
-          chatBan: data.chatBan
-        })
-      );
-      console.log(data);
       setUserProfile(data);
       setFriends(data.friends || []);
     } catch (error) {

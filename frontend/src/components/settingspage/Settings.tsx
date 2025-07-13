@@ -58,16 +58,6 @@ const Settings: React.FC = () => {
         );
         const data: UserProfile = await response.json();
         setUserLocal(data);
-        dispatch(
-          setUser({
-            username: data.username,
-            email: data.email,
-            verified: data.verified,
-            chatBan: data.chatBan,
-            gameBan: data.gameBan,
-            role: stateUser.role
-          })
-        );
       } catch (error) {
         console.error("Error fetching profile data", error);
         dispatch(

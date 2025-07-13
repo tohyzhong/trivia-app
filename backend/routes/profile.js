@@ -233,6 +233,7 @@ router.get("/:username", authenticate, async (req, res) => {
           id: profile._id,
           username: profile.username,
           email: profile.email,
+          role: profile.role,
           verified: profile.verified,
           chatBan: profile.chatBan,
           gameBan: profile.gameBan
