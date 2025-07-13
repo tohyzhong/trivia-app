@@ -517,8 +517,8 @@ router.post("/report", authenticate, async (req, res) => {
 
 router.get("/manage/:username", authenticate, async (req, res) => {
   try {
-    const { username } = req.params;
-    const { role } = req.user;
+    const { username: manageUsername } = req.params;
+    const { username, role } = req.user;
 
     if (role === "user") {
       return res
@@ -527,12 +527,12 @@ router.get("/manage/:username", authenticate, async (req, res) => {
     }
 
     const userDoc = await User.aggregate([
-      { $match: { username } },
+      { $match: { username: manageUsername } },
       {
         $lookup: {
           from: "profiles",
           pipeline: [
-            { $match: { username } },
+            { $match: { username: manageUsername } },
             { $project: { profilePicture: 1 } }
           ],
           as: "profileInfo"
@@ -556,9 +556,16 @@ router.get("/manage/:username", authenticate, async (req, res) => {
       }
     ]);
 
-    if (!userDoc) {
-      return res.status(400).json({ message: "User not found" });
+    if (userDoc.length === 0) {
+      return res.status(400).json({ message: "User not found." });
+    } else if (userDoc[0].username === username) {
+      return res
+        .status(403)
+        .json({ message: "You cannot manage your own account's status" });
+    } else if (userDoc[0].role === "superadmin" && role !== "superadmin") {
+      return res.status(403).json({ message: "Unauthorised attempt." });
     }
+
     return res.status(200).json(userDoc[0]);
   } catch (err) {
     console.error("Error fetching user:", err);

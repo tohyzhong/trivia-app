@@ -60,13 +60,14 @@ const ManageUser: React.FC = () => {
         throw new Error(data.message);
       }
     } catch (error) {
-      console.error("Error fetching profile data", error);
+      console.error(error);
       dispatch(
         setError({
-          errorMessage: `Error fetching user data: ${error}`,
+          errorMessage: `Error fetching user data: ${error.message}`,
           success: false
         })
       );
+      navigate("/profile");
     }
   };
 
@@ -343,69 +344,75 @@ const ManageUser: React.FC = () => {
             </span>
           </p>
         </div>
-        <div className="chat-ban-change">
-          <label>Reason:</label>
-          <input
-            type="text"
-            value={chatBanReason}
-            onChange={(e) => setChatBanReason(e.target.value)}
-            placeholder={`Enter a reason for ${user.chatBan ? "un" : ""}banning ${user.username}`}
-          />
-          <button
-            className={`${user.chatBan ? "unban-button" : "ban-button"} ${chatBanSending && "disabled"}`}
-            onClick={handleChatBan}
-          >
-            Chat {user.chatBan ? "Unb" : "B"}an {user.username}
-            {chatBanSending && (
-              <>
-                &nbsp;
-                <motion.div
-                  className="loading-icon-container"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 2,
-                    ease: "linear"
-                  }}
-                >
-                  <AiOutlineLoading3Quarters className="loading-icon" />
-                </motion.div>
-              </>
-            )}
-          </button>
-        </div>
 
-        <div className="game-ban-change">
-          <label>Reason:</label>
-          <input
-            type="text"
-            value={gameBanReason}
-            onChange={(e) => setGameBanReason(e.target.value)}
-            placeholder={`Enter a reason for ${user.gameBan ? "un" : ""}banning ${user.username}`}
-          />
-          <button
-            className={`${user.gameBan ? "unban-button" : "ban-button"} ${gameBanSending && "disabled"}`}
-            onClick={handleGameBan}
-          >
-            Game {user.gameBan ? "Unb" : "B"}an {user.username}
-            {gameBanSending && (
-              <>
-                &nbsp;
-                <motion.div
-                  className="loading-icon-container"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 2,
-                    ease: "linear"
-                  }}
-                >
-                  <AiOutlineLoading3Quarters className="loading-icon" />
-                </motion.div>
-              </>
-            )}
-          </button>
-        </div>
+        {(currUserRole === "superadmin" || // Superadmin can ban anyone
+          (currUserRole === "admin" && user.role === "user")) && ( // Admin can ban only users
+          <>
+            <div className="chat-ban-change">
+              <label>Reason:</label>
+              <input
+                type="text"
+                value={chatBanReason}
+                onChange={(e) => setChatBanReason(e.target.value)}
+                placeholder={`Enter a reason for ${user.chatBan ? "un" : ""}banning ${user.username}`}
+              />
+              <button
+                className={`${user.chatBan ? "unban-button" : "ban-button"} ${chatBanSending && "disabled"}`}
+                onClick={handleChatBan}
+              >
+                Chat {user.chatBan ? "Unb" : "B"}an {user.username}
+                {chatBanSending && (
+                  <>
+                    &nbsp;
+                    <motion.div
+                      className="loading-icon-container"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "linear"
+                      }}
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="game-ban-change">
+              <label>Reason:</label>
+              <input
+                type="text"
+                value={gameBanReason}
+                onChange={(e) => setGameBanReason(e.target.value)}
+                placeholder={`Enter a reason for ${user.gameBan ? "un" : ""}banning ${user.username}`}
+              />
+              <button
+                className={`${user.gameBan ? "unban-button" : "ban-button"} ${gameBanSending && "disabled"}`}
+                onClick={handleGameBan}
+              >
+                Game {user.gameBan ? "Unb" : "B"}an {user.username}
+                {gameBanSending && (
+                  <>
+                    &nbsp;
+                    <motion.div
+                      className="loading-icon-container"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "linear"
+                      }}
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  </>
+                )}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
