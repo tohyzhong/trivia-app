@@ -1,4 +1,5 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import * as crypto from "node:crypto";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
@@ -263,13 +264,35 @@ router.get("/check", authenticate, async (req, res) => {
       ])
       .toArray();
 
-    if (result.user[0].gameBan)
-      return res.status(400).json({ message: "User banned." });
-
     const lobby = result.lobby[0] ?? null;
     const categories = result.categories?.map((c) => c.category) ?? [];
     const currency = result.profile[0]?.currency ?? 0;
     const powerups = result.profile[0]?.powerups ?? {};
+
+    const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+    const newToken = jwt.sign(
+      {
+        id: decoded.id,
+        username: decoded.username,
+        email: decoded.email,
+        verified: decoded.verified,
+        chatBan: result.user[0].chatBan,
+        gameBan: result.user[0].gameBan,
+        role: decoded.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+    });
+
+    if (result.user[0].gameBan)
+      return res.status(400).json({ message: "User banned." });
 
     return res.status(200).json({
       lobbyId: lobby?.lobbyId ?? null,

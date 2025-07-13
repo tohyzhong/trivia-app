@@ -682,6 +682,17 @@ router.post("/chatban", authenticate, async (req, res) => {
       });
     }
 
+    await Lobby.collection.findOneAndUpdate(
+      {
+        [`players.${bannedUser}`]: { $exists: true }
+      },
+      {
+        $set: {
+          [`players.${bannedUser}.chatBan`]: !unban
+        }
+      }
+    );
+
     const htmlContentAdmin = `
       <div style="font-family: Arial, sans-serif; padding: 16px;">
         <h2>Chat ${unban ? "Unb" : "B"}an Issue Confirmation</h2>
