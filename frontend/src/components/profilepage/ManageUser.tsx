@@ -180,6 +180,12 @@ const ManageUser: React.FC = () => {
   ) : (
     <div className="manage-container">
       <div className="profile-header">
+        <button
+          className="back-button"
+          onClick={() => navigate(`/profile/${paramUsername}`)}
+        >
+          ← Back
+        </button>
         <h1 className="profile-name">Manage {user.username}&apos;s Profile</h1>
       </div>
       <div className="user-info-container">
