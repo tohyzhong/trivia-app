@@ -7,7 +7,7 @@ interface UserState {
   chatBan: boolean;
   gameBan: boolean;
   isAuthenticated?: boolean;
-  role?: string;
+  role: string;
 }
 
 const initialState: UserState = {

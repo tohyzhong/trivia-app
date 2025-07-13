@@ -230,11 +230,41 @@ router.get("/check", authenticate, async (req, res) => {
               { $match: { categories: { $ne: null } } },
               { $replaceRoot: { newRoot: "$categories" } }
             ],
-            profile: [{ $project: { _id: 0, currency: 1, powerups: 1 } }]
+            profile: [
+              {
+                $project: {
+                  _id: 0,
+                  currency: 1,
+                  powerups: 1
+                }
+              }
+            ],
+            user: [
+              {
+                $lookup: {
+                  from: "users",
+                  pipeline: [
+                    {
+                      $match: {
+                        username
+                      }
+                    },
+                    { $project: { _id: 0, gameBan: 1, chatBan: 1 } }
+                  ],
+                  as: "user"
+                }
+              },
+              { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+              { $match: { user: { $ne: null } } },
+              { $replaceRoot: { newRoot: "$user" } }
+            ]
           }
         }
       ])
       .toArray();
+
+    if (result.user[0].gameBan)
+      return res.status(400).json({ message: "User banned." });
 
     const lobby = result.lobby[0] ?? null;
     const categories = result.categories?.map((c) => c.category) ?? [];
@@ -246,7 +276,8 @@ router.get("/check", authenticate, async (req, res) => {
       categories,
       currency,
       powerups,
-      status: lobby?.status ?? ""
+      status: lobby?.status ?? "",
+      chatBan: result.user[0].chatBan
     });
   } catch (error) {
     console.error(error);
@@ -699,6 +730,11 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
     const { message } = req.body;
     const username = req.user.username;
 
+    if (req.user.chatBan)
+      return res.status(404).json({
+        message: "User is chat banned."
+      });
+
     const newChatMessage = {
       sender: username,
       message,
@@ -864,63 +900,101 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
     const { lobbyId } = req.params;
     const loggedInUser = req.user.username;
 
-    const lobby = await Lobby.collection.findOne({
-      lobbyId,
-      [`players.${loggedInUser}`]: { $exists: true }
-    });
+    const [lobbyResult] = await Lobby.collection
+      .aggregate([
+        { $match: { lobbyId, [`players.${loggedInUser}`]: { $exists: true } } },
+        {
+          $lookup: {
+            from: "users",
+            let: { playerUsernames: { $objectToArray: "$players" } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $in: [
+                          "$username",
+                          {
+                            $map: {
+                              input: "$$playerUsernames",
+                              as: "p",
+                              in: "$$p.k"
+                            }
+                          }
+                        ]
+                      },
+                      { $eq: ["$gameBan", true] }
+                    ]
+                  }
+                }
+              },
+              { $project: { username: 1 } }
+            ],
+            as: "bannedPlayers"
+          }
+        }
+      ])
+      .toArray();
 
-    if (!lobby) {
+    if (!lobbyResult) {
       return res.status(404).json({ message: "Lobby not found" });
-    } else if (lobby.status === "in-progress" || lobby.status === "finished") {
+    }
+
+    const lobby = lobbyResult;
+    const banned = lobby.bannedPlayers;
+
+    if (lobby.status === "in-progress" || lobby.status === "finished") {
       return res.status(401).json({ message: "Lobby has already started." });
-    } else if (lobby.host !== loggedInUser) {
+    }
+
+    if (lobby.host !== loggedInUser) {
       return res.status(403).json({ message: "Only host can start the game." });
-    } else {
-      const players = Object.keys(lobby.players);
-      const readyCount = players.filter((u) => lobby.players[u].ready).length;
+    }
 
-      if (readyCount / players.length < 0.5)
-        return res
-          .status(403)
-          .json({ message: "At least 50% must be ready to start." });
+    if (banned.length > 0) {
+      return res.status(403).json({
+        message: "One or more players are banned from playing.",
+        bannedPlayers: banned.map((u) => u.username)
+      });
+    }
 
-      if (!lobby.gameType.includes("solo") && players.length <= 1)
-        return res.status(403).json({
-          message: "You can't start a multiplayer game with only 1 player."
-        });
+    if (!lobby.gameType.includes("solo") && players.length <= 1)
+      return res.status(403).json({
+        message: "You can't start a multiplayer game with only 1 player."
+      });
 
-      // Configure game state
-      const { questionIds, questionCategories, question } =
-        await generateUniqueQuestionIds(
-          lobby.gameSettings.numQuestions,
-          lobby.gameSettings.categories,
-          lobby.gameSettings.difficulty
-        );
-
-      const update = {
-        currentQuestion: 1,
-        questionIds,
-        question,
-        questionCategories,
-        lastUpdate: new Date()
-      };
-
-      const gameState = { ...lobby.gameState, ...update };
-
-      await Lobby.collection.updateOne(
-        { lobbyId },
-        { $set: { gameState, status: "in-progress", lastActivity: new Date() } }
+    // Configure game state
+    const { questionIds, questionCategories, question } =
+      await generateUniqueQuestionIds(
+        lobby.gameSettings.numQuestions,
+        lobby.gameSettings.categories,
+        lobby.gameSettings.difficulty
       );
 
-      // Notify players in the lobby
-      const socketIO = getSocketIO();
-      socketIO.to(lobbyId).emit("updateStatus", { status: "in-progress" });
-      socketIO
-        .to(lobbyId)
-        .emit("updateState", { gameState, serverTimeNow: new Date() });
+    const update = {
+      currentQuestion: 1,
+      questionIds,
+      question,
+      questionCategories,
+      lastUpdate: new Date()
+    };
 
-      return res.status(200).json({ message: "Lobby started." });
-    }
+    const gameState = { ...lobby.gameState, ...update };
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { gameState, status: "in-progress", lastActivity: new Date() } }
+    );
+
+    // Notify players in the lobby
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit("updateStatus", { status: "in-progress" });
+    socketIO
+      .to(lobbyId)
+      .emit("updateState", { gameState, serverTimeNow: new Date() });
+
+    return res.status(200).json({ message: "Lobby started." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error starting lobby." });
