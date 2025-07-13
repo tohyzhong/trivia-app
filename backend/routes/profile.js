@@ -1,4 +1,5 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
 import authenticate from "./authMiddleware.js";
@@ -210,8 +211,7 @@ router.get("/:username", authenticate, async (req, res) => {
           leaderboardStats: 1,
           friends: "$mutualProfiles",
           addedFriend: 1,
-          receivedFriendRequest: 1,
-          userInfo: 1
+          receivedFriendRequest: 1
         }
       }
     ]);
@@ -227,7 +227,27 @@ router.get("/:username", authenticate, async (req, res) => {
     const knowledgeStats =
       profile.leaderboardStats?.knowledge?.overall?.overall ?? {};
 
-    res.status(200).json({
+    const newToken = jwt.sign(
+      {
+        id: profile._id,
+        username: profile.username,
+        email: profile.email,
+        verified: profile.verified,
+        chatBan: profile.chatBan,
+        gameBan: profile.gameBan
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+    });
+
+    return res.status(200).json({
       _id: profile._id,
       username: profile.username,
       email: profile.email,
@@ -238,8 +258,8 @@ router.get("/:username", authenticate, async (req, res) => {
       friends: profile.friends,
       addedFriend: profile.addedFriend,
       receivedFriendRequest: profile.receivedFriendRequest,
-      chatBan: profile.userInfo[0].chatBan,
-      gameBan: profile.userInfo[0].gameBan,
+      chatBan: profile.chatBan,
+      gameBan: profile.gameBan,
       classicStats: extractStats(classicStats),
       knowledgeStats: extractStats(knowledgeStats)
     });

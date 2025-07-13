@@ -54,26 +54,16 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         }
       );
       const data: UserProfile = await response.json();
-      if (
-        username === usernameFromRedux &&
-        (data.role !== currUserRole ||
-          data.gameBan !== userFromRedux.gameBan ||
-          data.chatBan !== userFromRedux.chatBan)
-      ) {
-        await fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token`, {
-          method: "POST",
-          credentials: "include"
-        });
 
-        dispatch(
-          setUser({
-            ...userFromRedux,
-            role: data.role,
-            gameBan: data.gameBan,
-            chatBan: data.chatBan
-          })
-        );
-      }
+      dispatch(
+        setUser({
+          ...userFromRedux,
+          role: data.role,
+          gameBan: data.gameBan,
+          chatBan: data.chatBan
+        })
+      );
+      console.log(data);
       setUserProfile(data);
       setFriends(data.friends || []);
     } catch (error) {

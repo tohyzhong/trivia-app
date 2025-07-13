@@ -241,7 +241,9 @@ router.post("/verify-action", async (req, res) => {
               id: user._id,
               username: user.username,
               email: newEmail,
-              verified: user.verified
+              verified: user.verified,
+              chatBan: user.chatBan,
+              gameBan: user.gameBan
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
