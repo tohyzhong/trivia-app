@@ -77,9 +77,26 @@
   align-self: center;
 }
 
+.role-container .report-button:hover {
+  background-color: #e53935;
+  transition: background-color 0.3s ease;
+}
+
 .role-container .report-button.disabled {
   cursor: not-allowed;
   filter: grayscale(0.6);
+}
+
+.role-container .manage-button {
+  background-color: #1976d2;
+  justify-content: center;
+  width: fit-content;
+  align-self: center;
+}
+
+.role-container .manage-button:hover {
+  background-color: #1565c0;
+  transition: background-color 0.3s ease;
 }
 
 .loading-icon-container {

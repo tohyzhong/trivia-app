@@ -515,4 +515,228 @@ router.post("/report", authenticate, async (req, res) => {
   }
 });
 
+router.get("/manage/:username", authenticate, async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { role } = req.user;
+
+    if (role === "user") {
+      return res
+        .status(403)
+        .json({ message: "User is not authorised to use this feature." });
+    }
+
+    const userDoc = await User.aggregate([
+      { $match: { username } },
+      {
+        $lookup: {
+          from: "profiles",
+          pipeline: [
+            { $match: { username } },
+            { $project: { profilePicture: 1 } }
+          ],
+          as: "profileInfo"
+        }
+      },
+      {
+        $addFields: {
+          profilePicture: { $first: "$profileInfo.profilePicture" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          username: 1,
+          profilePicture: 1,
+          role: 1,
+          verified: 1,
+          chatBan: 1,
+          gameBan: 1
+        }
+      }
+    ]);
+
+    if (!userDoc) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    return res.status(200).json(userDoc[0]);
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.post("/ban", authenticate, async (req, res) => {
+  try {
+    const { bannedUser, reason, unban } = req.body; // unban = true if unbanning user
+    const { username, role } = req.user;
+
+    if (role === "user") {
+      return res
+        .status(403)
+        .json({ message: "User is not authorised to issue bans." });
+    }
+
+    const userDoc = await User.findOneAndUpdate(
+      { username: bannedUser, gameBan: unban },
+      { $set: { gameBan: !unban } },
+      { new: "true" }
+    );
+
+    if (!userDoc) {
+      return res.status(400).json({
+        message: `User not found or user already ${unban && "un"}banned.`
+      });
+    }
+
+    const htmlContentAdmin = `
+      <div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>${unban ? "Unb" : "B"}an Issue Confirmation</h2>
+        <p><strong>${unban ? "Unb" : "B"}anned User:</strong> ${bannedUser}</p>
+        <p><strong>${unban ? "Unb" : "B"}anned By:</strong> ${username}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+      </div>
+    `;
+
+    const htmlContentUser = `<div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>${unban ? "Unb" : "B"}an Notice</h2>
+        <p><strong>Your account has been ${unban ? "Un" : ""}banned from The Rizz Quiz</strong></p>
+        <p><strong>Username:</strong> ${bannedUser}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+        ${
+          !unban
+            ? `
+        <p style="margin-top: 24px; font-style: italic; color: #ff0000;">
+          If you believe this was a mistake, please contact support to clarify.
+        </p>`
+            : ""
+        }
+      </div>`;
+
+    await sendEmail(
+      "therizzquiz@gmail.com",
+      `${unban ? "Unb" : "B"}an Report: ${bannedUser}`,
+      "",
+      htmlContentAdmin
+    );
+
+    await sendEmail(
+      userDoc.email,
+      `${unban ? "Unb" : "B"}an Notice: ${bannedUser}`,
+      "",
+      htmlContentUser
+    );
+
+    return res.status(200).json({ message: "User banned successfully." });
+  } catch (err) {
+    console.error("Error handling ban:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.post("/chatban", authenticate, async (req, res) => {
+  try {
+    const { bannedUser, reason, unban } = req.body; // unban = true if unbanning user
+    const { username, role } = req.user;
+
+    if (role === "user") {
+      return res
+        .status(403)
+        .json({ message: "User is not authorised to issue chat bans." });
+    }
+
+    const userDoc = await User.findOneAndUpdate(
+      { username: bannedUser, chatBan: unban },
+      { $set: { chatBan: !unban } },
+      { new: "true" }
+    );
+
+    if (!userDoc) {
+      return res.status(400).json({
+        message: `User not found or user already chat ${unban && "un"}banned.`
+      });
+    }
+
+    const htmlContentAdmin = `
+      <div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>Chat ${unban ? "Unb" : "B"}an Issue Confirmation</h2>
+        <p><strong>${unban ? "Unb" : "B"}anned User:</strong> ${bannedUser}</p>
+        <p><strong>${unban ? "Unb" : "B"}anned By:</strong> ${username}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+      </div>
+    `;
+
+    // TODO: retrieve chat logs (including from closed lobbies?)
+    const htmlContentUser = `<div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>Chat ${unban ? "Unb" : "B"}an Notice</h2>
+        <p><strong>Your account has been chat ${unban ? "Un" : ""}banned on The Rizz Quiz</strong></p>
+        <p><strong>Username:</strong> ${bannedUser}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+        ${
+          !unban
+            ? `
+        <p style="margin-top: 24px; font-style: italic; color: #ff0000;">
+          If you believe this was a mistake, please contact support to clarify.
+        </p>`
+            : ""
+        }
+      </div>`;
+
+    await sendEmail(
+      "therizzquiz@gmail.com",
+      `Chat ${unban ? "Unb" : "B"}an Report: ${bannedUser}`,
+      "",
+      htmlContentAdmin
+    );
+
+    await sendEmail(
+      userDoc.email,
+      `Chat ${unban ? "Unb" : "B"}an Notice: ${bannedUser}`,
+      "",
+      htmlContentUser
+    );
+
+    return res.status(200).json({ message: "User chat banned successfully." });
+  } catch (err) {
+    console.error("Error handling ban:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
 export default router;
