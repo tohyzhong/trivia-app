@@ -277,11 +277,7 @@ const ManageUser: React.FC = () => {
             return roleActions.map(({ label, newRole, type }) => (
               <button
                 key={label}
-                className={
-                  type === "promote"
-                    ? "add-friend-button"
-                    : "remove-friend-button"
-                }
+                className={type === "promote" ? "unban-button" : "ban-button"}
                 onClick={async () => {
                   try {
                     const response = await fetch(

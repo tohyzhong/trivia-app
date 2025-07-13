@@ -170,10 +170,14 @@ button.disabled {
 
 .unban-button {
   background-color: #4caf50;
+  display: flex;
+  justify-content: center;
 }
 
 .ban-button {
   background-color: #f44336;
+  display: flex;
+  justify-content: center;
 }
 
 .loading-icon-container {
