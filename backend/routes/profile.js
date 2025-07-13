@@ -133,7 +133,9 @@ router.get("/:username", authenticate, async (req, res) => {
         $addFields: {
           role: { $arrayElemAt: ["$userInfo.role", 0] },
           email: { $arrayElemAt: ["$userInfo.email", 0] },
-          verified: { $arrayElemAt: ["$userInfo.verified", 0] }
+          verified: { $arrayElemAt: ["$userInfo.verified", 0] },
+          chatBan: { $arrayElemAt: ["$userInfo.chatBan", 0] },
+          gameBan: { $arrayElemAt: ["$userInfo.gameBan", 0] }
         }
       },
 
@@ -200,6 +202,8 @@ router.get("/:username", authenticate, async (req, res) => {
           username: 1,
           email: 1,
           verified: 1,
+          gameBan: 1,
+          chatBan: 1,
           currency: 1,
           profilePicture: 1,
           role: 1,
