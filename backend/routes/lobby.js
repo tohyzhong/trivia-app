@@ -59,14 +59,15 @@ router.post("/create", authenticate, async (req, res) => {
           from: "users",
           pipeline: [
             { $match: { username: username } },
-            { $project: { chatBan: 1, _id: 0 } }
+            { $project: { gameBan: 1, chatBan: 1, _id: 0 } }
           ],
           as: "chatBanInfo"
         }
       },
       {
         $addFields: {
-          chatBan: { $first: "$chatBanInfo.chatBan" }
+          chatBan: { $arrayElemAt: ["$chatBanInfo.gameBan", 0] },
+          gameBan: { $arrayElemAt: ["$chatBanInfo.gameBan", 0] }
         }
       },
       { $unwind: "$lobbyStatus" },
@@ -89,7 +90,8 @@ router.post("/create", authenticate, async (req, res) => {
           profilePicture: 1,
           currency: 1,
           powerups: 1,
-          chatBan: 1
+          chatBan: 1,
+          gameBan: 1
         }
       }
     ]);
@@ -102,6 +104,9 @@ router.post("/create", authenticate, async (req, res) => {
       return res.status(400).json({ message: "Player already in a lobby." });
     if (playerDoc.categories.length === 0) {
       return res.status(400).json({ message: "No categories found." });
+    }
+    if (playerDoc.gameBan) {
+      return res.status(400).json({ message: "Player is banned." });
     }
 
     const defaultCategory = playerDoc.categories.includes("General")
@@ -373,9 +378,12 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
       { profilePicture: 1 }
     );
 
-    const userDoc = await User.findOne({ username }, { chatBan: 1 });
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
+    const userDoc = await User.findOne(
+      { username, gameBan: false },
+      { chatBan: 1 }
+    );
+    if (!playerDoc || !userDoc) {
+      return res.status(404).json({ message: "Player not found or banned." });
     }
 
     const lobby = await Lobby.collection.findOneAndUpdate(
