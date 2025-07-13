@@ -227,25 +227,27 @@ router.get("/:username", authenticate, async (req, res) => {
     const knowledgeStats =
       profile.leaderboardStats?.knowledge?.overall?.overall ?? {};
 
-    const newToken = jwt.sign(
-      {
-        id: profile._id,
-        username: profile.username,
-        email: profile.email,
-        verified: profile.verified,
-        chatBan: profile.chatBan,
-        gameBan: profile.gameBan
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    if (profile.username === req.user.username) {
+      const newToken = jwt.sign(
+        {
+          id: profile._id,
+          username: profile.username,
+          email: profile.email,
+          verified: profile.verified,
+          chatBan: profile.chatBan,
+          gameBan: profile.gameBan
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
 
-    res.cookie("token", newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-    });
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      });
+    }
 
     return res.status(200).json({
       _id: profile._id,
