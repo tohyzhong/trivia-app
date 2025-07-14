@@ -1,4 +1,5 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import * as crypto from "node:crypto";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
@@ -8,6 +9,7 @@ import {
   generateUniqueQuestionIds,
   getQuestionById
 } from "../utils/generateclassicquestions.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -53,6 +55,22 @@ router.post("/create", authenticate, async (req, res) => {
           as: "categories"
         }
       },
+      {
+        $lookup: {
+          from: "users",
+          pipeline: [
+            { $match: { username: username } },
+            { $project: { gameBan: 1, chatBan: 1, _id: 0 } }
+          ],
+          as: "chatBanInfo"
+        }
+      },
+      {
+        $addFields: {
+          chatBan: { $arrayElemAt: ["$chatBanInfo.gameBan", 0] },
+          gameBan: { $arrayElemAt: ["$chatBanInfo.gameBan", 0] }
+        }
+      },
       { $unwind: "$lobbyStatus" },
       {
         $addFields: {
@@ -72,7 +90,9 @@ router.post("/create", authenticate, async (req, res) => {
           categories: "$categories.category",
           profilePicture: 1,
           currency: 1,
-          powerups: 1
+          powerups: 1,
+          chatBan: 1,
+          gameBan: 1
         }
       }
     ]);
@@ -86,6 +106,9 @@ router.post("/create", authenticate, async (req, res) => {
     if (playerDoc.categories.length === 0) {
       return res.status(400).json({ message: "No categories found." });
     }
+    if (playerDoc.gameBan) {
+      return res.status(400).json({ message: "Player is banned." });
+    }
 
     const defaultCategory = playerDoc.categories.includes("General")
       ? "General"
@@ -96,7 +119,11 @@ router.post("/create", authenticate, async (req, res) => {
       status: "waiting",
       host: username,
       players: {
-        [username]: { ready: false, profilePicture: playerDoc.profilePicture }
+        [username]: {
+          ready: false,
+          profilePicture: playerDoc.profilePicture,
+          chatBan: playerDoc.chatBan
+        }
       },
       gameType,
       gameSettings: {
@@ -204,7 +231,34 @@ router.get("/check", authenticate, async (req, res) => {
               { $match: { categories: { $ne: null } } },
               { $replaceRoot: { newRoot: "$categories" } }
             ],
-            profile: [{ $project: { _id: 0, currency: 1, powerups: 1 } }]
+            profile: [
+              {
+                $project: {
+                  _id: 0,
+                  currency: 1,
+                  powerups: 1
+                }
+              }
+            ],
+            user: [
+              {
+                $lookup: {
+                  from: "users",
+                  pipeline: [
+                    {
+                      $match: {
+                        username
+                      }
+                    },
+                    { $project: { _id: 0, gameBan: 1, chatBan: 1 } }
+                  ],
+                  as: "user"
+                }
+              },
+              { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+              { $match: { user: { $ne: null } } },
+              { $replaceRoot: { newRoot: "$user" } }
+            ]
           }
         }
       ])
@@ -215,12 +269,38 @@ router.get("/check", authenticate, async (req, res) => {
     const currency = result.profile[0]?.currency ?? 0;
     const powerups = result.profile[0]?.powerups ?? {};
 
+    const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+    const newToken = jwt.sign(
+      {
+        id: decoded.id,
+        username: decoded.username,
+        email: decoded.email,
+        verified: decoded.verified,
+        chatBan: result.user[0].chatBan,
+        gameBan: result.user[0].gameBan,
+        role: decoded.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+    });
+
+    if (result.user[0].gameBan)
+      return res.status(400).json({ message: "User banned." });
+
     return res.status(200).json({
       lobbyId: lobby?.lobbyId ?? null,
       categories,
       currency,
       powerups,
-      status: lobby?.status ?? ""
+      status: lobby?.status ?? "",
+      chatBan: result.user[0].chatBan
     });
   } catch (error) {
     console.error(error);
@@ -347,19 +427,44 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
     const { lobbyId } = req.params;
     const username = req.user.username;
 
-    const playerDoc = await Profile.findOne(
-      { username },
-      { profilePicture: 1 }
-    );
-    if (!playerDoc) {
-      return res.status(404).json({ message: "Player not found." });
+    const [userData] = await User.aggregate([
+      {
+        $match: {
+          username,
+          gameBan: false
+        }
+      },
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "username",
+          foreignField: "username",
+          as: "profile"
+        }
+      },
+      {
+        $unwind: "$profile"
+      },
+      {
+        $project: {
+          chatBan: 1,
+          "profile.profilePicture": 1
+        }
+      }
+    ]);
+
+    if (!userData) {
+      return res.status(404).json({ message: "Player not found or banned." });
     }
 
     const lobby = await Lobby.collection.findOneAndUpdate(
       { lobbyId, gameType: { $not: /solo/i } },
       {
         $set: {
-          [`joinRequests.${username}`]: playerDoc.profilePicture || "",
+          [`joinRequests.${username}`]: {
+            profilePicture: userData.profile.profilePicture || "",
+            chatBan: userData.chatBan || false
+          },
           lastActivity: new Date()
         }
       },
@@ -422,7 +527,8 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
           $set: {
             [`players.${usernameToApprove}`]: {
               ready: false,
-              profilePicture: `$joinRequests.${usernameToApprove}`
+              profilePicture: `$joinRequests.${usernameToApprove}.profilePicture`,
+              chatBan: `$joinRequests.${usernameToApprove}.chatBan`
             },
             [`gameState.playerStates.${usernameToApprove}`]: {
               score: 0,
@@ -664,6 +770,11 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
     const { message } = req.body;
     const username = req.user.username;
 
+    if (req.user.chatBan)
+      return res.status(404).json({
+        message: "User is chat banned."
+      });
+
     const newChatMessage = {
       sender: username,
       message,
@@ -671,17 +782,22 @@ router.post("/chat/:lobbyId", authenticate, async (req, res) => {
     };
 
     const updatedLobby = await Lobby.collection.findOneAndUpdate(
-      { lobbyId, [`players.${username}`]: { $exists: true } },
+      {
+        lobbyId,
+        [`players.${username}`]: { $exists: true },
+        [`players.${username}.chatBan`]: false
+      },
       {
         $push: { chatMessages: newChatMessage },
         $set: { lastActivity: new Date() }
       },
       { returnDocument: "after" }
     );
+
     if (!updatedLobby) {
-      return res
-        .status(404)
-        .json({ message: "Lobby not found or user unauthorised" });
+      return res.status(404).json({
+        message: "Lobby not found or user not authorised to send messages."
+      });
     }
     // Notify all players in the lobby
     const socketIO = getSocketIO();
@@ -824,63 +940,109 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
     const { lobbyId } = req.params;
     const loggedInUser = req.user.username;
 
-    const lobby = await Lobby.collection.findOne({
-      lobbyId,
-      [`players.${loggedInUser}`]: { $exists: true }
-    });
+    const [lobbyResult] = await Lobby.collection
+      .aggregate([
+        { $match: { lobbyId, [`players.${loggedInUser}`]: { $exists: true } } },
+        {
+          $lookup: {
+            from: "users",
+            let: { playerUsernames: { $objectToArray: "$players" } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $in: [
+                          "$username",
+                          {
+                            $map: {
+                              input: "$$playerUsernames",
+                              as: "p",
+                              in: "$$p.k"
+                            }
+                          }
+                        ]
+                      },
+                      { $eq: ["$gameBan", true] }
+                    ]
+                  }
+                }
+              },
+              { $project: { username: 1 } }
+            ],
+            as: "bannedPlayers"
+          }
+        }
+      ])
+      .toArray();
 
-    if (!lobby) {
+    if (!lobbyResult) {
       return res.status(404).json({ message: "Lobby not found" });
-    } else if (lobby.status === "in-progress" || lobby.status === "finished") {
+    }
+
+    const lobby = lobbyResult;
+    const banned = lobby.bannedPlayers;
+
+    if (lobby.status === "in-progress" || lobby.status === "finished") {
       return res.status(401).json({ message: "Lobby has already started." });
-    } else if (lobby.host !== loggedInUser) {
+    }
+
+    if (lobby.host !== loggedInUser) {
       return res.status(403).json({ message: "Only host can start the game." });
-    } else {
-      const players = Object.keys(lobby.players);
-      const readyCount = players.filter((u) => lobby.players[u].ready).length;
+    }
 
-      if (readyCount / players.length < 0.5)
-        return res
-          .status(403)
-          .json({ message: "At least 50% must be ready to start." });
+    if (banned.length > 0) {
+      return res.status(403).json({
+        message: "One or more players are banned from playing.",
+        bannedPlayers: banned.map((u) => u.username)
+      });
+    }
 
-      if (!lobby.gameType.includes("solo") && players.length <= 1)
-        return res.status(403).json({
-          message: "You can't start a multiplayer game with only 1 player."
-        });
+    const players = Object.keys(lobby.players);
+    const readyCount = players.filter((u) => lobby.players[u].ready).length;
 
-      // Configure game state
-      const { questionIds, questionCategories, question } =
-        await generateUniqueQuestionIds(
-          lobby.gameSettings.numQuestions,
-          lobby.gameSettings.categories,
-          lobby.gameSettings.difficulty
-        );
+    if (readyCount / players.length < 0.5)
+      return res
+        .status(403)
+        .json({ message: "At least 50% must be ready to start." });
 
-      const update = {
-        currentQuestion: 1,
-        questionIds,
-        question,
-        questionCategories,
-        lastUpdate: new Date()
-      };
+    if (!lobby.gameType.includes("solo") && players.length <= 1)
+      return res.status(403).json({
+        message: "You can't start a multiplayer game with only 1 player."
+      });
 
-      const gameState = { ...lobby.gameState, ...update };
-
-      await Lobby.collection.updateOne(
-        { lobbyId },
-        { $set: { gameState, status: "in-progress", lastActivity: new Date() } }
+    // Configure game state
+    const { questionIds, questionCategories, question } =
+      await generateUniqueQuestionIds(
+        lobby.gameSettings.numQuestions,
+        lobby.gameSettings.categories,
+        lobby.gameSettings.difficulty
       );
 
-      // Notify players in the lobby
-      const socketIO = getSocketIO();
-      socketIO.to(lobbyId).emit("updateStatus", { status: "in-progress" });
-      socketIO
-        .to(lobbyId)
-        .emit("updateState", { gameState, serverTimeNow: new Date() });
+    const update = {
+      currentQuestion: 1,
+      questionIds,
+      question,
+      questionCategories,
+      lastUpdate: new Date()
+    };
 
-      return res.status(200).json({ message: "Lobby started." });
-    }
+    const gameState = { ...lobby.gameState, ...update };
+
+    await Lobby.collection.updateOne(
+      { lobbyId },
+      { $set: { gameState, status: "in-progress", lastActivity: new Date() } }
+    );
+
+    // Notify players in the lobby
+    const socketIO = getSocketIO();
+    socketIO.to(lobbyId).emit("updateStatus", { status: "in-progress" });
+    socketIO
+      .to(lobbyId)
+      .emit("updateState", { gameState, serverTimeNow: new Date() });
+
+    return res.status(200).json({ message: "Lobby started." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error starting lobby." });

@@ -10,10 +10,7 @@ const profileSchema = new mongoose.Schema(
     profilePicture: { type: String, default: "" },
     matchHistory: { type: Array, default: [] }, // { state: solo/win/lose (grey, green, red), totalPlayed: number, correctNumber: number, date: Date}'
     leaderboardStats: mongoose.Schema.Types.Mixed,
-    reports: {
-      type: [String],
-      default: []
-    },
+    reports: { type: mongoose.Schema.Types.Mixed },
     powerups: {
       hintBoosts: { type: Number, default: 0 },
       addTimes: { type: Number, default: 0 },

@@ -19,7 +19,7 @@
 
 .loading-icon {
   color: white;
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 /* Game Lobby */
@@ -56,7 +56,7 @@
   box-sizing: border-box;
 }
 
-.game-lobby-settings .disabled-overlay {
+.disabled-overlay {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -290,29 +290,87 @@
   overflow-y: auto;
 }
 
-.chat-content {
-  word-break: break-all;
-}
-
-.chat-container {
+.chat-message {
   display: flex;
-  flex-direction: row;
+  margin: 10px 0;
+}
+
+.chat-message.other {
+  justify-content: flex-start;
+}
+
+.chat-message.own {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.chat-message.system {
+  justify-content: center;
+  color: red;
+  font-weight: bold;
+  text-align: center;
   width: 100%;
-  margin: 0;
-  padding: 5px 10px;
 }
 
-.chat-container:nth-child(odd) {
-  background-color: #666;
+.chat-message.system .chat-text {
+  font-size: 12px;
 }
 
-.chat-container:nth-child(even) {
-  background-color: #777;
+.chat-message.system .chat-bubble {
+  background-color: #f1f1f1;
+  padding: 4px 12px;
+  border-radius: 12px;
+  position: relative;
+  word-wrap: break-word;
+  max-width: 80%;
+  margin-right: 8px;
+  align-items: center;
 }
 
-.game-lobby-chat-messages p {
-  margin: 0;
-  border-bottom: 1px solid #666;
+.chat-message.own {
+  color: #111;
+}
+
+.chat-message.other {
+  color: #111;
+}
+
+.chat-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  background-color: white;
+  margin: 8px;
+}
+
+.chat-bubble {
+  background-color: #f1f1f1;
+  padding: 8px 12px;
+  border-radius: 12px;
+  position: relative;
+  word-wrap: break-word;
+  max-width: 80%;
+  margin-right: 8px;
+}
+
+.chat-message.own .chat-bubble {
+  background-color: #d0f0fd;
+}
+
+.chat-sender-name {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.chat-text {
+  font-size: 14px;
+  white-space: pre-wrap;
+  text-align: center;
 }
 
 .game-lobby-chat-entry {
@@ -321,6 +379,7 @@
   align-items: center;
   width: 100%;
   height: 60px;
+  position: relative;
 }
 
 .chat-input {
@@ -350,6 +409,12 @@
 
 .chat-send-button:active {
   background-color: #3478b8;
+}
+
+.chat-disabled.overlay {
+}
+
+.chat-disabled-text {
 }
 
 /* Game Users */
