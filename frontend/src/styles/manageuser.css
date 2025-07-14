@@ -22,6 +22,7 @@
   cursor: pointer;
   top: 4%;
   left: 8%;
+  align-items: center;
 }
 
 .user-info-container {
@@ -172,12 +173,14 @@ button.disabled {
   background-color: #4caf50;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .ban-button {
   background-color: #f44336;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .loading-icon-container {
