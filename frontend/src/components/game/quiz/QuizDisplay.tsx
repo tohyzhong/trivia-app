@@ -234,18 +234,27 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 }}
               />
             ) : (
-              <Knowledge />
+              <Knowledge
+                lobbyId={lobbyId}
+                currentQuestion={gameState.currentQuestion}
+                totalQuestions={totalQuestions}
+                knowledgeQuestion={gameState.question as KnowledgeQuestion}
+                submitted={submitted || answerRevealed}
+                answerRevealed={answerRevealed}
+              />
             )
           ) : (
             <GameLoading />
           )}
-          <div className="question-timer-border">
-            <motion.div
-              key={`timer-${answerRevealed}`}
-              className="question-timer"
-              style={{ width: `${barWidthPercent}%` }}
-            />
-            <div className="numeric-timer">{displayTime}s</div>
+          <div className="question-timer-container">
+            <div className="question-timer-border">
+              <motion.div
+                key={`timer-${answerRevealed}`}
+                className="question-timer"
+                style={{ width: `${barWidthPercent}%` }}
+              />
+              <div className="numeric-timer">{displayTime}s</div>
+            </div>
           </div>
         </div>
         <GameChat

@@ -836,10 +836,16 @@
 }
 
 /* Question Timer Bar */
-.question-timer-border {
+.question-timer-container {
+  width: 90%;
   display: flex;
   justify-content: left;
-  width: 90%;
+  position: relative;
+}
+
+.question-timer-border {
+  display: flex;
+  width: 95%;
   height: 10px;
   border: 1px solid white;
   border-radius: 10px;
@@ -853,8 +859,8 @@
 
 .numeric-timer {
   position: absolute;
-  top: 31%;
-  right: 39%;
+  top: 4px;
+  right: -8px;
   transform: translateY(-50%);
   font-weight: bold;
   color: white;
