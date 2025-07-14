@@ -302,7 +302,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     <div className="game-lobby-settings">
       <div className="game-lobby-settings-header">
         <h1>
-          Lobby Settings{" "}
+          Lobby Settings -{" "}
+          {gameType.split("-")[1] === "classic" ? "Classic " : "Knowledge "}
           <IoInformationCircleOutline
             size={20}
             style={{
@@ -380,19 +381,24 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           />
         </div>
         <div className="game-lobby-settings-item">
-          <label>Lobby Visibility:</label>
-          <div className="game-lobby-public-checkbox">
-            <label>
-              <input
-                type="checkbox"
-                name="publicVisible"
-                checked={settings.publicVisible || false}
-                onChange={handleChange}
-                disabled={host !== localUsername}
-              />
-              Public
-            </label>
-          </div>
+          {gameType.split("-")[0] !== "solo" && (
+            <>
+              <label>Lobby Visibility:</label>
+
+              <div className="game-lobby-public-checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="publicVisible"
+                    checked={settings.publicVisible || false}
+                    onChange={handleChange}
+                    disabled={host !== localUsername}
+                  />
+                  Public
+                </label>
+              </div>
+            </>
+          )}
         </div>
         <div className="game-lobby-settings-item">
           <label>Number of Questions:</label>
