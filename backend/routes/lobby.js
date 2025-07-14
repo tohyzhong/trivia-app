@@ -427,16 +427,33 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
     const { lobbyId } = req.params;
     const username = req.user.username;
 
-    const playerDoc = await Profile.findOne(
-      { username },
-      { profilePicture: 1 }
-    );
+    const [userData] = await User.aggregate([
+      {
+        $match: {
+          username,
+          gameBan: false
+        }
+      },
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "username",
+          foreignField: "username",
+          as: "profile"
+        }
+      },
+      {
+        $unwind: "$profile"
+      },
+      {
+        $project: {
+          chatBan: 1,
+          "profile.profilePicture": 1
+        }
+      }
+    ]);
 
-    const userDoc = await User.findOne(
-      { username, gameBan: false },
-      { chatBan: 1 }
-    );
-    if (!playerDoc || !userDoc) {
+    if (!userData) {
       return res.status(404).json({ message: "Player not found or banned." });
     }
 
@@ -445,8 +462,8 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
       {
         $set: {
           [`joinRequests.${username}`]: {
-            profilePicture: playerDoc.profilePicture || "",
-            chatBan: userDoc.chatBan || false
+            profilePicture: userData.profile.profilePicture || "",
+            chatBan: userData.chatBan || false
           },
           lastActivity: new Date()
         }
