@@ -9,8 +9,21 @@ import { setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import CurrencyBar from "./subcomponents/CurrencyBar";
+import { setUser } from "../../redux/userSlice";
+
+interface UserLobby {
+  lobbyId: string;
+  categories: string[];
+  currency: number;
+  powerups: {
+    [key: string]: number;
+  };
+  status: string;
+  chatBan: boolean;
+}
 
 const GameRoutes: React.FC = () => {
+  const user = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -18,30 +31,46 @@ const GameRoutes: React.FC = () => {
 
   useEffect(() => {
     if (!lobby.lobbyId) {
-      // No lobby in redux, check if user in lobby
-      fetch(`${import.meta.env.VITE_API_URL}/api/lobby/check`, {
-        method: "GET",
-        credentials: "include"
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          dispatch(
-            setLobby({
-              lobbyId: data.lobbyId,
-              categories: data.categories,
-              currency: data.currency,
-              powerups: data.powerups,
-              status: data.status
-            })
+      const checkLobby = async () => {
+        try {
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/lobby/check`,
+            {
+              method: "GET",
+              credentials: "include"
+            }
           );
+
+          const data: UserLobby = await res.json();
+
+          if (!res.ok) {
+            navigate("/settings");
+            return;
+          }
+
+          if (data) {
+            dispatch(
+              setLobby({
+                lobbyId: data.lobbyId,
+                categories: data.categories,
+                currency: data.currency,
+                powerups: data.powerups,
+                status: data.status
+              })
+            );
+
+            dispatch(setUser({ ...user, chatBan: data.chatBan }));
+          }
 
           if (data.lobbyId) {
             navigate(`/play/${data.lobbyId}`, { state: location.state });
           }
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error fetching lobby:", error);
-        });
+        }
+      };
+
+      checkLobby();
     }
   }, [dispatch, navigate, location.state]);
 

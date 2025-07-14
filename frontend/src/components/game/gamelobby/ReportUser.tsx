@@ -17,17 +17,14 @@ const ReportUser: React.FC<ReportUserProps> = ({
   setActive,
   lobbyId
 }) => {
-  /*
   const reportTypes = () => {
     return [
       "Inappropriate Username",
       "Cheating",
       "Harassment or Abusive Communications",
-      "Spam",
-      "Other"
+      "Spam"
     ];
   };
-  */
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -62,7 +59,8 @@ const ReportUser: React.FC<ReportUserProps> = ({
           body: JSON.stringify({
             reported: username,
             source: "lobby",
-            lobbyId
+            lobbyId,
+            reasons: selectedReasons
           })
         }
       );
@@ -96,6 +94,17 @@ const ReportUser: React.FC<ReportUserProps> = ({
     setActive(false);
   };
 
+  // Handle report reason selections
+  const [selectedReasons, setSelectedReasons] = React.useState<string[]>([]);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedReasons((prev) => [...prev, value]);
+    } else {
+      setSelectedReasons((prev) => prev.filter((reason) => reason !== value));
+    }
+  };
+
   return (
     <div className="report-user-container-full">
       <div className="report-overlay">
@@ -105,19 +114,19 @@ const ReportUser: React.FC<ReportUserProps> = ({
             onClick={() => setActive(false)}
           />
           <h2 className="report-header">Report User {username}</h2>
-          {/* Uncomment when report types are implemented
-          <p className="report-description">
-            Please select a reason for reporting this user:
-          </p>
           <div className="report-reasons">
             {reportTypes().map((type, index) => (
               <div key={index} className="report-reason">
-                <input type="checkbox" id={`reason-${index}`} value={type} />
+                <input
+                  type="checkbox"
+                  id={`reason-${index}`}
+                  value={type}
+                  onChange={handleChange}
+                />
                 <label htmlFor={`reason-${index}`}>{type}</label>
               </div>
             ))}
           </div>
-          */}
           <button
             className={`report-send-button ${reportSending && "disabled"}`}
             onClick={handleReportSubmit}

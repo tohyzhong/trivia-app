@@ -36,6 +36,7 @@ interface GameChatProps {
 }
 
 const GameChat: React.FC<GameChatProps> = (props) => {
+  const isChatBanned = useSelector((state: RootState) => state.user.chatBan);
   const profanityEnabled = useSelector(
     (state: RootState) => state.soundSettings.profanityEnabled
   );
@@ -227,16 +228,40 @@ const GameChat: React.FC<GameChatProps> = (props) => {
       >
         <div className="game-lobby-chat-messages" ref={chatContainerRef}>
           {chatMessages &&
-            chatMessages.map((msg, index) => (
-              <ul key={msg.sender + index} className="chat-container">
-                <p className="chat-sender">{msg.sender}:&nbsp;</p>
-                <p className="chat-content">
-                  {getFilteredMessage(msg.message, profanityEnabled)}
-                </p>
-              </ul>
-            ))}
+            chatMessages.map((msg, index) => {
+              const isOwnMessage = msg.sender === loggedInUser;
+              const isSystemMessage = msg.sender === "System";
+
+              return (
+                <div
+                  key={msg.sender + index}
+                  className={`chat-message ${isSystemMessage ? "system" : isOwnMessage ? "own" : "other"}`}
+                >
+                  {!isOwnMessage && !isSystemMessage && (
+                    <img
+                      src={profilePictures?.[msg.sender] || defaultAvatar}
+                      alt={msg.sender}
+                      className="chat-avatar"
+                    />
+                  )}
+                  <div className="chat-bubble">
+                    {!isSystemMessage && (
+                      <span className="chat-sender-name">{msg.sender}</span>
+                    )}
+                    <span className="chat-text">
+                      {getFilteredMessage(msg.message, profanityEnabled)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
         </div>
         <div className="game-lobby-chat-entry">
+          {isChatBanned && (
+            <div className="disabled-overlay">
+              <h3 className="disabled-text">You are currently chat banned.</h3>
+            </div>
+          )}
           <input
             type="text"
             className="chat-input"

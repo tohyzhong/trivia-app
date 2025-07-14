@@ -16,6 +16,8 @@ const loadUserState = () => {
           username: undefined,
           email: undefined,
           verified: false,
+          chatBan: undefined,
+          gameBan: undefined,
           isAuthenticated: false,
           role: undefined
         },

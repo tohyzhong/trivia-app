@@ -57,6 +57,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     lobbyUsers,
     joinRequests,
     lobbyChat,
+    profilePictures,
     gameType,
     socket,
     handleLeave,
@@ -110,7 +111,11 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
           handleLeave={handleLeave}
           host={host}
         />
-        <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
+        <GameChat
+          lobbyId={lobbyId}
+          chatMessages={lobbyChat}
+          profilePictures={profilePictures}
+        />
       </div>
 
       <IoSettingsOutline

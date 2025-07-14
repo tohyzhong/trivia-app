@@ -15,6 +15,8 @@ interface UserProfile {
   message?: string;
   email: string;
   verified: boolean;
+  chatBan: boolean;
+  gameBan: boolean;
 }
 
 const Settings: React.FC = () => {
@@ -56,14 +58,6 @@ const Settings: React.FC = () => {
         );
         const data: UserProfile = await response.json();
         setUserLocal(data);
-        dispatch(
-          setUser({
-            username: data.username,
-            email: data.email,
-            verified: data.verified,
-            role: stateUser.role
-          })
-        );
       } catch (error) {
         console.error("Error fetching profile data", error);
         dispatch(
@@ -317,10 +311,18 @@ const Settings: React.FC = () => {
             <strong>Status: </strong>
             <span
               className={`verification-status ${
-                user.verified ? "verified" : "not-verified"
+                user.gameBan
+                  ? "banned"
+                  : user.verified
+                    ? "verified"
+                    : "not-verified"
               }`}
             >
-              {user.verified ? "Verified" : "Not Verified"}
+              {user.gameBan
+                ? "Banned"
+                : user.verified
+                  ? "Verified"
+                  : "Not Verified"}
             </span>
           </p>
         </div>

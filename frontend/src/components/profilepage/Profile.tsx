@@ -6,6 +6,8 @@ import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
 import { setUser } from "../../redux/userSlice";
 import { setError } from "../../redux/errorSlice";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { motion } from "framer-motion";
 
 interface Friend {
   username: string;
@@ -17,6 +19,8 @@ interface UserProfile {
   currency: number;
   profilePicture: string;
   role: string;
+  gameBan: boolean;
+  chatBan: boolean;
   friends: Friend[];
   message?: string;
   addedFriend: boolean;
@@ -50,14 +54,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         }
       );
       const data: UserProfile = await response.json();
-      if (username === usernameFromRedux && data.role !== currUserRole) {
-        await fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token`, {
-          method: "POST",
-          credentials: "include"
-        });
 
-        dispatch(setUser({ ...userFromRedux, role: data.role }));
-      }
       setUserProfile(data);
       setFriends(data.friends || []);
     } catch (error) {
@@ -171,7 +168,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     navigate(`/profile/${username}/matchhistory`);
   };
 
+  // User reporting handlers
+  const [reportSending, setReportSending] = useState<boolean>(false);
   const handleReport = async (usernameToReport: string) => {
+    setReportSending(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/profile/report`,
@@ -182,7 +182,8 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           body: JSON.stringify({
             reported: usernameToReport,
             source: "profile",
-            lobbyId: null
+            lobbyId: null,
+            reasons: ["Inappropriate Username"]
           })
         }
       );
@@ -212,6 +213,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         })
       );
     }
+    setReportSending(false);
   };
 
   if (
@@ -242,16 +244,44 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
               ? "👑 Superadmin"
               : user.role === "admin"
                 ? "🛡️ Admin"
-                : ""}
+                : "👤 User"}
           </p>
 
           {user.username !== usernameFromRedux && (
-            <button
-              className="report-button"
-              onClick={() => handleReport(user.username)}
-            >
-              Report User
-            </button>
+            <>
+              {currUserRole === "user" ||
+              (currUserRole === "admin" && user.role === "superadmin") ? (
+                <button
+                  className={`report-button ${reportSending && "disabled"}`}
+                  onClick={() => handleReport(user.username)}
+                >
+                  Report Username
+                  {reportSending && (
+                    <>
+                      &nbsp;
+                      <motion.div
+                        className="loading-icon-container"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear"
+                        }}
+                      >
+                        <AiOutlineLoading3Quarters className="loading-icon" />
+                      </motion.div>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  className="manage-button"
+                  onClick={() => navigate(`/profile/${username}/manage`)}
+                >
+                  Manage User
+                </button>
+              )}
+            </>
           )}
         </div>
 
@@ -292,109 +322,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                   Delete Friend Request
                 </button>
               )}
-
-              {(() => {
-                const roleActions: {
-                  label: string;
-                  newRole: string;
-                  type: "promote" | "demote";
-                }[] = [];
-
-                if (currUserRole === "superadmin") {
-                  if (user.role === "superadmin") {
-                    roleActions.push({
-                      label: "Demote to Admin",
-                      newRole: "admin",
-                      type: "demote"
-                    });
-                  } else if (user.role === "admin") {
-                    roleActions.push(
-                      {
-                        label: "Demote to User",
-                        newRole: "user",
-                        type: "demote"
-                      },
-                      {
-                        label: "Promote to Superadmin",
-                        newRole: "superadmin",
-                        type: "promote"
-                      }
-                    );
-                  } else if (user.role === "user") {
-                    roleActions.push({
-                      label: "Promote to Admin",
-                      newRole: "admin",
-                      type: "promote"
-                    });
-                  }
-                } else if (currUserRole === "admin") {
-                  if (user.role === "user") {
-                    roleActions.push({
-                      label: "Promote to Admin",
-                      newRole: "admin",
-                      type: "promote"
-                    });
-                  }
-                }
-
-                return roleActions.map(({ label, newRole, type }) => (
-                  <button
-                    key={label}
-                    className={
-                      type === "promote"
-                        ? "add-friend-button"
-                        : "remove-friend-button"
-                    }
-                    onClick={async () => {
-                      try {
-                        const response = await fetch(
-                          `${import.meta.env.VITE_API_URL}/api/profile/updaterole/${user.username}`,
-                          {
-                            method: "PUT",
-                            headers: {
-                              "Content-Type": "application/json"
-                            },
-                            credentials: "include",
-                            body: JSON.stringify({ role: newRole })
-                          }
-                        );
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                          dispatch(
-                            setError({
-                              errorMessage:
-                                data.message ||
-                                `User role updated to ${newRole}`,
-                              success: true
-                            })
-                          );
-                          fetchProfile();
-                        } else {
-                          dispatch(
-                            setError({
-                              errorMessage:
-                                data.message || "Failed to update role.",
-                              success: false
-                            })
-                          );
-                        }
-                      } catch (err) {
-                        console.error("Error updating user role:", err);
-                        dispatch(
-                          setError({
-                            errorMessage: "Server error while updating role.",
-                            success: false
-                          })
-                        );
-                      }
-                    }}
-                  >
-                    {label}
-                  </button>
-                ));
-              })()}
             </>
           )}
         </div>

@@ -67,7 +67,7 @@
   font-size: 20px;
   color: #ff0000;
   margin: 22px 0px 0px 0px;
-  text-align: center;
+  text-align: left;
 }
 
 .role-container .report-button {
@@ -75,6 +75,42 @@
   justify-content: center;
   width: fit-content;
   align-self: center;
+  align-items: center;
+}
+
+.role-container .report-button:hover {
+  background-color: #e53935;
+  transition: background-color 0.3s ease;
+}
+
+.role-container .report-button.disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.role-container .manage-button {
+  background-color: #1976d2;
+  justify-content: center;
+  width: fit-content;
+  align-self: center;
+  align-items: center;
+}
+
+.role-container .manage-button:hover {
+  background-color: #1565c0;
+  transition: background-color 0.3s ease;
+}
+
+.loading-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  color: white;
+  font-size: 2rem;
 }
 
 .profile-image {
@@ -219,6 +255,7 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   height: auto;
+  align-items: center;
 }
 
 .remove-friend-button:hover {
@@ -239,6 +276,7 @@
     box-shadow 0.2s;
   font-weight: 500;
   box-shadow: 0 2px 6px rgba(25, 118, 210, 0.08);
+  align-items: center;
 }
 
 .see-match-history:hover {

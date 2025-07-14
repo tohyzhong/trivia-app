@@ -1,4 +1,5 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
 import authenticate from "./authMiddleware.js";
@@ -133,7 +134,9 @@ router.get("/:username", authenticate, async (req, res) => {
         $addFields: {
           role: { $arrayElemAt: ["$userInfo.role", 0] },
           email: { $arrayElemAt: ["$userInfo.email", 0] },
-          verified: { $arrayElemAt: ["$userInfo.verified", 0] }
+          verified: { $arrayElemAt: ["$userInfo.verified", 0] },
+          chatBan: { $arrayElemAt: ["$userInfo.chatBan", 0] },
+          gameBan: { $arrayElemAt: ["$userInfo.gameBan", 0] }
         }
       },
 
@@ -200,6 +203,8 @@ router.get("/:username", authenticate, async (req, res) => {
           username: 1,
           email: 1,
           verified: 1,
+          gameBan: 1,
+          chatBan: 1,
           currency: 1,
           profilePicture: 1,
           role: 1,
@@ -222,7 +227,30 @@ router.get("/:username", authenticate, async (req, res) => {
     const knowledgeStats =
       profile.leaderboardStats?.knowledge?.overall?.overall ?? {};
 
-    res.status(200).json({
+    if (profile.username === req.user.username) {
+      const newToken = jwt.sign(
+        {
+          id: profile._id,
+          username: profile.username,
+          email: profile.email,
+          role: profile.role,
+          verified: profile.verified,
+          chatBan: profile.chatBan,
+          gameBan: profile.gameBan
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      });
+    }
+
+    return res.status(200).json({
       _id: profile._id,
       username: profile.username,
       email: profile.email,
@@ -233,6 +261,8 @@ router.get("/:username", authenticate, async (req, res) => {
       friends: profile.friends,
       addedFriend: profile.addedFriend,
       receivedFriendRequest: profile.receivedFriendRequest,
+      chatBan: profile.chatBan,
+      gameBan: profile.gameBan,
       classicStats: extractStats(classicStats),
       knowledgeStats: extractStats(knowledgeStats)
     });
@@ -346,24 +376,37 @@ router.get("/matchhistory/:username", authenticate, async (req, res) => {
 
 router.post("/report", authenticate, async (req, res) => {
   try {
-    const { reported, source, lobbyId } = req.body;
+    const { reported, source, lobbyId, reasons } = req.body;
     const { username, email } = req.user;
 
     if (reported === username) {
       return res.status(400).json({ message: "You cannot report yourself." });
     }
 
-    const updatedUser = await Profile.findOneAndUpdate(
-      { username: reported, reports: { $ne: username } },
-      { $addToSet: { reports: username } },
-      { new: true }
-    );
+    const profileDocument = await Profile.findOne({ username: reported });
+    if (!profileDocument) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const newReasons = new Set(profileDocument.reports?.[username] || []);
+    let newReport = false;
+    for (const reason of reasons) {
+      const prevSize = newReasons.size;
+      newReasons.add(reason);
+      if (newReasons.size !== prevSize) newReport = true;
+    }
 
-    if (!updatedUser) {
-      return res.status(404).json({
-        message: "User not found or you have already reported this user."
+    if (!newReport) {
+      return res.status(400).json({
+        message:
+          "You have already reported this user for the selected reason(s)"
       });
     }
+
+    const updatedUser = await Profile.findOneAndUpdate(
+      { username: reported },
+      { $set: { [`reports.${username}`]: Array.from(newReasons) } },
+      { returnDocument: "after" }
+    );
 
     // Filter out messages sent by reported user
     let chatContent = "";
@@ -390,12 +433,24 @@ router.post("/report", authenticate, async (req, res) => {
       }
     }
 
+    const allReasons = [
+      "Inappropriate Username",
+      "Cheating",
+      "Harassment or Abusive Communications",
+      "Spam"
+    ];
+    const reports = Object.values(updatedUser.reports);
+    const reportCount = allReasons.map(
+      (reason) =>
+        `${reason}: ${reports.filter((report) => report.includes(reason)).length}`
+    );
     const htmlContentAdmin = `
       <div style="font-family: Arial, sans-serif; padding: 16px;">
         <h2>New Report Submitted</h2>
         <p><strong>Reported User:</strong> ${reported}</p>
         <p><strong>Reporter:</strong> ${username}</p>
         <p><strong>Source:</strong> ${String(source).charAt(0).toUpperCase() + String(source).slice(1)}</p>
+        <p><strong>Reasons:</strong> ${reasons.join(", ")}</p>
         <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
           weekday: "short",
           day: "2-digit",
@@ -405,7 +460,7 @@ router.post("/report", authenticate, async (req, res) => {
           minute: "2-digit",
           hour12: true
         })}</p>
-        <p><strong>Total Reports:</strong> ${updatedUser.reports.length}</p>
+        <p><strong>Total Reports:</strong><br/>${reportCount.join("<br/>")}</p>
         <h3>Chat History:</h3>
         <div style="background-color: #f2f2f2; padding: 12px; border-radius: 6px;">
           ${chatContent || "<div>(No messages found)</div>"}
@@ -419,6 +474,7 @@ router.post("/report", authenticate, async (req, res) => {
         <p><strong>Reported User:</strong> ${reported}</p>
         <p><strong>Reporter:</strong> ${username}</p>
         <p><strong>Source:</strong> ${String(source).charAt(0).toUpperCase() + String(source).slice(1)}</p>
+        <p><strong>Reasons:</strong> ${reasons.join(", ")}</p>
         <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
           weekday: "short",
           day: "2-digit",
@@ -455,6 +511,248 @@ router.post("/report", authenticate, async (req, res) => {
     return res.status(200).json({ message: "Report submitted successfully." });
   } catch (err) {
     console.error("Error handling report:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.get("/manage/:username", authenticate, async (req, res) => {
+  try {
+    const { username: manageUsername } = req.params;
+    const { username, role } = req.user;
+
+    if (role === "user") {
+      return res
+        .status(403)
+        .json({ message: "User is not authorised to use this feature." });
+    }
+
+    const userDoc = await User.aggregate([
+      { $match: { username: manageUsername } },
+      {
+        $lookup: {
+          from: "profiles",
+          pipeline: [
+            { $match: { username: manageUsername } },
+            { $project: { profilePicture: 1 } }
+          ],
+          as: "profileInfo"
+        }
+      },
+      {
+        $addFields: {
+          profilePicture: { $first: "$profileInfo.profilePicture" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          username: 1,
+          profilePicture: 1,
+          role: 1,
+          verified: 1,
+          chatBan: 1,
+          gameBan: 1
+        }
+      }
+    ]);
+
+    if (userDoc.length === 0) {
+      return res.status(400).json({ message: "User not found." });
+    } else if (userDoc[0].username === username) {
+      return res
+        .status(403)
+        .json({ message: "You cannot manage your own account's status" });
+    } else if (userDoc[0].role === "superadmin" && role !== "superadmin") {
+      return res.status(403).json({ message: "Unauthorised attempt." });
+    }
+
+    return res.status(200).json(userDoc[0]);
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.post("/ban", authenticate, async (req, res) => {
+  try {
+    const { bannedUser, reason, unban } = req.body; // unban = true if unbanning user
+    const { username, role } = req.user;
+
+    if (role === "user") {
+      return res
+        .status(403)
+        .json({ message: "User is not authorised to issue bans." });
+    }
+
+    const userDoc = await User.findOneAndUpdate(
+      { username: bannedUser, gameBan: unban },
+      { $set: { gameBan: !unban } },
+      { new: "true" }
+    );
+
+    if (!userDoc) {
+      return res.status(400).json({
+        message: `User not found or user already ${unban && "un"}banned.`
+      });
+    }
+
+    const htmlContentAdmin = `
+      <div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>${unban ? "Unb" : "B"}an Issue Confirmation</h2>
+        <p><strong>${unban ? "Unb" : "B"}anned User:</strong> ${bannedUser}</p>
+        <p><strong>${unban ? "Unb" : "B"}anned By:</strong> ${username}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+      </div>
+    `;
+
+    const htmlContentUser = `<div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>${unban ? "Unb" : "B"}an Notice</h2>
+        <p><strong>Your account has been ${unban ? "Un" : ""}banned from The Rizz Quiz</strong></p>
+        <p><strong>Username:</strong> ${bannedUser}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+        ${
+          !unban
+            ? `
+        <p style="margin-top: 24px; font-style: italic; color: #ff0000;">
+          If you believe this was a mistake, please contact support to clarify.
+        </p>`
+            : ""
+        }
+      </div>`;
+
+    await sendEmail(
+      "therizzquiz@gmail.com",
+      `${unban ? "Unb" : "B"}an Report: ${bannedUser}`,
+      "",
+      htmlContentAdmin
+    );
+
+    await sendEmail(
+      userDoc.email,
+      `${unban ? "Unb" : "B"}an Notice: ${bannedUser}`,
+      "",
+      htmlContentUser
+    );
+
+    return res.status(200).json({ message: "User banned successfully." });
+  } catch (err) {
+    console.error("Error handling ban:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.post("/chatban", authenticate, async (req, res) => {
+  try {
+    const { bannedUser, reason, unban } = req.body; // unban = true if unbanning user
+    const { username, role } = req.user;
+
+    if (role === "user") {
+      return res
+        .status(403)
+        .json({ message: "User is not authorised to issue chat bans." });
+    }
+
+    const userDoc = await User.findOneAndUpdate(
+      { username: bannedUser, chatBan: unban },
+      { $set: { chatBan: !unban } },
+      { new: "true" }
+    );
+
+    if (!userDoc) {
+      return res.status(400).json({
+        message: `User not found or user already chat ${unban && "un"}banned.`
+      });
+    }
+
+    await Lobby.collection.findOneAndUpdate(
+      {
+        [`players.${bannedUser}`]: { $exists: true }
+      },
+      {
+        $set: {
+          [`players.${bannedUser}.chatBan`]: !unban
+        }
+      }
+    );
+
+    const htmlContentAdmin = `
+      <div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>Chat ${unban ? "Unb" : "B"}an Issue Confirmation</h2>
+        <p><strong>${unban ? "Unb" : "B"}anned User:</strong> ${bannedUser}</p>
+        <p><strong>${unban ? "Unb" : "B"}anned By:</strong> ${username}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+      </div>
+    `;
+
+    // TODO: retrieve chat logs (including from closed lobbies?)
+    const htmlContentUser = `<div style="font-family: Arial, sans-serif; padding: 16px;">
+        <h2>Chat ${unban ? "Unb" : "B"}an Notice</h2>
+        <p><strong>Your account has been chat ${unban ? "Un" : ""}banned on The Rizz Quiz</strong></p>
+        <p><strong>Username:</strong> ${bannedUser}</p>
+        <p><strong>Reason:</strong> ${reason}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString(undefined, {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}</p>
+        ${
+          !unban
+            ? `
+        <p style="margin-top: 24px; font-style: italic; color: #ff0000;">
+          If you believe this was a mistake, please contact support to clarify.
+        </p>`
+            : ""
+        }
+      </div>`;
+
+    await sendEmail(
+      "therizzquiz@gmail.com",
+      `Chat ${unban ? "Unb" : "B"}an Report: ${bannedUser}`,
+      "",
+      htmlContentAdmin
+    );
+
+    await sendEmail(
+      userDoc.email,
+      `Chat ${unban ? "Unb" : "B"}an Notice: ${bannedUser}`,
+      "",
+      htmlContentUser
+    );
+
+    return res.status(200).json({ message: "User chat banned successfully." });
+  } catch (err) {
+    console.error("Error handling ban:", err);
     return res.status(500).json({ message: "Server error." });
   }
 });

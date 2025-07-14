@@ -29,6 +29,8 @@ router.get("/verify-token", authenticate, (req, res) => {
     username: req.user.username,
     email: req.user.email,
     verified: req.user.verified,
+    chatBan: req.user.chatBan,
+    gameBan: req.user.gameBan,
     role: req.user.role
   });
 });
@@ -50,6 +52,8 @@ router.get("/ping", authenticate, async (req, res) => {
         username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -87,6 +91,8 @@ router.post("/refresh-token", authenticate, async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -150,7 +156,9 @@ router.post(
         username,
         password: hashedPassword,
         previousPasswords: [hashedPassword],
-        verified: false
+        verified: false,
+        chatBan: false,
+        gameBan: false
       });
 
       await Profile.create({
@@ -260,6 +268,8 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role || "user"
       },
       process.env.JWT_SECRET,
@@ -275,7 +285,9 @@ router.post("/login", async (req, res) => {
     res.json({
       email: user.email,
       verified: user.verified,
-      role: user.role || "user"
+      role: user.role || "user",
+      chatBan: user.chatBan,
+      gameBan: user.gameBan
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -479,7 +491,9 @@ router.get("/verify", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: true,
-        role: user.role
+        role: user.role,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
