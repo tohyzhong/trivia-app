@@ -11,6 +11,7 @@ import profileRoutes from "./routes/profile.js";
 import settingsRoutes from "./routes/settings.js";
 import friendRoutes from "./routes/friend.js";
 import lobbyRoutes from "./routes/lobby.js";
+import knowledgeLobbyRoutes from "./routes/knowledgelobby.js";
 import questionRoutes from "./routes/question.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import shopRoutes from "./routes/shop.js";
@@ -80,8 +81,11 @@ app.use("/api/settings", settingsRoutes);
 // Friends
 app.use("/api/friends", friendRoutes);
 
-// Lobby
+// Lobby (Classic)
 app.use("/api/lobby", lobbyRoutes);
+
+// Lobby (Knowledge)
+app.use("/api/knowledgelobby", knowledgeLobbyRoutes);
 
 // Question Requests
 app.use("/api/questions", questionRoutes);

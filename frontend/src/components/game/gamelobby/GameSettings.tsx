@@ -9,7 +9,8 @@ interface GameSetting {
   numQuestions: number;
   timePerQuestion: number;
   difficulty: number;
-  categories: string[];
+  categories?: string[];
+  community?: boolean;
   name: string;
   publicVisible: boolean;
 }
@@ -34,9 +35,12 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   const localUsername = useSelector((state: RootState) => state.user.username);
   const dispatch = useDispatch();
 
+  const lobbyType = gameType.split("-")[0];
+  const gameMode = gameType.split("-")[1];
+
   // Keep community mode separate from default categories
   const [isCommunitySelected, setCommunitySelected] = useState<boolean>(
-    gameSettings.categories.includes("Community")
+    gameSettings.categories?.includes("Community")
   );
 
   // For button disabling
@@ -62,6 +66,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       }));
     } else if (type === "checkbox") {
       setSettings((prev) => ({ ...prev, [name]: checked }));
+      if (name === "community") setCommunitySelected(checked);
     } else {
       setSettings((prevSettings) => ({
         ...prevSettings,
@@ -76,10 +81,10 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   };
 
   const handleSaveSettings = async () => {
-    if (!settingsChanged) return; //
+    if (!settingsChanged) return;
 
     playClickSound();
-    if (settings.categories.length === 0) {
+    if (gameMode === "classic" && settings.categories.length === 0) {
       dispatch(
         setError({
           errorMessage: "Please select at least one category.",
@@ -124,9 +129,11 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       return;
     }
 
+    console.log(settings);
+
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/updateSettings/${lobbyId}`,
+        `${import.meta.env.VITE_API_URL}/api/${gameMode === "classic" ? "" : gameMode}lobby/updateSettings/${lobbyId}`,
         {
           method: "POST",
           headers: {
@@ -134,8 +141,10 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           },
           credentials: "include",
           body: JSON.stringify(
-            isCommunitySelected
-              ? { gameSettings: { ...settings, categories: ["Community"] } }
+            gameMode === "classic"
+              ? isCommunitySelected
+                ? { gameSettings: { ...settings, categories: ["Community"] } }
+                : { gameSettings: settings }
               : { gameSettings: settings }
           )
         }
@@ -176,7 +185,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
         JSON.stringify(gameSettings) ===
         JSON.stringify({
           ...settings,
-          categories: settings.categories.includes("Community")
+          categories: settings.categories?.includes("Community")
             ? ["Community"]
             : settings.categories
         })
@@ -302,8 +311,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
     <div className="game-lobby-settings">
       <div className="game-lobby-settings-header">
         <h1>
-          Lobby Settings -{" "}
-          {gameType.split("-")[1] === "classic" ? "Classic " : "Knowledge "}
+          Lobby Settings - {gameMode === "classic" ? "Classic " : "Knowledge "}
           <IoInformationCircleOutline
             size={20}
             style={{
@@ -381,7 +389,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({
           />
         </div>
         <div className="game-lobby-settings-item">
-          {gameType.split("-")[0] !== "solo" && (
+          {lobbyType !== "solo" && (
             <>
               <label>Lobby Visibility:</label>
 
@@ -436,34 +444,51 @@ const GameSettings: React.FC<GameSettingsProps> = ({
             disabled={host !== localUsername}
           />
         </div>
-        <div className="game-lobby-settings-item">
-          <label>Categories:</label>
-          <div>
-            {availableCategories.map((category) => (
-              <div key={category} className="game-lobby-settings-category">
-                <input
-                  type="checkbox"
-                  id={category}
-                  name="categories"
-                  value={category}
-                  checked={settings.categories.includes(category)}
-                  onChange={handleChange}
-                  disabled={
-                    (isCommunitySelected && category !== "Community") ||
-                    host !== localUsername
-                  }
-                />
-                <label htmlFor={category}>{category}</label>
-              </div>
-            ))}
+        {gameMode === "classic" ? (
+          <div className="game-lobby-settings-item">
+            <label>Categories:</label>
+            <div>
+              {availableCategories.map((category) => (
+                <div key={category} className="game-lobby-settings-category">
+                  <input
+                    type="checkbox"
+                    id={category}
+                    name="categories"
+                    value={category}
+                    checked={settings.categories?.includes(category)}
+                    onChange={handleChange}
+                    disabled={
+                      (isCommunitySelected && category !== "Community") ||
+                      host !== localUsername
+                    }
+                  />
+                  <label htmlFor={category}>{category}</label>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="game-lobby-settings-item">
+            <label>Community Mode:</label>
+            <label>
+              {isCommunitySelected ? "Enabled" : "Disabled"}
+              <input
+                type="checkbox"
+                name="community"
+                checked={isCommunitySelected}
+                onChange={handleChange}
+                disabled={host !== localUsername}
+              />
+            </label>
+          </div>
+        )}
         {isCommunitySelected && (
           <div className="community-mode-warning-container">
             <p className="community-mode-warning">
               Note: Community Mode uses a separate question bank built from
-              player contributions. Other categories cannot be selected together
-              with this mode.
+              player contributions.{" "}
+              {gameMode === "classic" &&
+                "Other categories cannot be selected together with this mode."}
             </p>
           </div>
         )}

@@ -7,8 +7,9 @@ import { getSocketIO, getUserSocketMap } from "../socket.js";
 import authenticate from "./authMiddleware.js";
 import {
   generateUniqueQuestionIds,
+  generateUniqueKnowledgeQuestionIds,
   getQuestionById
-} from "../utils/generateclassicquestions.js";
+} from "../utils/generatequestions.js";
 import User from "../models/User.js";
 
 const router = express.Router();
@@ -1014,11 +1015,16 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
 
     // Configure game state
     const { questionIds, questionCategories, question } =
-      await generateUniqueQuestionIds(
-        lobby.gameSettings.numQuestions,
-        lobby.gameSettings.categories,
-        lobby.gameSettings.difficulty
-      );
+      lobby.gameType.includes("classic")
+        ? await generateUniqueQuestionIds(
+            lobby.gameSettings.numQuestions,
+            lobby.gameSettings.categories,
+            lobby.gameSettings.difficulty
+          )
+        : await generateUniqueKnowledgeQuestionIds(
+            lobby.gameSettings.numQuestions,
+            lobby.gameSettings.difficulty
+          );
 
     const update = {
       currentQuestion: 1,

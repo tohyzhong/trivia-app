@@ -1,4 +1,5 @@
 import ClassicQuestion from "../models/ClassicQuestion.js";
+import KnowledgeQuestion from "../models/KnowledgeQuestion.js";
 
 const getRandomClassicQuestion = async (categories) => {
   try {
@@ -39,7 +40,6 @@ export const generateUniqueQuestionIds = async (
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
   const repeatedQuestions = [];
   while (repeatedQuestions.length < numQuestions) {
-    // Repeat until we have enough questions (will be fixed once the database is populated)
     repeatedQuestions.push(...shuffledQuestions);
   }
   const selectedQuestions = repeatedQuestions.slice(0, numQuestions);
@@ -54,6 +54,38 @@ export const generateUniqueQuestionIds = async (
   const firstQuestion = selectedQuestions[0];
 
   return { questionIds, questionCategories, question: firstQuestion };
+};
+
+export const generateUniqueKnowledgeQuestionIds = async (
+  numQuestions,
+  difficulty
+) => {
+  const allQuestions = await KnowledgeQuestion.find({
+    difficulty: { $lte: difficulty }
+  });
+
+  const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
+  const repeatedQuestions = [];
+  while (repeatedQuestions.length < numQuestions) {
+    repeatedQuestions.push(...shuffledQuestions);
+  }
+  const selectedQuestions = repeatedQuestions.slice(0, numQuestions);
+
+  const questionIds = [];
+  selectedQuestions.forEach((q) => {
+    questionIds.push(q._id);
+  });
+
+  const firstQuestion = selectedQuestions[0];
+
+  return { questionIds, question: firstQuestion };
+};
+
+export const getKnowledgeQuestionById = async (questionId) => {
+  const question = await KnowledgeQuestion.collection.findOne({
+    _id: questionId
+  });
+  return question;
 };
 
 export default getRandomClassicQuestion;
