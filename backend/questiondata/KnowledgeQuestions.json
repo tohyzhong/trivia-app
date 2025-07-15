@@ -1,52 +1,52 @@
 [
   {
     "question": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Brr_brr_patapim.jpg/330px-Brr_brr_patapim.jpg",
-    "answer": "Brr Brr Patapim",
+    "correctOption": "Brr Brr Patapim",
     "difficulty": 1
   },
   {
     "question": "https://upload.wikimedia.org/wikipedia/en/5/5f/Original_Doge_meme.jpg",
-    "answer": "Doge",
+    "correctOption": "Doge",
     "difficulty": 1
   },
   {
     "question": "https://s2.r29static.com/bin/entry/2ef/x,80/1621852/image.jpg",
-    "answer": "Disaster Girl",
+    "correctOption": "Disaster Girl",
     "difficulty": 3
   },
   {
     "question": "https://static.tvtropes.org/pmwiki/pub/images/1000001460.png",
-    "answer": "Mike Wazowski",
+    "correctOption": "Mike Wazowski",
     "difficulty": 2
   },
   {
     "question": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnxYz4fuKc5IZrW4D4EL9jSy3XqJi5UrCN2Q&s",
-    "answer": "Qin Shi Huang Rides a Polar Bear",
+    "correctOption": "Qin Shi Huang Rides a Polar Bear",
     "difficulty": 4
   },
   {
     "question": "https://overseasidol.com/wp-content/uploads/2025/07/Skandal-Hong-Jie-Guncang-Tiongkok-1691-Pria-Jadi-Korban-Video-Seksual.webp",
-    "answer": "Hong Jie",
+    "correctOption": "Hong Jie",
     "difficulty": 4
   },
   {
     "question": "https://i.ytimg.com/vi/wnedkVrgFF0/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AG-B4AC0AWKAgwIABABGHIgQyg4MA8=&rs=AOn4CLAhlfL0c_UOhY53yMRIji3Z_lSGLQ",
-    "answer": "HA, GOT EM!",
+    "correctOption": "HA, GOT EM!",
     "difficulty": 2
   },
   {
     "question": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSllLI6i5W462GJEpCl-bmTp68TROEOWl8_hg&s",
-    "answer": "HA, GAAAAY!",
+    "correctOption": "HA, GAAAAY!",
     "difficulty": 2
   },
   {
     "question": "https://static01.nyt.com/images/2020/01/28/multimedia/28xp-memekid3/28cp-memekid3-articleLarge.jpg?quality=75&auto=webp&disable=upscale",
-    "answer": "Success Kid",
+    "correctOption": "Success Kid",
     "difficulty": 2
   },
   {
     "question": "https://www.bu.edu/files/2024/12/Screenshot-2024-12-13-at-12.42.40%E2%80%AFPM.png",
-    "answer": "You Are My Sunshine",
+    "correctOption": "You Are My Sunshine",
     "difficulty": 3
   }
 ]
