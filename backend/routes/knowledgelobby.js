@@ -242,11 +242,11 @@ router.get("/search-inputs", authenticate, async (req, res) => {
 
     const matchingAnswers = await KnowledgeQuestion.find(
       {
-        answer: { $regex: query, $options: "i" }
+        correctOption: { $regex: query, $options: "i" }
       },
-      { _id: 0, answer: 1 }
+      { _id: 0, correctOption: 1 }
     )
-      .select("answer")
+      .select("correctOption")
       .lean()
       .limit(5);
 

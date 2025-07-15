@@ -5,12 +5,12 @@ import { RootState } from "../../../redux/store";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 interface SearchInput {
-  answer: string;
+  correctOption: string;
 }
 
 interface KnowledgeQuestion {
   question: string;
-  answer: string;
+  correctOption: string;
   difficulty: number;
 }
 
@@ -82,7 +82,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
       );
     } else if (event.key === "Enter") {
       if (matchingInputs.length !== 0) {
-        setAnswerInput(matchingInputs[currentSelection].answer);
+        setAnswerInput(matchingInputs[currentSelection].correctOption);
         setMatchingInputs([]);
         setCurrentSelection(0);
       } else {
@@ -92,9 +92,16 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   };
 
   // Sending Answer
-  const handleSendAnswer = () => {
-    console.log("test");
+  const handleSendAnswer = async () => {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/submit/${lobbyId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ user: loggedInUser, option: answerInput })
+    });
   };
+
+  console.log(playerStates);
 
   return (
     <div className="knowledge-question-display">
@@ -119,7 +126,11 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
             Question {currentQuestion} / {totalQuestions}
           </p>
           <div className="knowledge-question-answer">
-            {answerRevealed ? <h3>{knowledgeQuestion.answer}</h3> : <p>?</p>}
+            {answerRevealed ? (
+              <h3>{knowledgeQuestion.correctOption}</h3>
+            ) : (
+              <p>?</p>
+            )}
           </div>
           <p>Difficulty: {knowledgeQuestion.difficulty}</p>
         </div>
@@ -136,32 +147,44 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               value={answerInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              disabled={false && (submitted || answerRevealed)}
+              disabled={submitted || answerRevealed}
             />
             {matchingInputs.length > 0 && (
               <div className="input-dropdown">
                 <ul>
                   {matchingInputs.map((input, index) => (
                     <li
-                      key={input.answer}
+                      key={input.correctOption}
                       className={
                         index === currentSelection ? "input-selected" : ""
                       }
                       onClick={() => {
-                        setAnswerInput(input.answer);
+                        setAnswerInput(input.correctOption);
                         setMatchingInputs([]);
                       }}
                     >
-                      {input.answer}
+                      {input.correctOption}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
           </div>
-          <button className="confirm-button" onClick={handleSendAnswer}>
-            Confirm
-          </button>
+          {submitted ? (
+            <button
+              className={`update-button ${answerRevealed ? "disabled" : ""}`}
+              onClick={handleSendAnswer}
+            >
+              Update
+            </button>
+          ) : (
+            <button
+              className={`confirm-button ${answerRevealed ? "disabled" : ""}`}
+              onClick={handleSendAnswer}
+            >
+              Confirm
+            </button>
+          )}
         </div>
 
         <p className="knowledge-score-display">
