@@ -944,15 +944,6 @@
   position: relative;
 }
 
-.players-display {
-  border: 1px solid red;
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-  width: 30%;
-  height: 100%;
-  background: #222;
-}
-
 .knowledge-question-details {
   display: flex;
   flex-direction: column;
@@ -1072,6 +1063,60 @@
   align-items: center;
 }
 
-/* Score Display */
-.knowledge-score-display {
+/* Knowledge Mode Players' Selected Option Display */
+.players-display {
+  border: 1px solid red;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  width: 30%;
+  height: 100%;
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.player-display-item {
+  flex: 0 0 20%; /* Fix the height of each item to 20% of the container */
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  align-items: center;
+  position: relative;
+}
+
+.player-display-item img {
+  height: 60%;
+  aspect-ratio: 1 / 1;
+  position: absolute;
+  border-radius: 50%;
+  left: 7%;
+}
+
+.speech-bubble {
+  background: #f0f0f0;
+  border-radius: 10px;
+  padding: 10px 15px;
+  width: fit-content;
+  max-width: 10%;
+  height: fit-content;
+  min-height: 40%;
+  max-width: 300px;
+  font-size: 14px;
+  color: #333;
+  position: absolute;
+  left: 35%;
+  margin: 15px;
+  word-break: break-all;
+  border: 1px solid black;
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  left: -25px;
+  border: 15px solid;
+  border-color: transparent #f0f0f0 transparent transparent;
 }

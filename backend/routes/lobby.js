@@ -143,7 +143,7 @@ router.post("/create", authenticate, async (req, res) => {
             score: 0,
             correctScore: 0,
             streakBonus: 0,
-            selectedOption: 0,
+            selectedOption: gameType.includes("classic") ? 0 : "",
             submitted: false,
             answerHistory: {},
             powerups: {
@@ -1389,7 +1389,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
         const state = updatedPlayerStates[player] ?? {};
 
         if (!state.submitted) {
-          state.selectedOption = 0;
+          state.selectedOption = lobby.gameType.includes("classic") ? 0 : "";
           state.submitted = false;
           state.correctScore = 0;
           state.streakBonus = 0;

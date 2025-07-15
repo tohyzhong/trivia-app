@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../../../redux/errorSlice";
 import { RootState } from "../../../redux/store";
+import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 interface SearchInput {
   answer: string;
@@ -90,10 +91,6 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
     }
   };
 
-  useEffect(() => {
-    console.log(matchingInputs);
-  }, [matchingInputs]);
-
   // Sending Answer
   const handleSendAnswer = () => {
     console.log("test");
@@ -101,7 +98,20 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
 
   return (
     <div className="knowledge-question-display">
-      <div className="players-display"></div>
+      <div className="players-display">
+        {Object.entries(playerStates).map(([username, state]) => (
+          <div className="player-display-item">
+            <img src={profilePictures[username] || defaultAvatar} />
+            {answerRevealed && (
+              <div className="speech-bubble">
+                {state.selectedOption === ""
+                  ? "(no answer)"
+                  : state.selectedOption}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
       <div className="knowledge-question-details">
         <div className="knowledge-question-header">
