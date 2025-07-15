@@ -31,7 +31,7 @@ interface ClassicQuestion {
 
 interface KnowledgeQuestion {
   question: string;
-  answer: string;
+  correctOption: string;
   difficulty: number;
 }
 
@@ -245,6 +245,11 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 playerStates={gameState.playerStates}
                 teamStates={gameState.team}
                 profilePictures={profilePictures}
+                serverTimeNow={serverTimeNow}
+                readyCountdown={{
+                  countdownStarted: gameState.countdownStarted,
+                  countdownStartTime: gameState.countdownStartTime
+                }}
               />
             )
           ) : (

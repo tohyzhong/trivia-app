@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../../../redux/errorSlice";
 import { RootState } from "../../../redux/store";
@@ -28,6 +28,8 @@ interface KnowledgeQuestionProps {
     };
   };
   profilePictures: { [username: string]: string };
+  serverTimeNow: Date;
+  readyCountdown: { [key: string]: boolean | Date };
 }
 
 const Knowledge: React.FC<KnowledgeQuestionProps> = ({
@@ -39,9 +41,15 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   answerRevealed,
   playerStates,
   teamStates,
-  profilePictures
+  profilePictures,
+  serverTimeNow,
+  readyCountdown
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
+  const answerHistory = teamStates
+    ? teamStates["teamAnswerHistory"]
+    : playerStates[loggedInUser]?.answerHistory || [];
+  const currentQuestionRef = useRef(currentQuestion);
   const dispatch = useDispatch();
 
   // Input handlers
@@ -101,7 +109,65 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
     });
   };
 
-  console.log(playerStates);
+  // Advance lobby
+  const handleNextQuestion = async () => {
+    if (currentQuestionRef.current !== currentQuestion) return;
+    try {
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lobby/advancelobby/${lobbyId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include"
+        }
+      );
+      setAnswerInput("");
+    } catch (error) {
+      console.error("Failed to advance lobby", error);
+    }
+  };
+
+  // Next Question / Return to Lobby Countdown
+  const start =
+    readyCountdown.countdownStarted &&
+    typeof readyCountdown.countdownStartTime === "string"
+      ? new Date(readyCountdown.countdownStartTime).getTime()
+      : null;
+
+  const now = new Date(serverTimeNow).getTime();
+  const initialTimeLeft = start ? Math.max(0, 10 - (now - start) / 1000) : null;
+
+  const [countdownLeft, setCountdownLeft] = useState<number>(
+    Math.floor(initialTimeLeft ?? 10)
+  );
+
+  useEffect(() => {
+    if (initialTimeLeft === null) return;
+
+    const interval = setInterval(() => {
+      if (currentQuestionRef.current !== currentQuestion) {
+        clearInterval(interval);
+        return 0;
+      }
+
+      setCountdownLeft((prev) => {
+        if (prev <= 0) {
+          clearInterval(interval);
+          handleNextQuestion();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [start]);
+
+  // Reset countdown on new question
+  useEffect(() => {
+    currentQuestionRef.current = currentQuestion;
+    setCountdownLeft(Math.floor(initialTimeLeft ?? 10));
+  }, [currentQuestion]);
 
   return (
     <div className="knowledge-question-display">
@@ -122,7 +188,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
 
       <div className="knowledge-question-details">
         <div className="knowledge-question-header">
-          <p>
+          <p className="knowledge-question-progress">
             Question {currentQuestion} / {totalQuestions}
           </p>
           <div className="knowledge-question-answer">
@@ -132,7 +198,21 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               <p>?</p>
             )}
           </div>
-          <p>Difficulty: {knowledgeQuestion.difficulty}</p>
+          <div className="advance-lobby-button-container">
+            {answerRevealed && (
+              <button
+                className="advance-lobby-button"
+                onClick={handleNextQuestion}
+                disabled={playerStates[loggedInUser]?.ready}
+              >
+                {playerStates[loggedInUser]?.ready
+                  ? `Waiting... (${countdownLeft}s)`
+                  : currentQuestion === totalQuestions
+                    ? `Back to Lobby → ${readyCountdown.countdownStarted ? countdownLeft + "s" : ""}`
+                    : `Next Question → ${readyCountdown.countdownStarted ? countdownLeft + "s" : ""}`}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="knowledge-question-image">

@@ -959,17 +959,30 @@
 /* Header Display */
 .knowledge-question-header {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   width: 100%;
   height: 15%;
 }
 
+.knowledge-question-progress {
+  text-align: center;
+  width: 30%;
+}
+
 .knowledge-question-answer {
+  width: 40%;
   background-color: #222;
   padding: 5px 30px;
   border: 1px solid white;
   border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.advance-lobby-button-container {
+  width: 30%;
 }
 
 /* Image display */

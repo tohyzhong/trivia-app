@@ -8,7 +8,8 @@ import authenticate from "./authMiddleware.js";
 import {
   generateUniqueQuestionIds,
   generateUniqueKnowledgeQuestionIds,
-  getQuestionById
+  getQuestionById,
+  getKnowledgeQuestionById
 } from "../utils/generatequestions.js";
 import User from "../models/User.js";
 
@@ -2013,9 +2014,13 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       return res.status(200).json({ message: "Lobby finished." });
     } else {
       // Go to next question
-      const question = await getQuestionById(
-        gameState.questionIds[gameState.currentQuestion]
-      );
+      const question = lobby.gameType.includes("knowledge")
+        ? await getKnowledgeQuestionById(
+            gameState.questionIds[gameState.currentQuestion]
+          )
+        : await getQuestionById(
+            gameState.questionIds[gameState.currentQuestion]
+          );
 
       // Reset player states
       const resetPlayerStates = {};
@@ -2024,7 +2029,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           ...playerStates[username],
           correctScore: 0,
           streakBonus: 0,
-          selectedOption: 0,
+          selectedOption: lobby.gameType.includes("knowledge") ? "" : 0,
           submitted: false,
           ready: false,
           powerups: {
