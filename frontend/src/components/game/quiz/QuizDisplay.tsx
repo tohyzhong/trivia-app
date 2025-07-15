@@ -32,6 +32,7 @@ interface ClassicQuestion {
 interface KnowledgeQuestion {
   question: string;
   answer: string;
+  difficulty: number;
 }
 
 type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
@@ -241,6 +242,9 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 knowledgeQuestion={gameState.question as KnowledgeQuestion}
                 submitted={submitted || answerRevealed}
                 answerRevealed={answerRevealed}
+                playerStates={gameState.playerStates}
+                teamStates={gameState.team}
+                profilePictures={profilePictures}
               />
             )
           ) : (

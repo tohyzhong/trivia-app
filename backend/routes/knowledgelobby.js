@@ -3,6 +3,7 @@ import { getSocketIO } from "../socket.js";
 import * as crypto from "node:crypto";
 import Lobby from "../models/Lobby.js";
 import Profile from "../models/Profile.js";
+import KnowledgeQuestion from "../models/KnowledgeQuestion.js";
 import authenticate from "./authMiddleware.js";
 
 // Use /api/knowledgelobby/*
@@ -156,6 +157,7 @@ router.post("/create", authenticate, async (req, res) => {
   }
 });
 
+// Settings updates for knowledge mode
 router.post("/updateSettings/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
@@ -226,6 +228,32 @@ router.post("/updateSettings/:lobbyId", authenticate, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error updating game settings" });
+  }
+});
+
+// Searching possible answer inputs
+router.get("/search-inputs", authenticate, async (req, res) => {
+  try {
+    const query = req.query.query?.toLowerCase() || "";
+
+    if (query === "") {
+      return res.status(200).json([]);
+    }
+
+    const matchingAnswers = await KnowledgeQuestion.find(
+      {
+        answer: { $regex: query, $options: "i" }
+      },
+      { _id: 0, answer: 1 }
+    )
+      .select("answer")
+      .lean()
+      .limit(5);
+
+    return res.status(200).json(matchingAnswers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching searches" });
   }
 });
 
