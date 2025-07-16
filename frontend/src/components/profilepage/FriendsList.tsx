@@ -53,7 +53,7 @@ const FriendsList: React.FC = () => {
       dispatch(
         setError({ errorMessage: "Could not fetch friends", success: false })
       );
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -101,7 +101,7 @@ const FriendsList: React.FC = () => {
           success: false
         })
       );
-      console.log(error);
+      console.error(error);
     }
     fetchFriends(); // Reset friends info
   };
@@ -138,7 +138,7 @@ const FriendsList: React.FC = () => {
           success: false
         })
       );
-      console.log(error);
+      console.error(error);
     }
     fetchFriends(); // Reset friends info
   };

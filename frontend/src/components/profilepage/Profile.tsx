@@ -117,7 +117,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           success: false
         })
       );
-      console.log(error);
+      console.error(error);
     }
   };
 

@@ -94,7 +94,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
           success: false
         })
       );
-      console.log(error);
+      console.error(error);
     }
   };
 

@@ -129,8 +129,6 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       return;
     }
 
-    console.log(settings);
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/${gameMode === "classic" ? "" : gameMode}lobby/updateSettings/${lobbyId}`,
