@@ -31,9 +31,6 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
 
   const alreadyIn = Object.keys(usernames || {});
 
-  const lobbyType = gameType.split("-")[0];
-  const gameMode = gameType.split("-")[1];
-
   // Render all users and avatars
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -260,7 +257,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                             headers: { "Content-Type": "application/json" },
                             credentials: "include",
                             body: JSON.stringify({
-                              usernameToApprove: user.username
+                              usernameToApprove: user.username,
+                              gameType: gameType
                             })
                           }
                         );

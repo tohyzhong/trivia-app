@@ -497,7 +497,7 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
 router.post("/approve/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
-    const { usernameToApprove } = req.body;
+    const { usernameToApprove, gameType } = req.body;
     const hostUsername = req.user.username;
 
     // Check if the user is already in another lobby
@@ -536,7 +536,7 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
               score: 0,
               correctScore: 0,
               streakBonus: 0,
-              selectedOption: 0,
+              selectedOption: gameType.includes("classic") ? 0 : "",
               submitted: false,
               answerHistory: {},
               powerups: {
@@ -1747,7 +1747,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           score: 0,
           correctScore: 0,
           streakBonus: 0,
-          selectedOption: 0,
+          selectedOption: lobby.gameType.includes("classic") ? 0 : "",
           submitted: false,
           answerHistory: {},
           ready: false,
@@ -2023,6 +2023,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           );
 
       // Reset player states
+
       const resetPlayerStates = {};
       for (const username in playerStates) {
         resetPlayerStates[username] = {
