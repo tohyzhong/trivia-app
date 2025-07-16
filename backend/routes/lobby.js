@@ -1499,13 +1499,17 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
       for (const username of Object.keys(lobby.players)) {
         const state = playerStates[username] ?? {};
-        const selected = state.selectedOption ?? 0;
+        const selected = state.selectedOption;
+        const gameMode = lobby.gameType.split("-")[1];
         state.submitted = true;
         state.answerHistory = state.answerHistory || {};
         state.correctScore = 0;
         state.streakBonus = 0;
 
-        if (selected > 0) {
+        if (
+          (gameMode === "classic" && selected > 0) ||
+          (gameMode === "knowledge" && selected !== "")
+        ) {
           voteDetails[selected] = voteDetails[selected] || [];
           if (!voteDetails[selected].includes(username)) {
             voteDetails[selected].push(username);

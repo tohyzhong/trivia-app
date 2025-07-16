@@ -18,7 +18,6 @@ import shopRoutes from "./routes/shop.js";
 
 import morgan from "morgan";
 import runSchedulers from "./utils/tasks.js";
-import generateQuestions from "./utils/questionbank.js";
 
 dotenv.config();
 
@@ -106,6 +105,6 @@ server.listen(process.env.PORT, () => {
 runSchedulers();
 
 // Generate sample Classic Questions
-generateQuestions();
+// generateQuestions();
 
 export default app;
