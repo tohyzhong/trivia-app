@@ -109,6 +109,13 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
     });
   };
 
+  // Update/Reset input states when answer is revealed
+  useEffect(() => {
+    if (answerRevealed) {
+      setMatchingInputs([]);
+    }
+  }, [answerRevealed]);
+
   // Advance lobby
   const handleNextQuestion = async () => {
     if (currentQuestionRef.current !== currentQuestion) return;
@@ -193,7 +200,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
           </p>
           <div className="knowledge-question-answer">
             {answerRevealed ? (
-              <h3>{knowledgeQuestion.correctOption}</h3>
+              <h4>{knowledgeQuestion.correctOption}</h4>
             ) : (
               <p>?</p>
             )}
@@ -250,7 +257,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               </div>
             )}
           </div>
-          {submitted ? (
+          {submitted && playerStates[loggedInUser].selectedOption !== "" ? (
             <button
               className={`update-button ${answerRevealed ? "disabled" : ""}`}
               onClick={handleSendAnswer}

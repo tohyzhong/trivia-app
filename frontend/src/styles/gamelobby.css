@@ -682,6 +682,7 @@
   border-radius: 4px;
   color: white;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
   background-color: #088b3f;
 }
@@ -967,13 +968,13 @@
 
 .knowledge-question-progress {
   text-align: center;
-  width: 30%;
+  width: 33%;
 }
 
 .knowledge-question-answer {
-  width: 40%;
+  width: 34%;
   background-color: #222;
-  padding: 5px 30px;
+  padding: 5px 10px;
   border: 1px solid white;
   border-radius: 30px;
   display: flex;
@@ -985,7 +986,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30%;
+  width: 33%;
 }
 
 /* Image display */
@@ -1003,6 +1004,7 @@
   height: 100%;
   width: 100%;
   object-fit: contain;
+  border-radius: 25px;
 }
 
 /* Answer Input */
@@ -1112,7 +1114,7 @@ button.disabled {
 }
 
 .player-display-item {
-  flex: 0 0 20%; /* Fix the height of each item to 20% of the container */
+  flex: 0 0 20%;
   display: flex;
   flex-direction: row;
   padding: 10px;
