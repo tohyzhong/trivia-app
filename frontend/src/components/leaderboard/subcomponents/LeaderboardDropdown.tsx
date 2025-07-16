@@ -21,8 +21,17 @@ const LeaderboardDropdown: React.FC<Props> = ({
   categories
 }) => {
   const navigate = useNavigate();
+  const knowledgeCategories = ["Overall", "Community"];
 
   useEffect(() => {
+    if (
+      gameFormat === "knowledge" &&
+      category !== "Overall" &&
+      category !== "Community"
+    ) {
+      setCategory("Overall");
+      navigate(`/leaderboard/${gameFormat}/${mode}/Overall`);
+    }
     navigate(`/leaderboard/${gameFormat}/${mode}/${category}`);
   }, [gameFormat, mode, category]);
 
@@ -61,11 +70,17 @@ const LeaderboardDropdown: React.FC<Props> = ({
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
+          {gameFormat === "classic"
+            ? categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))
+            : knowledgeCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
         </select>
       </div>
     </div>
