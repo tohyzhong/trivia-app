@@ -982,6 +982,9 @@
 }
 
 .advance-lobby-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 30%;
 }
 
@@ -1023,6 +1026,7 @@
   color: black;
   border-radius: 5px;
   text-align: center;
+  font-size: 16px;
 }
 
 .input-dropdown {
@@ -1133,13 +1137,16 @@ button.disabled {
   height: fit-content;
   min-height: 40%;
   max-width: 300px;
-  font-size: 14px;
+  font-size: 16px;
   color: #333;
   position: absolute;
   left: 35%;
   margin: 15px;
   word-break: break-all;
   border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .speech-bubble::after {
