@@ -227,7 +227,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               value={answerInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              disabled={submitted || answerRevealed}
+              disabled={answerRevealed}
             />
             {matchingInputs.length > 0 && (
               <div className="input-dropdown">
