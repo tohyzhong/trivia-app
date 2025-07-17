@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../../../redux/errorSlice";
 import { RootState } from "../../../redux/store";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
+import { resetHintRevealed } from "../../../redux/lobbySlice";
 
 interface SearchInput {
   correctOption: string;
@@ -46,9 +47,6 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   readyCountdown
 }) => {
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const answerHistory = teamStates
-    ? teamStates["teamAnswerHistory"]
-    : playerStates[loggedInUser]?.answerHistory || [];
   const currentQuestionRef = useRef(currentQuestion);
   const dispatch = useDispatch();
 
@@ -172,9 +170,20 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
 
   // Reset countdown on new question
   useEffect(() => {
+    dispatch(resetHintRevealed());
+    setPlaceholder("Meme Name");
     currentQuestionRef.current = currentQuestion;
     setCountdownLeft(Math.floor(initialTimeLeft ?? 10));
   }, [currentQuestion]);
+
+  // Hint revelation
+  const [placeholder, setPlaceholder] = useState<string>("Meme Name");
+  const hint = useSelector((state: RootState) => state.lobby.hintRevealed);
+  useEffect(() => {
+    if (hint?.length !== 0 && !submitted) {
+      answerInput === "" ? setPlaceholder(hint + "...") : setAnswerInput(hint);
+    }
+  }, [hint]);
 
   return (
     <div className="knowledge-question-display">
@@ -230,7 +239,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
           <div className="input-search">
             <input
               type="text"
-              placeholder="Meme Name"
+              placeholder={placeholder}
               value={answerInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}

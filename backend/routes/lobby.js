@@ -2190,10 +2190,15 @@ router.post("/use-powerup/:lobbyId", authenticate, async (req, res) => {
 
   if (powerupName === "Hint Boost") {
     const correctOption = lobby.gameState.question.correctOption;
-    const all = [1, 2, 3, 4];
-    const wrongOptions = all.filter((o) => o !== correctOption);
-    revealed = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 2);
-    update.$set[`${path}.Hint Boost`] = revealed;
+    if (lobby.gameType.includes("classic")) {
+      const all = [1, 2, 3, 4];
+      const wrongOptions = all.filter((o) => o !== correctOption);
+      revealed = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 2);
+      update.$set[`${path}.Hint Boost`] = revealed;
+    } else if (lobby.gameType.includes("knowledge")) {
+      revealed = correctOption.slice(0, 2);
+      update.$set[`${path}.Hint Boost`] = revealed;
+    }
   } else if (powerupName === "Add Time") {
     update.$set[`${path}.Add Time`] = true;
     update.$set[`gameState.lastUpdate`] = new Date(

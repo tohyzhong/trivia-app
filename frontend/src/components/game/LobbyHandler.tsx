@@ -39,7 +39,8 @@ interface ClassicQuestion {
 
 interface KnowledgeQuestion {
   question: string;
-  answer: string;
+  correctOption: string;
+  difficulty: number;
 }
 
 type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
