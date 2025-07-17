@@ -1853,7 +1853,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         const overallStats = formatStats.overall;
 
         for (let i = 0; i < numQuestions; i++) {
-          const category = categoriesInMatch[i];
+          const category =
+            gameFormat === "classic"
+              ? categoriesInMatch[i]
+              : lobby.gameSettings.community
+                ? "Community"
+                : "Overall";
           const result = answerHistory[i + 1];
 
           matchCategoryStats[category] =
@@ -1873,7 +1878,10 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
             overallStats[category].correct++;
           }
 
-          if (category !== "Community") {
+          if (
+            (gameFormat === "classic" && category !== "Community") ||
+            (gameFormat === "knowledge" && !lobby.gameSettings.community)
+          ) {
             modeStats.overall.total++;
             overallStats.overall.total++;
             if (result === "correct") {
@@ -1883,7 +1891,11 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           }
         }
 
-        if (!categoriesInMatch.includes("Community")) {
+        if (
+          (gameFormat === "classic" &&
+            !categoriesInMatch.includes("Community")) ||
+          (gameFormat === "knowledge" && !lobby.gameSettings.community)
+        ) {
           modeStats.overall.score +=
             gameMode === "coop"
               ? Math.round(teamScore / usernamesToUpdate.length)
