@@ -1031,6 +1031,14 @@
   font-size: 16px;
 }
 
+.input-search .answer-correct {
+  background-color: #088b3fe5 !important;
+}
+
+.input-search .answer-wrong {
+  background-color: #ff4d4de5 !important;
+}
+
 .input-dropdown {
   display: block;
   margin-top: 5px;

@@ -238,6 +238,14 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
         <div className="knowledge-question-input">
           <div className="input-search">
             <input
+              className={
+                answerRevealed
+                  ? playerStates[loggedInUser].selectedOption ===
+                    knowledgeQuestion.correctOption
+                    ? "answer-correct"
+                    : "answer-wrong"
+                  : ""
+              }
               type="text"
               placeholder={placeholder}
               value={answerInput}
