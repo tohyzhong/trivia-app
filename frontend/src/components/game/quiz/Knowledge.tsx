@@ -51,7 +51,9 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   const dispatch = useDispatch();
 
   // Input handlers
-  const [answerInput, setAnswerInput] = useState<string>("");
+  const [answerInput, setAnswerInput] = useState<string>(
+    playerStates[loggedInUser].selectedOption
+  );
   const [matchingInputs, setMatchingInputs] = useState<SearchInput[]>([]);
 
   const handleInputChange = async (e) => {
