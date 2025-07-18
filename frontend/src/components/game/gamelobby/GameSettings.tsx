@@ -40,7 +40,9 @@ const GameSettings: React.FC<GameSettingsProps> = ({
 
   // Keep community mode separate from default categories
   const [isCommunitySelected, setCommunitySelected] = useState<boolean>(
-    gameSettings.categories?.includes("Community")
+    gameMode === "classic"
+      ? gameSettings.categories?.includes("Community")
+      : gameSettings.community
   );
 
   // For button disabling
