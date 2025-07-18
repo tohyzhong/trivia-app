@@ -1024,7 +1024,8 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
           )
         : await generateUniqueKnowledgeQuestionIds(
             lobby.gameSettings.numQuestions,
-            lobby.gameSettings.difficulty
+            lobby.gameSettings.difficulty,
+            lobby.gameSettings.community
           );
 
     const update = {

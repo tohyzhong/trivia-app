@@ -4,7 +4,7 @@ const knowledgeQuestionSchema = new mongoose.Schema({
   question: { type: String, required: true },
   correctOption: { type: String, required: true },
   difficulty: { type: Number, required: true },
-  approved: { type: Boolean },
+  approved: { type: Boolean, default: true },
   createdBy: { type: String, ref: "User" },
   approvedBy: { type: String, ref: "User" }
 });

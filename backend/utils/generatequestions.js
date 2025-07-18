@@ -58,10 +58,12 @@ export const generateUniqueQuestionIds = async (
 
 export const generateUniqueKnowledgeQuestionIds = async (
   numQuestions,
-  difficulty
+  difficulty,
+  communityMode
 ) => {
   const allQuestions = await KnowledgeQuestion.find({
-    difficulty: { $lte: difficulty }
+    difficulty: { $lte: difficulty },
+    approved: !communityMode
   });
 
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
