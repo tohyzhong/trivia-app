@@ -1384,8 +1384,6 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
     const lastUpdate = new Date(lobby.gameState.lastUpdate);
     const secondsElapsed = (timeNow - lastUpdate) / 1000;
 
-    console.log(secondsElapsed);
-    console.log(timeNow);
     if (secondsElapsed < timeLimit - 2) {
       return res.status(403).json({ message: "Too early to reveal answer." });
     }
