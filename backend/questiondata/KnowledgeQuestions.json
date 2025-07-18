@@ -48,5 +48,12 @@
     "question": "https://www.bu.edu/files/2024/12/Screenshot-2024-12-13-at-12.42.40%E2%80%AFPM.png",
     "correctOption": "You Are My Sunshine",
     "difficulty": 3
+  },
+  {
+    "question": "https://chargeraccount.org/wp-content/uploads/2023/06/K7Kk3DSxN0r4AVhONa9ruggbas3DWRIrbnHw1dJc-1-900x600.jpg",
+    "correctOption": "Troll Face",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "blerargh"
   }
 ]
