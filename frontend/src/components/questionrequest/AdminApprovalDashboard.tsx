@@ -13,10 +13,10 @@ interface ClassicQuestion {
   type: "classic";
   _id: string;
   question: string;
-  options: string[];
+  options?: string[];
   correctOption: number;
-  explanation: string;
-  category: string;
+  explanation?: string;
+  category?: string;
   difficulty: number;
   approved?: boolean;
   createdBy?: string;
@@ -43,8 +43,11 @@ const AdminApprovalDashboard: React.FC = () => {
   const [currentMode, setCurrentMode] = useState<string>("Classic");
   const [searchMode, setSearchMode] = useState<string>("Classic");
 
-  const [questions, setQuestions] = useState<
-    ClassicQuestion[] | KnowledgeQuestion[]
+  const [classicQuestions, setClassicQuestions] = useState<ClassicQuestion[]>(
+    []
+  );
+  const [knowledgeQuestions, setKnowledgeQuestions] = useState<
+    KnowledgeQuestion[]
   >([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [manualCategories, setManualCategories] = useState<{
@@ -99,7 +102,8 @@ const AdminApprovalDashboard: React.FC = () => {
         }
         const data = await response.json();
         console.log(data);
-        setQuestions(data.questions);
+        if (currentMode === "Classic") setClassicQuestions(data.questions);
+        else setKnowledgeQuestions(data.questions);
         setCategories(
           data.categories.filter((cat: string) => cat !== "Community")
         );
@@ -238,7 +242,9 @@ const AdminApprovalDashboard: React.FC = () => {
   const sendApproval = async (questionId: string, categoryToUse: string) => {
     const difficultyToUse =
       editedDifficulties[questionId] ??
-      questions.find((q) => q._id === questionId)?.difficulty;
+      (currentMode === "Classic"
+        ? classicQuestions.find((q) => q._id === questionId)?.difficulty
+        : knowledgeQuestions.find((q) => q._id === questionId)?.difficulty);
 
     if (
       difficultyToUse === undefined ||
@@ -276,8 +282,9 @@ const AdminApprovalDashboard: React.FC = () => {
         throw new Error(`Approval failed: ${response.status}`);
       }
 
-      setQuestions((prev) => prev.filter((q) => q._id !== questionId));
       if (currentMode === "Classic") {
+        setClassicQuestions((prev) => prev.filter((q) => q._id !== questionId));
+
         setManualCategories((prev) => {
           const updated = { ...prev };
           delete updated[questionId];
@@ -288,6 +295,10 @@ const AdminApprovalDashboard: React.FC = () => {
           delete updated[questionId];
           return updated;
         });
+      } else {
+        setKnowledgeQuestions((prev) =>
+          prev.filter((q) => q._id !== questionId)
+        );
       }
 
       setShowManualPopup(false);
@@ -341,7 +352,13 @@ const AdminApprovalDashboard: React.FC = () => {
         throw new Error("Failed to reject question");
       }
 
-      setQuestions((prev) => prev.filter((q) => q._id !== questionId));
+      currentMode === "Classic"
+        ? setClassicQuestions((prev) =>
+            prev.filter((q) => q._id !== questionId)
+          )
+        : setKnowledgeQuestions((prev) =>
+            prev.filter((q) => q._id !== questionId)
+          );
       dispatch(
         setError({
           errorMessage: "Question rejected successfully.",
@@ -365,7 +382,7 @@ const AdminApprovalDashboard: React.FC = () => {
     }
   };
 
-  const columnDefs: ColDef<ClassicQuestion>[] | ColDef<KnowledgeQuestion>[] = [
+  const columnDefs: ColDef<ClassicQuestion | KnowledgeQuestion>[] = [
     {
       headerName: "Question",
       field: "question",
@@ -671,15 +688,17 @@ const AdminApprovalDashboard: React.FC = () => {
         </div>
         {isLoading ? (
           <p>Loading...</p>
-        ) : questions.length === 0 ? (
+        ) : (currentMode === "Classic"
+            ? classicQuestions.length
+            : knowledgeQuestions.length) === 0 ? (
           <p>You have no unapproved questions.</p>
         ) : (
           <div className="ag-theme-alpine unapproved-questions-grid">
             <AgGridReact
               rowData={
                 currentMode === "Classic"
-                  ? (questions as ClassicQuestion[])
-                  : (questions as KnowledgeQuestion[])
+                  ? classicQuestions
+                  : knowledgeQuestions
               }
               columnDefs={columnDefs}
               pagination={true}
