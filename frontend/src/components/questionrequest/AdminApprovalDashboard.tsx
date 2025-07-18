@@ -193,7 +193,11 @@ const AdminApprovalDashboard: React.FC = () => {
         <div className="question-details-request">
           <h3>Question Details</h3>
           <p className="question-text-request">
-            <strong>Image:</strong> {selectedQuestion.question}
+            <strong>Image:</strong>
+            <img
+              src={selectedQuestion.question}
+              style={{ display: "block", marginTop: "10px", height: "300px" }}
+            />
           </p>
           <p className="difficulty-text-request">
             <strong>Difficulty:</strong> {selectedQuestion.difficulty}
