@@ -96,6 +96,8 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
       } else {
         handleSendAnswer();
       }
+    } else if (event.key === "Escape") {
+      setMatchingInputs([]);
     }
   };
 
