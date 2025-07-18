@@ -1029,11 +1029,9 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
           );
 
     if (questionIds.length === 0)
-      return res
-        .status(500)
-        .json({
-          message: "Error starting lobby. There are no questions available."
-        });
+      return res.status(500).json({
+        message: "Error starting lobby. There are no questions available."
+      });
 
     const update = {
       currentQuestion: 1,
@@ -1386,7 +1384,9 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
     const lastUpdate = new Date(lobby.gameState.lastUpdate);
     const secondsElapsed = (timeNow - lastUpdate) / 1000;
 
-    if (secondsElapsed < timeLimit - 1) {
+    console.log(secondsElapsed);
+    console.log(timeNow);
+    if (secondsElapsed < timeLimit - 2) {
       return res.status(403).json({ message: "Too early to reveal answer." });
     }
 
