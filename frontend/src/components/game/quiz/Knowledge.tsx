@@ -203,7 +203,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
       {answerRevealed && (
         <div className="players-display">
           {Object.entries(playerStates).map(([username, state]) => (
-            <div className="player-display-item">
+            <div className="player-display-item" key={username}>
               <img src={profilePictures[username] || defaultAvatar} />
               {answerRevealed && (
                 <div className="speech-bubble">

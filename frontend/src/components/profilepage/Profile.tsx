@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
-import { setUser } from "../../redux/userSlice";
 import { setError } from "../../redux/errorSlice";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";

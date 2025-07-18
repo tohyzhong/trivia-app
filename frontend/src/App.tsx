@@ -104,7 +104,6 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const loggedInUser = useSelector((state: RootState) => state.user.username);
   useLobbySocketRedirect();
 
   const Components = [

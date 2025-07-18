@@ -7,7 +7,6 @@ import { useCooldown } from "../../hooks/useCooldown";
 import { motion } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { setError } from "../../redux/errorSlice";
-import { setUser } from "../../redux/userSlice";
 
 interface UserProfile {
   username: string;

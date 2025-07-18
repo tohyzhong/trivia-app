@@ -5,7 +5,8 @@
     "test": "npm run test --prefix frontend",
     "test:ui": "npm run test:ui --prefix frontend",
     "deploy-frontend": "cd frontend && npm run build && cd .. && gcloud app deploy frontend/app.frontendstandard.yaml --version 20250628t033311",
-    "deploy-backend": "gcloud run deploy backend-run --source backend"
+    "deploy-backend": "gcloud run deploy backend-run --source backend",
+    "lint": "cd frontend && npm run lint"
   },
   "devDependencies": {
     "@eslint/css": "^0.10.0",

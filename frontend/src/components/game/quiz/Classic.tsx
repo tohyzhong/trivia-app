@@ -54,9 +54,12 @@ const Classic: React.FC<ClassicQuestionProps> = ({
     ? teamStates["teamAnswerHistory"]
     : playerStates[loggedInUser]?.answerHistory || [];
   const currentQuestionRef = useRef(currentQuestion);
-  const hintRevealedOptions = useSelector(
+  const hintRevealedOptionsCheck = useSelector(
     (state: RootState) => state.lobby.hintRevealed
   );
+  const hintRevealedOptions: number[] = Array.isArray(hintRevealedOptionsCheck)
+    ? hintRevealedOptionsCheck
+    : [];
   const dispatch = useDispatch();
 
   // Next Question / Return to Lobby Countdown

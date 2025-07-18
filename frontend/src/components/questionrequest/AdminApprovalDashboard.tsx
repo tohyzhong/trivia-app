@@ -355,13 +355,12 @@ const AdminApprovalDashboard: React.FC = () => {
         throw new Error("Failed to reject question");
       }
 
-      currentMode === "Classic"
-        ? setClassicQuestions((prev) =>
-            prev.filter((q) => q._id !== questionId)
-          )
-        : setKnowledgeQuestions((prev) =>
-            prev.filter((q) => q._id !== questionId)
-          );
+      if (currentMode === "Classic")
+        setClassicQuestions((prev) => prev.filter((q) => q._id !== questionId));
+      else
+        setKnowledgeQuestions((prev) =>
+          prev.filter((q) => q._id !== questionId)
+        );
       dispatch(
         setError({
           errorMessage: "Question rejected successfully.",
@@ -549,6 +548,7 @@ const AdminApprovalDashboard: React.FC = () => {
       <div className="buttons-container">
         {availableModes.map((mode) => (
           <button
+            key={mode}
             className={`mode-select-buttons ${mode === searchMode ? "selected" : ""}`}
             onClick={() => {
               setSearchMode(mode);
@@ -682,6 +682,7 @@ const AdminApprovalDashboard: React.FC = () => {
         <div className="buttons-container">
           {availableModes.map((mode) => (
             <button
+              key={mode}
               className={`mode-select-buttons ${mode === currentMode ? "selected" : ""}`}
               onClick={() => setCurrentMode(mode)}
             >

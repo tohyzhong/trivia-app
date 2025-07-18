@@ -49,7 +49,7 @@ export default [
         ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: { jsx: true },
-        project: "./frontend/tsconfig.json"
+        project: "./tsconfig.json"
       }
     },
     plugins: { "@typescript-eslint": tsPlugin, react: reactPlugin },
