@@ -253,7 +253,11 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               }
               type="text"
               placeholder={placeholder}
-              value={answerInput}
+              value={
+                answerRevealed
+                  ? playerStates[loggedInUser].selectedOption
+                  : answerInput
+              }
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               disabled={answerRevealed}
