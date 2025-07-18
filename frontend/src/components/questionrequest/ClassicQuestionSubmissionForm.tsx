@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/questionsubmissionform.css";
 import { setError } from "../../redux/errorSlice";
 
-const QuestionSubmissionForm: React.FC = () => {
+const ClassicQuestionSubmissionForm: React.FC = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctOption, setCorrectOption] = useState<number | null>(null);
@@ -18,7 +18,6 @@ const QuestionSubmissionForm: React.FC = () => {
 
   const user = useSelector((state: RootState) => state.user);
   const username = user.username;
-  const role = user.role;
 
   const handleChangeOption = (index: number, value: string) => {
     const newOptions = [...options];
@@ -102,15 +101,12 @@ const QuestionSubmissionForm: React.FC = () => {
 
   return (
     <div className="question-submission-page">
-      {role.includes("admin") && (
-        <button
-          className="admin-dashboard-btn"
-          onClick={() => navigate("/question-request/admin-dashboard")}
-        >
-          Go to Admin Dashboard
-        </button>
-      )}
-
+      <button
+        className="back-button"
+        onClick={() => navigate("/question-request")}
+      >
+        Back
+      </button>
       <h2>Submit a Question</h2>
       <form onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="question-input">Question:</label>
@@ -165,4 +161,4 @@ const QuestionSubmissionForm: React.FC = () => {
   );
 };
 
-export default QuestionSubmissionForm;
+export default ClassicQuestionSubmissionForm;

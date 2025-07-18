@@ -19,7 +19,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": process.env.VITE_API_URL
+      "/api": "http://localhost:8080"
     }
   },
   assetsInclude: ["**/*.jpg", "**/*.png"]

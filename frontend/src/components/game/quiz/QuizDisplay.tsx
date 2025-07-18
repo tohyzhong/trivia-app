@@ -31,7 +31,8 @@ interface ClassicQuestion {
 
 interface KnowledgeQuestion {
   question: string;
-  answer: string;
+  correctOption: string;
+  difficulty: number;
 }
 
 type QuizQuestion = ClassicQuestion | KnowledgeQuestion;
@@ -234,18 +235,35 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
                 }}
               />
             ) : (
-              <Knowledge />
+              <Knowledge
+                lobbyId={lobbyId}
+                currentQuestion={gameState.currentQuestion}
+                totalQuestions={totalQuestions}
+                knowledgeQuestion={gameState.question as KnowledgeQuestion}
+                submitted={submitted || answerRevealed}
+                answerRevealed={answerRevealed}
+                playerStates={gameState.playerStates}
+                teamStates={gameState.team}
+                profilePictures={profilePictures}
+                serverTimeNow={serverTimeNow}
+                readyCountdown={{
+                  countdownStarted: gameState.countdownStarted,
+                  countdownStartTime: gameState.countdownStartTime
+                }}
+              />
             )
           ) : (
             <GameLoading />
           )}
-          <div className="question-timer-border">
-            <motion.div
-              key={`timer-${answerRevealed}`}
-              className="question-timer"
-              style={{ width: `${barWidthPercent}%` }}
-            />
-            <div className="numeric-timer">{displayTime}s</div>
+          <div className="question-timer-container">
+            <div className="question-timer-border">
+              <motion.div
+                key={`timer-${answerRevealed}`}
+                className="question-timer"
+                style={{ width: `${barWidthPercent}%` }}
+              />
+              <div className="numeric-timer">{displayTime}s</div>
+            </div>
           </div>
         </div>
         <GameChat

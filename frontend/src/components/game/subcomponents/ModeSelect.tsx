@@ -55,9 +55,10 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
     }
 
     // Create a lobby
+    const gameMode = lobbyMode.split("-")[1];
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lobby/create`,
+        `${import.meta.env.VITE_API_URL}/api/${gameMode === "classic" ? "" : gameMode}lobby/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -93,7 +94,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
           success: false
         })
       );
-      console.log(error);
+      console.error(error);
     }
   };
 

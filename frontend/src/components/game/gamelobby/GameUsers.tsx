@@ -257,7 +257,8 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                             headers: { "Content-Type": "application/json" },
                             credentials: "include",
                             body: JSON.stringify({
-                              usernameToApprove: user.username
+                              usernameToApprove: user.username,
+                              gameType: gameType
                             })
                           }
                         );

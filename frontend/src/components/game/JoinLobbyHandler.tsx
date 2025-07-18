@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { useDispatch } from "react-redux";
 import GameLoading from "./gamelobby/GameLoading";
 import { useLobbySocketRedirect } from "../../hooks/useLobbySocketRedirect";
 import { useInitSound } from "../../hooks/useInitSound";
@@ -27,7 +26,6 @@ const JoinLobbyHandler: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { lobbyId } = useParams();
-  const loggedInUser = useSelector((state: RootState) => state.user.username);
 
   useLobbySocketRedirect();
 

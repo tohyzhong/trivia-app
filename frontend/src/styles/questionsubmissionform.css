@@ -6,12 +6,25 @@
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+}
+
+.type-selection-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.back-button {
+  position: absolute;
+  background-color: #ff4d4d !important;
+  top: 10px;
 }
 
 .question-submission-page h2 {
   text-align: center;
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 10px;
   font-size: 28px;
 }
 
@@ -59,6 +72,10 @@
   margin-top: 20px;
   transition: background-color 0.3s ease;
   font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
 .question-submission-page button:disabled {

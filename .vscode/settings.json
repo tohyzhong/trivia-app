@@ -5,6 +5,19 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "files.autoSave": "onFocusChange",
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "frontend/node_modules/**": true,
+    "backend/node_modules/**": true,
+    "frontend/dist/**": true
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "frontend/node_modules/**": true,
+    "backend/node_modules/**": true,
+    "frontend/dist/**": true
+  },
 
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
@@ -17,5 +30,6 @@
     "html",
     "json",
     "markdown"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

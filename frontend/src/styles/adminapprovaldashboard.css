@@ -268,3 +268,38 @@ body {
 .admin-approval-dashboard .popup-actions .cancel-button:hover {
   background-color: #c82333;
 }
+
+.buttons-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: fit-content;
+  padding: 5px;
+  border-radius: 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.buttons-container .mode-select-buttons {
+  color: #333;
+  text-align: center;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 16px;
+  height: 40px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: none;
+}
+
+.buttons-container .mode-select-buttons:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.buttons-container .mode-select-buttons.selected {
+  background-color: #e0e0e0 !important;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+}

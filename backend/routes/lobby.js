@@ -7,8 +7,10 @@ import { getSocketIO, getUserSocketMap } from "../socket.js";
 import authenticate from "./authMiddleware.js";
 import {
   generateUniqueQuestionIds,
-  getQuestionById
-} from "../utils/generateclassicquestions.js";
+  generateUniqueKnowledgeQuestionIds,
+  getQuestionById,
+  getKnowledgeQuestionById
+} from "../utils/generatequestions.js";
 import User from "../models/User.js";
 
 const router = express.Router();
@@ -142,7 +144,7 @@ router.post("/create", authenticate, async (req, res) => {
             score: 0,
             correctScore: 0,
             streakBonus: 0,
-            selectedOption: 0,
+            selectedOption: gameType.includes("classic") ? 0 : "",
             submitted: false,
             answerHistory: {},
             powerups: {
@@ -495,7 +497,7 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
 router.post("/approve/:lobbyId", authenticate, async (req, res) => {
   try {
     const { lobbyId } = req.params;
-    const { usernameToApprove } = req.body;
+    const { usernameToApprove, gameType } = req.body;
     const hostUsername = req.user.username;
 
     // Check if the user is already in another lobby
@@ -534,7 +536,7 @@ router.post("/approve/:lobbyId", authenticate, async (req, res) => {
               score: 0,
               correctScore: 0,
               streakBonus: 0,
-              selectedOption: 0,
+              selectedOption: gameType.includes("classic") ? 0 : "",
               submitted: false,
               answerHistory: {},
               powerups: {
@@ -1014,11 +1016,22 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
 
     // Configure game state
     const { questionIds, questionCategories, question } =
-      await generateUniqueQuestionIds(
-        lobby.gameSettings.numQuestions,
-        lobby.gameSettings.categories,
-        lobby.gameSettings.difficulty
-      );
+      lobby.gameType.includes("classic")
+        ? await generateUniqueQuestionIds(
+            lobby.gameSettings.numQuestions,
+            lobby.gameSettings.categories,
+            lobby.gameSettings.difficulty
+          )
+        : await generateUniqueKnowledgeQuestionIds(
+            lobby.gameSettings.numQuestions,
+            lobby.gameSettings.difficulty,
+            lobby.gameSettings.community
+          );
+
+    if (questionIds.length === 0)
+      return res.status(500).json({
+        message: "Error starting lobby. There are no questions available."
+      });
 
     const update = {
       currentQuestion: 1,
@@ -1371,7 +1384,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
     const lastUpdate = new Date(lobby.gameState.lastUpdate);
     const secondsElapsed = (timeNow - lastUpdate) / 1000;
 
-    if (secondsElapsed < timeLimit - 1) {
+    if (secondsElapsed < timeLimit - 2) {
       return res.status(403).json({ message: "Too early to reveal answer." });
     }
 
@@ -1383,7 +1396,7 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
         const state = updatedPlayerStates[player] ?? {};
 
         if (!state.submitted) {
-          state.selectedOption = 0;
+          state.selectedOption = lobby.gameType.includes("classic") ? 0 : "";
           state.submitted = false;
           state.correctScore = 0;
           state.streakBonus = 0;
@@ -1492,13 +1505,17 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
 
       for (const username of Object.keys(lobby.players)) {
         const state = playerStates[username] ?? {};
-        const selected = state.selectedOption ?? 0;
+        const selected = state.selectedOption;
+        const gameMode = lobby.gameType.split("-")[1];
         state.submitted = true;
         state.answerHistory = state.answerHistory || {};
         state.correctScore = 0;
         state.streakBonus = 0;
 
-        if (selected > 0) {
+        if (
+          (gameMode === "classic" && selected > 0) ||
+          (gameMode === "knowledge" && selected !== "")
+        ) {
           voteDetails[selected] = voteDetails[selected] || [];
           if (!voteDetails[selected].includes(username)) {
             voteDetails[selected].push(username);
@@ -1740,7 +1757,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           score: 0,
           correctScore: 0,
           streakBonus: 0,
-          selectedOption: 0,
+          selectedOption: lobby.gameType.includes("classic") ? 0 : "",
           submitted: false,
           answerHistory: {},
           ready: false,
@@ -1842,7 +1859,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
         const overallStats = formatStats.overall;
 
         for (let i = 0; i < numQuestions; i++) {
-          const category = categoriesInMatch[i];
+          const category =
+            gameFormat === "classic"
+              ? categoriesInMatch[i]
+              : lobby.gameSettings.community
+                ? "Community"
+                : "Overall";
           const result = answerHistory[i + 1];
 
           matchCategoryStats[category] =
@@ -1862,7 +1884,10 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
             overallStats[category].correct++;
           }
 
-          if (category !== "Community") {
+          if (
+            (gameFormat === "classic" && category !== "Community") ||
+            (gameFormat === "knowledge" && !lobby.gameSettings.community)
+          ) {
             modeStats.overall.total++;
             overallStats.overall.total++;
             if (result === "correct") {
@@ -1872,7 +1897,11 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           }
         }
 
-        if (!categoriesInMatch.includes("Community")) {
+        if (
+          (gameFormat === "classic" &&
+            !categoriesInMatch.includes("Community")) ||
+          (gameFormat === "knowledge" && !lobby.gameSettings.community)
+        ) {
           modeStats.overall.score +=
             gameMode === "coop"
               ? Math.round(teamScore / usernamesToUpdate.length)
@@ -2007,18 +2036,23 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
       return res.status(200).json({ message: "Lobby finished." });
     } else {
       // Go to next question
-      const question = await getQuestionById(
-        gameState.questionIds[gameState.currentQuestion]
-      );
+      const question = lobby.gameType.includes("knowledge")
+        ? await getKnowledgeQuestionById(
+            gameState.questionIds[gameState.currentQuestion]
+          )
+        : await getQuestionById(
+            gameState.questionIds[gameState.currentQuestion]
+          );
 
       // Reset player states
+
       const resetPlayerStates = {};
       for (const username in playerStates) {
         resetPlayerStates[username] = {
           ...playerStates[username],
           correctScore: 0,
           streakBonus: 0,
-          selectedOption: 0,
+          selectedOption: lobby.gameType.includes("knowledge") ? "" : 0,
           submitted: false,
           ready: false,
           powerups: {
@@ -2162,10 +2196,15 @@ router.post("/use-powerup/:lobbyId", authenticate, async (req, res) => {
 
   if (powerupName === "Hint Boost") {
     const correctOption = lobby.gameState.question.correctOption;
-    const all = [1, 2, 3, 4];
-    const wrongOptions = all.filter((o) => o !== correctOption);
-    revealed = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 2);
-    update.$set[`${path}.Hint Boost`] = revealed;
+    if (lobby.gameType.includes("classic")) {
+      const all = [1, 2, 3, 4];
+      const wrongOptions = all.filter((o) => o !== correctOption);
+      revealed = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 2);
+      update.$set[`${path}.Hint Boost`] = revealed;
+    } else if (lobby.gameType.includes("knowledge")) {
+      revealed = correctOption.slice(0, 2);
+      update.$set[`${path}.Hint Boost`] = revealed;
+    }
   } else if (powerupName === "Add Time") {
     update.$set[`${path}.Add Time`] = true;
     update.$set[`gameState.lastUpdate`] = new Date(
