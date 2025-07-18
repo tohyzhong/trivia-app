@@ -52,7 +52,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
 
   // Input handlers
   const [answerInput, setAnswerInput] = useState<string>(
-    playerStates[loggedInUser].selectedOption
+    playerStates[loggedInUser]?.selectedOption ?? ""
   );
   const [matchingInputs, setMatchingInputs] = useState<SearchInput[]>([]);
 
@@ -182,8 +182,9 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   const [placeholder, setPlaceholder] = useState<string>("Meme Name");
   const hint = useSelector((state: RootState) => state.lobby.hintRevealed);
   useEffect(() => {
-    if (hint?.length !== 0 && !submitted) {
-      answerInput === "" ? setPlaceholder(hint + "...") : setAnswerInput(hint);
+    if (typeof hint === "string" && hint?.length !== 0 && !submitted) {
+      setPlaceholder(hint + "...");
+      setAnswerInput(String(hint));
     }
   }, [hint]);
 
@@ -242,7 +243,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
             <input
               className={
                 answerRevealed
-                  ? playerStates[loggedInUser].selectedOption ===
+                  ? playerStates[loggedInUser]?.selectedOption ===
                     knowledgeQuestion.correctOption
                     ? "answer-correct"
                     : "answer-wrong"
@@ -276,7 +277,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               </div>
             )}
           </div>
-          {submitted && playerStates[loggedInUser].selectedOption !== "" ? (
+          {submitted && playerStates[loggedInUser]?.selectedOption !== "" ? (
             <button
               className={`update-button ${answerRevealed ? "disabled" : ""}`}
               onClick={handleSendAnswer}
