@@ -72,6 +72,10 @@
   margin-top: 20px;
   transition: background-color 0.3s ease;
   font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
 .question-submission-page button:disabled {

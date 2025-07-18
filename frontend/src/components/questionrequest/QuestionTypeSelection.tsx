@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux/store";
+import "../../styles/questionsubmissionform.css";
 
 const QuestionTypeSelection: React.FC = () => {
   const navigate = useNavigate();
