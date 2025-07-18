@@ -101,6 +101,14 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
 
   // Sending Answer
   const handleSendAnswer = async () => {
+    if (
+      answerRevealed ||
+      playerStates[loggedInUser].selectedOption === answerInput ||
+      answerInput === ""
+    ) {
+      return;
+    }
+
     await fetch(`${import.meta.env.VITE_API_URL}/api/lobby/submit/${lobbyId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -283,22 +291,18 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               </div>
             )}
           </div>
-          {submitted && playerStates[loggedInUser]?.selectedOption !== "" ? (
-            <button
-              className={`update-button ${answerRevealed ? "disabled" : ""}`}
-              onClick={handleSendAnswer}
-            >
-              Update
-            </button>
-          ) : (
-            <button
-              className={`confirm-button ${answerRevealed ? "disabled" : ""}`}
-              onClick={handleSendAnswer}
-            >
-              Confirm
-            </button>
-          )}
+
+          <button
+            className={`confirm-button ${answerRevealed || playerStates[loggedInUser].selectedOption === answerInput || answerInput === "" ? "disabled" : ""}`}
+            onClick={handleSendAnswer}
+          >
+            Confirm
+          </button>
         </div>
+
+        <p className="submitted-answer-display">
+          Submitted: {playerStates[loggedInUser].selectedOption}
+        </p>
 
         <p className="knowledge-score-display">
           {teamStates

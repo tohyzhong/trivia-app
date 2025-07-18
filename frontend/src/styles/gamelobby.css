@@ -990,7 +990,7 @@
 
 /* Image display */
 .knowledge-question-image {
-  height: 65%;
+  height: 63%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1007,6 +1007,12 @@
 }
 
 /* Answer Input */
+.submitted-answer-display {
+  height: 2%;
+  margin: 2px;
+  font-size: 12px;
+}
+
 .knowledge-question-input {
   display: flex;
   justify-content: space-between;
@@ -1081,19 +1087,6 @@
   width: 15%;
   border: none;
   border-radius: 4px;
-  background-color: #055096;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.update-button {
-  height: 100%;
-  width: 15%;
-  border: none;
-  border-radius: 4px;
   background-color: #088b3f;
   color: white;
   cursor: pointer;
@@ -1104,7 +1097,7 @@
 
 button.disabled {
   cursor: not-allowed;
-  filter: grayscale(0.5);
+  filter: grayscale(0.7);
 }
 
 /* Knowledge Mode Players' Selected Option Display */
