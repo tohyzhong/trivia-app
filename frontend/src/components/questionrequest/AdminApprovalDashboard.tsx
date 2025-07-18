@@ -101,7 +101,6 @@ const AdminApprovalDashboard: React.FC = () => {
           throw new Error("Failed to fetch initial questions and categories");
         }
         const data = await response.json();
-        console.log(data);
         if (currentMode === "Classic") setClassicQuestions(data.questions);
         else setKnowledgeQuestions(data.questions);
         setCategories(
