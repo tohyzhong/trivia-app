@@ -10,7 +10,7 @@ interface LobbyState {
     doublePoints: number;
   };
   status: string;
-  hintRevealed: any;
+  hintRevealed: number[] | string;
 }
 
 const initialState: LobbyState = {
