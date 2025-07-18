@@ -1028,6 +1028,13 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
             lobby.gameSettings.community
           );
 
+    if (questionIds.length === 0)
+      return res
+        .status(500)
+        .json({
+          message: "Error starting lobby. There are no questions available."
+        });
+
     const update = {
       currentQuestion: 1,
       questionIds,

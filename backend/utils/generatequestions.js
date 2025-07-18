@@ -66,6 +66,8 @@ export const generateUniqueKnowledgeQuestionIds = async (
     approved: !communityMode
   });
 
+  if (allQuestions.length === 0) return { questionIds: [], question: null };
+
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
   const repeatedQuestions = [];
   while (repeatedQuestions.length < numQuestions) {
