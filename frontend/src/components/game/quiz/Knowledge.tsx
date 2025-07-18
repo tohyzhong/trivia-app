@@ -105,7 +105,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   const handleSendAnswer = async () => {
     if (
       answerRevealed ||
-      playerStates[loggedInUser].selectedOption === answerInput ||
+      playerStates[loggedInUser]?.selectedOption === answerInput ||
       answerInput === ""
     ) {
       return;
@@ -265,7 +265,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
               placeholder={placeholder}
               value={
                 answerRevealed
-                  ? playerStates[loggedInUser].selectedOption
+                  ? playerStates[loggedInUser]?.selectedOption
                   : answerInput
               }
               onChange={handleInputChange}
@@ -295,7 +295,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
           </div>
 
           <button
-            className={`confirm-button ${answerRevealed || playerStates[loggedInUser].selectedOption === answerInput || answerInput === "" ? "disabled" : ""}`}
+            className={`confirm-button ${answerRevealed || playerStates[loggedInUser]?.selectedOption === answerInput || answerInput === "" ? "disabled" : ""}`}
             onClick={handleSendAnswer}
           >
             Confirm
@@ -303,7 +303,7 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
         </div>
 
         <p className="submitted-answer-display">
-          Submitted: {playerStates[loggedInUser].selectedOption}
+          Submitted: {playerStates[loggedInUser]?.selectedOption}
         </p>
 
         <p className="knowledge-score-display">
