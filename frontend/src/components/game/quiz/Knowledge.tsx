@@ -190,20 +190,22 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
 
   return (
     <div className="knowledge-question-display">
-      <div className="players-display">
-        {Object.entries(playerStates).map(([username, state]) => (
-          <div className="player-display-item">
-            <img src={profilePictures[username] || defaultAvatar} />
-            {answerRevealed && (
-              <div className="speech-bubble">
-                {state.selectedOption === ""
-                  ? "(no answer)"
-                  : state.selectedOption}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {answerRevealed && (
+        <div className="players-display">
+          {Object.entries(playerStates).map(([username, state]) => (
+            <div className="player-display-item">
+              <img src={profilePictures[username] || defaultAvatar} />
+              {answerRevealed && (
+                <div className="speech-bubble">
+                  {state.selectedOption === ""
+                    ? "(no answer)"
+                    : state.selectedOption}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="knowledge-question-details">
         <div className="knowledge-question-header">

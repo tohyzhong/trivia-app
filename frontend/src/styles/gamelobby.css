@@ -950,10 +950,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  border: 1px solid red;
   border-top-right-radius: 25px;
   border-bottom-right-radius: 25px;
-  width: 70%;
+  flex: 7;
   height: 100%;
 }
 
@@ -1110,10 +1109,9 @@ button.disabled {
 
 /* Knowledge Mode Players' Selected Option Display */
 .players-display {
-  border: 1px solid red;
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
-  width: 30%;
+  flex: 3;
   height: 100%;
   background: #222;
   display: flex;
