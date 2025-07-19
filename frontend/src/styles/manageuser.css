@@ -14,7 +14,7 @@
   position: relative;
 }
 
-.back-button {
+.profile-header .back-button {
   position: absolute;
   color: white;
   background-color: #f44336;
