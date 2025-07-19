@@ -4,6 +4,9 @@ import { setError } from "../../../redux/errorSlice";
 import { RootState } from "../../../redux/store";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import { resetHintRevealed } from "../../../redux/lobbySlice";
+import { playClickSound } from "../../../utils/soundManager";
+import { IoIosInformationCircle } from "react-icons/io";
+import Explanation from "./Explanation";
 
 interface SearchInput {
   correctOption: string;
@@ -199,8 +202,26 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
     }
   }, [hint]);
 
+  // Answer popup (for long answers)
+  const [showAnswer, setShowAnswer] = useState<boolean>(false);
+  const handleIconClick = () => {
+    playClickSound();
+    setShowAnswer(true);
+  };
+
   return (
     <div className="knowledge-question-display">
+      {showAnswer && (
+        <Explanation
+          setActive={setShowAnswer}
+          explanation={
+            (knowledgeQuestion.createdBy
+              ? `[Contributed by: ${knowledgeQuestion.createdBy}]  \n`
+              : "") + knowledgeQuestion.correctOption
+          }
+        />
+      )}
+
       {answerRevealed && (
         <div className="players-display">
           {Object.entries(playerStates).map(([username, state]) => (
@@ -218,7 +239,10 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
         </div>
       )}
 
-      <div className="knowledge-question-details">
+      <div
+        className="knowledge-question-details"
+        style={!answerRevealed ? { width: "95%", maxWidth: "95%" } : {}}
+      >
         <div className="knowledge-question-header">
           <p className="knowledge-question-progress">
             Question {currentQuestion} / {totalQuestions}
@@ -231,6 +255,10 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
                     [Contributed by: {knowledgeQuestion.createdBy}]
                   </p>
                 )}
+                <IoIosInformationCircle
+                  className="question-explanation-icon"
+                  onClick={handleIconClick}
+                />
                 <h4>{knowledgeQuestion.correctOption}</h4>
               </>
             ) : (

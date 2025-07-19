@@ -614,6 +614,7 @@
   align-items: center;
   justify-content: space-evenly;
   width: 70%;
+  max-width: 70%;
   height: 100%;
 }
 
@@ -891,6 +892,8 @@
   border: 1px solid white;
   border-radius: 15px;
   position: relative;
+  text-align: center;
+  line-height: 30px;
 }
 
 .explanation-popup-close {
@@ -954,6 +957,8 @@
   border-bottom-right-radius: 25px;
   flex: 7;
   height: 100%;
+  width: 70%;
+  max-width: 70%;
 }
 
 /* Header Display */
@@ -962,7 +967,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 15%;
+  height: 20%;
 }
 
 .knowledge-question-progress {
@@ -971,7 +976,9 @@
 }
 
 .knowledge-question-answer {
-  width: 34%;
+  width: 50%;
+  max-width: 50%;
+  max-height: 80px;
   background-color: #222;
   padding: 5px 10px;
   border: 1px solid white;
@@ -980,12 +987,31 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow-y: visible;
+  position: relative;
 }
 
 .knowledge-question-answer .contribution-credit {
-  margin: 0;
-  padding-top: 10px;
+  margin-block-start: 10px;
   font-size: 14px;
+  width: 90%;
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
+.knowledge-question-answer h4 {
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 90%;
+  max-width: 90%;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .advance-lobby-button-container {
@@ -1114,6 +1140,8 @@ button.disabled {
   border-bottom-left-radius: 25px;
   flex: 3;
   height: 100%;
+  width: 30%;
+  max-width: 30%;
   background: #222;
   display: flex;
   flex-direction: column;
