@@ -1028,9 +1028,9 @@ router.get("/startlobby/:lobbyId", authenticate, async (req, res) => {
             lobby.gameSettings.community
           );
 
-    if (questionIds.length === 0)
+    if (questionIds.length < lobby.gameSettings.numQuestions)
       return res.status(500).json({
-        message: "Error starting lobby. There are no questions available."
+        message: `Error starting lobby. There ${questionIds.length === 0 ? "are no questions available." : questionIds.length === 1 ? "is only 1 question available." : "are only " + questionIds.length + " questions available."} `
       });
 
     const update = {

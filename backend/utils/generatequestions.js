@@ -38,11 +38,7 @@ export const generateUniqueQuestionIds = async (
   });
 
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
-  const repeatedQuestions = [];
-  while (repeatedQuestions.length < numQuestions) {
-    repeatedQuestions.push(...shuffledQuestions);
-  }
-  const selectedQuestions = repeatedQuestions.slice(0, numQuestions);
+  const selectedQuestions = shuffledQuestions.slice(0, numQuestions);
 
   const questionIds = [];
   const questionCategories = [];
@@ -69,11 +65,7 @@ export const generateUniqueKnowledgeQuestionIds = async (
   if (allQuestions.length === 0) return { questionIds: [], question: null };
 
   const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
-  const repeatedQuestions = [];
-  while (repeatedQuestions.length < numQuestions) {
-    repeatedQuestions.push(...shuffledQuestions);
-  }
-  const selectedQuestions = repeatedQuestions.slice(0, numQuestions);
+  const selectedQuestions = shuffledQuestions.slice(0, numQuestions);
 
   const questionIds = [];
   selectedQuestions.forEach((q) => {
