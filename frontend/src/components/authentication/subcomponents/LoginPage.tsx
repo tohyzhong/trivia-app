@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../../redux/userSlice";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "../../../styles/loginpage.css";
 import ReturnButton from "./ReturnButton";
 import { RootState } from "../../../redux/store";
@@ -89,9 +89,9 @@ const LoginPage: React.FC = () => {
             placeholder="Password"
             required
           />
-          <a className="forgot-password" href="/auth/forgotpassword">
+          <Link className="forgot-password" to="/auth/forgotpassword">
             Forgot Password?
-          </a>
+          </Link>
           <div className="buttons-container">
             <ReturnButton />
             <button type="submit" className="submit-button">
@@ -99,7 +99,8 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
           <p className="register-message">
-            Don&apos;t have an account? <a href="/auth/signup">Sign up here!</a>
+            Don&apos;t have an account?{" "}
+            <Link to="/auth/signup">Sign up here!</Link>
           </p>
         </form>
       </div>

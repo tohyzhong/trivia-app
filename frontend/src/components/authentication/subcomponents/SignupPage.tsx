@@ -3,7 +3,7 @@ import "../../../styles/signuppage.css";
 import ReturnButton from "./ReturnButton";
 import { RootState } from "../../../redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setError } from "../../../redux/errorSlice";
 import {
   RegExpMatcher,
@@ -124,7 +124,7 @@ const SignupPage: React.FC = () => {
           />
         </div>
         <p className="register-message">
-          Have an account? <a href="/auth/login">Log in here!</a>
+          Have an account? <Link to="/auth/login">Log in here!</Link>
         </p>
         <div className="buttons-container">
           <ReturnButton />
