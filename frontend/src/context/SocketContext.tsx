@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { createContext, useContext } from "react";
 import socket from "../socket";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const SocketContext = createContext<typeof socket | null>(null);
 
 export const SocketProvider = ({ children }) => {
+  const loggedInUser = useSelector((state: RootState) => state.user.username);
   const [ping, setPing] = useState(null);
 
   useEffect(() => {
@@ -43,7 +46,7 @@ export const SocketProvider = ({ children }) => {
   return (
     <SocketContext.Provider value={socket}>
       {children}
-      {ping && (
+      {loggedInUser && (
         <div
           style={{
             position: "fixed",
@@ -52,10 +55,10 @@ export const SocketProvider = ({ children }) => {
             padding: 8,
             zIndex: 999999,
             background: "#222",
-            color: ping > 100 ? "#f00" : ping > 40 ? "#ffa500" : "#0f0"
+            color: ping > 100 || !ping ? "#f00" : ping > 40 ? "#ffa500" : "#0f0"
           }}
         >
-          Ping: {ping} ms
+          Ping: {ping ?? "Disconnected"} {ping && "ms"}
         </div>
       )}
     </SocketContext.Provider>
