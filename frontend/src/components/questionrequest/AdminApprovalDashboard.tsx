@@ -695,7 +695,9 @@ const AdminApprovalDashboard: React.FC = () => {
         ) : (currentMode === "Classic"
             ? classicQuestions.length
             : knowledgeQuestions.length) === 0 ? (
-          <p>You have no unapproved questions.</p>
+          <p style={{ color: "black", textShadow: "none" }}>
+            You have no unapproved questions.
+          </p>
         ) : (
           <div className="ag-theme-alpine unapproved-questions-grid">
             <AgGridReact
