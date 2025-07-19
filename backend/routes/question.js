@@ -248,7 +248,8 @@ router.put("/approve-knowledge/:questionId", authenticate, async (req, res) => {
             <p>Great news! Your question has been reviewed and approved by an admin.</p>
             <h4>Question Details:</h4>
             <ul>
-              <li><strong>Question:</strong> ${updated.question}</li>
+              <li><strong>Meme Name:</strong> ${updated.correctOption}</li>
+              <li><img src="${updated.question}" alt="Meme Question Image" style="max-width: 100%; height: auto; border-radius: 8px;" /></li>
               <li><strong>Difficulty:</strong> ${difficulty}</li>
             </ul>
             <p>Thanks for contributing to the community!</p>
@@ -304,8 +305,8 @@ router.delete("/reject-classic/:questionId", authenticate, async (req, res) => {
             <h2 style="color: #dc3545;">Your question was rejected</h2>
             <p>Hi <strong>${user.username}</strong>,</p>
             <p>We regret to inform you that your submitted question was not approved by the admin team.</p>
-            <h4>Question:</h4>
-            <p>${question.question}</p>
+            <p><strong>Meme Name:</strong> ${question.correctOption}</p>
+            <p><img src="${question.question}" alt="Meme Question Image" style="max-width: 100%; height: auto; border-radius: 8px;" /></p>
             ${
               reason?.trim()
                 ? `<h4>Reason:</h4><p style="background-color: #f8f8f8; padding: 10px; border-left: 4px solid #dc3545;">${reason}</p>`
