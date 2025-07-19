@@ -1,33 +1,31 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux/store";
 import "../../styles/questionsubmissionform.css";
+import { Link } from "react-router-dom";
 
 const QuestionTypeSelection: React.FC = () => {
-  const navigate = useNavigate();
   const role = useSelector((state: RootState) => state.user.role);
   return (
     <div className="question-submission-page">
       <h2>Select a Question Type to Submit</h2>
       <div className="type-selection-buttons">
-        <button onClick={() => navigate("/question-request/classic")}>
-          Classic
-        </button>
-        <button onClick={() => navigate("/question-request/knowledge")}>
-          Knowledge
-        </button>
+        <Link to="/question-request/classic">
+          <button>Classic</button>
+        </Link>
+        <Link to="/question-request/knowledge">
+          <button>Knowledge</button>
+        </Link>
       </div>
       {role.includes("admin") && (
-        <>
+        <div className="type-selection-buttons">
           <h2>Admin Dashboard</h2>
-          <button
-            className="admin-dashboard-btn"
-            onClick={() => navigate("/question-request/admin-dashboard")}
-          >
-            Go to Admin Dashboard
-          </button>
-        </>
+          <Link to="/question-request/admin-dashboard">
+            <button className="admin-dashboard-btn">
+              Go to Admin Dashboard
+            </button>
+          </Link>
+        </div>
       )}
     </div>
   );

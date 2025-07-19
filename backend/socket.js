@@ -34,11 +34,23 @@ export function initSocket(server) {
   io.on("connection", (socket) => {
     const username = socket.user?.username;
     if (username) {
-      if (!userSocketMap.has(username)) {
-        userSocketMap.set(username, []);
+      let socketIds = userSocketMap.get(username) || [];
+
+      socketIds.push(socket.id);
+
+      if (socketIds.length > 3) {
+        const toDisconnect = socketIds.shift();
+        const oldSocket = io.sockets.sockets.get(toDisconnect);
+        if (oldSocket) {
+          oldSocket.emit(
+            "forceDisconnect",
+            "This session has been disconnected and will be closed in 3 seconds. Please do not open more than 3 active sessions."
+          );
+          oldSocket.disconnect(true);
+        }
       }
 
-      userSocketMap.get(username).push(socket.id);
+      userSocketMap.set(username, socketIds);
       console.log(`User ${username} connected with socket ${socket.id}`);
     }
 
@@ -62,6 +74,10 @@ export function initSocket(server) {
     socket.on("leaveLobby", (lobbyId) => {
       socket.leave(lobbyId);
       console.log(`User ${socket.id} left lobby ${lobbyId}`);
+    });
+
+    socket.on("pingCheck", (func) => {
+      func();
     });
   });
 

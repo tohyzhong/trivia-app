@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/noaccess.css";
+import { Link } from "react-router-dom";
 
 const NoAccess: React.FC = () => {
   return (
@@ -10,14 +11,14 @@ const NoAccess: React.FC = () => {
       </p>
       <p className="no-access-text">
         Please{" "}
-        <a className="contact-support" href="/contact">
+        <Link className="contact-support" to="/contact">
           contact support
-        </a>{" "}
+        </Link>{" "}
         if you believe this is an error.
       </p>
-      <a className="return-button" href="/">
+      <Link className="return-button" to="/">
         Go to Home
-      </a>
+      </Link>
     </div>
   );
 };

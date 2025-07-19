@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 import "../../styles/loginbar.css";
 import { useSelector } from "react-redux";
@@ -13,12 +13,6 @@ export const LoginBar = () => {
       e.target.className.indexOf("-button")
     );
     navigate(`/auth/${page}`);
-  };
-
-  const handleUsernameClick = () => {
-    if (username) {
-      navigate(`/profile`);
-    }
   };
 
   const username = useSelector((state: RootState) => state.user.username);
@@ -37,9 +31,9 @@ export const LoginBar = () => {
         <div className="logged-in-bar">
           <div className="welcome-text">
             <p>Welcome,&nbsp;</p>
-            <p onClick={handleUsernameClick} className="username">
+            <Link to="/profile" className="username">
               {username}
-            </p>
+            </Link>
           </div>
           <LogoutButton />
         </div>

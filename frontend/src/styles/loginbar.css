@@ -87,6 +87,13 @@ button {
   color: white;
 }
 
+.welcome-text a {
+  all: unset !important;
+  color: white !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+}
+
 .username {
   margin-left: 5px;
   cursor: pointer;

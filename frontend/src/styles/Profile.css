@@ -171,6 +171,11 @@
   text-decoration: underline;
 }
 
+.friends-list h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .friends-list ul {
   list-style-type: none;
   padding-left: 0;
@@ -184,6 +189,11 @@
 
 .friends-list li:hover {
   text-decoration: underline;
+}
+
+.friends-list li a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .profile-header h1 {

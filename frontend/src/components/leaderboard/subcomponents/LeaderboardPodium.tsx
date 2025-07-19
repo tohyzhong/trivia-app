@@ -1,6 +1,6 @@
 import React from "react";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface RowData {
   username: string;
@@ -24,7 +24,6 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
   podiumData,
   sortField
 }) => {
-  const navigate = useNavigate();
   const podiumDisplayData = [podiumData[1], podiumData[0], podiumData[2]];
 
   const getUserDetail = (data: RowData) => {
@@ -60,17 +59,18 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
               <strong>{getUserDetail(data)}</strong>
             </div>
             <div className="podium-user-detail podium-username">
-              <strong onClick={() => navigate(`/profile/${data.username}`)}>
-                {data.username}
-              </strong>
+              <Link to={`/profile/${data.username}`} style={{ all: "unset" }}>
+                <strong>{data.username}</strong>
+              </Link>
             </div>
             <div className="podium-stand">
-              <img
-                src={data.profilePicture || defaultAvatar}
-                alt={data.username}
-                onError={(e) => (e.currentTarget.src = defaultAvatar)}
-                onClick={() => navigate(`/profile/${data.username}`)}
-              />
+              <Link to={`/profile/${data.username}`} style={{ all: "unset" }}>
+                <img
+                  src={data.profilePicture || defaultAvatar}
+                  alt={data.username}
+                  onError={(e) => (e.currentTarget.src = defaultAvatar)}
+                />
+              </Link>
             </div>
           </div>
         ) : (

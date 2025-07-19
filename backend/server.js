@@ -106,6 +106,6 @@ server.listen(process.env.PORT, () => {
 runSchedulers();
 
 // Generate sample Classic Questions
-generateQuestions();
+// generateQuestions();
 
 export default app;

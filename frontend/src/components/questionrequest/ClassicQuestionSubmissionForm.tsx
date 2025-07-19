@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { useNavigate } from "react-router-dom";
 import "../../styles/questionsubmissionform.css";
 import { setError } from "../../redux/errorSlice";
+import { Link } from "react-router-dom";
 
 const ClassicQuestionSubmissionForm: React.FC = () => {
   const [question, setQuestion] = useState("");
@@ -13,7 +13,6 @@ const ClassicQuestionSubmissionForm: React.FC = () => {
   const category = "Community";
   const [difficulty, setDifficulty] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user);
@@ -101,12 +100,9 @@ const ClassicQuestionSubmissionForm: React.FC = () => {
 
   return (
     <div className="question-submission-page">
-      <button
-        className="back-button"
-        onClick={() => navigate("/question-request")}
-      >
-        Back
-      </button>
+      <Link to="/question-request">
+        <button className="back-button">Back</button>
+      </Link>
       <h2>Submit a Question</h2>
       <form onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="question-input">Question:</label>

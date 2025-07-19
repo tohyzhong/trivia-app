@@ -375,14 +375,6 @@
     "difficulty": 1
   },
   {
-    "question": "Which meme is associated with the phrase 'It’s Wednesday, my dudes'?",
-    "options": ["Dog", "Cat", "Lizard", "Frog"],
-    "correctOption": 4,
-    "explanation": "The meme features a frog and the phrase 'It’s Wednesday, my dudes.'",
-    "category": "General",
-    "difficulty": 1
-  },
-  {
     "question": "What is the main joke in the 'Surprised Pikachu' meme?",
     "options": ["Happiness", "Surprise", "Anger", "Sadness"],
     "correctOption": 2,
@@ -404,31 +396,10 @@
     "difficulty": 1
   },
   {
-    "question": "What is the main theme of 'Loss' meme?",
-    "options": ["Happiness", "Confusion", "Tragedy", "Victory"],
-    "correctOption": 3,
-    "explanation": "The 'Loss' meme references a tragic comic strip from Ctrl+Alt+Del.",
-    "category": "General",
-    "difficulty": 2
-  },
-  {
     "question": "Which animal is associated with the meme phrase 'Is this a pigeon?'",
     "options": ["Bird", "Dog", "Cat", "Butterfly"],
     "correctOption": 4,
     "explanation": "The meme comes from an anime scene where a character mistakes a butterfly for a pigeon.",
-    "category": "General",
-    "difficulty": 2
-  },
-  {
-    "question": "What is the main joke in the 'Expanding Brain' meme?",
-    "options": [
-      "Levels of anger",
-      "Levels of sadness",
-      "Levels of happiness",
-      "Levels of intelligence"
-    ],
-    "correctOption": 4,
-    "explanation": "The meme shows increasing levels of intelligence or enlightenment.",
     "category": "General",
     "difficulty": 2
   },
@@ -498,14 +469,6 @@
     "category": "General",
     "difficulty": 2
   },
-  {
-    "question": "Which meme is associated with the phrase 'You had one job'?",
-    "options": ["Failure", "Success", "Happiness", "Confusion"],
-    "correctOption": 1,
-    "explanation": "The meme is used to highlight simple tasks that were failed.",
-    "category": "General",
-    "difficulty": 1
-  },
 
   {
     "question": "Which animal is often used in 'Cheems' memes?",
@@ -566,32 +529,6 @@
     "difficulty": 2
   },
   {
-    "question": "Which meme features a cat at a dinner table?",
-    "options": [
-      "Doge",
-      "Surprised Pikachu",
-      "Woman Yelling at Cat",
-      "Mocking SpongeBob"
-    ],
-    "correctOption": 3,
-    "explanation": "The meme features a woman yelling and a cat sitting at a dinner table.",
-    "category": "General",
-    "difficulty": 1
-  },
-  {
-    "question": "Which meme features a dog in a burning room?",
-    "options": [
-      "Doge",
-      "Surprised Pikachu",
-      "Woman Yelling at Cat",
-      "This is fine"
-    ],
-    "correctOption": 4,
-    "explanation": "The 'This is fine' meme features a dog calmly sitting in a burning room.",
-    "category": "General",
-    "difficulty": 1
-  },
-  {
     "question": "Which meme is associated with the phrase 'You had one job'?",
     "options": ["Failure", "Success", "Happiness", "Confusion"],
     "correctOption": 1,
@@ -619,35 +556,6 @@
     "explanation": "The 'Loss' meme references a tragic comic strip from Ctrl+Alt+Del.",
     "category": "General",
     "difficulty": 2
-  },
-  {
-    "question": "Which meme is associated with the phrase 'Is this a pigeon?'",
-    "options": ["Butterfly", "Bird", "Dog", "Cat"],
-    "correctOption": 1,
-    "explanation": "The meme comes from an anime scene where a character mistakes a butterfly for a pigeon.",
-    "category": "General",
-    "difficulty": 2
-  },
-  {
-    "question": "What is the main joke in the 'Expanding Brain' meme?",
-    "options": [
-      "Levels of intelligence",
-      "Levels of anger",
-      "Levels of sadness",
-      "Levels of happiness"
-    ],
-    "correctOption": 1,
-    "explanation": "The meme shows increasing levels of intelligence or enlightenment.",
-    "category": "General",
-    "difficulty": 2
-  },
-  {
-    "question": "Which meme is associated with the phrase 'Nobody:'?",
-    "options": ["No one asked", "Mocking", "Unexpected actions", "Repeating"],
-    "correctOption": 3,
-    "explanation": "The 'Nobody:' meme is used to highlight unexpected or random actions.",
-    "category": "General",
-    "difficulty": 1
   },
   {
     "question": "Which animal became a meme on TikTok due to its chill and surreal vibes?",
@@ -1344,7 +1252,904 @@
     "category": "Community",
     "difficulty": 1,
     "approved": false,
-    "createdBy": "blerargh",
-    "__v": 0
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "Which meme features a shivering monkey in a thick coat?",
+    "options": ["Banana Monkey", "Fashion Ape", "IKEA Monkey", "Cold Primate"],
+    "correctOption": 3,
+    "explanation": "🧥 The 'IKEA Monkey' became a viral meme after a monkey was found in an IKEA parking lot in a stylish coat.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "Which meme features an image of a dog surrounded by fire saying 'This is fine'?",
+    "options": ["Crisis Pup", "Everything is Okay", "This is fine", "Dogfire"],
+    "correctOption": 3,
+    "explanation": "🔥 The 'This is fine' dog represents staying calm in chaotic situations.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "Which phrase is commonly associated with shocking plot twists?",
+    "options": [
+      "Plot Armor",
+      "That’s crazy",
+      "Wait, what?",
+      "No one saw it coming"
+    ],
+    "correctOption": 3,
+    "explanation": "😲 'Wait, what?' is a meme reaction to unexpected plot twists or absurd reveals.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "Which viral video involves a kid saying 'I like turtles'?",
+    "options": [
+      "Zoo Interview",
+      "Turtle Boy",
+      "Animal Planet Kid",
+      "Funny Interview"
+    ],
+    "correctOption": 2,
+    "explanation": "🐢 'I like turtles' became famous after a news interview with a zombie-faced boy.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the name of the viral video with a dramatic prairie dog?",
+    "options": [
+      "Zoom Gopher",
+      "Suspense Squirrel",
+      "Dramatic Chipmunk",
+      "Shock Rodent"
+    ],
+    "correctOption": 3,
+    "explanation": "🎬 'Dramatic Chipmunk' became iconic for its intense zoom and stare.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "What image is used to represent internal conflict or decision-making?",
+    "options": ["Angel vs Devil", "Two Wolves", "Brainstorm", "Split Screen"],
+    "correctOption": 2,
+    "explanation": "🐺 'There are two wolves inside you' is a meme format used to show inner conflict.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "What color pill represents awakening to harsh reality in meme culture?",
+    "options": ["Green", "Red", "Blue", "White"],
+    "correctOption": 2,
+    "explanation": "💊 'Red pill' refers to waking up to uncomfortable truths, from The Matrix.",
+    "category": "General",
+    "difficulty": 3
+  },
+  {
+    "question": "Which meme shows a surprised Pikachu face?",
+    "options": [
+      "Shocked Pikachu",
+      "Sad Pikachu",
+      "Angry Pikachu",
+      "Surprised Pikachu"
+    ],
+    "correctOption": 4,
+    "explanation": "⚡ 'Surprised Pikachu' is used to react to obvious consequences that somehow shocked someone.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What is the main idea behind 'Florida Man' memes?",
+    "options": [
+      "Mysterious hero",
+      "Absurd headlines",
+      "Conspiracy theories",
+      "Surfing accidents"
+    ],
+    "correctOption": 2,
+    "explanation": "🌴 'Florida Man' memes mock bizarre headlines involving men in Florida.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "Which phrase is used when someone gets publicly embarrassed online?",
+    "options": ["Womp womp", "He got cooked", "Got roasted", "L+ratio"],
+    "correctOption": 3,
+    "explanation": "🔥 'Got roasted' is used when someone is insulted or clowned effectively.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "Which animal meme became popular for being 'loaf-shaped'?",
+    "options": ["Hamster", "Seal", "Cat", "Otter"],
+    "correctOption": 3,
+    "explanation": "🍞 The 'cat loaf' meme shows cats sitting with tucked limbs resembling bread loaves.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "What meme format features a guy in red asking for 'more juice'?",
+    "options": [
+      "Thirsty Man",
+      "Stevie Meme",
+      "More Juice Guy",
+      "Grape Juice Kid"
+    ],
+    "correctOption": 3,
+    "explanation": "🧃 'More Juice Guy' became a meme for exaggerated desire or greed.",
+    "category": "General",
+    "difficulty": 3
+  },
+  {
+    "question": "Which comic meme involves a man showing a butterfly and asking if it’s something else?",
+    "options": [
+      "Butterfly Confusion",
+      "Is This a Pigeon?",
+      "Winged Wonder",
+      "Bird or Not"
+    ],
+    "correctOption": 2,
+    "explanation": "🦋 'Is this a pigeon?' is used to highlight misinterpretation or confusion.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What was the original context of the 'Hide the Pain Harold' meme?",
+    "options": [
+      "Old man joking",
+      "Marketing stock photo",
+      "Doctor ad",
+      "Sad movie still"
+    ],
+    "correctOption": 2,
+    "explanation": "📸 'Hide the Pain Harold' features a man with an awkward smile from stock images.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "Which image is often used to express extreme confusion or 'math lady' reactions?",
+    "options": [
+      "Calculating Girl",
+      "Thinking Woman",
+      "Confused Lady",
+      "Math Lady"
+    ],
+    "correctOption": 4,
+    "explanation": "🧠 'Math Lady' memes come from a telenovela scene showing a woman calculating complex expressions.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "Which image macro features a duck giving aggressive advice?",
+    "options": [
+      "Sassy Goose",
+      "Advice Duck",
+      "Actual Advice Mallard",
+      "Helpful Quacker"
+    ],
+    "correctOption": 3,
+    "explanation": "🦆 'Actual Advice Mallard' gives useful life tips as memes.",
+    "category": "General",
+    "difficulty": 3
+  },
+  {
+    "question": "What phrase mocks people making a big deal out of something trivial?",
+    "options": [
+      "Over it",
+      "Drama Queen",
+      "First world problems",
+      "Karen alert"
+    ],
+    "correctOption": 3,
+    "explanation": "🧻 'First world problems' jokes highlight minor inconveniences exaggerated into crisis.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "Which word describes memes that were funny years ago but now feel outdated?",
+    "options": ["Boomer", "Dead", "Vintage", "Classic"],
+    "correctOption": 2,
+    "explanation": "💀 'Dead memes' refer to jokes that were once viral but have lost their humor.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "Which phrase is often used when someone gets caught doing something embarrassing?",
+    "options": ["This you?", "Sheesh", "Caught in 4K", "Based"],
+    "correctOption": 3,
+    "explanation": "📷 'Caught in 4K' means someone got exposed on camera doing something questionable.",
+    "category": "General",
+    "difficulty": 2
+  },
+  {
+    "question": "What phrase do people use to react sarcastically to someone bragging?",
+    "options": ["Cool story bro", "So what?", "You win!", "Big whoop"],
+    "correctOption": 1,
+    "explanation": "😒 'Cool story bro' is used to dismiss someone trying to show off.",
+    "category": "General",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'bussin' mean in meme slang?",
+    "options": ["Broken", "Amazing", "Confusing", "Loud"],
+    "correctOption": 2,
+    "explanation": "'Bussin' is used to describe something that's really good, especially food.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'OOMF' stand for?",
+    "options": [
+      "Only One Meme Found",
+      "One Of My Followers",
+      "Out Of My Face",
+      "Oh My Funny"
+    ],
+    "correctOption": 2,
+    "explanation": "'OOMF' means 'One Of My Followers', used on social media.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'pressed' mean in meme slang?",
+    "options": ["Happy", "Calm", "Annoyed", "Dizzy"],
+    "correctOption": 3,
+    "explanation": "'Pressed' refers to someone who is angry or bothered.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'FRFR' mean?",
+    "options": [
+      "For Real For Real",
+      "Fun Right, Fun Right",
+      "Fast Run Fast Run",
+      "For Really Funny Remarks"
+    ],
+    "correctOption": 1,
+    "explanation": "'FRFR' means 'For Real For Real', emphasizing truth or sincerity.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'OOMF is mad salty' imply?",
+    "options": [
+      "They are happy",
+      "They are hungry",
+      "They are upset",
+      "They are sleepy"
+    ],
+    "correctOption": 3,
+    "explanation": "It means 'One of my followers is really upset'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'OP' stand for in meme/gaming slang?",
+    "options": ["Over Powered", "Only Player", "On Point", "Old Post"],
+    "correctOption": 1,
+    "explanation": "'OP' means Over Powered, used when something is too strong.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Cap' mean in slang?",
+    "options": ["True", "Lie", "Yell", "Win"],
+    "correctOption": 2,
+    "explanation": "'Cap' means a lie; 'No cap' means you're being honest.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'NPC' mean in slang?",
+    "options": [
+      "No Personal Connection",
+      "Non-Player Character",
+      "Not Playing Cool",
+      "Network Protocol"
+    ],
+    "correctOption": 2,
+    "explanation": "NPC refers to someone who behaves predictably, like a background character.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Slaps' mean in slang?",
+    "options": ["Is boring", "Is very good", "Is physical", "Is old"],
+    "correctOption": 2,
+    "explanation": "If something 'slaps', it’s excellent or catchy — usually music.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'GOAT' mean?",
+    "options": [
+      "Game Over And Try",
+      "Get Out And Travel",
+      "Greatest Of All Time",
+      "Going On A Trip"
+    ],
+    "correctOption": 3,
+    "explanation": "GOAT is an acronym for 'Greatest Of All Time'.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Flex' mean?",
+    "options": ["Sleep", "Brag", "Run", "Sing"],
+    "correctOption": 2,
+    "explanation": "'Flex' means to show off or brag.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Snatched' mean in slang?",
+    "options": ["Confused", "Stylish", "Taken", "Gone"],
+    "correctOption": 2,
+    "explanation": "'Snatched' means looking great or fashionable.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Lowkey' mean?",
+    "options": ["High importance", "Secretly", "Very excited", "Loudly"],
+    "correctOption": 2,
+    "explanation": "'Lowkey' means subtly or secretly feeling something.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Big Mood' express?",
+    "options": ["Strong emotion", "Anger", "Food craving", "Excitement"],
+    "correctOption": 1,
+    "explanation": "'Big Mood' is used to agree strongly with a feeling or statement.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Vibe Check' refer to?",
+    "options": [
+      "Testing music",
+      "Checking someone's energy or mood",
+      "Looking at clothes",
+      "Scanning for danger"
+    ],
+    "correctOption": 2,
+    "explanation": "'Vibe Check' is used to assess someone's attitude or energy.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Zaddy' mean?",
+    "options": [
+      "Sleepy person",
+      "Attractive confident man",
+      "Father figure",
+      "Old friend"
+    ],
+    "correctOption": 2,
+    "explanation": "'Zaddy' is a slang term for a stylish, attractive man.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Lit' mean in slang?",
+    "options": ["Boring", "Cancelled", "Amazing or exciting", "Scared"],
+    "correctOption": 3,
+    "explanation": "'Lit' means something is exciting, fun, or excellent.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "What does 'Shook' mean in slang?",
+    "options": ["Confused", "Angry", "Startled or overwhelmed", "Happy"],
+    "correctOption": 3,
+    "explanation": "'Shook' means being emotionally rattled or shocked.",
+    "category": "Slang & Acronyms",
+    "difficulty": 2
+  },
+  {
+    "question": "What does 'Viral' mean in meme culture?",
+    "options": ["Sick", "Suddenly popular online", "Boring", "Scary"],
+    "correctOption": 2,
+    "explanation": "'Viral' means content that spreads rapidly online.",
+    "category": "Slang & Acronyms",
+    "difficulty": 1
+  },
+  {
+    "question": "Which dance challenge was created using the song 'Savage Love'?",
+    "options": ["Renegade", "Savage Love Dance", "Say So", "Toosie Slide"],
+    "correctOption": 2,
+    "explanation": "'Savage Love' became a viral dance trend on TikTok.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok filter adds sparkles and beautifies the face?",
+    "options": ["Fairy Dust", "Shiny Face", "Beauty Filter", "Glow Up"],
+    "correctOption": 4,
+    "explanation": "'Glow Up' filter smooths the skin and adds sparkle for aesthetic content.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What’s the name of the TikTok sound used when someone messes up badly?",
+    "options": ["Fail Song", "Run Sound", "Oh No", "Oops Vibe"],
+    "correctOption": 3,
+    "explanation": "The 'Oh No' sound is used for comedic fails and embarrassing moments.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok term describes the obsession with aesthetics and curated visuals?",
+    "options": [
+      "ArtTok",
+      "Main Character Vibe",
+      "Corecore",
+      "Aesthetic Overload"
+    ],
+    "correctOption": 3,
+    "explanation": "'Corecore' videos mix random clips with emotional music and aesthetic value.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What trend involves rewatching nostalgic childhood shows?",
+    "options": ["ThrowbackTok", "KidCore", "Memory Lane", "NostalgiaTok"],
+    "correctOption": 4,
+    "explanation": "'NostalgiaTok' is a genre of TikToks that evoke childhood memories.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which phrase is used when someone gets overly emotional in a TikTok?",
+    "options": [
+      "Screaming Crying Throwing Up",
+      "Can't Even",
+      "Ugly Cry",
+      "Emo Core"
+    ],
+    "correctOption": 1,
+    "explanation": "The phrase 'Screaming Crying Throwing Up' dramatizes emotional reactions.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the 'NPC trend' on TikTok about?",
+    "options": [
+      "Pretending to be game characters",
+      "Making games",
+      "Creating AI bots",
+      "Streaming Fortnite"
+    ],
+    "correctOption": 1,
+    "explanation": "The 'NPC trend' involves creators mimicking video game NPC behaviors.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which sound is used to dramatize moments with slow motion?",
+    "options": ["Epic Drop", "Cinematic Slap", "Oh No", "Villain Music"],
+    "correctOption": 4,
+    "explanation": "Villain Music is used for slow motion and dramatic edits.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which TikTok food trend involves pouring sauce over ice?",
+    "options": ["Ice Drench", "Flavor Ice", "Ice Bites", "Ice Cube Challenge"],
+    "correctOption": 2,
+    "explanation": "Flavor Ice involves putting syrup or sauce on ice cubes for satisfying crunch sounds.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which popular TikTok trend involves dramatic retellings of dreams?",
+    "options": ["DreamTok", "SleepCore", "Dream Log", "REM Diaries"],
+    "correctOption": 1,
+    "explanation": "'DreamTok' is a genre where users share strange or intense dreams.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which filter turns your pet into a talking character?",
+    "options": ["Pet Voice", "Talking Animal", "AI Pet", "My Talking Pet"],
+    "correctOption": 4,
+    "explanation": "'My Talking Pet' filter adds a moving mouth and voice to pets.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "What type of TikTok content is tagged #BookTok?",
+    "options": ["Books & reviews", "Video games", "Board games", "Comics"],
+    "correctOption": 1,
+    "explanation": "'#BookTok' is a community focused on book recommendations and reading.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok effect turns surroundings into cartoon worlds?",
+    "options": ["Pixar Filter", "Cartoonify", "Toonify Me", "Sketch Life"],
+    "correctOption": 2,
+    "explanation": "The 'Cartoonify' effect turns real footage into animated scenes.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which aesthetic centers around schoolgirl outfits and soft filters?",
+    "options": ["Softcore", "StudyTok", "Coquette", "Y2K Baddie"],
+    "correctOption": 3,
+    "explanation": "'Coquette' blends vintage beauty with romanticized girlish looks.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is 'That Girl' trend about?",
+    "options": [
+      "Toxic confidence",
+      "Self-care lifestyle routines",
+      "Fashion drama",
+      "Flexing wealth"
+    ],
+    "correctOption": 2,
+    "explanation": "'That Girl' showcases idealized daily routines focused on health and productivity.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which sound is often paired with fails and awkward moments?",
+    "options": ["Fail Horn", "Awkward Zoom", "Oh No", "Sad Trombone"],
+    "correctOption": 4,
+    "explanation": "'Sad Trombone' is often used after something goes wrong in a funny way.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which trend features people dancing in front of their open fridge?",
+    "options": ["Fridge Rave", "Cold Core", "Snack Shuffle", "Midnight Moves"],
+    "correctOption": 1,
+    "explanation": "Fridge Rave involves dancing dramatically in front of an open fridge.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "Which trend involves matching your pet's outfit with yours?",
+    "options": ["PetSync", "Twin Fit", "Match Meow", "Pet Style"],
+    "correctOption": 2,
+    "explanation": "'Twin Fit' shows creators wearing coordinated outfits with their pets.",
+    "category": "TikTok",
+    "difficulty": 2
+  },
+  {
+    "question": "What is the 'Get Ready With Me' trend?",
+    "options": [
+      "Makeup routine videos",
+      "Cooking hacks",
+      "Dance practice",
+      "Storytime with food"
+    ],
+    "correctOption": 1,
+    "explanation": "'GRWM' (Get Ready With Me) is a format for creators to prep while narrating or chatting.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "Which TikTok trend uses dramatic zoom-ins for comedic timing?",
+    "options": ["Face Zoom", "Mega Zoom", "Drama Shot", "Zoomer Core"],
+    "correctOption": 1,
+    "explanation": "'Face Zoom' adds humor by enlarging faces during key moments.",
+    "category": "TikTok",
+    "difficulty": 1
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What kind of dog is Cheems?",
+    "options": ["Corgi", "Golden Retriever", "Shiba Inu", "Pomeranian"],
+    "correctOption": 3,
+    "explanation": "Cheems is a Shiba Inu dog often used in meme formats.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] Fill in the blank: Ain't nobody got time for _______",
+    "options": ["coffee", "memes", "that", "talking"],
+    "correctOption": 3,
+    "explanation": "Ain't nobody got time for that! – viral quote from Sweet Brown.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What color was the dress in the viral debate?",
+    "options": ["Blue and Black", "White and Gold", "Both", "Neither"],
+    "correctOption": 3,
+    "explanation": "The infamous dress debate had people seeing different colors.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] What sound is associated with Vine fails?",
+    "options": ["Sad violin", "Boom", "Vine Boom", "Airhorn"],
+    "correctOption": 3,
+    "explanation": "The Vine Boom sound became a staple in dramatic meme edits.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What phrase ends 'Ain’t no way ______'?",
+    "options": ["he did that", "bro", "this real", "she said that"],
+    "correctOption": 2,
+    "explanation": "'Ain’t no way bro' is a common meme reaction to disbelief.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] What does it mean to be 'HIM'?",
+    "options": ["Confused", "Annoying", "That guy", "Quiet"],
+    "correctOption": 3,
+    "explanation": "'He’s HIM' refers to someone acting like they’re the main character.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which phrase describes the opposite of rizz?",
+    "options": ["Lame", "Cringe", "Unspoken L", "Anti-rizz"],
+    "correctOption": 3,
+    "explanation": "'Unspoken L' is used to describe a smooth failure.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] Who is 'Skibidi Toilet' battling?",
+    "options": ["Sigma Army", "Camera Men", "Toilet Squad", "Rizz Agents"],
+    "correctOption": 2,
+    "explanation": "In the absurd lore, Skibidi Toilet fights the Camera Men.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What is 'mewing' meant to improve?",
+    "options": ["Breathing", "Swag", "Jawline", "Eyesight"],
+    "correctOption": 3,
+    "explanation": "Mewing is a viral jawline-enhancing tongue posture trend.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] What does 'Skibidi' refer to in meme culture?",
+    "options": ["A dance", "A toilet", "A weird war", "All of the above"],
+    "correctOption": 4,
+    "explanation": "Skibidi refers to a surreal meme series involving toilets and camera-headed soldiers.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What’s the name of the bald filter that went viral?",
+    "options": ["Smooth Filter", "Baldify", "No Hair Mode", "Chrome Dome"],
+    "correctOption": 2,
+    "explanation": "'Baldify' is a humorous filter that removes hair from your selfie.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] Which catchphrase is from the 'Sigma Male Grindset' memes?",
+    "options": [
+      "Never give up",
+      "Get money",
+      "I am the storm",
+      "Hustle harder"
+    ],
+    "correctOption": 3,
+    "explanation": "'I am the storm' is part of the dramatic 'Sigma' meme persona.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which phrase is used to show agreement with something super relatable?",
+    "options": ["Based", "Facts", "Say less", "Sheesh"],
+    "correctOption": 2,
+    "explanation": "'Facts' is used to express strong agreement.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] What does 'gyatt' mean?",
+    "options": ["Excitement", "Anger", "Admiration for curves", "Tiredness"],
+    "correctOption": 3,
+    "explanation": "'Gyatt' is a humorous way to express admiration for someone's body.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of these is a real internet 'core' aesthetic?",
+    "options": ["CringeCore", "GrindCore", "CoreCore", "FlexCore"],
+    "correctOption": 3,
+    "explanation": "'CoreCore' is a TikTok video aesthetic focused on existential emotion.",
+    "category": "Community",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] 'Touch grass' is slang for what?",
+    "options": ["Go for a run", "Calm down", "Go outside", "End an argument"],
+    "correctOption": 3,
+    "explanation": "'Touch grass' tells someone to log off and experience reality.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What is the term for an intentionally low-quality meme?",
+    "options": ["Anti-humor", "Dank meme", "Deep fried meme", "Noise post"],
+    "correctOption": 3,
+    "explanation": "Deep fried memes are over-filtered, saturated images meant to be absurd.",
+    "category": "Community",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] What is 'Nodders' an emote of?",
+    "options": [
+      "A frog nodding",
+      "A guy headbanging",
+      "A zoom-in",
+      "A dog nodding"
+    ],
+    "correctOption": 1,
+    "explanation": "'Nodders' is a Twitch emote showing Pepe the Frog nodding approvingly.",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What is 'GigaChad' known for?",
+    "options": [
+      "Being a villain",
+      "Being super cringe",
+      "Being the alpha male meme",
+      "Being rejected"
+    ],
+    "correctOption": 3,
+    "explanation": "'GigaChad' is the exaggerated symbol of male perfection in meme culture.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by tohyzhong] 'Skibidi Toilet' videos are mostly...",
+    "options": ["Romantic", "Silent", "Absurd and chaotic", "Wholesome"],
+    "correctOption": 3,
+    "explanation": "The videos are loud, chaotic, and surreal, often involving toilets with faces.",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+
+  {
+    "question": "[Contributed by rizzlerquizzler] Fill in the blank: I was lightning, before the _________",
+    "options": ["Storm", "Thunder", "Earthquake", "Blackout"],
+    "correctOption": 2,
+    "explanation": "From the song \"Thunder\" by Imagine Dragons",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which bottled water brand is affliated with influencer Ashton Hall?",
+    "options": [
+      "Fiji Water",
+      "Evian Bottled Water",
+      "VOSS Bottled Water",
+      "Saratoga Spring Water"
+    ],
+    "correctOption": 4,
+    "explanation": "Saratoga Spring Water was the bottled water brand commonly featured in Ashton Hall's 'daily routine' videos",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] ¿Cuál de las siguientes frases **NO** fue dicha por Don Pollo en sus videos?",
+    "options": [
+      "salsa, y picante.",
+      "wazzzzaaaaaaa!",
+      "ling gang guliguli~",
+      "como un nuget, carnal!"
+    ],
+    "correctOption": 4,
+    "explanation": "Don Pollo usa frases absurdas como *“salsa, y picante”* o *“ling gang guliguli”*, pero **“wazzaaaaa”** es una frase popular de un comercial antiguo y no se asocia con Don Pollo.",
+    "category": "Community",
+    "difficulty": 4,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of the following is not an acronym/slang used by Gordon Ramsay?",
+    "options": ["DPWYMLT", "SMYW", "ISLK", "MCBTY"],
+    "correctOption": 3,
+    "explanation": "DPWYMLT - Don't Play With Your Meat Like That\nSMYW - Show Me Your Welly\nMCBTY - My Cucumber's Bigger Than Yours",
+    "category": "Community",
+    "difficulty": 5,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What does one say when he gets pissed off by something?",
+    "options": ["TSPMO", "TSPCL", "TSGMP", "TSPTL"],
+    "correctOption": 1,
+    "explanation": "TSPMO - ThiS Piss Me Off",
+    "category": "Community",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of the following is not one of the 3 trigger M words?",
+    "options": ["Moist", "Mango", "Mustard", "Massive"],
+    "correctOption": 1,
+    "explanation": "-",
+    "category": "Community",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Fill in the blank: (Darling hold my hand!~) Nothing beats a ________ holiday...",
+    "options": ["JetStar", "Jet2", "AvaFly", "School"],
+    "correctOption": 2,
+    "explanation": "Recent Jet2 advertisement catchphrase",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of the following is not one of the reasons why DeShaun Cole is famous on Instagram",
+    "options": [
+      "Counting down numbers",
+      "Blessing people",
+      "Covering meme music",
+      "Predicting the future"
+    ],
+    "correctOption": 3,
+    "explanation": "DeShaun Cole (@deshaunmcole) frequently post reels counting down numbers, blessing people or predicting the future",
+    "category": "Community",
+    "difficulty": 4,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
   }
 ]
