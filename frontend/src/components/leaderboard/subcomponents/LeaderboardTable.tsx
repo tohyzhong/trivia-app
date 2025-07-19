@@ -35,7 +35,19 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
   const [sortField, setSortField] = useState<string>("correctAnswer");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const gridRef = useRef<any>(null);
+  const [gridApi, setGridApi] = useState<any>(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (gridApi) {
+      const sortModel = gridApi.getColumnState();
+      sortModel[3].sort = "desc";
+      gridApi.applyColumnState({
+        state: sortModel,
+        applyOrder: true
+      });
+    }
+  }, [gridApi]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,13 +84,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
 
           return { ...entry, correctRate, winRate };
         });
-
-        if (gridRef.current && gridRef.current.api) {
-          gridRef.current.api.applyColumnState({
-            defaultState: { sort: null },
-            applyOrder: true
-          });
-        }
 
         setRawData(withRate);
         updateRanks(withRate);
@@ -121,6 +126,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       flex: 0.5,
       autoHeight: true,
       sortable: false,
+      resizable: false,
       cellRenderer: (params: any) => {
         return (
           <strong>
@@ -144,6 +150,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       flex: 0.5,
       autoHeight: true,
       sortable: false,
+      resizable: false,
       cellRenderer: (params: any) => {
         const profilePic = params.value || defaultAvatar;
         return (
@@ -174,6 +181,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       headerName: "Username",
       field: "username",
       sortable: false,
+      resizable: false,
       filter: true,
       flex: 1.5,
       cellRenderer: (params: any) => {
@@ -201,6 +209,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       field: "correctAnswer",
       flex: 0.6,
       sortable: true,
+      resizable: false,
       sortingOrder: ["desc"]
     },
     {
@@ -208,6 +217,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       field: "totalAnswer",
       flex: 0.6,
       sortable: true,
+      resizable: false,
       sortingOrder: ["desc"]
     },
     {
@@ -215,6 +225,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       field: "correctRate",
       flex: 0.6,
       sortable: true,
+      resizable: false,
       sortingOrder: ["desc"],
       valueFormatter: (params) =>
         params.value === -1 || params.value === undefined
@@ -229,6 +240,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             field: "wonMatches",
             flex: 0.6,
             sortable: true,
+            resizable: false,
             sortingOrder: ["desc"] as SortDirection[]
           },
           {
@@ -236,6 +248,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             field: "totalMatches",
             flex: 0.6,
             sortable: true,
+            resizable: false,
             sortingOrder: ["desc"] as SortDirection[]
           },
           {
@@ -243,6 +256,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             field: "winRate",
             flex: 0.6,
             sortable: true,
+            resizable: false,
             sortingOrder: ["desc"] as SortDirection[],
             valueFormatter: (params) =>
               params.value === -1 || params.value === undefined
@@ -254,6 +268,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             field: "score",
             flex: 0.6,
             sortable: true,
+            resizable: false,
             sortingOrder: ["desc"] as SortDirection[],
             valueFormatter: (params) =>
               params.value === undefined
@@ -268,6 +283,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
               field: "totalMatches",
               flex: 0.6,
               sortable: true,
+              resizable: false,
               sortingOrder: ["desc"] as SortDirection[]
             },
 
@@ -276,6 +292,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
               field: "score",
               flex: 0.6,
               sortable: true,
+              resizable: false,
               sortingOrder: ["desc"] as SortDirection[],
               valueFormatter: (params) =>
                 params.value === undefined
@@ -300,6 +317,9 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
         <div className="ag-theme-alpine">
           <AgGridReact
             ref={gridRef}
+            onGridReady={(params) => {
+              setGridApi(params.api);
+            }}
             columnDefs={columnDefs}
             rowData={rowData}
             pagination={true}
@@ -307,6 +327,7 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
             paginationPageSizeSelector={[20, 50, 100]}
             domLayout="autoHeight"
             onSortChanged={onSortChanged}
+            multiSortKey={null}
           />
         </div>
       )}

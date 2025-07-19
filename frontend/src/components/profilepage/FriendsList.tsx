@@ -158,6 +158,7 @@ const FriendsList: React.FC = () => {
       flex: 1,
       autoHeight: true,
       sortable: false,
+      resizable: false,
       cellRenderer: (params: any) => {
         const profilePic = params.value || defaultAvatar;
         return (
@@ -186,6 +187,7 @@ const FriendsList: React.FC = () => {
       headerName: "Username",
       field: "username",
       sortable: true,
+      resizable: false,
       filter: true,
       flex: 3,
       cellRenderer: (params: any) => {
@@ -206,6 +208,7 @@ const FriendsList: React.FC = () => {
       flex: 3,
       hide: !renderIncoming,
       sortable: false,
+      resizable: false,
       cellRenderer: (params: any) => {
         return (
           <div className="actions-button-container">

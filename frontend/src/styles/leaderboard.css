@@ -30,8 +30,9 @@
 
 .leaderboard-container .ag-theme-alpine {
   height: auto;
-  width: 100%;
+  width: 101%;
   min-height: 0;
+  border: 0;
 }
 
 .leaderboard-container .ag-theme-alpine .ag-header {
