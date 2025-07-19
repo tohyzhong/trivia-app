@@ -1252,8 +1252,7 @@
     "category": "Community",
     "difficulty": 1,
     "approved": false,
-    "createdBy": "blerargh",
-    "__v": 0
+    "createdBy": "rizzlerquizzler"
   },
   {
     "question": "Which meme features a shivering monkey in a thick coat?",
@@ -1273,7 +1272,12 @@
   },
   {
     "question": "Which phrase is commonly associated with shocking plot twists?",
-    "options": ["Plot Armor", "That’s crazy", "Wait, what?", "No one saw it coming"],
+    "options": [
+      "Plot Armor",
+      "That’s crazy",
+      "Wait, what?",
+      "No one saw it coming"
+    ],
     "correctOption": 3,
     "explanation": "😲 'Wait, what?' is a meme reaction to unexpected plot twists or absurd reveals.",
     "category": "General",
@@ -1281,7 +1285,12 @@
   },
   {
     "question": "Which viral video involves a kid saying 'I like turtles'?",
-    "options": ["Zoo Interview", "Turtle Boy", "Animal Planet Kid", "Funny Interview"],
+    "options": [
+      "Zoo Interview",
+      "Turtle Boy",
+      "Animal Planet Kid",
+      "Funny Interview"
+    ],
     "correctOption": 2,
     "explanation": "🐢 'I like turtles' became famous after a news interview with a zombie-faced boy.",
     "category": "General",
@@ -1289,7 +1298,12 @@
   },
   {
     "question": "What is the name of the viral video with a dramatic prairie dog?",
-    "options": ["Zoom Gopher", "Suspense Squirrel", "Dramatic Chipmunk", "Shock Rodent"],
+    "options": [
+      "Zoom Gopher",
+      "Suspense Squirrel",
+      "Dramatic Chipmunk",
+      "Shock Rodent"
+    ],
     "correctOption": 3,
     "explanation": "🎬 'Dramatic Chipmunk' became iconic for its intense zoom and stare.",
     "category": "General",
@@ -1313,7 +1327,12 @@
   },
   {
     "question": "Which meme shows a surprised Pikachu face?",
-    "options": ["Shocked Pikachu", "Sad Pikachu", "Angry Pikachu", "Surprised Pikachu"],
+    "options": [
+      "Shocked Pikachu",
+      "Sad Pikachu",
+      "Angry Pikachu",
+      "Surprised Pikachu"
+    ],
     "correctOption": 4,
     "explanation": "⚡ 'Surprised Pikachu' is used to react to obvious consequences that somehow shocked someone.",
     "category": "General",
@@ -1321,7 +1340,12 @@
   },
   {
     "question": "What is the main idea behind 'Florida Man' memes?",
-    "options": ["Mysterious hero", "Absurd headlines", "Conspiracy theories", "Surfing accidents"],
+    "options": [
+      "Mysterious hero",
+      "Absurd headlines",
+      "Conspiracy theories",
+      "Surfing accidents"
+    ],
     "correctOption": 2,
     "explanation": "🌴 'Florida Man' memes mock bizarre headlines involving men in Florida.",
     "category": "General",
@@ -1345,7 +1369,12 @@
   },
   {
     "question": "What meme format features a guy in red asking for 'more juice'?",
-    "options": ["Thirsty Man", "Stevie Meme", "More Juice Guy", "Grape Juice Kid"],
+    "options": [
+      "Thirsty Man",
+      "Stevie Meme",
+      "More Juice Guy",
+      "Grape Juice Kid"
+    ],
     "correctOption": 3,
     "explanation": "🧃 'More Juice Guy' became a meme for exaggerated desire or greed.",
     "category": "General",
@@ -1353,7 +1382,12 @@
   },
   {
     "question": "Which comic meme involves a man showing a butterfly and asking if it’s something else?",
-    "options": ["Butterfly Confusion", "Is This a Pigeon?", "Winged Wonder", "Bird or Not"],
+    "options": [
+      "Butterfly Confusion",
+      "Is This a Pigeon?",
+      "Winged Wonder",
+      "Bird or Not"
+    ],
     "correctOption": 2,
     "explanation": "🦋 'Is this a pigeon?' is used to highlight misinterpretation or confusion.",
     "category": "General",
@@ -1361,7 +1395,12 @@
   },
   {
     "question": "What was the original context of the 'Hide the Pain Harold' meme?",
-    "options": ["Old man joking", "Marketing stock photo", "Doctor ad", "Sad movie still"],
+    "options": [
+      "Old man joking",
+      "Marketing stock photo",
+      "Doctor ad",
+      "Sad movie still"
+    ],
     "correctOption": 2,
     "explanation": "📸 'Hide the Pain Harold' features a man with an awkward smile from stock images.",
     "category": "General",
@@ -1369,7 +1408,12 @@
   },
   {
     "question": "Which image is often used to express extreme confusion or 'math lady' reactions?",
-    "options": ["Calculating Girl", "Thinking Woman", "Confused Lady", "Math Lady"],
+    "options": [
+      "Calculating Girl",
+      "Thinking Woman",
+      "Confused Lady",
+      "Math Lady"
+    ],
     "correctOption": 4,
     "explanation": "🧠 'Math Lady' memes come from a telenovela scene showing a woman calculating complex expressions.",
     "category": "General",
@@ -1377,7 +1421,12 @@
   },
   {
     "question": "Which image macro features a duck giving aggressive advice?",
-    "options": ["Sassy Goose", "Advice Duck", "Actual Advice Mallard", "Helpful Quacker"],
+    "options": [
+      "Sassy Goose",
+      "Advice Duck",
+      "Actual Advice Mallard",
+      "Helpful Quacker"
+    ],
     "correctOption": 3,
     "explanation": "🦆 'Actual Advice Mallard' gives useful life tips as memes.",
     "category": "General",
@@ -1385,7 +1434,12 @@
   },
   {
     "question": "What phrase mocks people making a big deal out of something trivial?",
-    "options": ["Over it", "Drama Queen", "First world problems", "Karen alert"],
+    "options": [
+      "Over it",
+      "Drama Queen",
+      "First world problems",
+      "Karen alert"
+    ],
     "correctOption": 3,
     "explanation": "🧻 'First world problems' jokes highlight minor inconveniences exaggerated into crisis.",
     "category": "General",
@@ -1425,7 +1479,12 @@
   },
   {
     "question": "What does 'OOMF' stand for?",
-    "options": ["Only One Meme Found", "One Of My Followers", "Out Of My Face", "Oh My Funny"],
+    "options": [
+      "Only One Meme Found",
+      "One Of My Followers",
+      "Out Of My Face",
+      "Oh My Funny"
+    ],
     "correctOption": 2,
     "explanation": "'OOMF' means 'One Of My Followers', used on social media.",
     "category": "Slang & Acronyms",
@@ -1441,7 +1500,12 @@
   },
   {
     "question": "What does 'FRFR' mean?",
-    "options": ["For Real For Real", "Fun Right, Fun Right", "Fast Run Fast Run", "For Really Funny Remarks"],
+    "options": [
+      "For Real For Real",
+      "Fun Right, Fun Right",
+      "Fast Run Fast Run",
+      "For Really Funny Remarks"
+    ],
     "correctOption": 1,
     "explanation": "'FRFR' means 'For Real For Real', emphasizing truth or sincerity.",
     "category": "Slang & Acronyms",
@@ -1449,7 +1513,12 @@
   },
   {
     "question": "What does 'OOMF is mad salty' imply?",
-    "options": ["They are happy", "They are hungry", "They are upset", "They are sleepy"],
+    "options": [
+      "They are happy",
+      "They are hungry",
+      "They are upset",
+      "They are sleepy"
+    ],
     "correctOption": 3,
     "explanation": "It means 'One of my followers is really upset'.",
     "category": "Slang & Acronyms",
@@ -1473,7 +1542,12 @@
   },
   {
     "question": "What does 'NPC' mean in slang?",
-    "options": ["No Personal Connection", "Non-Player Character", "Not Playing Cool", "Network Protocol"],
+    "options": [
+      "No Personal Connection",
+      "Non-Player Character",
+      "Not Playing Cool",
+      "Network Protocol"
+    ],
     "correctOption": 2,
     "explanation": "NPC refers to someone who behaves predictably, like a background character.",
     "category": "Slang & Acronyms",
@@ -1489,7 +1563,12 @@
   },
   {
     "question": "What does 'GOAT' mean?",
-    "options": ["Game Over And Try", "Get Out And Travel", "Greatest Of All Time", "Going On A Trip"],
+    "options": [
+      "Game Over And Try",
+      "Get Out And Travel",
+      "Greatest Of All Time",
+      "Going On A Trip"
+    ],
     "correctOption": 3,
     "explanation": "GOAT is an acronym for 'Greatest Of All Time'.",
     "category": "Slang & Acronyms",
@@ -1529,7 +1608,12 @@
   },
   {
     "question": "What does 'Vibe Check' refer to?",
-    "options": ["Testing music", "Checking someone's energy or mood", "Looking at clothes", "Scanning for danger"],
+    "options": [
+      "Testing music",
+      "Checking someone's energy or mood",
+      "Looking at clothes",
+      "Scanning for danger"
+    ],
     "correctOption": 2,
     "explanation": "'Vibe Check' is used to assess someone's attitude or energy.",
     "category": "Slang & Acronyms",
@@ -1537,7 +1621,12 @@
   },
   {
     "question": "What does 'Zaddy' mean?",
-    "options": ["Sleepy person", "Attractive confident man", "Father figure", "Old friend"],
+    "options": [
+      "Sleepy person",
+      "Attractive confident man",
+      "Father figure",
+      "Old friend"
+    ],
     "correctOption": 2,
     "explanation": "'Zaddy' is a slang term for a stylish, attractive man.",
     "category": "Slang & Acronyms",
@@ -1593,7 +1682,12 @@
   },
   {
     "question": "Which TikTok term describes the obsession with aesthetics and curated visuals?",
-    "options": ["ArtTok", "Main Character Vibe", "Corecore", "Aesthetic Overload"],
+    "options": [
+      "ArtTok",
+      "Main Character Vibe",
+      "Corecore",
+      "Aesthetic Overload"
+    ],
     "correctOption": 3,
     "explanation": "'Corecore' videos mix random clips with emotional music and aesthetic value.",
     "category": "TikTok",
@@ -1609,7 +1703,12 @@
   },
   {
     "question": "Which phrase is used when someone gets overly emotional in a TikTok?",
-    "options": ["Screaming Crying Throwing Up", "Can't Even", "Ugly Cry", "Emo Core"],
+    "options": [
+      "Screaming Crying Throwing Up",
+      "Can't Even",
+      "Ugly Cry",
+      "Emo Core"
+    ],
     "correctOption": 1,
     "explanation": "The phrase 'Screaming Crying Throwing Up' dramatizes emotional reactions.",
     "category": "TikTok",
@@ -1617,7 +1716,12 @@
   },
   {
     "question": "What is the 'NPC trend' on TikTok about?",
-    "options": ["Pretending to be game characters", "Making games", "Creating AI bots", "Streaming Fortnite"],
+    "options": [
+      "Pretending to be game characters",
+      "Making games",
+      "Creating AI bots",
+      "Streaming Fortnite"
+    ],
     "correctOption": 1,
     "explanation": "The 'NPC trend' involves creators mimicking video game NPC behaviors.",
     "category": "TikTok",
@@ -1681,7 +1785,12 @@
   },
   {
     "question": "What is 'That Girl' trend about?",
-    "options": ["Toxic confidence", "Self-care lifestyle routines", "Fashion drama", "Flexing wealth"],
+    "options": [
+      "Toxic confidence",
+      "Self-care lifestyle routines",
+      "Fashion drama",
+      "Flexing wealth"
+    ],
     "correctOption": 2,
     "explanation": "'That Girl' showcases idealized daily routines focused on health and productivity.",
     "category": "TikTok",
@@ -1713,7 +1822,12 @@
   },
   {
     "question": "What is the 'Get Ready With Me' trend?",
-    "options": ["Makeup routine videos", "Cooking hacks", "Dance practice", "Storytime with food"],
+    "options": [
+      "Makeup routine videos",
+      "Cooking hacks",
+      "Dance practice",
+      "Storytime with food"
+    ],
     "correctOption": 1,
     "explanation": "'GRWM' (Get Ready With Me) is a format for creators to prep while narrating or chatting.",
     "category": "TikTok",
@@ -1839,7 +1953,12 @@
   },
   {
     "question": "[Contributed by tohyzhong] Which catchphrase is from the 'Sigma Male Grindset' memes?",
-    "options": ["Never give up", "Get money", "I am the storm", "Hustle harder"],
+    "options": [
+      "Never give up",
+      "Get money",
+      "I am the storm",
+      "Hustle harder"
+    ],
     "correctOption": 3,
     "explanation": "'I am the storm' is part of the dramatic 'Sigma' meme persona.",
     "category": "Community",
@@ -1899,7 +2018,12 @@
   },
   {
     "question": "[Contributed by tohyzhong] What is 'Nodders' an emote of?",
-    "options": ["A frog nodding", "A guy headbanging", "A zoom-in", "A dog nodding"],
+    "options": [
+      "A frog nodding",
+      "A guy headbanging",
+      "A zoom-in",
+      "A dog nodding"
+    ],
     "correctOption": 1,
     "explanation": "'Nodders' is a Twitch emote showing Pepe the Frog nodding approvingly.",
     "category": "Community",
@@ -1909,7 +2033,12 @@
   },
   {
     "question": "[Contributed by rizzlerquizzler] What is 'GigaChad' known for?",
-    "options": ["Being a villain", "Being super cringe", "Being the alpha male meme", "Being rejected"],
+    "options": [
+      "Being a villain",
+      "Being super cringe",
+      "Being the alpha male meme",
+      "Being rejected"
+    ],
     "correctOption": 3,
     "explanation": "'GigaChad' is the exaggerated symbol of male perfection in meme culture.",
     "category": "Community",
@@ -1926,5 +2055,101 @@
     "difficulty": 2,
     "approved": false,
     "createdBy": "tohyzhong"
+  },
+
+  {
+    "question": "[Contributed by rizzlerquizzler] Fill in the blank: I was lightning, before the _________",
+    "options": ["Storm", "Thunder", "Earthquake", "Blackout"],
+    "correctOption": 2,
+    "explanation": "From the song \"Thunder\" by Imagine Dragons",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which bottled water brand is affliated with influencer Ashton Hall?",
+    "options": [
+      "Fiji Water",
+      "Evian Bottled Water",
+      "VOSS Bottled Water",
+      "Saratoga Spring Water"
+    ],
+    "correctOption": 4,
+    "explanation": "Saratoga Spring Water was the bottled water brand commonly featured in Ashton Hall's 'daily routine' videos",
+    "category": "Community",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] ¿Cuál de las siguientes frases **NO** fue dicha por Don Pollo en sus videos?",
+    "options": [
+      "salsa, y picante.",
+      "wazzzzaaaaaaa!",
+      "ling gang guliguli~",
+      "como un nuget, carnal!"
+    ],
+    "correctOption": 4,
+    "explanation": "Don Pollo usa frases absurdas como *“salsa, y picante”* o *“ling gang guliguli”*, pero **“wazzaaaaa”** es una frase popular de un comercial antiguo y no se asocia con Don Pollo.",
+    "category": "Community",
+    "difficulty": 4,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of the following is not an acronym/slang used by Gordon Ramsay?",
+    "options": ["DPWYMLT", "SMYW", "ISLK", "MCBTY"],
+    "correctOption": 3,
+    "explanation": "DPWYMLT - Don't Play With Your Meat Like That\nSMYW - Show Me Your Welly\nMCBTY - My Cucumber's Bigger Than Yours",
+    "category": "Community",
+    "difficulty": 5,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] What does one say when he gets pissed off by something?",
+    "options": ["TSPMO", "TSPCL", "TSGMP", "TSPTL"],
+    "correctOption": 1,
+    "explanation": "TSPMO - ThiS Piss Me Off",
+    "category": "Community",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of the following is not one of the 3 trigger M words?",
+    "options": ["Moist", "Mango", "Mustard", "Massive"],
+    "correctOption": 1,
+    "explanation": "-",
+    "category": "Community",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Fill in the blank: (Darling hold my hand!~) Nothing beats a ________ holiday...",
+    "options": ["JetStar", "Jet2", "AvaFly", "School"],
+    "correctOption": 2,
+    "explanation": "Recent Jet2 advertisement catchphrase",
+    "category": "Community",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
+  },
+  {
+    "question": "[Contributed by rizzlerquizzler] Which of the following is not one of the reasons why DeShaun Cole is famous on Instagram",
+    "options": [
+      "Counting down numbers",
+      "Blessing people",
+      "Covering meme music",
+      "Predicting the future"
+    ],
+    "correctOption": 3,
+    "explanation": "DeShaun Cole (@deshaunmcole) frequently post reels counting down numbers, blessing people or predicting the future",
+    "category": "Community",
+    "difficulty": 4,
+    "approved": false,
+    "createdBy": "rizzlerquizzler"
   }
 ]
