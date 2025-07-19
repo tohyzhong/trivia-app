@@ -55,10 +55,10 @@ export const SocketProvider = ({ children }) => {
             padding: 8,
             zIndex: 999999,
             background: "#222",
-            color: ping > 100 || !ping ? "#f00" : ping > 40 ? "#ffa500" : "#0f0"
+            color: ping > 100 ? "#f00" : ping > 40 ? "#ffa500" : "#0f0"
           }}
         >
-          Ping: {ping ?? "Disconnected"} {ping && "ms"}
+          Ping: {ping} ms
         </div>
       )}
     </SocketContext.Provider>
