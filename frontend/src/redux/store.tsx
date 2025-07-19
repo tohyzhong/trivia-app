@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
 import lobbyReducer from "./lobbySlice";
 import soundSettingsReducer from "./soundSettingsSlice";
+import errorReducer from "./errorSlice";
 import { Middleware } from "redux";
 
 const loadUserState = () => {
@@ -15,12 +16,19 @@ const loadUserState = () => {
           username: undefined,
           email: undefined,
           verified: false,
+          chatBan: undefined,
+          gameBan: undefined,
           isAuthenticated: false,
           role: undefined
         },
     soundSettings: soundSettings
       ? JSON.parse(soundSettings)
-      : { overallSound: 100, bgmVolume: 100, sfxVolume: 100 }
+      : {
+          overallSound: 100,
+          bgmVolume: 100,
+          sfxVolume: 100,
+          profanityEnabled: false
+        }
   };
 };
 
@@ -38,7 +46,8 @@ const store = configureStore({
   reducer: {
     user: userReducer,
     lobby: lobbyReducer,
-    soundSettings: soundSettingsReducer
+    soundSettings: soundSettingsReducer,
+    error: errorReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(saveUserState),

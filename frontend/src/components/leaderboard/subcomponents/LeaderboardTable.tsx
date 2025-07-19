@@ -1,74 +1,123 @@
-import React, { useEffect, useState } from "react";
-import { ColDef } from "ag-grid-community";
+import React, { useEffect, useRef, useState } from "react";
+import { ColDef, SortDirection } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import "../../../styles/leaderboard.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
-import LeaderboardDropdown from "./LeaderboardDropdown";
-import ErrorPopup from "../../authentication/subcomponents/ErrorPopup";
+import { setError } from "../../../redux/errorSlice";
+import { Link } from "react-router-dom";
 
-interface PodiumData {
-  rank: number;
+interface Props {
+  gameFormat: string;
+  mode: string;
+  category: string;
+}
+
+interface RowData {
   username: string;
   profilePicture: string;
-  value: number | string;
-}
-
-interface LeaderboardRow {
+  correctAnswer: number;
+  totalAnswer: number;
+  correctRate?: number;
+  wonMatches?: number;
+  totalMatches?: number;
+  winRate?: number;
   rank: number;
-  profilePicture: string;
-  username: string;
-  [key: string]: number | string; // Allows any additional string key with number or string value
+  score: number;
 }
 
-interface LeaderboardTableProps {
-  apiRoute: string;
-  valueField: string;
-  valueHeader: string;
-}
-
-const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
-  apiRoute,
-  valueField,
-  valueHeader
-}) => {
-  // Loading state
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const navigate = useNavigate();
-
-  // Leaderboard states
+const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
+  const [loading, setLoading] = useState(true);
+  const [rawData, setRawData] = useState<RowData[]>([]);
+  const [rowData, setRowData] = useState<RowData[]>([]);
+  const [sortField, setSortField] = useState<string>("correctAnswer");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardRow[]>([]);
-
-  const fetchAnswerRateLeaderboard = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/leaderboard/${apiRoute}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include"
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch friends");
-
-      const data = await response.json();
-
-      setLeaderboardData(data.rowData);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const gridRef = useRef<any>(null);
+  const [gridApi, setGridApi] = useState<any>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (apiRoute && loggedInUser) fetchAnswerRateLeaderboard();
-  }, [loggedInUser, apiRoute]);
+    if (gridApi) {
+      const sortModel = gridApi.getColumnState();
+      sortModel[3].sort = "desc";
+      gridApi.applyColumnState({
+        state: sortModel,
+        applyOrder: true
+      });
+    }
+  }, [gridApi]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/leaderboard/stats?gameFormat=${gameFormat}&mode=${mode.toLowerCase().replace("-", "")}&category=${category === "Overall" ? "overall" : category}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
+          }
+        );
+        const data = await res.json();
+        const withRate = data.map((entry: RowData) => {
+          const correct = entry.correctAnswer;
+          const total = entry.totalAnswer;
+          const correctRate =
+            total === 0 ? -1 : parseFloat(((correct / total) * 100).toFixed(2));
+
+          let winRate: number | undefined = undefined;
+          if (
+            (category === "Overall" || category === "Community") &&
+            typeof entry.wonMatches === "number" &&
+            typeof entry.totalMatches === "number"
+          ) {
+            winRate =
+              entry.totalMatches === 0
+                ? -1
+                : parseFloat(
+                    ((entry.wonMatches / entry.totalMatches) * 100).toFixed(2)
+                  );
+          }
+
+          return { ...entry, correctRate, winRate };
+        });
+
+        setRawData(withRate);
+        updateRanks(withRate);
+      } catch (err: any) {
+        dispatch(setError({ errorMessage: err.message, success: false }));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [gameFormat, mode, category]);
+
+  const updateRanks = (data: RowData[], field: string = "correctAnswer") => {
+    const sortedDesc = [...data].sort((a, b) => {
+      return b[field] - a[field];
+    });
+
+    sortedDesc.forEach((entry, idx) => (entry.rank = idx + 1));
+
+    const sortedByRank = [...sortedDesc].sort((a, b) => a.rank - b.rank);
+
+    setRowData(sortedByRank);
+    setSortField(field);
+  };
+
+  const onSortChanged = (event: any) => {
+    const api = event.api;
+    const sortModel = api.getColumnState().find((col: any) => col.sort);
+    if (!sortModel) return updateRanks(rowData);
+
+    const colId = sortModel.colId;
+
+    updateRanks(rawData, colId);
+  };
 
   const columnDefs: ColDef[] = [
     {
@@ -77,6 +126,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       flex: 0.5,
       autoHeight: true,
       sortable: false,
+      resizable: false,
       cellRenderer: (params: any) => {
         return (
           <strong>
@@ -97,25 +147,33 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
     {
       headerName: "Avatar",
       field: "profilePicture",
-      flex: 1,
+      flex: 0.5,
       autoHeight: true,
       sortable: false,
+      resizable: false,
       cellRenderer: (params: any) => {
         const profilePic = params.value || defaultAvatar;
         return (
-          <img
-            src={profilePic}
-            alt={"test"}
-            onError={(e) => (e.currentTarget.src = defaultAvatar)}
+          <Link
+            to={`/profile/${params.data.username}`}
             style={{
               width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              cursor: "pointer",
-              objectFit: "cover"
+              height: "40px"
             }}
-            onClick={() => navigate(`/profile/${params.data.username}`)}
-          />
+          >
+            <img
+              src={profilePic}
+              alt={"test"}
+              onError={(e) => (e.currentTarget.src = defaultAvatar)}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                cursor: "pointer",
+                objectFit: "cover"
+              }}
+            />
+          </Link>
         );
       }
     },
@@ -123,59 +181,156 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       headerName: "Username",
       field: "username",
       sortable: false,
-      flex: 3,
+      resizable: false,
+      filter: true,
+      flex: 1.5,
       cellRenderer: (params: any) => {
         return (
-          <span
-            className="username-link"
-            onClick={() => navigate(`/profile/${params.data.username}`)}
-            style={
-              params.value === loggedInUser
-                ? { fontWeight: "bold", color: "lightblue" }
-                : undefined
-            }
+          <Link
+            to={`/profile/${params.data.username}`}
+            style={{ all: "unset" }}
           >
-            {params.value} {params.value === loggedInUser ? "(You)" : ""}
-          </span>
+            <span
+              className="username-link"
+              style={
+                params.value === loggedInUser
+                  ? { fontWeight: "bold", color: "lightblue" }
+                  : undefined
+              }
+            >
+              {params.value} {params.value === loggedInUser ? "(You)" : ""}
+            </span>
+          </Link>
         );
       }
     },
     {
-      headerName: valueHeader,
-      field: valueField,
-      flex: 1,
-      sortable: false
-    }
+      headerName: "Correct",
+      field: "correctAnswer",
+      flex: 0.6,
+      sortable: true,
+      resizable: false,
+      sortingOrder: ["desc"]
+    },
+    {
+      headerName: "Total",
+      field: "totalAnswer",
+      flex: 0.6,
+      sortable: true,
+      resizable: false,
+      sortingOrder: ["desc"]
+    },
+    {
+      headerName: "Correct %",
+      field: "correctRate",
+      flex: 0.6,
+      sortable: true,
+      resizable: false,
+      sortingOrder: ["desc"],
+      valueFormatter: (params) =>
+        params.value === -1 || params.value === undefined
+          ? "N.A."
+          : params.value.toFixed(2) + "%"
+    },
+    ...((category === "Overall" || category === "Community") &&
+    (mode === "Overall" || mode === "Versus")
+      ? [
+          {
+            headerName: "Wins",
+            field: "wonMatches",
+            flex: 0.6,
+            sortable: true,
+            resizable: false,
+            sortingOrder: ["desc"] as SortDirection[]
+          },
+          {
+            headerName: "Matches",
+            field: "totalMatches",
+            flex: 0.6,
+            sortable: true,
+            resizable: false,
+            sortingOrder: ["desc"] as SortDirection[]
+          },
+          {
+            headerName: "Win %",
+            field: "winRate",
+            flex: 0.6,
+            sortable: true,
+            resizable: false,
+            sortingOrder: ["desc"] as SortDirection[],
+            valueFormatter: (params) =>
+              params.value === -1 || params.value === undefined
+                ? "N.A."
+                : params.value.toFixed(2) + "%"
+          },
+          {
+            headerName: "Score",
+            field: "score",
+            flex: 0.6,
+            sortable: true,
+            resizable: false,
+            sortingOrder: ["desc"] as SortDirection[],
+            valueFormatter: (params) =>
+              params.value === undefined
+                ? 0
+                : params.value.toLocaleString("en-US")
+          }
+        ]
+      : category === "Overall" || category === "Community"
+        ? [
+            {
+              headerName: "Matches",
+              field: "totalMatches",
+              flex: 0.6,
+              sortable: true,
+              resizable: false,
+              sortingOrder: ["desc"] as SortDirection[]
+            },
+
+            {
+              headerName: "Score",
+              field: "score",
+              flex: 0.6,
+              sortable: true,
+              resizable: false,
+              sortingOrder: ["desc"] as SortDirection[],
+              valueFormatter: (params) =>
+                params.value === undefined
+                  ? 0
+                  : params.value.toLocaleString("en-US")
+            }
+          ]
+        : [])
   ];
 
-  return loading ? (
-    <>
-      <ErrorPopup message={error} setMessage={setError} />
-    </>
-  ) : (
+  return (
     <div className="leaderboard-container">
-      <ErrorPopup message={error} setMessage={setError} />
-      <LeaderboardPodium
-        podiumData={
-          leaderboardData.slice(0, 3).map((row) => ({
-            rank: row.rank,
-            username: row.username,
-            profilePicture: row.profilePicture,
-            value: row[valueField]
-          })) as PodiumData[]
-        }
-      />
-      <LeaderboardDropdown />
-      <div className="ag-theme-alpine">
-        <AgGridReact
-          pagination={true}
-          paginationPageSize={20}
-          paginationPageSizeSelector={[20, 50, 100]}
-          columnDefs={columnDefs}
-          rowData={leaderboardData}
-          domLayout="autoHeight"
+      {!loading && rowData && (
+        <LeaderboardPodium
+          podiumData={rowData
+            .filter((entry) => entry.rank <= 3)
+            .sort((a, b) => a.rank - b.rank)}
+          sortField={sortField}
         />
-      </div>
+      )}
+      {!loading && rowData && (
+        <div className="ag-theme-alpine">
+          <AgGridReact
+            ref={gridRef}
+            onGridReady={(params) => {
+              setGridApi(params.api);
+            }}
+            columnDefs={columnDefs}
+            rowData={rowData}
+            pagination={true}
+            paginationPageSize={20}
+            paginationPageSizeSelector={[20, 50, 100]}
+            domLayout="autoHeight"
+            onSortChanged={onSortChanged}
+            multiSortKey={null}
+          />
+        </div>
+      )}
     </div>
   );
 };

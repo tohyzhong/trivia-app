@@ -20,6 +20,15 @@
   justify-content: space-between;
 }
 
+.match-history-div-header .user-name {
+  color: black;
+  text-decoration-line: none;
+}
+
+.match-history-div-header .user-name:hover {
+  text-decoration-line: underline;
+}
+
 .match-history-div-header h1 {
   color: black;
 }
@@ -39,7 +48,6 @@
 
 .match-history-item {
   list-style-type: none;
-  margin: 0px;
   padding: 0px;
   display: flex;
   flex-direction: row;
@@ -49,6 +57,7 @@
   height: 100px;
   margin: 1px;
   border-radius: 10px;
+  min-width: 800px;
 }
 
 .match-history-item.solo {
@@ -118,4 +127,68 @@
 .match-detailed-view:hover {
   text-decoration: underline;
   cursor: pointer;
+}
+
+.match-details-expanded {
+  background: #f9f9f9;
+  border-left: 4px solid #ccc;
+  margin: 0 1rem 1rem 1rem;
+  padding: 1rem;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.match-details-expanded .dots-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 0.5rem;
+}
+
+.match-details-expanded .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #444;
+}
+
+.match-details-expanded .player-scores .player-score-user {
+  font-weight: bold;
+  color: #1a73e8;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.match-details-expanded .player-scores .player-score {
+  font-weight: normal;
+  color: inherit;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.match-details-expanded .player-scores .player-name {
+  text-decoration-line: none;
+  color: inherit;
+  width: 100px;
+  display: inline-block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.match-details-expanded .player-scores .player-name:hover {
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.match-details-expanded .player-scores .player-score {
+  min-width: 80px;
+}
+
+.match-details-expanded .player-scores .player-correct {
+  min-width: 80px;
 }

@@ -16,6 +16,8 @@ const authenticate = (req, res, next) => {
         username: decoded.username,
         email: decoded.email,
         verified: decoded.verified,
+        chatBan: decoded.chatBan,
+        gameBan: decoded.gameBan,
         role: decoded.role
       },
       process.env.JWT_SECRET,
@@ -32,7 +34,7 @@ const authenticate = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ message: "Invalid or expired token", err });
   }
 };
 

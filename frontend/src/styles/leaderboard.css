@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  width: 60%;
+  width: 70%;
   align-self: center;
   margin: 0 auto;
 }
@@ -30,8 +30,9 @@
 
 .leaderboard-container .ag-theme-alpine {
   height: auto;
-  width: 100%;
+  width: 101%;
   min-height: 0;
+  border: 0;
 }
 
 .leaderboard-container .ag-theme-alpine .ag-header {
@@ -118,9 +119,10 @@
 .leaderboard-container
   .ag-theme-alpine
   .ag-paging-panel
-  .ag-paging-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  .ag-paging-button:disabled,
+.ag-disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
 .leaderboard-container
@@ -289,9 +291,24 @@
 .leaderboard-dropdown-container {
   display: flex;
   flex-direction: row;
-  justify-content: left;
-  align-items: left;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+  gap: 50px;
+}
+
+.dropdown-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.dropdown-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
 }
 
 .leaderboard-dropdown {
@@ -467,4 +484,27 @@
 
 .volume-control .muted:hover {
   color: #e41c1c;
+}
+
+.leaderboard-container .ag-filter-body-wrapper,
+.leaderboard-container .ag-simple-filter-body-wrapper,
+.leaderboard-container .ag-filter,
+.leaderboard-container .ag-filter-menu {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.leaderboard-container .ag-theme-alpine .ag-floating-filter-full-body {
+  overflow: visible !important;
+}
+
+.leaderboard-container .ag-theme-alpine,
+.leaderboard-container .ag-root-wrapper {
+  overflow: visible !important;
+}
+
+.profanity-control {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }

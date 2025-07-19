@@ -2,20 +2,32 @@ import React, { useState, useEffect } from "react";
 import "../../styles/adminapprovaldashboard.css";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import NoAccess from "../noaccess/NoAccess";
 import { motion } from "framer-motion";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { setError } from "../../redux/errorSlice";
 
-interface Question {
+interface ClassicQuestion {
+  type: "classic";
   _id: string;
   question: string;
-  options: string[];
+  options?: string[];
   correctOption: number;
-  explanation: string;
-  category: string;
+  explanation?: string;
+  category?: string;
+  difficulty: number;
+  approved?: boolean;
+  createdBy?: string;
+  approvedBy?: string;
+}
+
+interface KnowledgeQuestion {
+  type: "knowledge";
+  _id: string;
+  question: string;
+  correctOption: string;
   difficulty: number;
   approved?: boolean;
   createdBy?: string;
@@ -23,12 +35,20 @@ interface Question {
 }
 
 const AdminApprovalDashboard: React.FC = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const role = user.role;
 
-  const [approvalMessage, setApprovalMessage] = useState("");
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState(false);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const availableModes = ["Classic", "Knowledge"];
+  const [currentMode, setCurrentMode] = useState<string>("Classic");
+  const [searchMode, setSearchMode] = useState<string>("Classic");
+
+  const [classicQuestions, setClassicQuestions] = useState<ClassicQuestion[]>(
+    []
+  );
+  const [knowledgeQuestions, setKnowledgeQuestions] = useState<
+    KnowledgeQuestion[]
+  >([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [manualCategories, setManualCategories] = useState<{
     [key: string]: string;
@@ -53,17 +73,22 @@ const AdminApprovalDashboard: React.FC = () => {
     [key: string]: string;
   }>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    ClassicQuestion[] | KnowledgeQuestion[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<
+    ClassicQuestion | KnowledgeQuestion | null
+  >(null);
 
   // Fetching questions that are not approved, and categories for admin to select
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchData = async () => {
+      if (!currentMode) return;
       setIsLoading(true);
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/questions/initial`,
+          `${import.meta.env.VITE_API_URL}/api/questions/fetch-${currentMode.toLowerCase()}`,
           {
             method: "GET",
             credentials: "include",
@@ -76,7 +101,8 @@ const AdminApprovalDashboard: React.FC = () => {
           throw new Error("Failed to fetch initial questions and categories");
         }
         const data = await response.json();
-        setQuestions(data.questions);
+        if (currentMode === "Classic") setClassicQuestions(data.questions);
+        else setKnowledgeQuestions(data.questions);
         setCategories(
           data.categories.filter((cat: string) => cat !== "Community")
         );
@@ -87,8 +113,8 @@ const AdminApprovalDashboard: React.FC = () => {
       }
     };
 
-    fetchInitialData();
-  }, []);
+    fetchData();
+  }, [currentMode]);
 
   // Searchbar for admin to search through preexisting questions and options
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +130,7 @@ const AdminApprovalDashboard: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/questions/search?searchQuery=${query}`,
+        `${import.meta.env.VITE_API_URL}/api/questions/search-${searchMode.toLowerCase()}?searchQuery=${query}`,
         {
           method: "GET",
           credentials: "include",
@@ -125,10 +151,62 @@ const AdminApprovalDashboard: React.FC = () => {
     }
   };
 
-  const handleQuestionClick = (question: any) => {
+  const handleQuestionClick = (
+    question: ClassicQuestion | KnowledgeQuestion
+  ) => {
     setSelectedQuestion((prevState) =>
       prevState?._id === question._id ? null : question
     );
+  };
+
+  const generateQuestionDisplay = () => {
+    if (selectedQuestion.type === "classic") {
+      return (
+        <div className="question-details-request">
+          <h3>Question Details</h3>
+          <p className="question-text-request">
+            <strong>Question:</strong> {selectedQuestion.question}
+          </p>
+          <p className="category-text-request">
+            <strong>Category:</strong> {selectedQuestion.category}
+          </p>
+          <p className="difficulty-text-request">
+            <strong>Difficulty:</strong> {selectedQuestion.difficulty}
+          </p>
+          <p className="options-label-request">
+            <strong>Options:</strong>
+          </p>
+          <ul className="options-list-request">
+            {selectedQuestion.options.map((option: string, index: number) => (
+              <li key={index}>{option}</li>
+            ))}
+          </ul>
+          <p className="correct-option-request">
+            <strong>Correct Option:</strong>{" "}
+            {selectedQuestion.options[selectedQuestion.correctOption - 1]}
+          </p>
+        </div>
+      );
+    } else if (selectedQuestion.type === "knowledge") {
+      return (
+        <div className="question-details-request">
+          <h3>Question Details</h3>
+          <p className="question-text-request">
+            <strong>Image:</strong>
+            <img
+              src={selectedQuestion.question}
+              style={{ display: "block", marginTop: "10px", height: "300px" }}
+            />
+          </p>
+          <p className="difficulty-text-request">
+            <strong>Difficulty:</strong> {selectedQuestion.difficulty}
+          </p>
+          <p className="options-label-request">
+            <strong>Answer:</strong> {selectedQuestion.correctOption}
+          </p>
+        </div>
+      );
+    }
   };
 
   const handleCategoryChange = (questionId: string, selectedValue: string) => {
@@ -139,27 +217,37 @@ const AdminApprovalDashboard: React.FC = () => {
   };
 
   const handleApprove = async (questionId: string) => {
-    const selectedCat = selectedCategories[questionId];
+    if (currentMode === "Classic") {
+      const selectedCat = selectedCategories[questionId];
 
-    if (selectedCat === "Other") {
-      setPendingApprovalId(questionId);
-      setShowManualPopup(true);
-      return;
+      if (selectedCat === "Other") {
+        setPendingApprovalId(questionId);
+        setShowManualPopup(true);
+        return;
+      }
+
+      if (!selectedCat?.trim()) {
+        dispatch(
+          setError({
+            errorMessage: "Please select a category.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      await sendApproval(questionId, selectedCat);
+    } else if (currentMode === "Knowledge") {
+      await sendApproval(questionId, null);
     }
-
-    if (!selectedCat?.trim()) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Please select a category.");
-      return;
-    }
-
-    await sendApproval(questionId, selectedCat);
   };
 
   const sendApproval = async (questionId: string, categoryToUse: string) => {
     const difficultyToUse =
       editedDifficulties[questionId] ??
-      questions.find((q) => q._id === questionId)?.difficulty;
+      (currentMode === "Classic"
+        ? classicQuestions.find((q) => q._id === questionId)?.difficulty
+        : knowledgeQuestions.find((q) => q._id === questionId)?.difficulty);
 
     if (
       difficultyToUse === undefined ||
@@ -168,8 +256,12 @@ const AdminApprovalDashboard: React.FC = () => {
       difficultyToUse < 1 ||
       difficultyToUse > 5
     ) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Please enter a valid difficulty between 1 and 5.");
+      dispatch(
+        setError({
+          errorMessage: "Please enter a valid difficulty between 1 and 5.",
+          success: false
+        })
+      );
       return;
     }
 
@@ -177,7 +269,7 @@ const AdminApprovalDashboard: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/questions/approve/${questionId}`,
+        `${import.meta.env.VITE_API_URL}/api/questions/approve-${currentMode.toLowerCase()}/${questionId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -193,26 +285,41 @@ const AdminApprovalDashboard: React.FC = () => {
         throw new Error(`Approval failed: ${response.status}`);
       }
 
-      setQuestions((prev) => prev.filter((q) => q._id !== questionId));
-      setManualCategories((prev) => {
-        const updated = { ...prev };
-        delete updated[questionId];
-        return updated;
-      });
-      setSelectedCategories((prev) => {
-        const updated = { ...prev };
-        delete updated[questionId];
-        return updated;
-      });
+      if (currentMode === "Classic") {
+        setClassicQuestions((prev) => prev.filter((q) => q._id !== questionId));
+
+        setManualCategories((prev) => {
+          const updated = { ...prev };
+          delete updated[questionId];
+          return updated;
+        });
+        setSelectedCategories((prev) => {
+          const updated = { ...prev };
+          delete updated[questionId];
+          return updated;
+        });
+      } else {
+        setKnowledgeQuestions((prev) =>
+          prev.filter((q) => q._id !== questionId)
+        );
+      }
 
       setShowManualPopup(false);
       setPendingApprovalId(null);
-      setIsApprovalSuccess(true);
-      setApprovalMessage("Question approved successfully!");
+      dispatch(
+        setError({
+          errorMessage: "Question approved successfully!",
+          success: true
+        })
+      );
     } catch (error) {
       console.error("Error approving:", error);
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Failed to approve question. Please try again.");
+      dispatch(
+        setError({
+          errorMessage: "Failed to approve question. Please try again.",
+          success: false
+        })
+      );
     } finally {
       setApprovingIds((prev) => {
         const updated = { ...prev };
@@ -233,7 +340,7 @@ const AdminApprovalDashboard: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/questions/reject/${questionId}`,
+        `${import.meta.env.VITE_API_URL}/api/questions/reject-${currentMode.toLowerCase()}/${questionId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -248,13 +355,26 @@ const AdminApprovalDashboard: React.FC = () => {
         throw new Error("Failed to reject question");
       }
 
-      setQuestions((prev) => prev.filter((q) => q._id !== questionId));
-      setIsApprovalSuccess(true);
-      setApprovalMessage("Question rejected successfully.");
+      if (currentMode === "Classic")
+        setClassicQuestions((prev) => prev.filter((q) => q._id !== questionId));
+      else
+        setKnowledgeQuestions((prev) =>
+          prev.filter((q) => q._id !== questionId)
+        );
+      dispatch(
+        setError({
+          errorMessage: "Question rejected successfully.",
+          success: true
+        })
+      );
     } catch (error) {
       console.error("Error rejecting question:", error);
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Failed to reject question.");
+      dispatch(
+        setError({
+          errorMessage: "Failed to reject question. Please try again.",
+          success: false
+        })
+      );
     } finally {
       setRejectingIds((prev) => {
         const updated = { ...prev };
@@ -264,7 +384,7 @@ const AdminApprovalDashboard: React.FC = () => {
     }
   };
 
-  const columnDefs: ColDef<Question>[] = [
+  const columnDefs: ColDef<ClassicQuestion | KnowledgeQuestion>[] = [
     {
       headerName: "Question",
       field: "question",
@@ -279,40 +399,55 @@ const AdminApprovalDashboard: React.FC = () => {
       wrapText: true,
       filter: true
     },
-    {
-      headerName: "Category",
-      field: "category",
-      sortable: false,
-      maxWidth: 180,
-      flex: 2,
-      cellStyle: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "8px"
-      },
-      cellRenderer: (params) => {
-        const id = params.data._id;
-        return (
-          <div>
-            <select
-              className="category-select"
-              value={selectedCategories[id] || params.data.category}
-              onChange={(e) => handleCategoryChange(id, e.target.value)}
-            >
-              <option value="">Select Category</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-              <option value="Other">Other</option>
-            </select>
-          </div>
-        );
-      }
-    },
+    currentMode === "Classic"
+      ? {
+          headerName: "Category",
+          field: "category",
+          sortable: false,
+          maxWidth: 180,
+          flex: 2,
+          cellStyle: {
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "8px"
+          },
+          cellRenderer: (params) => {
+            const id = params.data._id;
+            return (
+              <div>
+                <select
+                  className="category-select"
+                  value={selectedCategories[id] || params.data.category}
+                  onChange={(e) => handleCategoryChange(id, e.target.value)}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            );
+          }
+        }
+      : {
+          headerName: "Answer",
+          field: "correctOption",
+          sortable: false,
+          maxWidth: 180,
+          flex: 2,
+          cellStyle: {
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "8px"
+          }
+        },
     {
       headerName: "Difficulty",
       field: "difficulty",
@@ -356,7 +491,6 @@ const AdminApprovalDashboard: React.FC = () => {
     },
     {
       headerName: "Actions",
-      field: "actions" as any,
       maxWidth: 250,
       sortable: false,
       flex: 1,
@@ -410,12 +544,23 @@ const AdminApprovalDashboard: React.FC = () => {
 
   return role.includes("admin") ? (
     <div className="admin-approval-dashboard">
-      <ErrorPopup
-        message={approvalMessage}
-        setMessage={setApprovalMessage}
-        success={isApprovalSuccess}
-      />
       <h2 className="admin-header">Admin Question Approval</h2>
+      <div className="buttons-container">
+        {availableModes.map((mode) => (
+          <button
+            key={mode}
+            className={`mode-select-buttons ${mode === searchMode ? "selected" : ""}`}
+            onClick={() => {
+              setSearchMode(mode);
+              setSearchQuery("");
+              setSearchResults([]);
+            }}
+          >
+            {mode}
+          </button>
+        ))}
+      </div>
+      <br />
 
       <input
         type="text"
@@ -434,38 +579,15 @@ const AdminApprovalDashboard: React.FC = () => {
               onClick={() => handleQuestionClick(result)}
               className="search-result-item"
             >
-              {result.question}
+              {searchMode === "Classic"
+                ? result.question
+                : result.correctOption}
             </li>
           ))}
         </ul>
       </div>
 
-      {selectedQuestion && (
-        <div className="question-details-request">
-          <h3>Question Details</h3>
-          <p className="question-text-request">
-            <strong>Question:</strong> {selectedQuestion.question}
-          </p>
-          <p className="category-text-request">
-            <strong>Category:</strong> {selectedQuestion.category}
-          </p>
-          <p className="difficulty-text-request">
-            <strong>Difficulty:</strong> {selectedQuestion.difficulty}
-          </p>
-          <p className="options-label-request">
-            <strong>Options:</strong>
-          </p>
-          <ul className="options-list-request">
-            {selectedQuestion.options.map((option: string, index: number) => (
-              <li key={index}>{option}</li>
-            ))}
-          </ul>
-          <p className="correct-option-request">
-            <strong>Correct Option:</strong>{" "}
-            {selectedQuestion.options[selectedQuestion.correctOption - 1]}
-          </p>
-        </div>
-      )}
+      {selectedQuestion && generateQuestionDisplay()}
 
       <div className="unapproved-questions">
         {showManualPopup && pendingApprovalId && (
@@ -488,8 +610,12 @@ const AdminApprovalDashboard: React.FC = () => {
                   onClick={() => {
                     const value = manualCategories[pendingApprovalId]?.trim();
                     if (!value) {
-                      setIsApprovalSuccess(false);
-                      setApprovalMessage("Please enter a category.");
+                      dispatch(
+                        setError({
+                          errorMessage: "Please enter a category.",
+                          success: false
+                        })
+                      );
                       return;
                     }
                     setShowManualPopup(false);
@@ -552,16 +678,34 @@ const AdminApprovalDashboard: React.FC = () => {
             </div>
           </div>
         )}
-
         <h3>Unapproved Community Questions</h3>
+        <div className="buttons-container">
+          {availableModes.map((mode) => (
+            <button
+              key={mode}
+              className={`mode-select-buttons ${mode === currentMode ? "selected" : ""}`}
+              onClick={() => setCurrentMode(mode)}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
         {isLoading ? (
           <p>Loading...</p>
-        ) : questions.length === 0 ? (
-          <p>You have no unapproved questions.</p>
+        ) : (currentMode === "Classic"
+            ? classicQuestions.length
+            : knowledgeQuestions.length) === 0 ? (
+          <p style={{ color: "black", textShadow: "none" }}>
+            You have no unapproved questions.
+          </p>
         ) : (
           <div className="ag-theme-alpine unapproved-questions-grid">
             <AgGridReact
-              rowData={questions}
+              rowData={
+                currentMode === "Classic"
+                  ? classicQuestions
+                  : knowledgeQuestions
+              }
               columnDefs={columnDefs}
               pagination={true}
               paginationPageSize={10}

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { logExecutionTime } from "mongoose-execution-time";
 // mongoose.plugin(logExecutionTime, {
 //   loggerLevel: 'info'
 // });
@@ -7,13 +6,16 @@ import { logExecutionTime } from "mongoose-execution-time";
 const profileSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
-    winRate: { type: Number, default: 0 },
-    correctRate: { type: Number, default: 0 },
-    correctAnswer: { type: Number, default: 0 },
-    totalAnswer: { type: Number, default: 0 },
     currency: { type: Number, default: 0 },
     profilePicture: { type: String, default: "" },
-    matchHistory: { type: Array, default: [] } // { state: solo/win/lose (grey, green, red), totalPlayed: number, correctNumber: number, date: Date}
+    matchHistory: { type: Array, default: [] }, // { state: solo/win/lose (grey, green, red), totalPlayed: number, correctNumber: number, date: Date}'
+    leaderboardStats: mongoose.Schema.Types.Mixed,
+    reports: { type: mongoose.Schema.Types.Mixed },
+    powerups: {
+      hintBoosts: { type: Number, default: 0 },
+      addTimes: { type: Number, default: 0 },
+      doublePoints: { type: Number, default: 0 }
+    }
   },
   { timestamps: true }
 );

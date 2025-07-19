@@ -94,6 +94,10 @@
   color: red;
 }
 
+.verification-status.banned {
+  color: red;
+}
+
 .verification-email {
   margin-left: auto;
 }
@@ -103,6 +107,7 @@
   background-color: #007bff;
   color: white;
   margin-left: 20px;
+  height: auto;
 }
 
 .verification-email button:hover {

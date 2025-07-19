@@ -26,7 +26,6 @@ export const setVolumeLevels = ({
   }
 };
 
-let userHasInteracted = false;
 let isBGMPlaybackBlocked = false;
 let onPlaybackBlockedCallback: (() => void) | null = null;
 
@@ -39,7 +38,6 @@ export const clearOnPlaybackBlocked = () => {
 };
 
 export const notifyUserInteraction = () => {
-  userHasInteracted = true;
   playBGM(mode);
 };
 

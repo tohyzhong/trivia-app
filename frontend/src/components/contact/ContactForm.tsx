@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "motion/react";
 import "../../styles/contactform.css";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { setError } from "../../redux/errorSlice";
 
 const ContactForm = () => {
   const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -17,8 +18,6 @@ const ContactForm = () => {
     message: ""
   });
 
-  const [approvalMessage, setApprovalMessage] = useState("");
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState(false);
   const [sending, setSending] = useState<boolean>(false);
 
   const handleChange = (e) => {
@@ -38,8 +37,12 @@ const ContactForm = () => {
     e.preventDefault();
 
     if (!isValidEmail(formData.email)) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage("Please enter a valid email address.");
+      dispatch(
+        setError({
+          errorMessage: "Please enter a valid email address.",
+          success: false
+        })
+      );
       return;
     }
 
@@ -55,10 +58,13 @@ const ContactForm = () => {
           body: JSON.stringify(formData)
         }
       );
-
       if (response.ok) {
-        setIsApprovalSuccess(true);
-        setApprovalMessage("Your message has been sent!");
+        dispatch(
+          setError({
+            errorMessage: "Your message has been sent!",
+            success: true
+          })
+        );
         setFormData({
           name: "",
           username: user.username,
@@ -67,18 +73,24 @@ const ContactForm = () => {
           message: ""
         });
       } else {
-        setIsApprovalSuccess(false);
         const errorData = await response.json();
-        setApprovalMessage(
-          errorData.message ||
-            "Failed to send your message. Please try again later."
+        dispatch(
+          setError({
+            errorMessage:
+              errorData.message ||
+              "Failed to send your message. Please try again later.",
+            success: false
+          })
         );
       }
     } catch (error) {
-      setIsApprovalSuccess(false);
-      setApprovalMessage(
-        error.message ||
-          "Failed to send your message. Please try again later or email us directly."
+      dispatch(
+        setError({
+          errorMessage:
+            error.message ||
+            "Failed to send your message. Please try again later or email us directly.",
+          success: false
+        })
       );
     }
 
@@ -161,11 +173,6 @@ const ContactForm = () => {
           )}
         </button>
       </form>
-      <ErrorPopup
-        message={approvalMessage}
-        setMessage={setApprovalMessage}
-        success={isApprovalSuccess}
-      />
     </div>
   );
 };

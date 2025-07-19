@@ -1,0 +1,196 @@
+.manage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+  max-width: 800px;
+  margin: auto;
+  background-color: #f9f9f9;
+  color: black;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 100px;
+  position: relative;
+}
+
+.profile-header .back-button {
+  position: absolute;
+  color: white;
+  background-color: #f44336;
+  border: none;
+  cursor: pointer;
+  top: 4%;
+  left: 8%;
+  align-items: center;
+}
+
+.user-info-container {
+  display: flex;
+  width: 80%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-info-container p {
+  color: black;
+  font-size: 20px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-info-details p {
+  max-width: 350px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  min-height: 30px;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-role {
+  display: inline;
+  color: #ff0000 !important;
+}
+
+.verification-status {
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.verification-status.verified {
+  color: rgb(19, 161, 19);
+}
+
+.verification-status.not-verified {
+  color: red;
+}
+
+.verification-status.banned {
+  color: red;
+}
+
+.role-update-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Ban Update Actions */
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  justify-content: left;
+  border: 1px solid black;
+  padding: 10px 30px;
+  border-radius: 20px;
+}
+
+.admin-actions h2 {
+  color: black;
+  text-align: left;
+  font-family: inherit;
+}
+
+.admin-actions .banned {
+  color: red;
+  font-weight: bold;
+}
+
+.admin-actions .not-banned {
+  color: rgb(19, 161, 19);
+  font-weight: bold;
+}
+
+.ban-info-details p {
+  max-width: 350px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  min-height: 30px;
+  max-height: 200px;
+  overflow: hidden;
+  color: black;
+  font-size: 20px;
+}
+
+.game-ban-change,
+.chat-ban-change {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.chat-ban-change input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.game-ban-change input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.chat-ban-change button {
+  padding: 10px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.game-ban-change button {
+  padding: 10px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button.disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.unban-button {
+  background-color: #4caf50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ban-button {
+  background-color: #f44336;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  color: white;
+  font-size: 2rem;
+}

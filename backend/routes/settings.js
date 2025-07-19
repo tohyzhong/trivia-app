@@ -51,7 +51,7 @@ router.post("/update-profile-picture", authenticate, async (req, res) => {
 
     res.json({ message: "Profile picture updated successfully", user });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", err });
   }
 });
 
@@ -80,7 +80,7 @@ router.post("/change-password", authenticate, async (req, res) => {
 
     res.json({ message: "Verification email sent to change password" });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", err });
   }
 });
 
@@ -127,7 +127,7 @@ router.post(
         message: "Verification email sent to the new email for change"
       });
     } catch (err) {
-      res.status(500).json({ error: "Server error" });
+      res.status(500).json({ error: "Server error", err });
     }
   }
 );
@@ -158,7 +158,7 @@ router.post("/delete-account", authenticate, async (req, res) => {
       message: "Verification email sent to confirm account deletion"
     });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", err });
   }
 });
 
@@ -241,7 +241,9 @@ router.post("/verify-action", async (req, res) => {
               id: user._id,
               username: user.username,
               email: newEmail,
-              verified: user.verified
+              verified: user.verified,
+              chatBan: user.chatBan,
+              gameBan: user.gameBan
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
@@ -272,9 +274,19 @@ router.post("/verify-action", async (req, res) => {
       }
     }
   } catch (err) {
-    res.status(400).json({ error: "Invalid or expired token" });
+    res.status(400).json({ error: "Invalid or expired token", err });
   }
 });
+
+const formatMessage = (raw) => {
+  return raw
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/\n/g, "<br>");
+};
 
 router.post(
   "/contact",
@@ -291,6 +303,12 @@ router.post(
     } else if (!message) {
       return res.status(400).json({ message: "Message is required" });
     }
+
+    const formattedMessage = formatMessage(message);
+    const formattedSubject = formatMessage(subject);
+    const formattedName = formatMessage(name);
+    const formattedUsername = formatMessage(username);
+    const formattedEmail = formatMessage(email);
 
     const userMailContent = `
     <html>
@@ -324,15 +342,15 @@ router.post(
       </head>
       <body>
         <h2>Thank You for Contacting Us!</h2>
-        <p>Dear ${name},</p>
+        <p>Dear ${formattedName},</p>
         <p>Thank you for reaching out to Rizz Quiz! We have received your message and will get back to you as soon as possible.</p>
         
         <p><strong>Here’s a copy of your message:</strong></p>
         
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Subject:</strong> ${formattedSubject}</p>
         <p><strong>Message:</strong></p>
         <blockquote>
-          ${message}
+          ${formattedMessage}
         </blockquote>
 
         <p>If you need immediate assistance, feel free to contact us again at <a href="mailto:therizzquiz@gmail.com">therizzquiz@gmail.com</a>.</p>
@@ -377,27 +395,27 @@ router.post(
         </style>
       </head>
       <body>
-        <h2>New Inquiry from ${name}</h2>
-        <p><strong>Username:</strong> ${username}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <h2>New Inquiry from ${formattedName}</h2>
+        <p><strong>Username:</strong> ${formattedUsername}</p>
+        <p><strong>Email:</strong> ${formattedEmail}</p>
+        <p><strong>Subject:</strong> ${formattedSubject}</p>
 
         <p><strong>Message:</strong></p>
         <blockquote>
-          ${message}
+          ${formattedMessage}
         </blockquote>
 
         <p><strong>Contact Details:</strong></p>
-        <p>Name: ${name}</p>
-        <p>Username: ${username}</p>
-        <p>Email: ${email}</p>
+        <p>Name: ${formattedName}</p>
+        <p>Username: ${formattedUsername}</p>
+        <p>Email: ${formattedEmail}</p>
         
         <p>This message was sent through the contact form on Rizz Quiz.</p>
 
         <p>Best regards,<br>The Rizz Quiz Team</p>
         <hr />
         <footer>
-          <p>Please reply to this email if you'd like to follow up with ${name}.</p>
+          <p>Please reply to this email if you'd like to follow up with ${formattedName}.</p>
         </footer>
       </body>
     </html>

@@ -5,9 +5,12 @@ import "./styles/App.css";
 import useAuth from "./hooks/useAuth";
 
 import NavigationBar from "./components/navigationbar/NavigationBar";
+import ErrorPopup from "./components/authentication/subcomponents/ErrorPopup";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux/store";
+import { useLobbySocketRedirect } from "./hooks/useLobbySocketRedirect";
+import { setError } from "./redux/errorSlice";
 
 const HomePage = lazy(() => import("./components/homepage/HomePage"));
 const GameRoutes = lazy(() => import("./components/game/GameRoutes"));
@@ -37,6 +40,12 @@ function App() {
   const navigate = useNavigate();
   const verified = useSelector((state: RootState) => state.user.verified);
   const username = useSelector((state: RootState) => state.user.username);
+  const isGameBanned = useSelector((state: RootState) => state.user.gameBan);
+
+  // Error popup
+  const error = useSelector((state: RootState) => state.error.errorMessage);
+  const isSuccess = useSelector((state: RootState) => state.error.success);
+  const timestampKey = useSelector((state: RootState) => state.error.timestamp);
 
   const authFreeRoutes = [
     "/auth",
@@ -46,17 +55,27 @@ function App() {
   ];
   const verifiedFreeRoutes = authFreeRoutes.concat(["/settings"]);
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (
-      verified === false &&
+      (verified === false || isGameBanned) &&
       !verifiedFreeRoutes.some((route) =>
         location.pathname.startsWith(route)
       ) &&
       location.pathname !== "/"
     ) {
+      dispatch(
+        setError({
+          errorMessage:
+            verified === false
+              ? "You need to verify your account before accessing this feature!"
+              : "Your account is currently banned from the game.",
+          success: false
+        })
+      );
       navigate("/settings", { replace: true });
     }
-  }, [verified, location.pathname, navigate]);
+  }, [verified, location.pathname, navigate, isGameBanned]);
 
   useEffect(() => {
     if (
@@ -85,6 +104,8 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  useLobbySocketRedirect();
+
   const Components = [
     { component: HomePage, path: "/" },
     { component: GameRoutes, path: "/play/*" },
@@ -105,6 +126,9 @@ function App() {
 
   return (
     <>
+      {error && (
+        <ErrorPopup key={timestampKey} message={error} success={isSuccess} />
+      )}
       <NavigationBar />
       <Suspense fallback={<></>}>
         <Routes>

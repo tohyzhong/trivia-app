@@ -1,85 +1,52 @@
 import express from "express";
 import authenticate from "./authMiddleware.js";
 import Profile from "../models/Profile.js";
+import ClassicQuestion from "../models/ClassicQuestion.js";
 
 const router = express.Router();
 
-// Get all correct answer rate stats
-router.get("/correctrate", authenticate, async (req, res) => {
+// Fetch unique categories for leaderboard dropdown rendering
+router.get("/categories", authenticate, async (req, res) => {
   try {
-    const stats = await Profile.find(
-      {},
-      {
-        username: 1,
-        profilePicture: 1,
-        correctRate: 1,
-        _id: 0
-      }
-    )
-      .sort({ correctRate: -1 })
-      .lean();
-
-    // Add index (rank) to each result
-    stats.forEach((item, idx) => {
-      item.rank = idx + 1;
-    });
-
-    return res.status(200).json({ rowData: stats });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error retrieving stats" });
+    const categories = await ClassicQuestion.distinct("category");
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load categories", err });
   }
 });
 
-router.get("/totalanswer", authenticate, async (req, res) => {
+router.get("/stats", authenticate, async (req, res) => {
+  const { gameFormat, mode, category } = req.query;
   try {
-    const stats = await Profile.find(
-      {},
-      {
-        username: 1,
-        profilePicture: 1,
-        totalAnswer: 1,
-        _id: 0
-      }
-    )
-      .sort({ totalAnswer: -1 })
-      .lean();
+    const users = await Profile.find({});
 
-    // Add index (rank) to each result
-    stats.forEach((item, idx) => {
-      item.rank = idx + 1;
+    const data = users.map((user) => {
+      const stats =
+        user.leaderboardStats?.[gameFormat]?.[mode]?.[category] || {};
+
+      const score = stats.score || 0;
+
+      return category === "overall" || category === "Community"
+        ? {
+            username: user.username,
+            profilePicture: user.profilePicture,
+            correctAnswer: stats.correct || 0,
+            totalAnswer: stats.total || 0,
+            wonMatches: stats.wonMatches || 0,
+            totalMatches: stats.totalMatches || 0,
+            score: score
+          }
+        : {
+            username: user.username,
+            profilePicture: user.profilePicture,
+            correctAnswer: stats.correct || 0,
+            totalAnswer: stats.total || 0
+          };
     });
 
-    return res.status(200).json({ rowData: stats });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error retrieving stats" });
-  }
-});
-
-router.get("/correctanswer", authenticate, async (req, res) => {
-  try {
-    const stats = await Profile.find(
-      {},
-      {
-        username: 1,
-        profilePicture: 1,
-        correctAnswer: 1,
-        _id: 0
-      }
-    )
-      .sort({ correctAnswer: -1 })
-      .lean();
-
-    // Add index (rank) to each result
-    stats.forEach((item, idx) => {
-      item.rank = idx + 1;
-    });
-
-    return res.status(200).json({ rowData: stats });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error retrieving stats" });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load stats", err });
   }
 });
 

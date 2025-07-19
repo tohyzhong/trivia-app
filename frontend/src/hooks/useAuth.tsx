@@ -26,6 +26,8 @@ const useAuth = () => {
               username: data.username,
               email: data.email,
               verified: data.verified,
+              chatBan: data.chatBan,
+              gameBan: data.gameBan,
               role: data.role
             })
           );

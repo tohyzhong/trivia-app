@@ -1,20 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../../styles/homepage.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import ErrorPopup from "../authentication/subcomponents/ErrorPopup";
+import { setError } from "../../redux/errorSlice";
 
 const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const location = useLocation();
-  const [errorMessage, setErrorMessage] = useState<string>(
-    location.state?.errorMessage || ""
-  );
+  const dispatch = useDispatch();
+  const params = new URLSearchParams(location.search);
+  const shopSuccess = params.get("shopSuccess");
+
+  useEffect(() => {
+    if (shopSuccess === "1") {
+      dispatch(
+        setError({
+          errorMessage: "Purchase Successful!",
+          success: true
+        })
+      );
+    }
+  }, [shopSuccess]);
 
   return (
     <>
-      <ErrorPopup message={errorMessage} setMessage={setErrorMessage} />
       <div className="home-container">
         <header>
           <h1>The Rizz Quiz</h1>
@@ -22,11 +32,11 @@ const HomePage: React.FC = () => {
           <p>
             The ultimate trivia game that lets you test your knowledge of meme
             culture. Whether you want to play solo, compete with friends, or
-            team up for co-op challenges, there's something for everyone.
+            team up for co-op challenges, there&apos;s something for everyone.
           </p>
           <p>
-            Track your stats, earn rewards, and climb the leaderboard. Let’s see
-            who’s the ultimate meme master!
+            Track your stats, earn rewards, and climb the leaderboard.
+            Let&apos;s see who&apos;s the ultimate meme master!
           </p>
         </header>
         <main>

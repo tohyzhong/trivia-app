@@ -1,0 +1,76 @@
+[
+  {
+    "question": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Brr_brr_patapim.jpg/330px-Brr_brr_patapim.jpg",
+    "correctOption": "Brr Brr Patapim",
+    "difficulty": 1,
+    "approved": true
+  },
+  {
+    "question": "https://upload.wikimedia.org/wikipedia/en/5/5f/Original_Doge_meme.jpg",
+    "correctOption": "Doge",
+    "difficulty": 1,
+    "approved": true
+  },
+  {
+    "question": "https://s2.r29static.com/bin/entry/2ef/x,80/1621852/image.jpg",
+    "correctOption": "Disaster Girl",
+    "difficulty": 3,
+    "approved": true
+  },
+  {
+    "question": "https://static.tvtropes.org/pmwiki/pub/images/1000001460.png",
+    "correctOption": "Mike Wazowski",
+    "difficulty": 2,
+    "approved": true
+  },
+  {
+    "question": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnxYz4fuKc5IZrW4D4EL9jSy3XqJi5UrCN2Q&s",
+    "correctOption": "Qin Shi Huang Rides a Polar Bear",
+    "difficulty": 4,
+    "approved": true
+  },
+  {
+    "question": "https://overseasidol.com/wp-content/uploads/2025/07/Skandal-Hong-Jie-Guncang-Tiongkok-1691-Pria-Jadi-Korban-Video-Seksual.webp",
+    "correctOption": "Hong Jie",
+    "difficulty": 4,
+    "approved": true
+  },
+  {
+    "question": "https://i.ytimg.com/vi/wnedkVrgFF0/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AG-B4AC0AWKAgwIABABGHIgQyg4MA8=&rs=AOn4CLAhlfL0c_UOhY53yMRIji3Z_lSGLQ",
+    "correctOption": "HA, GOT EM!",
+    "difficulty": 2,
+    "approved": true
+  },
+  {
+    "question": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSllLI6i5W462GJEpCl-bmTp68TROEOWl8_hg&s",
+    "correctOption": "HA, GAAAAY!",
+    "difficulty": 2,
+    "approved": true
+  },
+  {
+    "question": "https://static01.nyt.com/images/2020/01/28/multimedia/28xp-memekid3/28cp-memekid3-articleLarge.jpg?quality=75&auto=webp&disable=upscale",
+    "correctOption": "Success Kid",
+    "difficulty": 2,
+    "approved": true
+  },
+  {
+    "question": "https://www.bu.edu/files/2024/12/Screenshot-2024-12-13-at-12.42.40%E2%80%AFPM.png",
+    "correctOption": "You Are My Sunshine",
+    "difficulty": 3,
+    "approved": true
+  },
+  {
+    "question": "https://chargeraccount.org/wp-content/uploads/2023/06/K7Kk3DSxN0r4AVhONa9ruggbas3DWRIrbnHw1dJc-1-900x600.jpg",
+    "correctOption": "Troll Face",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "blerargh"
+  },
+  {
+    "question": "https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg",
+    "correctOption": "Pepe The Frog",
+    "difficulty": 1,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  }
+]

@@ -12,16 +12,25 @@ import profileRoutes from "./routes/profile.js";
 import settingsRoutes from "./routes/settings.js";
 import friendRoutes from "./routes/friend.js";
 import lobbyRoutes from "./routes/lobby.js";
+import knowledgeLobbyRoutes from "./routes/knowledgelobby.js";
 import questionRoutes from "./routes/question.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
+import shopRoutes from "./routes/shop.js";
 
 import morgan from "morgan";
 import runSchedulers from "./utils/tasks.js";
+import generateQuestions from "./utils/questionbank.js";
 
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/shop/webhook") {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(cookieParser());
 app.use(
   cors({
@@ -50,7 +59,7 @@ const connectMongo = async () => {
       }
     );
     isConnected = true;
-    console.log("MongoDB connected");
+    console.info("MongoDB connected");
   } catch (err) {
     console.error("MongoDB connection error:", err);
     process.exit(1);
@@ -73,14 +82,20 @@ app.use("/api/settings", settingsRoutes);
 // Friends
 app.use("/api/friends", friendRoutes);
 
-// Lobby
+// Lobby (Classic)
 app.use("/api/lobby", lobbyRoutes);
+
+// Lobby (Knowledge)
+app.use("/api/knowledgelobby", knowledgeLobbyRoutes);
 
 // Question Requests
 app.use("/api/questions", questionRoutes);
 
 // Leaderboard
 app.use("/api/leaderboard", leaderboardRoutes);
+
+// Shop
+app.use("/api/shop", shopRoutes);
 
 // Connection
 server.listen(8080, () => {
@@ -92,6 +107,6 @@ server.listen(8080, () => {
 runSchedulers();
 
 // Generate sample Classic Questions
-// generateQuestions(); // Uncomment for local dev testing
+// generateQuestions();
 
 export default app;

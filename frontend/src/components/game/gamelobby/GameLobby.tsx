@@ -4,8 +4,6 @@ import "../../../styles/gamelobby.css";
 import GameSettings from "./GameSettings";
 import GameUsers from "./GameUsers";
 import GameChat from "./GameChat";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 
 import { useInitSound } from "../../../hooks/useInitSound";
@@ -20,6 +18,8 @@ interface GameSetting {
   timePerQuestion: number;
   difficulty: number;
   categories: string[];
+  name: string;
+  publicVisible: boolean;
 }
 
 interface ChatMessage {
@@ -30,9 +30,14 @@ interface ChatMessage {
 interface GameLobbyProps {
   lobbyId: string;
   lobbySettings: GameSetting;
-  lobbyUsers: string[];
+  lobbyUsers: { [key: string]: { [key: string]: boolean } };
+  joinRequests: { [key: string]: boolean };
   lobbyChat: ChatMessage[];
+  profilePictures: { [username: string]: string };
+  gameType: string;
   socket: any;
+  handleLeave: () => void;
+  host: string;
 }
 
 const GameLobby: React.FC<GameLobbyProps> = (props) => {
@@ -46,7 +51,18 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   const navigate = useNavigate();
 
   // Lobby details
-  const { lobbyId, lobbySettings, lobbyUsers, lobbyChat, socket } = props;
+  const {
+    lobbyId,
+    lobbySettings,
+    lobbyUsers,
+    joinRequests,
+    lobbyChat,
+    profilePictures,
+    gameType,
+    socket,
+    handleLeave,
+    host
+  } = props;
 
   useEffect(() => {
     if (lobbyId) {
@@ -81,9 +97,25 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
     <div className="game-lobby-full">
       {bgmBlocked && <PauseOverlay onResume={handleResume} />}
       <div className="game-lobby-container">
-        <GameSettings lobbyId={lobbyId} gameSettings={lobbySettings} />
-        <GameUsers lobbyId={lobbyId} userIds={lobbyUsers} />
-        <GameChat lobbyId={lobbyId} chatMessages={lobbyChat} />
+        <GameSettings
+          lobbyId={lobbyId}
+          gameSettings={lobbySettings}
+          host={host}
+          gameType={gameType}
+        />
+        <GameUsers
+          lobbyId={lobbyId}
+          usernames={lobbyUsers}
+          joinRequests={joinRequests}
+          gameType={gameType}
+          handleLeave={handleLeave}
+          host={host}
+        />
+        <GameChat
+          lobbyId={lobbyId}
+          chatMessages={lobbyChat}
+          profilePictures={profilePictures}
+        />
       </div>
 
       <IoSettingsOutline
@@ -93,7 +125,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
         }}
         className="sound-settings-icon"
       />
-      <p className="hover-text-2 sound-settings-icon-text">Sound Settings</p>
+      <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
       {isSoundPopupOpen && (
         <div className="sound-settings-popup">

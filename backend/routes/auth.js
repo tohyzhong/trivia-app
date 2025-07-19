@@ -7,6 +7,16 @@ import UsedToken from "../models/UsedToken.js";
 import Profile from "../models/Profile.js";
 import authenticate from "./authMiddleware.js";
 import sendEmail from "../utils/email.js";
+import {
+  RegExpMatcher,
+  englishDataset,
+  englishRecommendedTransformers
+} from "obscenity";
+
+const matcher = new RegExpMatcher({
+  ...englishDataset.build(),
+  ...englishRecommendedTransformers
+});
 
 const router = express.Router();
 
@@ -19,6 +29,8 @@ router.get("/verify-token", authenticate, (req, res) => {
     username: req.user.username,
     email: req.user.email,
     verified: req.user.verified,
+    chatBan: req.user.chatBan,
+    gameBan: req.user.gameBan,
     role: req.user.role
   });
 });
@@ -26,7 +38,7 @@ router.get("/verify-token", authenticate, (req, res) => {
 // Ping every 2 minutes to check if frontend user data matches DB data
 router.get("/ping", authenticate, async (req, res) => {
   try {
-    const { id, username, email, verified, role } = req.user;
+    const { id, username, role } = req.user;
 
     const user = await User.findById(id);
 
@@ -40,6 +52,8 @@ router.get("/ping", authenticate, async (req, res) => {
         username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -77,6 +91,8 @@ router.post("/refresh-token", authenticate, async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -92,7 +108,7 @@ router.post("/refresh-token", authenticate, async (req, res) => {
 
     res.json({ message: "Token refreshed" });
   } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Invalid or expired token", err });
   }
 });
 
@@ -127,6 +143,12 @@ router.post(
     }
 
     const { email, username, password } = req.body;
+    if (matcher.hasMatch(username)) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "Username contains profanities." }] });
+    }
+
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       await User.create({
@@ -134,7 +156,9 @@ router.post(
         username,
         password: hashedPassword,
         previousPasswords: [hashedPassword],
-        verified: false
+        verified: false,
+        chatBan: false,
+        gameBan: false
       });
 
       await Profile.create({
@@ -244,6 +268,8 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: user.verified,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan,
         role: user.role || "user"
       },
       process.env.JWT_SECRET,
@@ -259,7 +285,9 @@ router.post("/login", async (req, res) => {
     res.json({
       email: user.email,
       verified: user.verified,
-      role: user.role || "user"
+      role: user.role || "user",
+      chatBan: user.chatBan,
+      gameBan: user.gameBan
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -335,7 +363,7 @@ router.post("/verifyreset", async (req, res) => {
       return res.status(200).json({ email });
     }
   } catch (err) {
-    return res.status(400).json({ error: "Invalid or expired token" });
+    return res.status(400).json({ error: "Invalid or expired token", err });
   }
 });
 
@@ -405,7 +433,7 @@ router.post(
       await user.save();
       return res.status(200).json({ message: "Password reset successfully." });
     } catch (err) {
-      return res.status(400).json({ error: "Invalid or expired token." });
+      return res.status(400).json({ error: "Invalid or expired token.", err });
     }
   }
 );
@@ -463,7 +491,9 @@ router.get("/verify", async (req, res) => {
         username: user.username,
         email: user.email,
         verified: true,
-        role: user.role
+        role: user.role,
+        chatBan: user.chatBan,
+        gameBan: user.gameBan
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -485,7 +515,7 @@ router.get("/verify", async (req, res) => {
 });
 
 // Helper function to send email verification token
-const emailVerificationToken = async (username, req, res) => {
+const emailVerificationToken = async (username, _req, _res) => {
   const user = await User.findOne({ username });
 
   if (!user) {

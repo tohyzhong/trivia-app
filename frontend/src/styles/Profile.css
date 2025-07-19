@@ -52,16 +52,65 @@
 }
 
 .role-container {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   left: 0;
   margin-left: 50px;
+  justify-content: center;
+  align-content: center;
+  gap: 20px;
 }
 
 .role-container p {
   font-size: 20px;
   color: #ff0000;
   margin: 22px 0px 0px 0px;
+  text-align: left;
+}
+
+.role-container .report-button {
+  background-color: #f44336;
+  justify-content: center;
+  width: fit-content;
+  align-self: center;
+  align-items: center;
+}
+
+.role-container .report-button:hover {
+  background-color: #e53935;
+  transition: background-color 0.3s ease;
+}
+
+.role-container .report-button.disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.role-container .manage-button {
+  background-color: #1976d2;
+  justify-content: center;
+  width: fit-content;
+  align-self: center;
+  align-items: center;
+}
+
+.role-container .manage-button:hover {
+  background-color: #1565c0;
+  transition: background-color 0.3s ease;
+}
+
+.loading-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  color: white;
+  font-size: 2rem;
 }
 
 .profile-image {
@@ -81,10 +130,15 @@
   margin-top: 20px;
 }
 
+.stats-container {
+  display: flex;
+  flex-direction: row;
+  width: 68%;
+}
+
 .profile-details {
   flex: 1;
   text-align: center;
-  margin-right: 20px;
 }
 
 .profile-details p {
@@ -101,15 +155,25 @@
   margin-bottom: 10px;
 }
 
-.friends-list {
+.friends-list-container {
+  display: flex;
+  justify-content: center;
   text-align: center;
-  flex: 1;
-  margin-left: 20px;
+  width: 32%;
+}
+
+.friends-list {
+  width: fit-content;
 }
 
 .friends-list h3:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+
+.friends-list h3 a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .friends-list ul {
@@ -125,6 +189,11 @@
 
 .friends-list li:hover {
   text-decoration: underline;
+}
+
+.friends-list li a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .profile-header h1 {
@@ -196,18 +265,32 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   height: auto;
+  align-items: center;
 }
 
 .remove-friend-button:hover {
   background-color: #e53935;
 }
 
-.profile-details .see-match-history {
-  color: rgb(83, 82, 82);
+.see-match-history {
+  background-color: #1976d2;
+  color: #fff;
   font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.08);
+  align-items: center;
 }
 
-.profile-details .see-match-history:hover {
-  text-decoration: underline;
-  cursor: pointer;
+.see-match-history:hover {
+  background-color: #1565c0;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+  text-decoration: none;
 }

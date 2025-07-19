@@ -1,52 +1,88 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface LeaderboardDropdownProps {}
+interface Props {
+  gameFormat: string;
+  setGameFormat: (val: string) => void;
+  mode: string;
+  setMode: (val: string) => void;
+  category: string;
+  setCategory: (val: string) => void;
+  categories: string[];
+}
 
-const LeaderboardDropdown: React.FC<LeaderboardDropdownProps> = ({}) => {
-  const options = [
-    {
-      name: "Correct Rate (Sigma Snipers)",
-      key: "correct-rate",
-      link: "/leaderboard/correctrate"
-    },
-    {
-      name: "Total Answered (Certified Quiz Addicts)",
-      key: "total-answer",
-      link: "/leaderboard/totalanswer"
-    },
-    {
-      name: "Correctly Answered (Enlightened Rizzlers)",
-      key: "correct-answer",
-      link: "/leaderboard/correctanswer"
-    }
-  ];
-
+const LeaderboardDropdown: React.FC<Props> = ({
+  gameFormat,
+  setGameFormat,
+  mode,
+  setMode,
+  category,
+  setCategory,
+  categories
+}) => {
   const navigate = useNavigate();
-  const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = event.target.value;
-    navigate(selected);
-  };
+  const knowledgeCategories = ["Overall", "Community"];
 
-  // Get current path to set as default selected option
-  const currentPath = window.location.pathname;
-  const defaultValue =
-    options.find((option) => option.link === currentPath)?.link ||
-    options[0].link;
+  useEffect(() => {
+    if (
+      gameFormat === "knowledge" &&
+      category !== "Overall" &&
+      category !== "Community"
+    ) {
+      setCategory("Overall");
+      navigate(`/leaderboard/${gameFormat}/${mode}/Overall`);
+    }
+    navigate(`/leaderboard/${gameFormat}/${mode}/${category}`);
+  }, [gameFormat, mode, category]);
 
   return (
     <div className="leaderboard-dropdown-container">
-      <select
-        className="leaderboard-dropdown"
-        onChange={handleSelect}
-        value={defaultValue}
-      >
-        {options.map((option) => (
-          <option key={option.key} value={option.link}>
-            {option.name}
-          </option>
-        ))}
-      </select>
+      <div className="dropdown-group">
+        <label className="dropdown-label">Game Type</label>
+        <select
+          className="leaderboard-dropdown"
+          value={gameFormat}
+          onChange={(e) => setGameFormat(e.target.value)}
+        >
+          <option value="classic">Classic</option>
+          <option value="knowledge">Knowledge</option>
+        </select>
+      </div>
+
+      <div className="dropdown-group">
+        <label className="dropdown-label">Mode</label>
+        <select
+          className="leaderboard-dropdown"
+          value={mode}
+          onChange={(e) => setMode(e.target.value)}
+        >
+          <option value="Overall">Overall</option>
+          <option value="Solo">Solo</option>
+          <option value="Versus">Versus</option>
+          <option value="Co-Op">Co-Op</option>
+        </select>
+      </div>
+
+      <div className="dropdown-group">
+        <label className="dropdown-label">Category</label>
+        <select
+          className="leaderboard-dropdown"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          {gameFormat === "classic"
+            ? categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))
+            : knowledgeCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+        </select>
+      </div>
     </div>
   );
 };

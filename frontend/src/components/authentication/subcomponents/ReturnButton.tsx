@@ -1,16 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ReturnButton: React.FC = () => {
-  const navigate = useNavigate();
-  const handleBack = () => {
-    navigate("/");
-  };
-
   return (
-    <a className="back-button" onClick={handleBack}>
+    <Link className="back-button" to="/" style={{ textDecoration: "none" }}>
       Back
-    </a>
+    </Link>
   );
 };
 

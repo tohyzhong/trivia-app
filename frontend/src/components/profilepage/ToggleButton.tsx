@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface Props {
-  onClick: Function;
+  onClick: () => void;
   incoming: boolean;
   numFriends: number;
 }

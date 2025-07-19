@@ -1,6 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
-import "../../styles/leaderboard.css";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Leaderboard from "./Leaderboard";
 
 const LeaderboardRoutes: React.FC = () => {
@@ -8,47 +7,12 @@ const LeaderboardRoutes: React.FC = () => {
     <Routes>
       <Route
         path="/"
-        element={
-          <Leaderboard
-            headerTitle="Sigma Snipers"
-            apiRoute="correctrate"
-            valueField="correctRate"
-            valueHeader="Correct Answer Rate"
-          />
-        }
+        element={<Navigate to="/leaderboard/classic/Overall/Overall" />}
       />
+      <Route path="/:gameFormat/:mode/:category" element={<Leaderboard />} />
       <Route
-        path="/correctrate"
-        element={
-          <Leaderboard
-            headerTitle="Sigma Snipers"
-            apiRoute="correctrate"
-            valueField="correctRate"
-            valueHeader="Correct Answer Rate"
-          />
-        }
-      />
-      <Route
-        path="/totalanswer"
-        element={
-          <Leaderboard
-            headerTitle="Certified Quiz Addicts"
-            apiRoute="totalanswer"
-            valueField="totalAnswer"
-            valueHeader="Total Answered"
-          />
-        }
-      />
-      <Route
-        path="/correctanswer"
-        element={
-          <Leaderboard
-            headerTitle="Enlightened Rizzlers"
-            apiRoute="correctanswer"
-            valueField="correctAnswer"
-            valueHeader="Correct Answers"
-          />
-        }
+        path="/*"
+        element={<Navigate to="/leaderboard/classic/Overall/Overall" />}
       />
     </Routes>
   );

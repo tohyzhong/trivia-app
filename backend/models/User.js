@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { logExecutionTime } from "mongoose-execution-time";
 // mongoose.plugin(logExecutionTime, {
 //   loggerLevel: 'info'
 // });
@@ -9,7 +8,9 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   previousPasswords: { type: Array, required: true, default: [] },
-  verified: { type: Boolean, default: false },
+  verified: { type: Boolean, required: true, default: false },
+  chatBan: { type: Boolean, required: true, default: false },
+  gameBan: { type: Boolean, required: true, default: false },
   role: {
     type: String,
     enum: ["user", "admin", "superadmin"],

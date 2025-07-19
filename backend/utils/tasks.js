@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import UsedToken from "../models/UsedToken.js";
 import Lobby from "../models/Lobby.js";
+import Profile from "../models/Profile.js";
 import { getSocketIO } from "../socket.js";
 
 const runSchedulers = () => {
@@ -49,6 +50,15 @@ const runSchedulers = () => {
       }
     } catch (error) {
       console.error("Error deleting inactive lobbies:", error);
+    }
+  });
+
+  cron.schedule("0 0 * * *", async () => {
+    try {
+      await Profile.updateMany({}, { $set: { reports: {} } });
+      console.log("Cleared all user reports at midnight.");
+    } catch (err) {
+      console.error("Failed to reset reports:", err);
     }
   });
 };
