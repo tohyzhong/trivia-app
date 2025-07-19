@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "../../styles/matchhistory.css";
 
 interface MatchDetails {
@@ -75,9 +75,9 @@ const MatchHistory: React.FC = () => {
     <div className="match-history-div-full">
       <div className="match-history-div-header">
         <h1>
-          <a className="user-name" href={`/profile/${username}`}>
+          <Link className="user-name" to={`/profile/${username}`}>
             {username}&apos;s
-          </a>{" "}
+          </Link>{" "}
           Game History (Last 10)
         </h1>
       </div>
@@ -223,12 +223,12 @@ const MatchHistory: React.FC = () => {
                             }
                             key={player}
                           >
-                            <a
+                            <Link
                               className="player-name"
-                              href={`/profile/${player}`}
+                              to={`/profile/${player}`}
                             >
                               {player}
-                            </a>
+                            </Link>
                             <span className="player-score-value">
                               {match.type.includes("coop")
                                 ? match.teamScore

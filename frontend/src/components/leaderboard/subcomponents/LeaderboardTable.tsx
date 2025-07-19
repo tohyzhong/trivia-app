@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ColDef, SortDirection } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 import "../../../styles/leaderboard.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import LeaderboardPodium from "./LeaderboardPodium";
 import { setError } from "../../../redux/errorSlice";
+import { Link } from "react-router-dom";
 
 interface Props {
   gameFormat: string;
@@ -35,7 +35,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
   const [sortField, setSortField] = useState<string>("correctAnswer");
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const gridRef = useRef<any>(null);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -148,19 +147,26 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       cellRenderer: (params: any) => {
         const profilePic = params.value || defaultAvatar;
         return (
-          <img
-            src={profilePic}
-            alt={"test"}
-            onError={(e) => (e.currentTarget.src = defaultAvatar)}
+          <Link
+            to={`/profile/${params.data.username}`}
             style={{
               width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              cursor: "pointer",
-              objectFit: "cover"
+              height: "40px"
             }}
-            onClick={() => navigate(`/profile/${params.data.username}`)}
-          />
+          >
+            <img
+              src={profilePic}
+              alt={"test"}
+              onError={(e) => (e.currentTarget.src = defaultAvatar)}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                cursor: "pointer",
+                objectFit: "cover"
+              }}
+            />
+          </Link>
         );
       }
     },
@@ -172,17 +178,21 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       flex: 1.5,
       cellRenderer: (params: any) => {
         return (
-          <span
-            className="username-link"
-            onClick={() => navigate(`/profile/${params.data.username}`)}
-            style={
-              params.value === loggedInUser
-                ? { fontWeight: "bold", color: "lightblue" }
-                : undefined
-            }
+          <Link
+            to={`/profile/${params.data.username}`}
+            style={{ all: "unset" }}
           >
-            {params.value} {params.value === loggedInUser ? "(You)" : ""}
-          </span>
+            <span
+              className="username-link"
+              style={
+                params.value === loggedInUser
+                  ? { fontWeight: "bold", color: "lightblue" }
+                  : undefined
+              }
+            >
+              {params.value} {params.value === loggedInUser ? "(You)" : ""}
+            </span>
+          </Link>
         );
       }
     },

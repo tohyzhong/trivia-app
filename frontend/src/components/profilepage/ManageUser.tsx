@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/manageuser.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { setError } from "../../redux/errorSlice";
@@ -180,12 +180,9 @@ const ManageUser: React.FC = () => {
   ) : (
     <div className="manage-container">
       <div className="profile-header">
-        <button
-          className="back-button"
-          onClick={() => navigate(`/profile/${paramUsername}`)}
-        >
-          ← Back
-        </button>
+        <Link to={`/profile/${paramUsername}`}>
+          <button className="back-button">← Back</button>
+        </Link>
         <h1 className="profile-name">Manage {user.username}&apos;s Profile</h1>
       </div>
       <div className="user-info-container">

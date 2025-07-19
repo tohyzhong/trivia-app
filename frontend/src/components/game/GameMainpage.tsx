@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../../styles/game.css";
 import ModeSelect from "./subcomponents/ModeSelect";
 import SoundSettings from "./subcomponents/SoundSettings";
@@ -14,6 +13,7 @@ import { useInitSound } from "../../hooks/useInitSound";
 import PauseOverlay from "./PauseOverlay";
 import { useBGMResumeOverlay } from "../../hooks/useBGMResumeOverlay";
 import { playClickSound } from "../../utils/soundManager";
+import { Link } from "react-router-dom";
 
 interface SubModes {
   name: string;
@@ -120,14 +120,9 @@ export const GameMainpage: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [isSoundPopupOpen, setIsSoundPopupOpen] = useState<boolean>(false);
 
-  const navigate = useNavigate();
   const handleModeClick = (mode) => {
-    if (mode === "Leaderboard") {
-      navigate("/leaderboard");
-    } else {
-      setPopupMode(mode);
-      setIsPopupOpen(true);
-    }
+    setPopupMode(mode);
+    setIsPopupOpen(true);
   };
 
   return (
@@ -158,16 +153,30 @@ export const GameMainpage: React.FC = () => {
             />
             <h2 className="mode-name">{mode.name}</h2>
             <p className="mode-description">{mode.description}</p>
-            <button
-              className="mode-play-button"
-              onClick={() => {
-                playClickSound();
-                handleModeClick(mode.name);
-              }}
-              disabled={isSoundPopupOpen}
-            >
-              {mode.buttonText}
-            </button>
+            {mode.name === "Leaderboard" ? (
+              <Link to="/leaderboard">
+                <button
+                  className="mode-play-button"
+                  onClick={() => {
+                    playClickSound();
+                  }}
+                  disabled={isSoundPopupOpen}
+                >
+                  {mode.buttonText}
+                </button>
+              </Link>
+            ) : (
+              <button
+                className="mode-play-button"
+                onClick={() => {
+                  playClickSound();
+                  handleModeClick(mode.name);
+                }}
+                disabled={isSoundPopupOpen}
+              >
+                {mode.buttonText}
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -193,22 +202,24 @@ export const GameMainpage: React.FC = () => {
         </div>
       )}
 
-      <FaWpforms
-        onClick={() => {
-          playClickSound();
-          navigate("/question-request");
-        }}
-        className="question-submit-icon"
-      />
+      <Link to="/question-request">
+        <FaWpforms
+          onClick={() => {
+            playClickSound();
+          }}
+          className="question-submit-icon"
+        />
+      </Link>
       <p className="hover-text question-submit-icon-text">Submit A Question</p>
 
-      <IoHelp
-        onClick={() => {
-          playClickSound();
-          navigate("/contact");
-        }}
-        className="help-icon"
-      />
+      <Link to="/contact">
+        <IoHelp
+          onClick={() => {
+            playClickSound();
+          }}
+          className="help-icon"
+        />
+      </Link>
       <p className="hover-text help-icon-text">Contact Us</p>
     </div>
   );

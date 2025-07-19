@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ColDef } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/friendslist.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -161,19 +161,24 @@ const FriendsList: React.FC = () => {
       cellRenderer: (params: any) => {
         const profilePic = params.value || defaultAvatar;
         return (
-          <img
-            src={profilePic}
-            alt={username}
-            onError={(e) => (e.currentTarget.src = defaultAvatar)}
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              cursor: "pointer",
-              objectFit: "cover"
-            }}
-            onClick={() => navigate(`/profile/${params.data.username}`)}
-          />
+          <Link
+            className="avatar-cell"
+            to={`/profile/${params.data.username}`}
+            style={{ width: "40px", height: "40px" }}
+          >
+            <img
+              src={profilePic}
+              alt={username}
+              onError={(e) => (e.currentTarget.src = defaultAvatar)}
+              style={{
+                borderRadius: "50%",
+                width: "40px",
+                height: "40px",
+                cursor: "pointer",
+                objectFit: "cover"
+              }}
+            />
+          </Link>
         );
       }
     },
@@ -185,12 +190,14 @@ const FriendsList: React.FC = () => {
       flex: 3,
       cellRenderer: (params: any) => {
         return (
-          <span
-            className="username-link"
-            onClick={() => navigate(`/profile/${params.data.username}`)}
+          <Link
+            to={`/profile/${params.data.username}`}
+            style={{
+              all: "unset"
+            }}
           >
-            {params.value}
-          </span>
+            <span className="username-link">{params.value}</span>
+          </Link>
         );
       }
     },

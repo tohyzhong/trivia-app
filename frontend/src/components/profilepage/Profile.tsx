@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { RootState } from "../../redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 import "../../styles/Profile.css";
 import { setError } from "../../redux/errorSlice";
@@ -40,7 +40,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   const username = paramUsername || user1 || usernameFromRedux;
   const [user, setUserProfile] = useState<UserProfile | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Retrieve profile details
@@ -66,14 +65,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
       fetchProfile();
     }
   }, [username]);
-
-  const handleFriendClick = (friendUsername: string) => {
-    navigate(`/profile/${friendUsername}`);
-  };
-
-  const handleFriendsClick = () => {
-    navigate(`/profile/${user.username}/friends`);
-  };
 
   const isFriend =
     friends?.map((friend) => friend.username).includes(usernameFromRedux) ||
@@ -161,10 +152,6 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         })
       );
     }
-  };
-
-  const handleSeeMatchHistory = () => {
-    navigate(`/profile/${username}/matchhistory`);
   };
 
   // User reporting handlers
@@ -273,12 +260,9 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                   )}
                 </button>
               ) : (
-                <button
-                  className="manage-button"
-                  onClick={() => navigate(`/profile/${username}/manage`)}
-                >
-                  Manage User
-                </button>
+                <Link to={`/profile/${username}/manage`}>
+                  <button className="manage-button">Manage User</button>
+                </Link>
               )}
             </>
           )}
@@ -326,9 +310,9 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
         </div>
       </div>
 
-      <button className="see-match-history" onClick={handleSeeMatchHistory}>
-        Match History
-      </button>
+      <Link to={`/profile/${username}/matchhistory`}>
+        <button className="see-match-history">Match History</button>
+      </Link>
 
       <div className="profile-details-container">
         <div className="stats-container">
@@ -386,15 +370,16 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
 
         <div className="friends-list-container">
           <div className="friends-list">
-            <h3 onClick={() => handleFriendsClick()}>Friends:</h3>
+            <h3>
+              <Link to={`/profile/${user.username}/friends`}>Friends:</Link>
+            </h3>
             <ul>
               {friends.map((friend, index) => (
-                <li
-                  key={friend.username}
-                  onClick={() => handleFriendClick(friend.username)}
-                >
-                  <span>{index + 1}. </span>
-                  {friend.username}
+                <li key={friend.username}>
+                  <Link to={`/profile/${friend.username}`}>
+                    <span>{index + 1}. </span>
+                    {friend.username}
+                  </Link>
                 </li>
               ))}
             </ul>
