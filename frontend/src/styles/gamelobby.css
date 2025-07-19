@@ -977,8 +977,15 @@
   border: 1px solid white;
   border-radius: 30px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.knowledge-question-answer .contribution-credit {
+  margin: 0;
+  padding-top: 10px;
+  font-size: 14px;
 }
 
 .advance-lobby-button-container {
@@ -997,6 +1004,7 @@
   width: 95%;
   border: 1px solid white;
   border-radius: 25px;
+  position: relative;
 }
 
 .knowledge-question-image img {

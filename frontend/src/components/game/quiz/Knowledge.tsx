@@ -13,6 +13,7 @@ interface KnowledgeQuestion {
   question: string;
   correctOption: string;
   difficulty: number;
+  createdBy?: string;
 }
 
 interface KnowledgeQuestionProps {
@@ -224,7 +225,14 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
           </p>
           <div className="knowledge-question-answer">
             {answerRevealed ? (
-              <h4>{knowledgeQuestion.correctOption}</h4>
+              <>
+                {knowledgeQuestion.createdBy && (
+                  <p className="contribution-credit">
+                    [Contributed by: {knowledgeQuestion.createdBy}]
+                  </p>
+                )}
+                <h4>{knowledgeQuestion.correctOption}</h4>
+              </>
             ) : (
               <p>?</p>
             )}
