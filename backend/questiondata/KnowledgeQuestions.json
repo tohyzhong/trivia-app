@@ -72,5 +72,19 @@
     "difficulty": 1,
     "approved": false,
     "createdBy": "tohyzhong"
+  },
+  {
+    "question": "https://www.blanktag.co/cdn/shop/files/image_36_43399fbf-0e0d-411d-9e29-c854652ecc38.png",
+    "correctOption": "Mocking Spongebob",
+    "difficulty": 2,
+    "approved": false,
+    "createdBy": "tohyzhong"
+  },
+  {
+    "question": "https://i.redd.it/vlflelx8hp6e1.jpg",
+    "correctOption": "Chill Guy",
+    "difficulty": 3,
+    "approved": false,
+    "createdBy": "tohyzhong"
   }
 ]
