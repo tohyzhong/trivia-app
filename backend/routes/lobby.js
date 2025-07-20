@@ -1207,7 +1207,7 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
           state.correctScore = 0;
           state.streakBonus = 0;
 
-          if (selected > 0) {
+          if (selected > 0 || selected !== "") {
             voteDetails[selected] = voteDetails[selected] || [];
             if (!voteDetails[selected].includes(username)) {
               voteDetails[selected].push(username);
@@ -1240,7 +1240,10 @@ router.post("/submit/:lobbyId", authenticate, async (req, res) => {
         );
         const topOptions = Object.entries(voteDetails)
           .filter(([_, users]) => users.length === maxVotes)
-          .map(([opt]) => parseInt(opt));
+          .map(([opt]) => {
+            const num = Number(opt);
+            return isNaN(num) ? opt : num;
+          });
 
         const isCorrect =
           topOptions.length === 1
