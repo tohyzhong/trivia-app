@@ -92,7 +92,10 @@ router.get("/search-knowledge", authenticate, async (req, res) => {
     const questions = await KnowledgeQuestion.find({
       $and: [
         {
-          correctOption: { $regex: regex }
+          $or: [
+            { correctOption: { $regex: regex } },
+            { createdBy: { $regex: regex } }
+          ]
         },
         {
           $or: [
