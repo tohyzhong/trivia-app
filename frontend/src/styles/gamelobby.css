@@ -1129,7 +1129,7 @@
   align-items: center;
 }
 
-button.disabled {
+.confirm-button.disabled {
   cursor: not-allowed;
   filter: grayscale(0.7);
 }
