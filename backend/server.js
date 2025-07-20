@@ -22,6 +22,10 @@ import runSchedulers from "./utils/tasks.js";
 import generateQuestions from "./utils/questionbank.js";
 
 dotenv.config();
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://console.cron-job.org"
+];
 
 const app = express();
 app.use((req, res, next) => {
@@ -34,7 +38,14 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
   })
 );
@@ -96,6 +107,12 @@ app.use("/api/leaderboard", leaderboardRoutes);
 
 // Shop
 app.use("/api/shop", shopRoutes);
+
+// cron-job.org
+app.get("/cron-endpoint", (req, res) => {
+  console.log("Cron job triggered:", new Date().toISOString());
+  res.status(200).send("OK");
+});
 
 // Connection
 server.listen(8080, () => {
