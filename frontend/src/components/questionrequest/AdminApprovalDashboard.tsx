@@ -453,6 +453,7 @@ const AdminApprovalDashboard: React.FC = () => {
           headerName: "Answer",
           field: "correctOption",
           sortable: false,
+          filter: true,
           maxWidth: 180,
           flex: 2,
           cellStyle: {
@@ -463,6 +464,22 @@ const AdminApprovalDashboard: React.FC = () => {
             gap: "8px"
           }
         },
+    currentMode === "Knowledge"
+      ? {
+          headerName: "Contributor",
+          field: "createdBy",
+          sortable: false,
+          filter: true,
+          maxWidth: 200,
+          flex: 1.5,
+          cellStyle: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontStyle: "italic"
+          }
+        }
+      : { sortable: false, filter: false, maxWidth: 0, flex: 0 },
     {
       headerName: "Difficulty",
       field: "difficulty",
