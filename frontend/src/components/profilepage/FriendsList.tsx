@@ -127,7 +127,12 @@ const FriendsList: React.FC = () => {
         throw new Error("Failed to decline incoming friend request");
       else {
         dispatch(
-          setError({ errorMessage: "Friend request ignored.", success: true })
+          setError({
+            errorMessage: renderIncoming
+              ? "Friend request ignored."
+              : "Friend removed.",
+            success: true
+          })
         );
       }
     } catch (error) {
@@ -205,8 +210,7 @@ const FriendsList: React.FC = () => {
     },
     {
       headerName: "Actions",
-      flex: 3,
-      hide: !renderIncoming,
+      flex: renderIncoming ? 3 : 1.5,
       sortable: false,
       resizable: false,
       cellRenderer: (params: any) => {
@@ -215,6 +219,7 @@ const FriendsList: React.FC = () => {
             <button
               className="accept-button"
               onClick={() => handleAccept(params.data.username)}
+              style={renderIncoming ? {} : { display: "none" }}
             >
               Accept
             </button>
@@ -222,7 +227,7 @@ const FriendsList: React.FC = () => {
               className="decline-button"
               onClick={() => handleDecline(params.data.username)}
             >
-              Decline
+              {renderIncoming ? "Decline" : "Remove Friend"}
             </button>
           </div>
         );

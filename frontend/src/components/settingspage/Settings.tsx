@@ -18,6 +18,10 @@ interface UserProfile {
   gameBan: boolean;
 }
 
+const isValidImageUrl = (url: string): boolean => {
+  return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+};
+
 const Settings: React.FC = () => {
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
@@ -371,6 +375,19 @@ const Settings: React.FC = () => {
           <button onClick={handleProfilePictureChange}>
             Update Profile Picture
           </button>
+          {newProfilePictureUrl && isValidImageUrl(newProfilePictureUrl) ? (
+            <div className="image-preview">
+              <img
+                src={newProfilePictureUrl}
+                alt="Preview"
+                style={{ maxWidth: "300px", marginTop: "10px" }}
+              />
+            </div>
+          ) : newProfilePictureUrl ? (
+            <p style={{ color: "red" }}>
+              ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
+            </p>
+          ) : null}
         </div>
 
         <div className="email-change">

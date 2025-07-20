@@ -18,7 +18,32 @@ router.get("/categories", authenticate, async (req, res) => {
 router.get("/stats", authenticate, async (req, res) => {
   const { gameFormat, mode, category } = req.query;
   try {
-    const users = await Profile.find({});
+    const users = await Profile.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "username",
+          foreignField: "username",
+          as: "userInfo"
+        }
+      },
+      {
+        $unwind: "$userInfo"
+      },
+      {
+        $match: {
+          "userInfo.gameBan": { $ne: true }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          username: 1,
+          profilePicture: 1,
+          leaderboardStats: 1
+        }
+      }
+    ]);
 
     const data = users.map((user) => {
       const stats =

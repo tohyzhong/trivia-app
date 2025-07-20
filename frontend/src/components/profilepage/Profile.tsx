@@ -210,6 +210,10 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     return <div className="not-found">Profile not found</div>;
   }
 
+  if (user.gameBan) {
+    return <div className="not-found">User is banned</div>;
+  }
+
   return (
     <div className="profile-container">
       <div className="header-buttons">
