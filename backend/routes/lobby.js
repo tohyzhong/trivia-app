@@ -1550,7 +1550,10 @@ router.get("/revealanswer/:lobbyId", authenticate, async (req, res) => {
       );
       const topOptions = Object.entries(voteDetails)
         .filter(([_, users]) => users.length === maxVotes)
-        .map(([opt]) => parseInt(opt));
+        .map(([opt]) => {
+          const num = Number(opt);
+          return isNaN(num) ? opt : num;
+        });
 
       const isCorrect =
         topOptions.length === 1
