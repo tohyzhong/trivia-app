@@ -1,0 +1,47 @@
+runtime: "nodejs22"
+service: "default"
+
+runtime_config:
+  operating_system: "ubuntu22"
+  runtime_version: "22"
+
+instance_class: "F1"
+
+handlers:
+  - url: /assets/(.*)
+    static_files: dist/assets/\1
+    upload: dist/assets/(.*)
+    http_headers:
+      Cache-Control: public, max-age=31536000, immutable
+
+  - url: /(meme_background\.jpg|rizz_quiz\.svg)
+    static_files: dist/\1
+    upload: dist/(meme_background\.jpg|rizz_quiz\.svg)
+    http_headers:
+      Cache-Control: public, max-age=31536000, immutable
+
+  - url: /index\.html
+    static_files: dist/index.html
+    upload: dist/index.html
+    http_headers:
+      Cache-Control: no-cache
+
+  - url: /.*
+    static_files: dist/index.html
+    upload: dist/index.html
+    http_headers:
+      Cache-Control: no-cache
+
+automatic_scaling:
+  min_instances: "1"
+  max_instances: "1"
+  min_idle_instances: "1"
+  max_idle_instances: "1"
+
+network:
+  session_affinity: true
+
+env_variables:
+  NODE_ENV: "production"
+  VITE_API_URL: "https://backend-run-25568870720.asia-southeast1.run.app/"
+#"https://rizz-quiz-backend-dot-rizz-quiz-464112.as.r.appspot.com"
