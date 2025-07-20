@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import "../../../styles/modeselect.css";
 import { IoClose } from "react-icons/io5";
@@ -23,6 +23,31 @@ interface ModeSelectProps {
 }
 
 const submodeSelect: React.FC<ModeSelectProps> = (props) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (scrollContainer && e.deltaY !== 0) {
+        e.preventDefault();
+        scrollContainer.scrollLeft += e.deltaY;
+      }
+    };
+
+    if (scrollContainer) {
+      scrollContainer.addEventListener("wheel", handleWheel, {
+        passive: false
+      });
+    }
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("wheel", handleWheel);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -113,7 +138,7 @@ const submodeSelect: React.FC<ModeSelectProps> = (props) => {
               onClick={() => props.setActive(false)}
             />
           </div>
-          <div className="submode-select-content">
+          <div className="submode-select-content" ref={scrollRef}>
             {props.submodes.map((submode, index) => (
               <div
                 key={index}
