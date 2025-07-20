@@ -802,7 +802,7 @@
 
 .avatar-wrapper {
   position: relative;
-  width: auto;
+  width: 25px;
   height: 25px;
   border-radius: 50%;
   overflow: hidden;
@@ -816,6 +816,7 @@
   object-fit: cover;
   border: 1px solid #fff;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  background-color: white;
 }
 
 .extra-voters {
