@@ -8,6 +8,11 @@ import { FaWpforms } from "react-icons/fa";
 import SoloModeLogo from "../../assets/solo_mode.png";
 import MultiplayerModeLogo from "../../assets/multiplayer_mode.png";
 import LeaderboardLogo from "../../assets/leaderboard_logo.png";
+import VersusLogo from "../../assets/versus.png";
+import CoopLogo from "../../assets/coop.png";
+import ClassicLogo from "../../assets/classic.png";
+import KnowledgeLogo from "../../assets/knowledge.png";
+import BrowseLogo from "../../assets/browse.png";
 
 import { useInitSound } from "../../hooks/useInitSound";
 import PauseOverlay from "./PauseOverlay";
@@ -56,13 +61,13 @@ export const GameMainpage: React.FC = () => {
       gameType: "solo-classic",
       description:
         "Answer multiple-choice questions about memes in a timed format.",
-      image: SoloModeLogo
+      image: ClassicLogo
     },
     {
       name: "Knowledge",
       gameType: "solo-knowledge",
       description: "Test your knowledge with open-ended questions.",
-      image: SoloModeLogo
+      image: KnowledgeLogo
     },
     {
       name: "Coming Soon...",
@@ -78,35 +83,35 @@ export const GameMainpage: React.FC = () => {
       gameType: "coop-classic",
       description:
         "Team up with your buddies in a quiz with multiple-choice questions about memes in a timed format.",
-      image: MultiplayerModeLogo
+      image: CoopLogo
     },
     {
       name: "Co-op - Knowledge",
       gameType: "coop-knowledge",
       description:
         "Team up with your buddies in an open-ended test of meme knowledge",
-      image: MultiplayerModeLogo
+      image: CoopLogo
     },
     {
       name: "Versus - Classic",
       gameType: "versus-classic",
       description:
         "Compete against your friends in a quiz with multiple-choice questions about memes in a timed format.",
-      image: MultiplayerModeLogo
+      image: VersusLogo
     },
     {
       name: "Versus - Knowledge",
       gameType: "versus-knowledge",
       description:
         "Compete against your friends and test your knowledge with open-ended questions.",
-      image: MultiplayerModeLogo
+      image: VersusLogo
     },
     {
       name: "Browse Lobbies",
       gameType: "Browse",
       description:
         "Look for public multiplayer lobbies to join and make new friends!",
-      image: MultiplayerModeLogo
+      image: BrowseLogo
     },
     {
       name: "Coming Soon...",
