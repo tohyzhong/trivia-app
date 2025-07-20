@@ -164,7 +164,8 @@
   cursor: pointer;
 }
 
-button.disabled {
+.game-ban-change button.disabled,
+.chat-ban-change button.disabled {
   cursor: not-allowed;
   filter: grayscale(0.6);
 }
