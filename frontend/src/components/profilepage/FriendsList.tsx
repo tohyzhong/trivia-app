@@ -208,31 +208,35 @@ const FriendsList: React.FC = () => {
         );
       }
     },
-    {
-      headerName: "Actions",
-      flex: renderIncoming ? 3 : 1.5,
-      sortable: false,
-      resizable: false,
-      cellRenderer: (params: any) => {
-        return (
-          <div className="actions-button-container">
-            <button
-              className="accept-button"
-              onClick={() => handleAccept(params.data.username)}
-              style={renderIncoming ? {} : { display: "none" }}
-            >
-              Accept
-            </button>
-            <button
-              className="decline-button"
-              onClick={() => handleDecline(params.data.username)}
-            >
-              {renderIncoming ? "Decline" : "Remove Friend"}
-            </button>
-          </div>
-        );
-      }
-    }
+    ...(loggedInUser === username
+      ? [
+          {
+            headerName: "Actions",
+            flex: renderIncoming ? 3 : 1.5,
+            sortable: false,
+            resizable: false,
+            cellRenderer: (params: any) => {
+              return (
+                <div className="actions-button-container">
+                  <button
+                    className="accept-button"
+                    onClick={() => handleAccept(params.data.username)}
+                    style={renderIncoming ? {} : { display: "none" }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="decline-button"
+                    onClick={() => handleDecline(params.data.username)}
+                  >
+                    {renderIncoming ? "Decline" : "Remove Friend"}
+                  </button>
+                </div>
+              );
+            }
+          }
+        ]
+      : [])
   ];
 
   return (
