@@ -802,7 +802,7 @@
 
 .avatar-wrapper {
   position: relative;
-  width: auto;
+  width: 25px;
   height: 25px;
   border-radius: 50%;
   overflow: hidden;
@@ -816,6 +816,7 @@
   object-fit: cover;
   border: 1px solid #fff;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  background-color: white;
 }
 
 .extra-voters {
@@ -1166,7 +1167,7 @@
 }
 
 .speech-bubble {
-  background: #f0f0f0;
+  background: var(--bg-color, #f0f0f0);
   border-radius: 10px;
   padding: 10px 15px;
   width: fit-content;
@@ -1192,6 +1193,6 @@
   top: 50%;
   transform: translate(0, -50%);
   left: -25px;
-  border: 15px solid;
-  border-color: transparent #f0f0f0 transparent transparent;
+  border: 15px solid transparent;
+  border-right-color: var(--bg-color, #f0f0f0);
 }

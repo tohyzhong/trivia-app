@@ -210,7 +210,7 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
     return <div className="not-found">Profile not found</div>;
   }
 
-  if (user.gameBan) {
+  if (user.gameBan && currUserRole !== "superadmin") {
     return <div className="not-found">User is banned</div>;
   }
 
@@ -240,7 +240,8 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           {user.username !== usernameFromRedux && (
             <>
               {currUserRole === "user" ||
-              (currUserRole === "admin" && user.role === "superadmin") ? (
+              (currUserRole === "admin" &&
+                (user.role === "superadmin" || user.role === "admin")) ? (
                 <button
                   className={`report-button ${reportSending && "disabled"}`}
                   onClick={() => handleReport(user.username)}

@@ -228,7 +228,16 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
             <div className="player-display-item" key={username}>
               <img src={profilePictures[username] || defaultAvatar} />
               {answerRevealed && (
-                <div className="speech-bubble">
+                <div
+                  className="speech-bubble"
+                  style={{
+                    "--bg-color":
+                      state.selectedOption === knowledgeQuestion.correctOption
+                        ? "#088b3fff"
+                        : "#ff4d4dff",
+                    color: "white"
+                  }}
+                >
                   {state.selectedOption === ""
                     ? "(no answer)"
                     : state.selectedOption}
