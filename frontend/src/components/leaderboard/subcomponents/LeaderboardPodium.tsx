@@ -69,6 +69,7 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({
                   src={data.profilePicture || defaultAvatar}
                   alt={data.username}
                   onError={(e) => (e.currentTarget.src = defaultAvatar)}
+                  style={{ backgroundColor: "#0000008c" }}
                 />
               </Link>
             </div>

@@ -5,6 +5,10 @@ import "../../styles/questionsubmissionform.css";
 import { setError } from "../../redux/errorSlice";
 import { Link } from "react-router-dom";
 
+const isValidImageUrl = (url: string): boolean => {
+  return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+};
+
 const KnowledgeQuestionSubmissionForm: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
@@ -93,6 +97,20 @@ const KnowledgeQuestionSubmissionForm: React.FC = () => {
           onChange={(e) => setQuestion(e.target.value)}
           required
         />
+        {question && isValidImageUrl(question) ? (
+          <div className="image-preview">
+            <img
+              src={question}
+              alt="Preview"
+              style={{ maxWidth: "300px", marginTop: "10px" }}
+            />
+          </div>
+        ) : question ? (
+          <p style={{ color: "red" }}>
+            ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
+          </p>
+        ) : null}
+
         <label htmlFor="correct-option-input">Answer:</label>
         <input
           id="correct-option-input"

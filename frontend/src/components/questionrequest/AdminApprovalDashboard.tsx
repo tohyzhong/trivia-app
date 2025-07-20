@@ -143,7 +143,17 @@ const AdminApprovalDashboard: React.FC = () => {
         throw new Error("Failed to search questions");
       }
       const data = await response.json();
-      setSearchResults(data);
+      setSearchResults(
+        data.map((q) =>
+          q.createdBy
+            ? {
+                ...q,
+                correctOption:
+                  `[Contributed by ${q.createdBy}] ` + q.correctOption
+              }
+            : { ...q }
+        )
+      );
     } catch (error) {
       console.error("Error searching for questions:", error);
     } finally {
@@ -204,6 +214,11 @@ const AdminApprovalDashboard: React.FC = () => {
           <p className="options-label-request">
             <strong>Answer:</strong> {selectedQuestion.correctOption}
           </p>
+          {selectedQuestion.createdBy && (
+            <p className="options-label-request">
+              <strong>Contributor:</strong> {selectedQuestion.createdBy}
+            </p>
+          )}
         </div>
       );
     }
@@ -438,6 +453,7 @@ const AdminApprovalDashboard: React.FC = () => {
           headerName: "Answer",
           field: "correctOption",
           sortable: false,
+          filter: true,
           maxWidth: 180,
           flex: 2,
           cellStyle: {
@@ -448,6 +464,22 @@ const AdminApprovalDashboard: React.FC = () => {
             gap: "8px"
           }
         },
+    currentMode === "Knowledge"
+      ? {
+          headerName: "Contributor",
+          field: "createdBy",
+          sortable: false,
+          filter: true,
+          maxWidth: 200,
+          flex: 1.5,
+          cellStyle: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontStyle: "italic"
+          }
+        }
+      : { sortable: false, filter: false, maxWidth: 0, flex: 0 },
     {
       headerName: "Difficulty",
       field: "difficulty",
@@ -544,7 +576,7 @@ const AdminApprovalDashboard: React.FC = () => {
 
   return role.includes("admin") ? (
     <div className="admin-approval-dashboard">
-      <h2 className="admin-header">Admin Question Approval</h2>
+      <h2 className="admin-header">Admin Question Approval Dashboard</h2>
       <div className="buttons-container">
         {availableModes.map((mode) => (
           <button
@@ -566,7 +598,7 @@ const AdminApprovalDashboard: React.FC = () => {
         type="text"
         value={searchQuery}
         onChange={handleSearch}
-        placeholder="Search questions or options"
+        placeholder="Search by Questions/Options or Search by User Contributor"
         className="search-input"
       />
 
