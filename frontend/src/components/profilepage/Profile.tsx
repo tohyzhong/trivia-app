@@ -240,7 +240,8 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
           {user.username !== usernameFromRedux && (
             <>
               {currUserRole === "user" ||
-              (currUserRole === "admin" && user.role === "superadmin") ? (
+              (currUserRole === "admin" &&
+                (user.role === "superadmin" || user.role === "admin")) ? (
                 <button
                   className={`report-button ${reportSending && "disabled"}`}
                   onClick={() => handleReport(user.username)}
