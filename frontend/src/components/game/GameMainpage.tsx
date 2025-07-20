@@ -8,10 +8,12 @@ import { FaWpforms } from "react-icons/fa";
 import SoloModeLogo from "../../assets/solo_mode.png";
 import MultiplayerModeLogo from "../../assets/multiplayer_mode.png";
 import LeaderboardLogo from "../../assets/leaderboard_logo.png";
-import VersusLogo from "../../assets/versus.png";
-import CoopLogo from "../../assets/coop.png";
 import ClassicLogo from "../../assets/classic.png";
 import KnowledgeLogo from "../../assets/knowledge.png";
+import CoopClassicLogo from "../../assets/coop_classic.png";
+import CoopKnowledgeLogo from "../../assets/coop_knowledge.png";
+import VersusClassicLogo from "../../assets/versus_classic.png";
+import VersusKnowledgeLogo from "../../assets/versus_knowledge.png";
 import BrowseLogo from "../../assets/browse.png";
 
 import { useInitSound } from "../../hooks/useInitSound";
@@ -83,28 +85,28 @@ export const GameMainpage: React.FC = () => {
       gameType: "coop-classic",
       description:
         "Team up with your buddies in a quiz with multiple-choice questions about memes in a timed format.",
-      image: CoopLogo
+      image: CoopClassicLogo
     },
     {
       name: "Co-op - Knowledge",
       gameType: "coop-knowledge",
       description:
         "Team up with your buddies in an open-ended test of meme knowledge",
-      image: CoopLogo
+      image: CoopKnowledgeLogo
     },
     {
       name: "Versus - Classic",
       gameType: "versus-classic",
       description:
         "Compete against your friends in a quiz with multiple-choice questions about memes in a timed format.",
-      image: VersusLogo
+      image: VersusClassicLogo
     },
     {
       name: "Versus - Knowledge",
       gameType: "versus-knowledge",
       description:
         "Compete against your friends and test your knowledge with open-ended questions.",
-      image: VersusLogo
+      image: VersusKnowledgeLogo
     },
     {
       name: "Browse Lobbies",
