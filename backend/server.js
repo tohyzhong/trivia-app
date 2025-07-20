@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
 import { initSocket } from "./socket.js";
-// import generateQuestions from "./utils/questionbank.js";
 
 import authRoutes from "./routes/auth.js";
 import profileRoutes from "./routes/profile.js";
@@ -19,7 +18,6 @@ import shopRoutes from "./routes/shop.js";
 
 import morgan from "morgan";
 import runSchedulers from "./utils/tasks.js";
-import generateQuestions from "./utils/questionbank.js";
 
 dotenv.config();
 const allowedOrigins = [
@@ -122,8 +120,5 @@ server.listen(8080, () => {
 
 // Run scheduled tasks
 runSchedulers();
-
-// Generate sample Classic Questions
-// generateQuestions();
 
 export default app;
