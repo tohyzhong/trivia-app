@@ -82,6 +82,16 @@ const Settings: React.FC = () => {
 
   // Handle profile picture change
   const handleProfilePictureChange = async () => {
+    if (!isValidImageUrl(newProfilePictureUrl)) {
+      dispatch(
+        setError({
+          errorMessage: "Please enter a valid image URL",
+          success: false
+        })
+      );
+      return;
+    }
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/settings/update-profile-picture`,
