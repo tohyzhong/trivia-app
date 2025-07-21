@@ -21,7 +21,12 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
   const powerups = [
     {
       name: "Hint Boost",
-      description: "Eliminates 2 wrong answers",
+      description: (
+        <>
+          Classic: Eliminates 2 wrong answers
+          <br /> Knowledge: Provides the first 2 letters
+        </>
+      ),
       cost: 40,
       image: <HiOutlineLightBulb />
     },
@@ -33,7 +38,12 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
     },
     {
       name: "Double Points",
-      description: "Doubles the score for 1 question (Does not stack)",
+      description: (
+        <>
+          Doubles the score for 1 question
+          <br /> (Does not stack)
+        </>
+      ),
       cost: 40,
       image: <TbMultiplier2X />
     }
