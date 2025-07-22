@@ -230,6 +230,11 @@ const Settings: React.FC = () => {
 
       await response.json();
 
+      if (!response.ok) {
+        throw new Error();
+        return;
+      }
+
       triggerDeleteCooldown();
       dispatch(
         setError({
