@@ -9,6 +9,7 @@ import { TbMultiplier2X } from "react-icons/tb";
 import { setCurrency, setPowerups } from "../../../redux/lobbySlice";
 import { useDispatch } from "react-redux";
 import { setError } from "../../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 const Shop = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useDispatch();
@@ -125,50 +126,57 @@ const Shop = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <div className="shop-overlay">
-      <div className="shop-window">
-        <IoClose className="close-button" onClick={onClose} />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="shop-overlay">
+        <div className="shop-window">
+          <IoClose className="close-button" onClick={onClose} />
 
-        <h2 className="shop-title">
-          <GiShoppingCart /> Currency Shop
-        </h2>
+          <h2 className="shop-title">
+            <GiShoppingCart /> Currency Shop
+          </h2>
 
-        <div className="section">
-          <h3 className="section-title">Top Up</h3>
-          {topups.map((item) => (
-            <button
-              key={item.amount}
-              className="shop-item topup"
-              onClick={() => handleTopUp(item)}
-            >
-              <span className="topup-amount">
-                {item.amount} <FaCoins className="coin-icon" />
-              </span>
-              <span className="topup-price bold">{item.price}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="section">
-          <h3 className="section-title">Power-ups</h3>
-          {powerups.map((item) => (
-            <div className="shop-item powerup" key={item.name}>
-              <div className="powerup-icon">{item.image}</div>
-              <div className="powerup-info">
-                <div className="bold">{item.name}</div>
-                <div className="desc">{item.description}</div>
-              </div>
+          <div className="section">
+            <h3 className="section-title">Top Up</h3>
+            {topups.map((item) => (
               <button
-                className="powerup-button"
-                onClick={() => handlePurchase(item)}
+                key={item.amount}
+                className="shop-item topup"
+                onClick={() => handleTopUp(item)}
               >
-                {item.cost} <FaCoins className="coin-icon" />
+                <span className="topup-amount">
+                  {item.amount} <FaCoins className="coin-icon" />
+                </span>
+                <span className="topup-price bold">{item.price}</span>
               </button>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="section">
+            <h3 className="section-title">Power-ups</h3>
+            {powerups.map((item) => (
+              <div className="shop-item powerup" key={item.name}>
+                <div className="powerup-icon">{item.image}</div>
+                <div className="powerup-info">
+                  <div className="bold">{item.name}</div>
+                  <div className="desc">{item.description}</div>
+                </div>
+                <button
+                  className="powerup-button"
+                  onClick={() => handlePurchase(item)}
+                >
+                  {item.cost} <FaCoins className="coin-icon" />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

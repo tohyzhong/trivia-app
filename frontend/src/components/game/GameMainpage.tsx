@@ -21,6 +21,7 @@ import PauseOverlay from "./PauseOverlay";
 import { useBGMResumeOverlay } from "../../hooks/useBGMResumeOverlay";
 import { playClickSound } from "../../utils/soundManager";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface SubModes {
   name: string;
@@ -133,102 +134,111 @@ export const GameMainpage: React.FC = () => {
   };
 
   return (
-    <div
-      className={`game-mainpage ${isSoundPopupOpen ? "dimmed-background" : ""}`}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
-      {isPopupOpen && (
-        <ModeSelect
-          mode={popupMode}
-          submodes={
-            popupMode === "Solo Mode" ? soloSubmodes : multiplayerSubmodes
-          }
-          setActive={setIsPopupOpen}
-        />
-      )}
-      <div className="welcome-message">
-        <h1>Welcome to The Rizz Quiz</h1>
-        <p>Select a game mode below</p>
-      </div>
-      <div className="mode-selection">
-        {modes.map((mode, index) => (
-          <div className="mode-card" key={index}>
-            <img
-              src={mode.logo}
-              alt={`${mode.name} logo`}
-              className="mode-logo"
-            />
-            <h2 className="mode-name">{mode.name}</h2>
-            <p className="mode-description">{mode.description}</p>
-            {mode.name === "Leaderboard" ? (
-              <Link to="/leaderboard">
+      <div
+        className={`game-mainpage ${isSoundPopupOpen ? "dimmed-background" : ""}`}
+      >
+        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+        {isPopupOpen && (
+          <ModeSelect
+            mode={popupMode}
+            submodes={
+              popupMode === "Solo Mode" ? soloSubmodes : multiplayerSubmodes
+            }
+            setActive={setIsPopupOpen}
+          />
+        )}
+        <div className="welcome-message">
+          <h1>Welcome to The Rizz Quiz</h1>
+          <p>Select a game mode below</p>
+        </div>
+        <div className="mode-selection">
+          {modes.map((mode, index) => (
+            <div className="mode-card" key={index}>
+              <img
+                src={mode.logo}
+                alt={`${mode.name} logo`}
+                className="mode-logo"
+              />
+              <h2 className="mode-name">{mode.name}</h2>
+              <p className="mode-description">{mode.description}</p>
+              {mode.name === "Leaderboard" ? (
+                <Link to="/leaderboard">
+                  <button
+                    className="mode-play-button"
+                    onClick={() => {
+                      playClickSound();
+                    }}
+                    disabled={isSoundPopupOpen}
+                  >
+                    {mode.buttonText}
+                  </button>
+                </Link>
+              ) : (
                 <button
                   className="mode-play-button"
                   onClick={() => {
                     playClickSound();
+                    handleModeClick(mode.name);
                   }}
                   disabled={isSoundPopupOpen}
                 >
                   {mode.buttonText}
                 </button>
-              </Link>
-            ) : (
-              <button
-                className="mode-play-button"
-                onClick={() => {
-                  playClickSound();
-                  handleModeClick(mode.name);
-                }}
-                disabled={isSoundPopupOpen}
-              >
-                {mode.buttonText}
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      <IoSettingsOutline
-        onClick={() => {
-          playClickSound();
-          setIsSoundPopupOpen(true);
-        }}
-        className="sound-settings-icon"
-      />
-      <p className="hover-text sound-settings-icon-text">Game Settings</p>
+              )}
+            </div>
+          ))}
+        </div>
+        <IoSettingsOutline
+          onClick={() => {
+            playClickSound();
+            setIsSoundPopupOpen(true);
+          }}
+          className="sound-settings-icon"
+        />
+        <p className="hover-text sound-settings-icon-text">Game Settings</p>
 
-      {isSoundPopupOpen && (
-        <div className="sound-settings-popup">
-          <IoClose
-            className="submode-select-close"
+        {isSoundPopupOpen && (
+          <div className="sound-settings-popup">
+            <IoClose
+              className="submode-select-close"
+              onClick={() => {
+                playClickSound();
+                setIsSoundPopupOpen(false);
+              }}
+            />
+            <SoundSettings />
+          </div>
+        )}
+
+        <Link to="/question-request">
+          <FaWpforms
             onClick={() => {
               playClickSound();
-              setIsSoundPopupOpen(false);
             }}
+            className="question-submit-icon"
           />
-          <SoundSettings />
-        </div>
-      )}
+        </Link>
+        <p className="hover-text question-submit-icon-text">
+          Submit A Question
+        </p>
 
-      <Link to="/question-request">
-        <FaWpforms
-          onClick={() => {
-            playClickSound();
-          }}
-          className="question-submit-icon"
-        />
-      </Link>
-      <p className="hover-text question-submit-icon-text">Submit A Question</p>
-
-      <Link to="/contact">
-        <IoHelp
-          onClick={() => {
-            playClickSound();
-          }}
-          className="help-icon"
-        />
-      </Link>
-      <p className="hover-text help-icon-text">Contact Us</p>
-    </div>
+        <Link to="/contact">
+          <IoHelp
+            onClick={() => {
+              playClickSound();
+            }}
+            className="help-icon"
+          />
+        </Link>
+        <p className="hover-text help-icon-text">Contact Us</p>
+      </div>
+    </motion.div>
   );
 };
 

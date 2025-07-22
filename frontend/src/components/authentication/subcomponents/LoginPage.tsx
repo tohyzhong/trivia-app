@@ -6,6 +6,7 @@ import "../../../styles/loginpage.css";
 import ReturnButton from "./ReturnButton";
 import { RootState } from "../../../redux/store";
 import { setError } from "../../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 const LoginPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -71,40 +72,47 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="form-container">
-        <form onSubmit={handleLogin}>
-          {loginError && <div className="error">{loginError}</div>}
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
-            required
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-          />
-          <Link className="forgot-password" to="/auth/forgotpassword">
-            Forgot Password?
-          </Link>
-          <div className="buttons-container">
-            <ReturnButton />
-            <button type="submit" className="submit-button">
-              Login
-            </button>
-          </div>
-          <p className="register-message">
-            Don&apos;t have an account?{" "}
-            <Link to="/auth/signup">Sign up here!</Link>
-          </p>
-        </form>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="login-page">
+        <div className="form-container">
+          <form onSubmit={handleLogin}>
+            {loginError && <div className="error">{loginError}</div>}
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+            />
+            <Link className="forgot-password" to="/auth/forgotpassword">
+              Forgot Password?
+            </Link>
+            <div className="buttons-container">
+              <ReturnButton />
+              <button type="submit" className="submit-button">
+                Login
+              </button>
+            </div>
+            <p className="register-message">
+              Don&apos;t have an account?{" "}
+              <Link to="/auth/signup">Sign up here!</Link>
+            </p>
+          </form>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

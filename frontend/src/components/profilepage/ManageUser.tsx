@@ -178,242 +178,251 @@ const ManageUser: React.FC = () => {
   return loading ? (
     <></>
   ) : (
-    <div className="manage-container">
-      <div className="profile-header">
-        <Link to={`/profile/${paramUsername}`}>
-          <button className="back-button">← Back</button>
-        </Link>
-        <h1 className="profile-name">Manage {user.username}&apos;s Profile</h1>
-      </div>
-      <div className="user-info-container">
-        <div className="user-info">
-          <img
-            src={user?.profilePicture || defaultAvatar}
-            alt={user.username}
-            className="profile-picture"
-          />
-          <div className="user-info-details">
-            <p>
-              <strong>Username:</strong> {user.username}
-            </p>
-            <p>
-              <strong>Role:</strong>{" "}
-              <span className="profile-role">
-                {user.role === "superadmin"
-                  ? "👑 Superadmin"
-                  : user.role === "admin"
-                    ? "🛡️ Admin"
-                    : "👤 User"}
-              </span>
-            </p>
-            <p>
-              <strong>Status: </strong>
-              <span
-                className={`verification-status ${
-                  user.gameBan
-                    ? "banned"
-                    : user.verified
-                      ? "verified"
-                      : "not-verified"
-                }`}
-              >
-                {user.gameBan
-                  ? "Banned"
-                  : user.verified
-                    ? "Verified"
-                    : "Not Verified"}
-              </span>
-            </p>
-          </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="manage-container">
+        <div className="profile-header">
+          <Link to={`/profile/${paramUsername}`}>
+            <button className="back-button">← Back</button>
+          </Link>
+          <h1 className="profile-name">
+            Manage {user.username}&apos;s Profile
+          </h1>
         </div>
-        <div className="role-update-actions">
-          {(() => {
-            const roleActions: {
-              label: string;
-              newRole: string;
-              type: "promote" | "demote";
-            }[] = [];
+        <div className="user-info-container">
+          <div className="user-info">
+            <img
+              src={user?.profilePicture || defaultAvatar}
+              alt={user.username}
+              className="profile-picture"
+            />
+            <div className="user-info-details">
+              <p>
+                <strong>Username:</strong> {user.username}
+              </p>
+              <p>
+                <strong>Role:</strong>{" "}
+                <span className="profile-role">
+                  {user.role === "superadmin"
+                    ? "👑 Superadmin"
+                    : user.role === "admin"
+                      ? "🛡️ Admin"
+                      : "👤 User"}
+                </span>
+              </p>
+              <p>
+                <strong>Status: </strong>
+                <span
+                  className={`verification-status ${
+                    user.gameBan
+                      ? "banned"
+                      : user.verified
+                        ? "verified"
+                        : "not-verified"
+                  }`}
+                >
+                  {user.gameBan
+                    ? "Banned"
+                    : user.verified
+                      ? "Verified"
+                      : "Not Verified"}
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="role-update-actions">
+            {(() => {
+              const roleActions: {
+                label: string;
+                newRole: string;
+                type: "promote" | "demote";
+              }[] = [];
 
-            if (currUserRole === "superadmin") {
-              if (user.role === "superadmin") {
-                roleActions.push({
-                  label: "Demote to Admin",
-                  newRole: "admin",
-                  type: "demote"
-                });
-              } else if (user.role === "admin") {
-                roleActions.push(
-                  {
-                    label: "Demote to User",
-                    newRole: "user",
+              if (currUserRole === "superadmin") {
+                if (user.role === "superadmin") {
+                  roleActions.push({
+                    label: "Demote to Admin",
+                    newRole: "admin",
                     type: "demote"
-                  },
-                  {
-                    label: "Promote to Superadmin",
-                    newRole: "superadmin",
+                  });
+                } else if (user.role === "admin") {
+                  roleActions.push(
+                    {
+                      label: "Demote to User",
+                      newRole: "user",
+                      type: "demote"
+                    },
+                    {
+                      label: "Promote to Superadmin",
+                      newRole: "superadmin",
+                      type: "promote"
+                    }
+                  );
+                } else if (user.role === "user") {
+                  roleActions.push({
+                    label: "Promote to Admin",
+                    newRole: "admin",
                     type: "promote"
-                  }
-                );
-              } else if (user.role === "user") {
-                roleActions.push({
-                  label: "Promote to Admin",
-                  newRole: "admin",
-                  type: "promote"
-                });
+                  });
+                }
+              } else if (currUserRole === "admin") {
+                if (user.role === "user") {
+                  roleActions.push({
+                    label: "Promote to Admin",
+                    newRole: "admin",
+                    type: "promote"
+                  });
+                }
               }
-            } else if (currUserRole === "admin") {
-              if (user.role === "user") {
-                roleActions.push({
-                  label: "Promote to Admin",
-                  newRole: "admin",
-                  type: "promote"
-                });
-              }
-            }
 
-            return roleActions.map(({ label, newRole, type }) => (
-              <button
-                key={label}
-                className={type === "promote" ? "unban-button" : "ban-button"}
-                onClick={async () => {
-                  try {
-                    const response = await fetch(
-                      `${import.meta.env.VITE_API_URL}/api/profile/updaterole/${user.username}`,
-                      {
-                        method: "PUT",
-                        headers: {
-                          "Content-Type": "application/json"
-                        },
-                        credentials: "include",
-                        body: JSON.stringify({ role: newRole })
-                      }
-                    );
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                      dispatch(
-                        setError({
-                          errorMessage:
-                            data.message || `User role updated to ${newRole}`,
-                          success: true
-                        })
+              return roleActions.map(({ label, newRole, type }) => (
+                <button
+                  key={label}
+                  className={type === "promote" ? "unban-button" : "ban-button"}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/profile/updaterole/${user.username}`,
+                        {
+                          method: "PUT",
+                          headers: {
+                            "Content-Type": "application/json"
+                          },
+                          credentials: "include",
+                          body: JSON.stringify({ role: newRole })
+                        }
                       );
-                      fetchUser();
-                    } else {
+
+                      const data = await response.json();
+
+                      if (response.ok) {
+                        dispatch(
+                          setError({
+                            errorMessage:
+                              data.message || `User role updated to ${newRole}`,
+                            success: true
+                          })
+                        );
+                        fetchUser();
+                      } else {
+                        dispatch(
+                          setError({
+                            errorMessage:
+                              data.message || "Failed to update role.",
+                            success: false
+                          })
+                        );
+                      }
+                    } catch (err) {
+                      console.error("Error updating user role:", err);
                       dispatch(
                         setError({
-                          errorMessage:
-                            data.message || "Failed to update role.",
+                          errorMessage: "Server error while updating role.",
                           success: false
                         })
                       );
                     }
-                  } catch (err) {
-                    console.error("Error updating user role:", err);
-                    dispatch(
-                      setError({
-                        errorMessage: "Server error while updating role.",
-                        success: false
-                      })
-                    );
-                  }
-                }}
-              >
-                {label}
-              </button>
-            ));
-          })()}
-        </div>
-      </div>
-
-      <div className="admin-actions">
-        <h2>Manage User Status</h2>
-        <div className="ban-info-details">
-          <p>
-            <strong>Chat Access Status:</strong>{" "}
-            <span className={user.chatBan ? "banned" : "not-banned"}>
-              {user.chatBan ? "Banned" : "Allowed"}
-            </span>
-          </p>
-          <p>
-            <strong>Game Access Status: </strong>{" "}
-            <span className={user.gameBan ? "banned" : "not-banned"}>
-              {user.gameBan ? "Banned" : "Allowed"}
-            </span>
-          </p>
+                  }}
+                >
+                  {label}
+                </button>
+              ));
+            })()}
+          </div>
         </div>
 
-        {(currUserRole === "superadmin" || // Superadmin can ban anyone
-          (currUserRole === "admin" && user.role === "user")) && ( // Admin can ban only users
-          <>
-            <div className="chat-ban-change">
-              <label>Reason:</label>
-              <input
-                type="text"
-                value={chatBanReason}
-                onChange={(e) => setChatBanReason(e.target.value)}
-                placeholder={`Enter a reason for ${user.chatBan ? "un" : ""}banning ${user.username}`}
-              />
-              <button
-                className={`${user.chatBan ? "unban-button" : "ban-button"} ${chatBanSending && "disabled"}`}
-                onClick={handleChatBan}
-              >
-                Chat {user.chatBan ? "Unb" : "B"}an {user.username}
-                {chatBanSending && (
-                  <>
-                    &nbsp;
-                    <motion.div
-                      className="loading-icon-container"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 2,
-                        ease: "linear"
-                      }}
-                    >
-                      <AiOutlineLoading3Quarters className="loading-icon" />
-                    </motion.div>
-                  </>
-                )}
-              </button>
-            </div>
+        <div className="admin-actions">
+          <h2>Manage User Status</h2>
+          <div className="ban-info-details">
+            <p>
+              <strong>Chat Access Status:</strong>{" "}
+              <span className={user.chatBan ? "banned" : "not-banned"}>
+                {user.chatBan ? "Banned" : "Allowed"}
+              </span>
+            </p>
+            <p>
+              <strong>Game Access Status: </strong>{" "}
+              <span className={user.gameBan ? "banned" : "not-banned"}>
+                {user.gameBan ? "Banned" : "Allowed"}
+              </span>
+            </p>
+          </div>
 
-            <div className="game-ban-change">
-              <label>Reason:</label>
-              <input
-                type="text"
-                value={gameBanReason}
-                onChange={(e) => setGameBanReason(e.target.value)}
-                placeholder={`Enter a reason for ${user.gameBan ? "un" : ""}banning ${user.username}`}
-              />
-              <button
-                className={`${user.gameBan ? "unban-button" : "ban-button"} ${gameBanSending && "disabled"}`}
-                onClick={handleGameBan}
-              >
-                Game {user.gameBan ? "Unb" : "B"}an {user.username}
-                {gameBanSending && (
-                  <>
-                    &nbsp;
-                    <motion.div
-                      className="loading-icon-container"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 2,
-                        ease: "linear"
-                      }}
-                    >
-                      <AiOutlineLoading3Quarters className="loading-icon" />
-                    </motion.div>
-                  </>
-                )}
-              </button>
-            </div>
-          </>
-        )}
+          {(currUserRole === "superadmin" || // Superadmin can ban anyone
+            (currUserRole === "admin" && user.role === "user")) && ( // Admin can ban only users
+            <>
+              <div className="chat-ban-change">
+                <label>Reason:</label>
+                <input
+                  type="text"
+                  value={chatBanReason}
+                  onChange={(e) => setChatBanReason(e.target.value)}
+                  placeholder={`Enter a reason for ${user.chatBan ? "un" : ""}banning ${user.username}`}
+                />
+                <button
+                  className={`${user.chatBan ? "unban-button" : "ban-button"} ${chatBanSending && "disabled"}`}
+                  onClick={handleChatBan}
+                >
+                  Chat {user.chatBan ? "Unb" : "B"}an {user.username}
+                  {chatBanSending && (
+                    <>
+                      &nbsp;
+                      <motion.div
+                        className="loading-icon-container"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear"
+                        }}
+                      >
+                        <AiOutlineLoading3Quarters className="loading-icon" />
+                      </motion.div>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="game-ban-change">
+                <label>Reason:</label>
+                <input
+                  type="text"
+                  value={gameBanReason}
+                  onChange={(e) => setGameBanReason(e.target.value)}
+                  placeholder={`Enter a reason for ${user.gameBan ? "un" : ""}banning ${user.username}`}
+                />
+                <button
+                  className={`${user.gameBan ? "unban-button" : "ban-button"} ${gameBanSending && "disabled"}`}
+                  onClick={handleGameBan}
+                >
+                  Game {user.gameBan ? "Unb" : "B"}an {user.username}
+                  {gameBanSending && (
+                    <>
+                      &nbsp;
+                      <motion.div
+                        className="loading-icon-container"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear"
+                        }}
+                      >
+                        <AiOutlineLoading3Quarters className="loading-icon" />
+                      </motion.div>
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

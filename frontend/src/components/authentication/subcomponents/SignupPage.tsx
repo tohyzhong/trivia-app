@@ -10,6 +10,7 @@ import {
   englishDataset,
   englishRecommendedTransformers
 } from "obscenity";
+import { motion } from "framer-motion";
 
 const SignupPage: React.FC = () => {
   const matcher = new RegExpMatcher({
@@ -80,60 +81,67 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="signup-form-container">
-      <form onSubmit={handleRegister}>
-        {errorMessages.length > 0 && (
-          <div className="error-message">
-            {errorMessages.map((error, index) => (
-              <p key={index}>{error}</p>
-            ))}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="signup-form-container">
+        <form onSubmit={handleRegister}>
+          {errorMessages.length > 0 && (
+            <div className="error-message">
+              {errorMessages.map((error, index) => (
+                <p key={index}>{error}</p>
+              ))}
+            </div>
+          )}
+          <div>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+            />
           </div>
-        )}
-        <div>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-          />
-        </div>
-        <div>
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            value={passwordConfirmation}
-            onChange={(e) => setPasswordConfirmation(e.target.value)}
-            placeholder="Confirm Password"
-            required
-          />
-        </div>
-        <p className="register-message">
-          Have an account? <Link to="/auth/login">Log in here!</Link>
-        </p>
-        <div className="buttons-container">
-          <ReturnButton />
-          <button type="submit" className="register-button">
-            Register
-          </button>
-        </div>
-      </form>
-    </div>
+          <div>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              required
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+          <p className="register-message">
+            Have an account? <Link to="/auth/login">Log in here!</Link>
+          </p>
+          <div className="buttons-container">
+            <ReturnButton />
+            <button type="submit" className="register-button">
+              Register
+            </button>
+          </div>
+        </form>
+      </div>
+    </motion.div>
   );
 };
 

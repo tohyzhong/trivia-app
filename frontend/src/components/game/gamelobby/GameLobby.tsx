@@ -12,6 +12,7 @@ import { useBGMResumeOverlay } from "../../../hooks/useBGMResumeOverlay";
 import SoundSettings from "../subcomponents/SoundSettings";
 import { playClickSound } from "../../../utils/soundManager";
 import { IoClose, IoSettingsOutline } from "react-icons/io5";
+import { motion } from "framer-motion";
 
 interface GameSetting {
   numQuestions: number;
@@ -94,52 +95,59 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
   return loading ? (
     <></>
   ) : (
-    <div className="game-lobby-full">
-      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
-      <div className="game-lobby-container">
-        <GameSettings
-          lobbyId={lobbyId}
-          gameSettings={lobbySettings}
-          host={host}
-          gameType={gameType}
-        />
-        <GameUsers
-          lobbyId={lobbyId}
-          usernames={lobbyUsers}
-          joinRequests={joinRequests}
-          gameType={gameType}
-          handleLeave={handleLeave}
-          host={host}
-        />
-        <GameChat
-          lobbyId={lobbyId}
-          chatMessages={lobbyChat}
-          profilePictures={profilePictures}
-        />
-      </div>
-
-      <IoSettingsOutline
-        onClick={() => {
-          playClickSound();
-          setIsSoundPopupOpen(true);
-        }}
-        className="sound-settings-icon"
-      />
-      <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
-
-      {isSoundPopupOpen && (
-        <div className="sound-settings-popup">
-          <IoClose
-            className="submode-select-close"
-            onClick={() => {
-              playClickSound();
-              setIsSoundPopupOpen(false);
-            }}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="game-lobby-full">
+        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+        <div className="game-lobby-container">
+          <GameSettings
+            lobbyId={lobbyId}
+            gameSettings={lobbySettings}
+            host={host}
+            gameType={gameType}
           />
-          <SoundSettings />
+          <GameUsers
+            lobbyId={lobbyId}
+            usernames={lobbyUsers}
+            joinRequests={joinRequests}
+            gameType={gameType}
+            handleLeave={handleLeave}
+            host={host}
+          />
+          <GameChat
+            lobbyId={lobbyId}
+            chatMessages={lobbyChat}
+            profilePictures={profilePictures}
+          />
         </div>
-      )}
-    </div>
+
+        <IoSettingsOutline
+          onClick={() => {
+            playClickSound();
+            setIsSoundPopupOpen(true);
+          }}
+          className="sound-settings-icon"
+        />
+        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
+
+        {isSoundPopupOpen && (
+          <div className="sound-settings-popup">
+            <IoClose
+              className="submode-select-close"
+              onClick={() => {
+                playClickSound();
+                setIsSoundPopupOpen(false);
+              }}
+            />
+            <SoundSettings />
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

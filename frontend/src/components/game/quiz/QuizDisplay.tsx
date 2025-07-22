@@ -204,98 +204,105 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
   return loading ? (
     <GameLoading />
   ) : (
-    <div className="game-lobby-full">
-      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
-      <div className="game-lobby-container">
-        <div className="question-display-container">
-          <div className="question-display-lobby-details">
-            <button className="leave-button" onClick={handleLeaveLocal}>
-              Leave
-            </button>
-            <p>Lobby ID: {lobbyId}</p>
-            <p>Host: {host}</p>
-          </div>
-          {gameState.question ? (
-            gameType.includes("classic") ? (
-              <Classic
-                lobbyId={lobbyId}
-                currentQuestion={gameState.currentQuestion}
-                totalQuestions={totalQuestions}
-                classicQuestion={gameState.question as ClassicQuestion}
-                optionSelected={optionSelected}
-                submitted={submitted || answerRevealed}
-                answerRevealed={answerRevealed}
-                playerStates={gameState.playerStates}
-                teamStates={gameState.team}
-                profilePictures={profilePictures}
-                serverTimeNow={serverTimeNow}
-                readyCountdown={{
-                  countdownStarted: gameState.countdownStarted,
-                  countdownStartTime: gameState.countdownStartTime
-                }}
-              />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="game-lobby-full">
+        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+        <div className="game-lobby-container">
+          <div className="question-display-container">
+            <div className="question-display-lobby-details">
+              <button className="leave-button" onClick={handleLeaveLocal}>
+                Leave
+              </button>
+              <p>Lobby ID: {lobbyId}</p>
+              <p>Host: {host}</p>
+            </div>
+            {gameState.question ? (
+              gameType.includes("classic") ? (
+                <Classic
+                  lobbyId={lobbyId}
+                  currentQuestion={gameState.currentQuestion}
+                  totalQuestions={totalQuestions}
+                  classicQuestion={gameState.question as ClassicQuestion}
+                  optionSelected={optionSelected}
+                  submitted={submitted || answerRevealed}
+                  answerRevealed={answerRevealed}
+                  playerStates={gameState.playerStates}
+                  teamStates={gameState.team}
+                  profilePictures={profilePictures}
+                  serverTimeNow={serverTimeNow}
+                  readyCountdown={{
+                    countdownStarted: gameState.countdownStarted,
+                    countdownStartTime: gameState.countdownStartTime
+                  }}
+                />
+              ) : (
+                <Knowledge
+                  lobbyId={lobbyId}
+                  currentQuestion={gameState.currentQuestion}
+                  totalQuestions={totalQuestions}
+                  knowledgeQuestion={gameState.question as KnowledgeQuestion}
+                  submitted={submitted || answerRevealed}
+                  answerRevealed={answerRevealed}
+                  playerStates={gameState.playerStates}
+                  teamStates={gameState.team}
+                  profilePictures={profilePictures}
+                  serverTimeNow={serverTimeNow}
+                  readyCountdown={{
+                    countdownStarted: gameState.countdownStarted,
+                    countdownStartTime: gameState.countdownStartTime
+                  }}
+                />
+              )
             ) : (
-              <Knowledge
-                lobbyId={lobbyId}
-                currentQuestion={gameState.currentQuestion}
-                totalQuestions={totalQuestions}
-                knowledgeQuestion={gameState.question as KnowledgeQuestion}
-                submitted={submitted || answerRevealed}
-                answerRevealed={answerRevealed}
-                playerStates={gameState.playerStates}
-                teamStates={gameState.team}
-                profilePictures={profilePictures}
-                serverTimeNow={serverTimeNow}
-                readyCountdown={{
-                  countdownStarted: gameState.countdownStarted,
-                  countdownStartTime: gameState.countdownStartTime
-                }}
-              />
-            )
-          ) : (
-            <GameLoading />
-          )}
-          <div className="question-timer-container">
-            <div className="question-timer-border">
-              <motion.div
-                key={`timer-${answerRevealed}`}
-                className="question-timer"
-                style={{ width: `${barWidthPercent}%` }}
-              />
-              <div className="numeric-timer">{displayTime}s</div>
+              <GameLoading />
+            )}
+            <div className="question-timer-container">
+              <div className="question-timer-border">
+                <motion.div
+                  key={`timer-${answerRevealed}`}
+                  className="question-timer"
+                  style={{ width: `${barWidthPercent}%` }}
+                />
+                <div className="numeric-timer">{displayTime}s</div>
+              </div>
             </div>
           </div>
-        </div>
-        <GameChat
-          lobbyId={lobbyId}
-          chatMessages={lobbyChat}
-          playerStates={gameState.playerStates}
-          gameType={gameType}
-          profilePictures={profilePictures}
-        />
-        <IoSettingsOutline
-          onClick={() => {
-            playClickSound();
-            setIsSoundPopupOpen(true);
-          }}
-          className="sound-settings-icon"
-        />
-        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
+          <GameChat
+            lobbyId={lobbyId}
+            chatMessages={lobbyChat}
+            playerStates={gameState.playerStates}
+            gameType={gameType}
+            profilePictures={profilePictures}
+          />
+          <IoSettingsOutline
+            onClick={() => {
+              playClickSound();
+              setIsSoundPopupOpen(true);
+            }}
+            className="sound-settings-icon"
+          />
+          <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
-        {isSoundPopupOpen && (
-          <div className="sound-settings-popup">
-            <IoClose
-              className="submode-select-close"
-              onClick={() => {
-                playClickSound();
-                setIsSoundPopupOpen(false);
-              }}
-            />
-            <SoundSettings />
-          </div>
-        )}
+          {isSoundPopupOpen && (
+            <div className="sound-settings-popup">
+              <IoClose
+                className="submode-select-close"
+                onClick={() => {
+                  playClickSound();
+                  setIsSoundPopupOpen(false);
+                }}
+              />
+              <SoundSettings />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import ToggleButton from "./ToggleButton";
 import { setError } from "../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 interface Friend {
   username: string;
@@ -240,34 +241,41 @@ const FriendsList: React.FC = () => {
   ];
 
   return (
-    <div className="friendslist-container">
-      <h2> {username}&apos;s Friends</h2>
-      {loggedInUser === username && (
-        <ToggleButton
-          onClick={handleButtonClick}
-          incoming={renderIncoming}
-          numFriends={incomingFriends.length}
-        />
-      )}
-
-      {(renderIncoming ? incomingFriends : friends).length === 0 ? (
-        <p>
-          You have{" "}
-          {renderIncoming ? "no incoming friend requests" : "no friends yet."}
-        </p>
-      ) : (
-        <div className="ag-theme-alpine">
-          <AgGridReact
-            pagination={true}
-            paginationPageSize={20}
-            paginationPageSizeSelector={[20, 50, 100]}
-            columnDefs={columnDefs}
-            rowData={renderIncoming ? incomingFriends : friends}
-            domLayout="autoHeight"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="friendslist-container">
+        <h2> {username}&apos;s Friends</h2>
+        {loggedInUser === username && (
+          <ToggleButton
+            onClick={handleButtonClick}
+            incoming={renderIncoming}
+            numFriends={incomingFriends.length}
           />
-        </div>
-      )}
-    </div>
+        )}
+
+        {(renderIncoming ? incomingFriends : friends).length === 0 ? (
+          <p>
+            You have{" "}
+            {renderIncoming ? "no incoming friend requests" : "no friends yet."}
+          </p>
+        ) : (
+          <div className="ag-theme-alpine">
+            <AgGridReact
+              pagination={true}
+              paginationPageSize={20}
+              paginationPageSizeSelector={[20, 50, 100]}
+              columnDefs={columnDefs}
+              rowData={renderIncoming ? incomingFriends : friends}
+              domLayout="autoHeight"
+            />
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

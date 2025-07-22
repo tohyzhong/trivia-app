@@ -575,184 +575,191 @@ const AdminApprovalDashboard: React.FC = () => {
   ];
 
   return role.includes("admin") ? (
-    <div className="admin-approval-dashboard">
-      <h2 className="admin-header">Admin Question Approval Dashboard</h2>
-      <div className="buttons-container">
-        {availableModes.map((mode) => (
-          <button
-            key={mode}
-            className={`mode-select-buttons ${mode === searchMode ? "selected" : ""}`}
-            onClick={() => {
-              setSearchMode(mode);
-              setSearchQuery("");
-              setSearchResults([]);
-            }}
-          >
-            {mode}
-          </button>
-        ))}
-      </div>
-      <br />
-
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={handleSearch}
-        placeholder="Search by Questions/Options or Search by User Contributor"
-        className="search-input"
-      />
-
-      <div className="search-results">
-        {isLoading && <p>Loading...</p>}
-        <ul className="search-results-list">
-          {searchResults.map((result) => (
-            <li
-              key={result._id}
-              onClick={() => handleQuestionClick(result)}
-              className="search-result-item"
-            >
-              {searchMode === "Classic"
-                ? result.question
-                : result.correctOption}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {selectedQuestion && generateQuestionDisplay()}
-
-      <div className="unapproved-questions">
-        {showManualPopup && pendingApprovalId && (
-          <div className="manual-category-popup-overlay">
-            <div className="manual-category-popup">
-              <h3>Enter Manual Category</h3>
-              <input
-                type="text"
-                value={manualCategories[pendingApprovalId] || ""}
-                onChange={(e) =>
-                  setManualCategories((prev) => ({
-                    ...prev,
-                    [pendingApprovalId]: e.target.value
-                  }))
-                }
-                placeholder="Type category name..."
-              />
-              <div className="popup-actions">
-                <button
-                  onClick={() => {
-                    const value = manualCategories[pendingApprovalId]?.trim();
-                    if (!value) {
-                      dispatch(
-                        setError({
-                          errorMessage: "Please enter a category.",
-                          success: false
-                        })
-                      );
-                      return;
-                    }
-                    setShowManualPopup(false);
-                    setPendingApprovalId(null);
-                    sendApproval(pendingApprovalId, value);
-                  }}
-                  className="approve-button"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => {
-                    setShowManualPopup(false);
-                    setPendingApprovalId(null);
-                  }}
-                  className="reject-button"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {showRejectPopup && pendingRejectId && (
-          <div className="manual-category-popup-overlay">
-            <div className="manual-category-popup">
-              <h3>Reason for Rejection</h3>
-              <textarea
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="Optional: Add a brief explanation"
-                style={{
-                  width: "100%",
-                  minHeight: "100px",
-                  padding: "10px",
-                  fontSize: "14px"
-                }}
-              />
-              <div className="popup-actions">
-                <button
-                  onClick={() => {
-                    sendRejection(pendingRejectId, rejectReason);
-                    setShowRejectPopup(false);
-                    setPendingRejectId(null);
-                  }}
-                  className="reject-button"
-                >
-                  Reject
-                </button>
-                <button
-                  onClick={() => {
-                    setShowRejectPopup(false);
-                    setPendingRejectId(null);
-                  }}
-                  className="approve-button"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        <h3>Unapproved Community Questions</h3>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="admin-approval-dashboard">
+        <h2 className="admin-header">Admin Question Approval Dashboard</h2>
         <div className="buttons-container">
           {availableModes.map((mode) => (
             <button
               key={mode}
-              className={`mode-select-buttons ${mode === currentMode ? "selected" : ""}`}
-              onClick={() => setCurrentMode(mode)}
+              className={`mode-select-buttons ${mode === searchMode ? "selected" : ""}`}
+              onClick={() => {
+                setSearchMode(mode);
+                setSearchQuery("");
+                setSearchResults([]);
+              }}
             >
               {mode}
             </button>
           ))}
         </div>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (currentMode === "Classic"
-            ? classicQuestions.length
-            : knowledgeQuestions.length) === 0 ? (
-          <p style={{ color: "black", textShadow: "none" }}>
-            You have no unapproved questions.
-          </p>
-        ) : (
-          <div className="ag-theme-alpine unapproved-questions-grid">
-            <AgGridReact
-              rowData={
-                currentMode === "Classic"
-                  ? classicQuestions
-                  : knowledgeQuestions
-              }
-              columnDefs={columnDefs}
-              pagination={true}
-              paginationPageSize={10}
-              paginationPageSizeSelector={[10, 20, 50]}
-              domLayout="autoHeight"
-              onCellClicked={(params) => {
-                if (params.colDef.field === "question") {
-                  handleQuestionClick(params.data);
-                }
-              }}
-            />
+        <br />
+
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder="Search by Questions/Options or Search by User Contributor"
+          className="search-input"
+        />
+
+        <div className="search-results">
+          {isLoading && <p>Loading...</p>}
+          <ul className="search-results-list">
+            {searchResults.map((result) => (
+              <li
+                key={result._id}
+                onClick={() => handleQuestionClick(result)}
+                className="search-result-item"
+              >
+                {searchMode === "Classic"
+                  ? result.question
+                  : result.correctOption}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {selectedQuestion && generateQuestionDisplay()}
+
+        <div className="unapproved-questions">
+          {showManualPopup && pendingApprovalId && (
+            <div className="manual-category-popup-overlay">
+              <div className="manual-category-popup">
+                <h3>Enter Manual Category</h3>
+                <input
+                  type="text"
+                  value={manualCategories[pendingApprovalId] || ""}
+                  onChange={(e) =>
+                    setManualCategories((prev) => ({
+                      ...prev,
+                      [pendingApprovalId]: e.target.value
+                    }))
+                  }
+                  placeholder="Type category name..."
+                />
+                <div className="popup-actions">
+                  <button
+                    onClick={() => {
+                      const value = manualCategories[pendingApprovalId]?.trim();
+                      if (!value) {
+                        dispatch(
+                          setError({
+                            errorMessage: "Please enter a category.",
+                            success: false
+                          })
+                        );
+                        return;
+                      }
+                      setShowManualPopup(false);
+                      setPendingApprovalId(null);
+                      sendApproval(pendingApprovalId, value);
+                    }}
+                    className="approve-button"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowManualPopup(false);
+                      setPendingApprovalId(null);
+                    }}
+                    className="reject-button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {showRejectPopup && pendingRejectId && (
+            <div className="manual-category-popup-overlay">
+              <div className="manual-category-popup">
+                <h3>Reason for Rejection</h3>
+                <textarea
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Optional: Add a brief explanation"
+                  style={{
+                    width: "100%",
+                    minHeight: "100px",
+                    padding: "10px",
+                    fontSize: "14px"
+                  }}
+                />
+                <div className="popup-actions">
+                  <button
+                    onClick={() => {
+                      sendRejection(pendingRejectId, rejectReason);
+                      setShowRejectPopup(false);
+                      setPendingRejectId(null);
+                    }}
+                    className="reject-button"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowRejectPopup(false);
+                      setPendingRejectId(null);
+                    }}
+                    className="approve-button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          <h3>Unapproved Community Questions</h3>
+          <div className="buttons-container">
+            {availableModes.map((mode) => (
+              <button
+                key={mode}
+                className={`mode-select-buttons ${mode === currentMode ? "selected" : ""}`}
+                onClick={() => setCurrentMode(mode)}
+              >
+                {mode}
+              </button>
+            ))}
           </div>
-        )}
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (currentMode === "Classic"
+              ? classicQuestions.length
+              : knowledgeQuestions.length) === 0 ? (
+            <p style={{ color: "black", textShadow: "none" }}>
+              You have no unapproved questions.
+            </p>
+          ) : (
+            <div className="ag-theme-alpine unapproved-questions-grid">
+              <AgGridReact
+                rowData={
+                  currentMode === "Classic"
+                    ? classicQuestions
+                    : knowledgeQuestions
+                }
+                columnDefs={columnDefs}
+                pagination={true}
+                paginationPageSize={10}
+                paginationPageSizeSelector={[10, 20, 50]}
+                domLayout="autoHeight"
+                onCellClicked={(params) => {
+                  if (params.colDef.field === "question") {
+                    handleQuestionClick(params.data);
+                  }
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </motion.div>
   ) : (
     <NoAccess />
   );

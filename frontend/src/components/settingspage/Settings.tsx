@@ -305,52 +305,125 @@ const Settings: React.FC = () => {
   return !user ? (
     <></>
   ) : (
-    <div className="settings-container">
-      <h1>Profile Settings</h1>
-      <div className="user-info">
-        <img
-          src={user?.profilePicture || defaultAvatar}
-          alt={username}
-          className="profile-picture"
-        />
-        <div className="user-info-details">
-          <p>
-            <strong>Username:</strong> {username}
-          </p>
-          <p>
-            <strong>Email:</strong> {user.email ?? "Unknown"}
-          </p>
-          <p>
-            <strong>Status: </strong>
-            <span
-              className={`verification-status ${
-                user.gameBan
-                  ? "banned"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="settings-container">
+        <h1>Profile Settings</h1>
+        <div className="user-info">
+          <img
+            src={user?.profilePicture || defaultAvatar}
+            alt={username}
+            className="profile-picture"
+          />
+          <div className="user-info-details">
+            <p>
+              <strong>Username:</strong> {username}
+            </p>
+            <p>
+              <strong>Email:</strong> {user.email ?? "Unknown"}
+            </p>
+            <p>
+              <strong>Status: </strong>
+              <span
+                className={`verification-status ${
+                  user.gameBan
+                    ? "banned"
+                    : user.verified
+                      ? "verified"
+                      : "not-verified"
+                }`}
+              >
+                {user.gameBan
+                  ? "Banned"
                   : user.verified
-                    ? "verified"
-                    : "not-verified"
-              }`}
-            >
-              {user.gameBan
-                ? "Banned"
-                : user.verified
-                  ? "Verified"
-                  : "Not Verified"}
-            </span>
-          </p>
+                    ? "Verified"
+                    : "Not Verified"}
+              </span>
+            </p>
+          </div>
+          <div className="verification-email">
+            {!user.verified && (
+              <button
+                onClick={handleVerificationEmail}
+                disabled={verificationCooldown > 0 || sendingVerification}
+              >
+                {verificationCooldown > 0 ? (
+                  `Wait ${Math.ceil(verificationCooldown / 1000)}s for Resend`
+                ) : (
+                  <>
+                    Verify
+                    {sendingVerification && (
+                      <>
+                        &nbsp;
+                        <motion.div
+                          className="loading-icon-container"
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            repeat: Infinity,
+                            duration: 2,
+                            ease: "linear"
+                          }}
+                        >
+                          <AiOutlineLoading3Quarters className="loading-icon" />
+                        </motion.div>
+                      </>
+                    )}
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
-        <div className="verification-email">
-          {!user.verified && (
+
+        <div className="settings-actions">
+          <div className="profile-picture-change">
+            <label>New Profile Picture URL:</label>
+            <input
+              type="text"
+              value={newProfilePictureUrl}
+              onChange={(e) => setNewProfilePictureUrl(e.target.value)}
+              placeholder="Enter new profile picture URL"
+            />
+            <button onClick={handleProfilePictureChange}>
+              Update Profile Picture
+            </button>
+            {newProfilePictureUrl && isValidImageUrl(newProfilePictureUrl) ? (
+              <div className="image-preview">
+                <img
+                  src={newProfilePictureUrl}
+                  alt="Preview"
+                  style={{ maxWidth: "300px", marginTop: "10px" }}
+                />
+              </div>
+            ) : newProfilePictureUrl ? (
+              <p style={{ color: "red" }}>
+                ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
+              </p>
+            ) : null}
+          </div>
+
+          <div className="email-change">
+            <label>New Email:</label>
+            <input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="Enter new email"
+            />
             <button
-              onClick={handleVerificationEmail}
-              disabled={verificationCooldown > 0 || sendingVerification}
+              onClick={handleEmailChangeRequest}
+              disabled={sendingEmail || emailChangeCooldown > 0}
             >
-              {verificationCooldown > 0 ? (
-                `Wait ${Math.ceil(verificationCooldown / 1000)}s for Resend`
+              {emailChangeCooldown > 0 ? (
+                `Wait ${Math.ceil(emailChangeCooldown / 1000)}s to Change Email Again`
               ) : (
                 <>
-                  Verify
-                  {sendingVerification && (
+                  Request Email Change
+                  {sendingEmail && (
                     <>
                       &nbsp;
                       <motion.div
@@ -369,138 +442,72 @@ const Settings: React.FC = () => {
                 </>
               )}
             </button>
-          )}
+          </div>
+
+          <div className="password-reset">
+            <button
+              onClick={handlePasswordResetRequest}
+              disabled={sendingPassword || passwordResetCooldown > 0}
+            >
+              {passwordResetCooldown > 0 ? (
+                `Wait ${Math.ceil(passwordResetCooldown / 1000)}s to Change Password Again`
+              ) : (
+                <>
+                  Request Password Reset
+                  {sendingPassword && (
+                    <>
+                      &nbsp;
+                      <motion.div
+                        className="loading-icon-container"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear"
+                        }}
+                      >
+                        <AiOutlineLoading3Quarters className="loading-icon" />
+                      </motion.div>
+                    </>
+                  )}
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="delete-account">
+            <button
+              onClick={handleAccountDeletion}
+              disabled={sendingDelete || deleteCooldown > 0}
+            >
+              {deleteCooldown > 0 ? (
+                `Wait ${Math.ceil(deleteCooldown / 1000)}s to Request Deletions Again`
+              ) : (
+                <>
+                  Delete Account
+                  {sendingDelete && (
+                    <>
+                      &nbsp;
+                      <motion.div
+                        className="loading-icon-container"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear"
+                        }}
+                      >
+                        <AiOutlineLoading3Quarters className="loading-icon" />
+                      </motion.div>
+                    </>
+                  )}
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="settings-actions">
-        <div className="profile-picture-change">
-          <label>New Profile Picture URL:</label>
-          <input
-            type="text"
-            value={newProfilePictureUrl}
-            onChange={(e) => setNewProfilePictureUrl(e.target.value)}
-            placeholder="Enter new profile picture URL"
-          />
-          <button onClick={handleProfilePictureChange}>
-            Update Profile Picture
-          </button>
-          {newProfilePictureUrl && isValidImageUrl(newProfilePictureUrl) ? (
-            <div className="image-preview">
-              <img
-                src={newProfilePictureUrl}
-                alt="Preview"
-                style={{ maxWidth: "300px", marginTop: "10px" }}
-              />
-            </div>
-          ) : newProfilePictureUrl ? (
-            <p style={{ color: "red" }}>
-              ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
-            </p>
-          ) : null}
-        </div>
-
-        <div className="email-change">
-          <label>New Email:</label>
-          <input
-            type="email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            placeholder="Enter new email"
-          />
-          <button
-            onClick={handleEmailChangeRequest}
-            disabled={sendingEmail || emailChangeCooldown > 0}
-          >
-            {emailChangeCooldown > 0 ? (
-              `Wait ${Math.ceil(emailChangeCooldown / 1000)}s to Change Email Again`
-            ) : (
-              <>
-                Request Email Change
-                {sendingEmail && (
-                  <>
-                    &nbsp;
-                    <motion.div
-                      className="loading-icon-container"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 2,
-                        ease: "linear"
-                      }}
-                    >
-                      <AiOutlineLoading3Quarters className="loading-icon" />
-                    </motion.div>
-                  </>
-                )}
-              </>
-            )}
-          </button>
-        </div>
-
-        <div className="password-reset">
-          <button
-            onClick={handlePasswordResetRequest}
-            disabled={sendingPassword || passwordResetCooldown > 0}
-          >
-            {passwordResetCooldown > 0 ? (
-              `Wait ${Math.ceil(passwordResetCooldown / 1000)}s to Change Password Again`
-            ) : (
-              <>
-                Request Password Reset
-                {sendingPassword && (
-                  <>
-                    &nbsp;
-                    <motion.div
-                      className="loading-icon-container"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 2,
-                        ease: "linear"
-                      }}
-                    >
-                      <AiOutlineLoading3Quarters className="loading-icon" />
-                    </motion.div>
-                  </>
-                )}
-              </>
-            )}
-          </button>
-        </div>
-
-        <div className="delete-account">
-          <button
-            onClick={handleAccountDeletion}
-            disabled={sendingDelete || deleteCooldown > 0}
-          >
-            {deleteCooldown > 0 ? (
-              `Wait ${Math.ceil(deleteCooldown / 1000)}s to Request Deletions Again`
-            ) : (
-              <>
-                Delete Account
-                {sendingDelete && (
-                  <>
-                    &nbsp;
-                    <motion.div
-                      className="loading-icon-container"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 2,
-                        ease: "linear"
-                      }}
-                    >
-                      <AiOutlineLoading3Quarters className="loading-icon" />
-                    </motion.div>
-                  </>
-                )}
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 };
 

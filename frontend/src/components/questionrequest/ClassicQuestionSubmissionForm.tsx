@@ -4,6 +4,7 @@ import { RootState } from "../../redux/store";
 import "../../styles/questionsubmissionform.css";
 import { setError } from "../../redux/errorSlice";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const ClassicQuestionSubmissionForm: React.FC = () => {
   const [question, setQuestion] = useState("");
@@ -99,61 +100,68 @@ const ClassicQuestionSubmissionForm: React.FC = () => {
   };
 
   return (
-    <div className="question-submission-page">
-      <Link to="/question-request">
-        <button className="back-button">Back</button>
-      </Link>
-      <h2>Submit a Question</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <label htmlFor="question-input">Question:</label>
-        <input
-          id="question-input"
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          required
-        />
-        <label>Options:</label>
-        {options.map((option, index) => (
-          <div key={index} className="option-input-wrapper">
-            <input
-              type="text"
-              value={option}
-              onChange={(e) => handleChangeOption(index, e.target.value)}
-              required
-            />
-          </div>
-        ))}
-        <label htmlFor="correct-option-input">Correct Option (1-4):</label>
-        <input
-          id="correct-option-input"
-          type="number"
-          value={correctOption ?? ""}
-          onChange={(e) => setCorrectOption(Number(e.target.value))}
-          required
-        />
-        <label htmlFor="explanation-textarea">Explanation:</label>
-        <textarea
-          id="explanation-textarea"
-          value={explanation}
-          onChange={(e) => setExplanation(e.target.value)}
-          required
-        />
-        <label htmlFor="difficulty-input">Difficulty (1-5):</label>
-        <input
-          id="difficulty-input"
-          type="number"
-          min={1}
-          max={5}
-          value={difficulty}
-          onChange={(e) => setDifficulty(Number(e.target.value))}
-          required
-        />
-        <button onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit Question"}
-        </button>
-      </form>
-    </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="question-submission-page">
+        <Link to="/question-request">
+          <button className="back-button">Back</button>
+        </Link>
+        <h2>Submit a Question</h2>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label htmlFor="question-input">Question:</label>
+          <input
+            id="question-input"
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            required
+          />
+          <label>Options:</label>
+          {options.map((option, index) => (
+            <div key={index} className="option-input-wrapper">
+              <input
+                type="text"
+                value={option}
+                onChange={(e) => handleChangeOption(index, e.target.value)}
+                required
+              />
+            </div>
+          ))}
+          <label htmlFor="correct-option-input">Correct Option (1-4):</label>
+          <input
+            id="correct-option-input"
+            type="number"
+            value={correctOption ?? ""}
+            onChange={(e) => setCorrectOption(Number(e.target.value))}
+            required
+          />
+          <label htmlFor="explanation-textarea">Explanation:</label>
+          <textarea
+            id="explanation-textarea"
+            value={explanation}
+            onChange={(e) => setExplanation(e.target.value)}
+            required
+          />
+          <label htmlFor="difficulty-input">Difficulty (1-5):</label>
+          <input
+            id="difficulty-input"
+            type="number"
+            min={1}
+            max={5}
+            value={difficulty}
+            onChange={(e) => setDifficulty(Number(e.target.value))}
+            required
+          />
+          <button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Question"}
+          </button>
+        </form>
+      </div>
+    </motion.div>
   );
 };
 

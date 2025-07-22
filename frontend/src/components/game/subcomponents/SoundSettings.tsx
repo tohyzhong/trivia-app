@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateSoundSettings } from "../../../redux/soundSettingsSlice";
 import { RootState } from "../../../redux/store";
 import { GoUnmute, GoMute } from "react-icons/go";
+import { motion } from "framer-motion";
 
 const SoundSettings: React.FC = () => {
   const soundSettings = useSelector((state: RootState) => state.soundSettings);
@@ -129,114 +130,121 @@ const SoundSettings: React.FC = () => {
   };
 
   return (
-    <div className="sound-settings">
-      <h3>Game Settings</h3>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="sound-settings">
+        <h3>Game Settings</h3>
 
-      <div className="volume-control">
-        <label>Overall Sound</label>
-        <div className="volumebar-muteicon">
-          <button
-            className={isOverallMuted ? "muted" : "unmuted"}
-            onClick={() => handleMute("overall")}
-          >
-            {isOverallMuted ? <GoMute /> : <GoUnmute />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={overallSound}
-            onChange={(e) => {
-              setOverallSound(Number(e.target.value));
-              dispatch(
-                updateSoundSettings({
-                  overallSound: Number(e.target.value),
-                  bgmVolume,
-                  sfxVolume,
-                  profanityEnabled
-                })
-              );
-            }}
-          />
+        <div className="volume-control">
+          <label>Overall Sound</label>
+          <div className="volumebar-muteicon">
+            <button
+              className={isOverallMuted ? "muted" : "unmuted"}
+              onClick={() => handleMute("overall")}
+            >
+              {isOverallMuted ? <GoMute /> : <GoUnmute />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={overallSound}
+              onChange={(e) => {
+                setOverallSound(Number(e.target.value));
+                dispatch(
+                  updateSoundSettings({
+                    overallSound: Number(e.target.value),
+                    bgmVolume,
+                    sfxVolume,
+                    profanityEnabled
+                  })
+                );
+              }}
+            />
+          </div>
+          <span>{overallSound}%</span>
         </div>
-        <span>{overallSound}%</span>
-      </div>
 
-      <div className="volume-control">
-        <label>BGM Volume</label>
-        <div className="volumebar-muteicon">
-          <button
-            className={isBgmMuted ? "muted" : "unmuted"}
-            onClick={() => handleMute("bgm")}
-          >
-            {isBgmMuted ? <GoMute /> : <GoUnmute />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={bgmVolume}
-            onChange={(e) => {
-              setBgmVolume(Number(e.target.value));
-              dispatch(
-                updateSoundSettings({
-                  overallSound,
-                  bgmVolume: Number(e.target.value),
-                  sfxVolume,
-                  profanityEnabled
-                })
-              );
-            }}
-          />
+        <div className="volume-control">
+          <label>BGM Volume</label>
+          <div className="volumebar-muteicon">
+            <button
+              className={isBgmMuted ? "muted" : "unmuted"}
+              onClick={() => handleMute("bgm")}
+            >
+              {isBgmMuted ? <GoMute /> : <GoUnmute />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={bgmVolume}
+              onChange={(e) => {
+                setBgmVolume(Number(e.target.value));
+                dispatch(
+                  updateSoundSettings({
+                    overallSound,
+                    bgmVolume: Number(e.target.value),
+                    sfxVolume,
+                    profanityEnabled
+                  })
+                );
+              }}
+            />
+          </div>
+          <span>{bgmVolume}%</span>
         </div>
-        <span>{bgmVolume}%</span>
-      </div>
 
-      <div className="volume-control">
-        <label>SFX Volume</label>
-        <div className="volumebar-muteicon">
-          <button
-            className={isSfxMuted ? "muted" : "unmuted"}
-            onClick={() => handleMute("sfx")}
-          >
-            {isSfxMuted ? <GoMute /> : <GoUnmute />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={sfxVolume}
-            onChange={(e) => {
-              setSfxVolume(Number(e.target.value));
-              dispatch(
-                updateSoundSettings({
-                  overallSound,
-                  bgmVolume,
-                  sfxVolume: Number(e.target.value),
-                  profanityEnabled
-                })
-              );
-            }}
-          />
+        <div className="volume-control">
+          <label>SFX Volume</label>
+          <div className="volumebar-muteicon">
+            <button
+              className={isSfxMuted ? "muted" : "unmuted"}
+              onClick={() => handleMute("sfx")}
+            >
+              {isSfxMuted ? <GoMute /> : <GoUnmute />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={sfxVolume}
+              onChange={(e) => {
+                setSfxVolume(Number(e.target.value));
+                dispatch(
+                  updateSoundSettings({
+                    overallSound,
+                    bgmVolume,
+                    sfxVolume: Number(e.target.value),
+                    profanityEnabled
+                  })
+                );
+              }}
+            />
+          </div>
+          <span>{sfxVolume}%</span>
         </div>
-        <span>{sfxVolume}%</span>
-      </div>
 
-      <div className="profanity-control">
-        <label style={{ fontWeight: "bold" }}>Show Profanities</label>
-        <div className="profanity-toggle">
-          <input
-            type="checkbox"
-            checked={profanityEnabled}
-            onChange={handleToggleProfanity}
-            id="profanity-toggle"
-          />
-          <label htmlFor="profanity-toggle">
-            {profanityEnabled ? "Enabled" : "Disabled"}
-          </label>
+        <div className="profanity-control">
+          <label style={{ fontWeight: "bold" }}>Show Profanities</label>
+          <div className="profanity-toggle">
+            <input
+              type="checkbox"
+              checked={profanityEnabled}
+              onChange={handleToggleProfanity}
+              id="profanity-toggle"
+            />
+            <label htmlFor="profanity-toggle">
+              {profanityEnabled ? "Enabled" : "Disabled"}
+            </label>
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
