@@ -361,7 +361,7 @@ const ManageUser: React.FC = () => {
                   type="text"
                   value={chatBanReason}
                   onChange={(e) => setChatBanReason(e.target.value)}
-                  placeholder={`Enter a reason for ${user.chatBan ? "un" : ""}banning ${user.username}`}
+                  placeholder={`Enter a reason for chat ${user.chatBan ? "un" : ""}banning ${user.username}`}
                 />
                 <button
                   className={`${user.chatBan ? "unban-button" : "ban-button"} ${chatBanSending && "disabled"}`}
@@ -393,7 +393,7 @@ const ManageUser: React.FC = () => {
                   type="text"
                   value={gameBanReason}
                   onChange={(e) => setGameBanReason(e.target.value)}
-                  placeholder={`Enter a reason for ${user.gameBan ? "un" : ""}banning ${user.username}`}
+                  placeholder={`Enter a reason for game ${user.gameBan ? "un" : ""}banning ${user.username}`}
                 />
                 <button
                   className={`${user.gameBan ? "unban-button" : "ban-button"} ${gameBanSending && "disabled"}`}

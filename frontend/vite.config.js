@@ -17,6 +17,11 @@ export default defineConfig({
     }
   },
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    css: true
+  },
   server: {
     proxy: {
       "/api": "http://localhost:8080"
