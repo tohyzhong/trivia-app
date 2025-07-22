@@ -22,6 +22,7 @@ import { useBGMResumeOverlay } from "../../hooks/useBGMResumeOverlay";
 import { playClickSound } from "../../utils/soundManager";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import CurrencyBar from "./subcomponents/CurrencyBar";
 
 interface SubModes {
   name: string;
@@ -140,6 +141,7 @@ export const GameMainpage: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <CurrencyBar />
       <div
         className={`game-mainpage ${isSoundPopupOpen ? "dimmed-background" : ""}`}
       >

@@ -12,6 +12,7 @@ import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
 import { useDispatch } from "react-redux";
 import { setError } from "../../redux/errorSlice";
 import { motion } from "framer-motion";
+import CurrencyBar from "./subcomponents/CurrencyBar";
 
 const LobbyBrowser: React.FC = () => {
   useInitSound("Lobby");
@@ -128,6 +129,7 @@ const LobbyBrowser: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <CurrencyBar />
       <div className="lobby-browser-container">
         <>
           {bgmBlocked && <PauseOverlay onResume={handleResume} />}

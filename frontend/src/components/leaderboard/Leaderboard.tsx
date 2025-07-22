@@ -9,6 +9,7 @@ import SoundSettings from "../game/subcomponents/SoundSettings";
 import { playClickSound } from "../../utils/soundManager";
 import { useNavigate, useParams } from "react-router-dom";
 import LeaderboardDropdown from "./subcomponents/LeaderboardDropdown";
+import { motion } from "framer-motion";
 
 const Leaderboard: React.FC = () => {
   useInitSound("Lobby");
@@ -69,48 +70,55 @@ const Leaderboard: React.FC = () => {
   };
 
   return (
-    <div className="leaderboard-container-full">
-      {bgmBlocked && <PauseOverlay onResume={handleResume} />}
-      <h1 className="leaderboard-header">{getHeaderTitle()}</h1>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="leaderboard-container-full">
+        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+        <h1 className="leaderboard-header">{getHeaderTitle()}</h1>
 
-      <LeaderboardDropdown
-        gameFormat={format}
-        setGameFormat={setFormat}
-        mode={selectedMode}
-        setMode={setSelectedMode}
-        category={selectedCategory}
-        setCategory={setSelectedCategory}
-        categories={fetchedCategories}
-      />
+        <LeaderboardDropdown
+          gameFormat={format}
+          setGameFormat={setFormat}
+          mode={selectedMode}
+          setMode={setSelectedMode}
+          category={selectedCategory}
+          setCategory={setSelectedCategory}
+          categories={fetchedCategories}
+        />
 
-      <LeaderboardTable
-        gameFormat={format}
-        mode={selectedMode}
-        category={selectedCategory}
-      />
+        <LeaderboardTable
+          gameFormat={format}
+          mode={selectedMode}
+          category={selectedCategory}
+        />
 
-      <IoSettingsOutline
-        onClick={() => {
-          playClickSound();
-          setIsSoundPopupOpen(true);
-        }}
-        className="sound-settings-icon"
-      />
-      <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
+        <IoSettingsOutline
+          onClick={() => {
+            playClickSound();
+            setIsSoundPopupOpen(true);
+          }}
+          className="sound-settings-icon"
+        />
+        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 
-      {isSoundPopupOpen && (
-        <div className="sound-settings-popup">
-          <IoClose
-            className="submode-select-close"
-            onClick={() => {
-              playClickSound();
-              setIsSoundPopupOpen(false);
-            }}
-          />
-          <SoundSettings />
-        </div>
-      )}
-    </div>
+        {isSoundPopupOpen && (
+          <div className="sound-settings-popup">
+            <IoClose
+              className="submode-select-close"
+              onClick={() => {
+                playClickSound();
+                setIsSoundPopupOpen(false);
+              }}
+            />
+            <SoundSettings />
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 
