@@ -98,82 +98,89 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="contact-form-container">
-      <h2>Contact Us</h2>
-      <div className="send-email-container">
-        <a>Email us at:&nbsp;</a>
-        <a className="send-email-prompt" href="mailto:email@example.com">
-          therizzquiz@gmail.com
-        </a>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="contact-form-container">
+        <h2>Contact Us</h2>
+        <div className="send-email-container">
+          <a>Email us at:&nbsp;</a>
+          <a className="send-email-prompt" href="mailto:email@example.com">
+            therizzquiz@gmail.com
+          </a>
+        </div>
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Username:</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              disabled={user.isAuthenticated}
+            />
+          </div>
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              disabled={user.isAuthenticated}
+            />
+          </div>
+          <div className="form-group">
+            <label>Subject:</label>
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Message:</label>
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit" className={sending ? "disabled" : ""}>
+            Send Message
+            {sending && (
+              <>
+                &nbsp;
+                <motion.div
+                  className="loading-icon-container"
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                >
+                  <AiOutlineLoading3Quarters className="loading-icon" />
+                </motion.div>
+              </>
+            )}
+          </button>
+        </form>
       </div>
-      <form className="contact-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Username:</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            disabled={user.isAuthenticated}
-          />
-        </div>
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            disabled={user.isAuthenticated}
-          />
-        </div>
-        <div className="form-group">
-          <label>Subject:</label>
-          <input
-            type="text"
-            name="subject"
-            value={formData.subject}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Message:</label>
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className={sending ? "disabled" : ""}>
-          Send Message
-          {sending && (
-            <>
-              &nbsp;
-              <motion.div
-                className="loading-icon-container"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-              >
-                <AiOutlineLoading3Quarters className="loading-icon" />
-              </motion.div>
-            </>
-          )}
-        </button>
-      </form>
-    </div>
+    </motion.div>
   );
 };
 

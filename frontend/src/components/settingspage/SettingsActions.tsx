@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import "../../styles/SettingsActions.css";
 import { logout } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
+import { motion } from "framer-motion";
 
 const SettingsActions: React.FC = () => {
   const dispatch = useDispatch();
@@ -181,39 +182,46 @@ const SettingsActions: React.FC = () => {
   }, [action, token]);
 
   return (
-    <div className="settings-actions-container">
-      <h1>Action Verification</h1>
-      <p className={error.current ? "error" : "settings-success"}>
-        {Array.isArray(message)
-          ? message.map((msg, index) => (
-              <p className={error.current ? "error" : "success"} key={index}>
-                {msg}
-              </p>
-            ))
-          : message}
-      </p>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="settings-actions-container">
+        <h1>Action Verification</h1>
+        <p className={error.current ? "error" : "settings-success"}>
+          {Array.isArray(message)
+            ? message.map((msg, index) => (
+                <p className={error.current ? "error" : "success"} key={index}>
+                  {msg}
+                </p>
+              ))
+            : message}
+        </p>
 
-      {action === "change-password" && (
-        <div className="password-change-form">
-          <h3>Change Your Password</h3>
-          <label>New Password</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Enter new password"
-          />
-          <label>Confirm New Password</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm new password"
-          />
-          <button onClick={handleChangePassword}>Submit New Password</button>
-        </div>
-      )}
-    </div>
+        {action === "change-password" && (
+          <div className="password-change-form">
+            <h3>Change Your Password</h3>
+            <label>New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+            />
+            <label>Confirm New Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+            />
+            <button onClick={handleChangePassword}>Submit New Password</button>
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

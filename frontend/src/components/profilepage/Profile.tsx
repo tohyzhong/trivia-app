@@ -215,183 +215,197 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
   }
 
   return (
-    <div className="profile-container">
-      <div className="header-buttons">
-        <div className="profile-header-container">
-          <div className="profile-header">
-            <h1 className="profile-name">{user.username}&apos;s Profile</h1>
-            <img
-              src={user.profilePicture || defaultAvatar}
-              alt={`${user.username}'s profile`}
-              className="profile-image"
-            />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="profile-container">
+        <div className="header-buttons">
+          <div className="profile-header-container">
+            <div className="profile-header">
+              <h1 className="profile-name">{user.username}&apos;s Profile</h1>
+              <img
+                src={user.profilePicture || defaultAvatar}
+                alt={`${user.username}'s profile`}
+                className="profile-image"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="role-container">
-          <p className="profile-role">
-            {user.role === "superadmin"
-              ? "👑 Superadmin"
-              : user.role === "admin"
-                ? "🛡️ Admin"
-                : "👤 User"}
-          </p>
+          <div className="role-container">
+            <p className="profile-role">
+              {user.role === "superadmin"
+                ? "👑 Superadmin"
+                : user.role === "admin"
+                  ? "🛡️ Admin"
+                  : "👤 User"}
+            </p>
 
-          {user.username !== usernameFromRedux && (
-            <>
-              {currUserRole === "user" ||
-              (currUserRole === "admin" &&
-                (user.role === "superadmin" || user.role === "admin")) ? (
-                <button
-                  className={`report-button ${reportSending && "disabled"}`}
-                  onClick={() => handleReport(user.username)}
-                >
-                  Report Username
-                  {reportSending && (
-                    <>
-                      &nbsp;
-                      <motion.div
-                        className="loading-icon-container"
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 2,
-                          ease: "linear"
-                        }}
-                      >
-                        <AiOutlineLoading3Quarters className="loading-icon" />
-                      </motion.div>
-                    </>
-                  )}
-                </button>
-              ) : (
-                <Link to={`/profile/${username}/manage`}>
-                  <button className="manage-button">Manage User</button>
-                </Link>
-              )}
-            </>
-          )}
-        </div>
+            {user.username !== usernameFromRedux && (
+              <>
+                {currUserRole === "user" ||
+                (currUserRole === "admin" &&
+                  (user.role === "superadmin" || user.role === "admin")) ? (
+                  <button
+                    className={`report-button ${reportSending && "disabled"}`}
+                    onClick={() => handleReport(user.username)}
+                  >
+                    Report Username
+                    {reportSending && (
+                      <>
+                        &nbsp;
+                        <motion.div
+                          className="loading-icon-container"
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            repeat: Infinity,
+                            duration: 2,
+                            ease: "linear"
+                          }}
+                        >
+                          <AiOutlineLoading3Quarters className="loading-icon" />
+                        </motion.div>
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <Link to={`/profile/${username}/manage`}>
+                    <button className="manage-button">Manage User</button>
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
 
-        <div className="friend-buttons-container">
-          {user.username !== usernameFromRedux && (
-            <>
-              {isFriend && (
-                <button
-                  className="remove-friend-button"
-                  onClick={handleDeleteFriend}
-                >
-                  Remove Friend
-                </button>
-              )}
+          <div className="friend-buttons-container">
+            {user.username !== usernameFromRedux && (
+              <>
+                {isFriend && (
+                  <button
+                    className="remove-friend-button"
+                    onClick={handleDeleteFriend}
+                  >
+                    Remove Friend
+                  </button>
+                )}
 
-              {!isFriend && user.receivedFriendRequest && (
-                <button className="add-friend-button" onClick={handleAddFriend}>
-                  Confirm Friend Request
-                </button>
-              )}
-
-              {!isFriend &&
-                !user.receivedFriendRequest &&
-                !user.addedFriend && (
+                {!isFriend && user.receivedFriendRequest && (
                   <button
                     className="add-friend-button"
                     onClick={handleAddFriend}
                   >
-                    Add Friend
+                    Confirm Friend Request
                   </button>
                 )}
 
-              {!isFriend && !user.receivedFriendRequest && user.addedFriend && (
-                <button
-                  className="remove-friend-button"
-                  onClick={handleDeleteFriend}
-                >
-                  Delete Friend Request
-                </button>
-              )}
-            </>
-          )}
+                {!isFriend &&
+                  !user.receivedFriendRequest &&
+                  !user.addedFriend && (
+                    <button
+                      className="add-friend-button"
+                      onClick={handleAddFriend}
+                    >
+                      Add Friend
+                    </button>
+                  )}
+
+                {!isFriend &&
+                  !user.receivedFriendRequest &&
+                  user.addedFriend && (
+                    <button
+                      className="remove-friend-button"
+                      onClick={handleDeleteFriend}
+                    >
+                      Delete Friend Request
+                    </button>
+                  )}
+              </>
+            )}
+          </div>
+        </div>
+
+        <Link to={`/profile/${username}/matchhistory`}>
+          <button className="see-match-history">Match History</button>
+        </Link>
+
+        <div className="profile-details-container">
+          <div className="stats-container">
+            <div className="profile-details">
+              <h3>Classic Stats:</h3>
+              <p>
+                <strong>Overall Score:</strong> {user.classicStats.score}
+              </p>
+              <p>
+                <strong>Win Rate:</strong> {user.classicStats.winRate}
+              </p>
+              <p>
+                <strong>Matches Won:</strong> {user.classicStats.wonMatches}
+              </p>
+              <p>
+                <strong>Total Matches:</strong> {user.classicStats.totalMatches}
+              </p>
+              <p>
+                <strong>Correct Rate:</strong> {user.classicStats.correctRate}
+              </p>
+              <p>
+                <strong>Correct Answers:</strong>{" "}
+                {user.classicStats.correctAnswer}
+              </p>
+              <p>
+                <strong>Total Answered:</strong> {user.classicStats.totalAnswer}
+              </p>
+            </div>
+            <div className="profile-details">
+              <h3>Knowledge Stats:</h3>
+              <p>
+                <strong>Overall Score:</strong> {user.knowledgeStats.score}
+              </p>
+              <p>
+                <strong>Win Rate:</strong> {user.knowledgeStats.winRate}
+              </p>
+              <p>
+                <strong>Matches Won:</strong> {user.knowledgeStats.wonMatches}
+              </p>
+              <p>
+                <strong>Total Matches:</strong>{" "}
+                {user.knowledgeStats.totalMatches}
+              </p>
+              <p>
+                <strong>Correct Rate:</strong> {user.knowledgeStats.correctRate}
+              </p>
+              <p>
+                <strong>Correct Answers:</strong>{" "}
+                {user.knowledgeStats.correctAnswer}
+              </p>
+              <p>
+                <strong>Total Answered:</strong>{" "}
+                {user.knowledgeStats.totalAnswer}
+              </p>
+            </div>
+          </div>
+
+          <div className="friends-list-container">
+            <div className="friends-list">
+              <h3>
+                <Link to={`/profile/${user.username}/friends`}>Friends:</Link>
+              </h3>
+              <ul>
+                {friends.map((friend, index) => (
+                  <li key={friend.username}>
+                    <Link to={`/profile/${friend.username}`}>
+                      <span>{index + 1}. </span>
+                      {friend.username}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-
-      <Link to={`/profile/${username}/matchhistory`}>
-        <button className="see-match-history">Match History</button>
-      </Link>
-
-      <div className="profile-details-container">
-        <div className="stats-container">
-          <div className="profile-details">
-            <h3>Classic Stats:</h3>
-            <p>
-              <strong>Overall Score:</strong> {user.classicStats.score}
-            </p>
-            <p>
-              <strong>Win Rate:</strong> {user.classicStats.winRate}
-            </p>
-            <p>
-              <strong>Matches Won:</strong> {user.classicStats.wonMatches}
-            </p>
-            <p>
-              <strong>Total Matches:</strong> {user.classicStats.totalMatches}
-            </p>
-            <p>
-              <strong>Correct Rate:</strong> {user.classicStats.correctRate}
-            </p>
-            <p>
-              <strong>Correct Answers:</strong>{" "}
-              {user.classicStats.correctAnswer}
-            </p>
-            <p>
-              <strong>Total Answered:</strong> {user.classicStats.totalAnswer}
-            </p>
-          </div>
-          <div className="profile-details">
-            <h3>Knowledge Stats:</h3>
-            <p>
-              <strong>Overall Score:</strong> {user.knowledgeStats.score}
-            </p>
-            <p>
-              <strong>Win Rate:</strong> {user.knowledgeStats.winRate}
-            </p>
-            <p>
-              <strong>Matches Won:</strong> {user.knowledgeStats.wonMatches}
-            </p>
-            <p>
-              <strong>Total Matches:</strong> {user.knowledgeStats.totalMatches}
-            </p>
-            <p>
-              <strong>Correct Rate:</strong> {user.knowledgeStats.correctRate}
-            </p>
-            <p>
-              <strong>Correct Answers:</strong>{" "}
-              {user.knowledgeStats.correctAnswer}
-            </p>
-            <p>
-              <strong>Total Answered:</strong> {user.knowledgeStats.totalAnswer}
-            </p>
-          </div>
-        </div>
-
-        <div className="friends-list-container">
-          <div className="friends-list">
-            <h3>
-              <Link to={`/profile/${user.username}/friends`}>Friends:</Link>
-            </h3>
-            <ul>
-              {friends.map((friend, index) => (
-                <li key={friend.username}>
-                  <Link to={`/profile/${friend.username}`}>
-                    <span>{index + 1}. </span>
-                    {friend.username}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -4,6 +4,7 @@ import { RootState } from "../../redux/store";
 import "../../styles/questionsubmissionform.css";
 import { setError } from "../../redux/errorSlice";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const isValidImageUrl = (url: string): boolean => {
   return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
@@ -83,57 +84,64 @@ const KnowledgeQuestionSubmissionForm: React.FC = () => {
   };
 
   return (
-    <div className="question-submission-page">
-      <Link to="/question-request">
-        <button className="back-button">Back</button>
-      </Link>
-      <h2>Submit a Question</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <label htmlFor="question-input">Question: (Image URL)</label>
-        <input
-          id="question-input"
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          required
-        />
-        {question && isValidImageUrl(question) ? (
-          <div className="image-preview">
-            <img
-              src={question}
-              alt="Preview"
-              style={{ maxWidth: "300px", marginTop: "10px" }}
-            />
-          </div>
-        ) : question ? (
-          <p style={{ color: "red" }}>
-            ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
-          </p>
-        ) : null}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="question-submission-page">
+        <Link to="/question-request">
+          <button className="back-button">Back</button>
+        </Link>
+        <h2>Submit a Question</h2>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label htmlFor="question-input">Question: (Image URL)</label>
+          <input
+            id="question-input"
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            required
+          />
+          {question && isValidImageUrl(question) ? (
+            <div className="image-preview">
+              <img
+                src={question}
+                alt="Preview"
+                style={{ maxWidth: "300px", marginTop: "10px" }}
+              />
+            </div>
+          ) : question ? (
+            <p style={{ color: "red" }}>
+              ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
+            </p>
+          ) : null}
 
-        <label htmlFor="correct-option-input">Answer:</label>
-        <input
-          id="correct-option-input"
-          type="text"
-          value={answer ?? ""}
-          onChange={(e) => setAnswer(e.target.value)}
-          required
-        />
-        <label htmlFor="difficulty-input">Difficulty (1-5):</label>
-        <input
-          id="difficulty-input"
-          type="number"
-          min={1}
-          max={5}
-          value={difficulty}
-          onChange={(e) => setDifficulty(Number(e.target.value))}
-          required
-        />
-        <button onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit Question"}
-        </button>
-      </form>
-    </div>
+          <label htmlFor="correct-option-input">Answer:</label>
+          <input
+            id="correct-option-input"
+            type="text"
+            value={answer ?? ""}
+            onChange={(e) => setAnswer(e.target.value)}
+            required
+          />
+          <label htmlFor="difficulty-input">Difficulty (1-5):</label>
+          <input
+            id="difficulty-input"
+            type="number"
+            min={1}
+            max={5}
+            value={difficulty}
+            onChange={(e) => setDifficulty(Number(e.target.value))}
+            required
+          />
+          <button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Question"}
+          </button>
+        </form>
+      </div>
+    </motion.div>
   );
 };
 

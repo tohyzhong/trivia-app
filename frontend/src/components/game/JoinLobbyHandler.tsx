@@ -12,6 +12,7 @@ import { playClickSound } from "../../utils/soundManager";
 import SoundSettings from "./subcomponents/SoundSettings";
 import "../../styles/game.css";
 import { setError } from "../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 const JoinLobbyHandler: React.FC = () => {
   useInitSound("Lobby");
@@ -92,7 +93,12 @@ const JoinLobbyHandler: React.FC = () => {
 
   if (status === "pending") {
     return (
-      <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         {bgmBlocked && <PauseOverlay onResume={handleResume} />}
         <IoSettingsOutline
           onClick={() => {
@@ -116,7 +122,7 @@ const JoinLobbyHandler: React.FC = () => {
           </div>
         )}
         <GameLoading message="Waiting for host to approve your request..." />
-      </>
+      </motion.div>
     );
   }
 

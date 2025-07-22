@@ -11,6 +11,7 @@ import { useInitSound } from "../../hooks/useInitSound";
 import useBGMResumeOverlay from "../../hooks/useBGMResumeOverlay";
 import { useDispatch } from "react-redux";
 import { setError } from "../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 const LobbyBrowser: React.FC = () => {
   useInitSound("Lobby");
@@ -121,49 +122,56 @@ const LobbyBrowser: React.FC = () => {
   ];
 
   return (
-    <div className="lobby-browser-container">
-      <>
-        {bgmBlocked && <PauseOverlay onResume={handleResume} />}
-        <IoSettingsOutline
-          onClick={() => {
-            playClickSound();
-            setIsSoundPopupOpen(true);
-          }}
-          className="sound-settings-icon"
-        />
-        <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
-
-        {isSoundPopupOpen && (
-          <div className="sound-settings-popup">
-            <IoClose
-              className="submode-select-close"
-              onClick={() => {
-                playClickSound();
-                setIsSoundPopupOpen(false);
-              }}
-            />
-            <SoundSettings />
-          </div>
-        )}
-      </>
-
-      <h1>Multiplayer Lobby Browser</h1>
-      {!loading && rowData && rowData.length >= 1 ? (
-        <div className="ag-theme-alpine">
-          <AgGridReact
-            ref={gridRef}
-            columnDefs={columnDefs}
-            rowData={rowData}
-            pagination={true}
-            paginationPageSize={20}
-            paginationPageSizeSelector={[20, 50, 100]}
-            domLayout="autoHeight"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="lobby-browser-container">
+        <>
+          {bgmBlocked && <PauseOverlay onResume={handleResume} />}
+          <IoSettingsOutline
+            onClick={() => {
+              playClickSound();
+              setIsSoundPopupOpen(true);
+            }}
+            className="sound-settings-icon"
           />
-        </div>
-      ) : (
-        <h3 style={{ color: "White" }}>No Lobbies Found</h3>
-      )}
-    </div>
+          <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
+
+          {isSoundPopupOpen && (
+            <div className="sound-settings-popup">
+              <IoClose
+                className="submode-select-close"
+                onClick={() => {
+                  playClickSound();
+                  setIsSoundPopupOpen(false);
+                }}
+              />
+              <SoundSettings />
+            </div>
+          )}
+        </>
+
+        <h1>Multiplayer Lobby Browser</h1>
+        {!loading && rowData && rowData.length >= 1 ? (
+          <div className="ag-theme-alpine">
+            <AgGridReact
+              ref={gridRef}
+              columnDefs={columnDefs}
+              rowData={rowData}
+              pagination={true}
+              paginationPageSize={20}
+              paginationPageSizeSelector={[20, 50, 100]}
+              domLayout="autoHeight"
+            />
+          </div>
+        ) : (
+          <h3 style={{ color: "White" }}>No Lobbies Found</h3>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

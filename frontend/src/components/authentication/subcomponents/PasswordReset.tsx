@@ -4,6 +4,7 @@ import ReturnButton from "./ReturnButton";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setError } from "../../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
@@ -141,33 +142,49 @@ const PasswordReset: React.FC = () => {
   };
 
   return verified ? (
-    <div className="password-reset-page">
-      <div className="form-container">
-        <form onSubmit={handlePasswordReset}>
-          <h3>Password Reset ({email})</h3>
-          <p className="verify-request-successful">
-            Request verified successfully!
-          </p>
-          <input type="password" placeholder="New Password" required />
-          <input type="password" placeholder="Confirm New Password" required />
-          {errorMessages.length > 0 && (
-            <div className="error-message">
-              {errorMessages.map((error, index) => (
-                <p key={index}>{error}</p>
-              ))}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="password-reset-page">
+        <div className="form-container">
+          <form onSubmit={handlePasswordReset}>
+            <h3>Password Reset ({email})</h3>
+            <p className="verify-request-successful">
+              Request verified successfully!
+            </p>
+            <input type="password" placeholder="New Password" required />
+            <input
+              type="password"
+              placeholder="Confirm New Password"
+              required
+            />
+            {errorMessages.length > 0 && (
+              <div className="error-message">
+                {errorMessages.map((error, index) => (
+                  <p key={index}>{error}</p>
+                ))}
+              </div>
+            )}
+            <div className="buttons-container">
+              <ReturnButton />
+              <button type="submit" className="submit-button">
+                Reset Password
+              </button>
             </div>
-          )}
-          <div className="buttons-container">
-            <ReturnButton />
-            <button type="submit" className="submit-button">
-              Reset Password
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </motion.div>
   ) : (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="password-reset-page">
         <div className="form-container">
           <form onSubmit={handleSendEmail}>
@@ -202,7 +219,7 @@ const PasswordReset: React.FC = () => {
           </form>
         </div>
       </div>
-    </>
+    </motion.div>
   );
 };
 

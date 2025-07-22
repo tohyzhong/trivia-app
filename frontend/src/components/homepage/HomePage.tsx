@@ -4,6 +4,7 @@ import "../../styles/homepage.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { setError } from "../../redux/errorSlice";
+import { motion } from "framer-motion";
 
 const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
@@ -24,7 +25,12 @@ const HomePage: React.FC = () => {
   }, [shopSuccess]);
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="home-container">
         <header>
           <h1>The Rizz Quiz</h1>
@@ -85,7 +91,7 @@ const HomePage: React.FC = () => {
           <p>&copy; 2025 The Rizz Quiz</p>
         </footer>
       </div>
-    </>
+    </motion.div>
   );
 };
 
