@@ -10,7 +10,6 @@ import { setHintRevealed, setPowerups } from "../../../redux/lobbySlice";
 import "../../../styles/CurrencyBar.css";
 import { useLocation } from "react-router-dom";
 import { setError } from "../../../redux/errorSlice";
-import { motion } from "framer-motion";
 
 const CurrencyBar: React.FC = () => {
   const currency = useSelector((state: RootState) => state.lobby.currency);
@@ -59,61 +58,54 @@ const CurrencyBar: React.FC = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="currency-bar-container">
-        <div className="bar-container-coins currency-bar">
-          <div className="icon-value">
-            <FaCoins className="coin-icon" />
-            <span className="currency-value">{currency}</span>
-          </div>
-          <button
-            className="plus-button currency-value"
-            onClick={() => setShowShop(true)}
-          >
-            <FaPlus size={12} />
-          </button>
+    <div className="currency-bar-container">
+      <div className="bar-container-coins currency-bar">
+        <div className="icon-value">
+          <FaCoins className="coin-icon" />
+          <span className="currency-value">{currency}</span>
         </div>
-
-        <div className="bar-container powerup-hint" title="Hint Boost">
-          <div
-            className="icon-value"
-            onClick={() => handleUsePowerup("Hint Boost")}
-          >
-            <HiOutlineLightBulb style={{ fontSize: "20px" }} />
-            <span>{powerups.hintBoosts}</span>
-          </div>
-        </div>
-
-        <div
-          className="bar-container powerup-freeze"
-          title="Add Time"
-          onClick={() => handleUsePowerup("Add Time")}
+        <button
+          className="plus-button currency-value"
+          onClick={() => setShowShop(true)}
         >
-          <div className="icon-value">
-            <MdOutlineTimer style={{ fontSize: "20px" }} />
-            <span>{powerups.addTimes}</span>
-          </div>
-        </div>
-
-        <div
-          className="bar-container powerup-double"
-          title="Double Points"
-          onClick={() => handleUsePowerup("Double Points")}
-        >
-          <div className="icon-value">
-            <TbMultiplier2X style={{ fontSize: "20px" }} />
-            <span>{powerups.doublePoints}</span>
-          </div>
-        </div>
-
-        {showShop && <Shop onClose={() => setShowShop(false)} />}
+          <FaPlus size={12} />
+        </button>
       </div>
-    </motion.div>
+
+      <div className="bar-container powerup-hint" title="Hint Boost">
+        <div
+          className="icon-value"
+          onClick={() => handleUsePowerup("Hint Boost")}
+        >
+          <HiOutlineLightBulb style={{ fontSize: "20px" }} />
+          <span>{powerups.hintBoosts}</span>
+        </div>
+      </div>
+
+      <div
+        className="bar-container powerup-freeze"
+        title="Add Time"
+        onClick={() => handleUsePowerup("Add Time")}
+      >
+        <div className="icon-value">
+          <MdOutlineTimer style={{ fontSize: "20px" }} />
+          <span>{powerups.addTimes}</span>
+        </div>
+      </div>
+
+      <div
+        className="bar-container powerup-double"
+        title="Double Points"
+        onClick={() => handleUsePowerup("Double Points")}
+      >
+        <div className="icon-value">
+          <TbMultiplier2X style={{ fontSize: "20px" }} />
+          <span>{powerups.doublePoints}</span>
+        </div>
+      </div>
+
+      {showShop && <Shop onClose={() => setShowShop(false)} />}
+    </div>
   );
 };
 

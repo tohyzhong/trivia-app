@@ -13,6 +13,7 @@ import SoundSettings from "./subcomponents/SoundSettings";
 import "../../styles/game.css";
 import { setError } from "../../redux/errorSlice";
 import { motion } from "framer-motion";
+import CurrencyBar from "./subcomponents/CurrencyBar";
 
 const JoinLobbyHandler: React.FC = () => {
   useInitSound("Lobby");
@@ -99,6 +100,7 @@ const JoinLobbyHandler: React.FC = () => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
+        <CurrencyBar />
         {bgmBlocked && <PauseOverlay onResume={handleResume} />}
         <IoSettingsOutline
           onClick={() => {

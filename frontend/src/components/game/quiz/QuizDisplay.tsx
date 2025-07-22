@@ -14,6 +14,7 @@ import { useBGMResumeOverlay } from "../../../hooks/useBGMResumeOverlay";
 import { playClickSound } from "../../../utils/soundManager";
 import { IoClose, IoSettingsOutline } from "react-icons/io5";
 import SoundSettings from "../subcomponents/SoundSettings";
+import CurrencyBar from "../subcomponents/CurrencyBar";
 
 interface ChatMessage {
   sender: string;
@@ -210,6 +211,7 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <CurrencyBar />
       <div className="game-lobby-full">
         {bgmBlocked && <PauseOverlay onResume={handleResume} />}
         <div className="game-lobby-container">

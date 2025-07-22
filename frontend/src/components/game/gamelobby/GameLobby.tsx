@@ -13,6 +13,7 @@ import SoundSettings from "../subcomponents/SoundSettings";
 import { playClickSound } from "../../../utils/soundManager";
 import { IoClose, IoSettingsOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
+import CurrencyBar from "../subcomponents/CurrencyBar";
 
 interface GameSetting {
   numQuestions: number;
@@ -101,6 +102,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <CurrencyBar />
       <div className="game-lobby-full">
         {bgmBlocked && <PauseOverlay onResume={handleResume} />}
         <div className="game-lobby-container">

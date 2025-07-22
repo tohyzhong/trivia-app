@@ -8,7 +8,6 @@ import LobbyBrowser from "./LobbyBrowser";
 import { setLobby } from "../../redux/lobbySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import CurrencyBar from "./subcomponents/CurrencyBar";
 import { setUser } from "../../redux/userSlice";
 
 interface UserLobby {
@@ -76,7 +75,6 @@ const GameRoutes: React.FC = () => {
 
   return (
     <>
-      <CurrencyBar />
       <Routes>
         {lobby.lobbyId && <Route path="/:lobbyId" element={<LobbyHandler />} />}
         <Route path="/join/:lobbyId" element={<JoinLobbyHandler />} />
