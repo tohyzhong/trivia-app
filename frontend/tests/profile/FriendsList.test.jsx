@@ -4,8 +4,8 @@ import "@testing-library/jest-dom";
 import FriendsList from "../../src/components/profilepage/FriendsList.tsx";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import store from "../../src/redux/store";
-import { setUser } from "../../src/redux/userSlice";
+import store from "../../src/redux/store.tsx";
+import { setUser } from "../../src/redux/userSlice.tsx";
 import React from "react";
 
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";

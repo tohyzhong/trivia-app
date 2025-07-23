@@ -1,28 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, render, fireEvent, waitFor } from "@testing-library/react";
-import GameMainpage from "../src/components/game/GameMainpage.tsx";
+import GameMainpage from "../../src/components/game/GameMainpage.tsx";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import store from "../src/redux/store.tsx";
-import { setUser } from "../src/redux/userSlice.tsx";
-import { updateSoundSettings } from "../src/redux/soundSettingsSlice";
-import { playClickSound } from "../src/utils/soundManager.tsx";
+import store from "../../src/redux/store.tsx";
+import { setUser } from "../../src/redux/userSlice.tsx";
+import { updateSoundSettings } from "../../src/redux/soundSettingsSlice.tsx";
+import { playClickSound } from "../../src/utils/soundManager.tsx";
 import "@testing-library/jest-dom";
 import React from "react";
 
-vi.mock("../src/hooks/useInitSound", () => ({
+vi.mock("../../src/hooks/useInitSound", () => ({
   useInitSound: vi.fn()
 }));
 
-vi.mock("../src/hooks/useBGMResumeOverlay", () => ({
+vi.mock("../../src/hooks/useBGMResumeOverlay", () => ({
   useBGMResumeOverlay: () => ({
     bgmBlocked: false,
     handleResume: vi.fn()
   })
 }));
 
-vi.mock("../src/utils/soundManager", async () => {
-  const actual = await vi.importActual("../src/utils/soundManager");
+vi.mock("../../src/utils/soundManager", async () => {
+  const actual = await vi.importActual("../../src/utils/soundManager");
   return {
     ...actual,
     playClickSound: vi.fn()

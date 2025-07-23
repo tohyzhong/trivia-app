@@ -3,8 +3,8 @@ import { screen, render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { expect, vi } from "vitest";
 import MatchHistory from "../../src/components/profilepage/MatchHistory.tsx";
-import store from "../../src/redux/store";
-import { setUser } from "../../src/redux/userSlice";
+import store from "../../src/redux/store.tsx";
+import { setUser } from "../../src/redux/userSlice.tsx";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 
