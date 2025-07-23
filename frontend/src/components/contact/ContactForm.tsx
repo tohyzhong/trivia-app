@@ -114,30 +114,33 @@ const ContactForm = () => {
         </div>
         <form className="contact-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Name:</label>
+            <label htmlFor="name">Name:</label>
             <input
               type="text"
               name="name"
+              id="name"
               value={formData.name}
               onChange={handleChange}
               required
             />
           </div>
           <div className="form-group">
-            <label>Username:</label>
+            <label htmlFor="username">Username:</label>
             <input
               type="text"
               name="username"
+              id="username"
               value={formData.username}
               onChange={handleChange}
               disabled={user.isAuthenticated}
             />
           </div>
           <div className="form-group">
-            <label>Email:</label>
+            <label htmlFor="email">Email:</label>
             <input
               type="email"
               name="email"
+              id="email"
               value={formData.email}
               onChange={handleChange}
               required
@@ -145,19 +148,21 @@ const ContactForm = () => {
             />
           </div>
           <div className="form-group">
-            <label>Subject:</label>
+            <label htmlFor="subject">Subject:</label>
             <input
               type="text"
               name="subject"
+              id="subject"
               value={formData.subject}
               onChange={handleChange}
               required
             />
           </div>
           <div className="form-group">
-            <label>Message:</label>
+            <label htmlFor="message">Message:</label>
             <textarea
               name="message"
+              id="message"
               value={formData.message}
               onChange={handleChange}
               required
