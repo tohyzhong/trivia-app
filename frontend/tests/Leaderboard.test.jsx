@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import Leaderboard from "../src/components/leaderboard/Leaderboard.tsx";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import store from "../src/redux/store";
+import store from "../src/redux/store.tsx";
 import React from "react";
 import { act } from "react";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";

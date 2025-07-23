@@ -202,6 +202,7 @@ export const GameMainpage: React.FC = () => {
             setIsSoundPopupOpen(true);
           }}
           className="sound-settings-icon"
+          data-testid="game-settings"
         />
         <p className="hover-text sound-settings-icon-text">Game Settings</p>
 
@@ -218,27 +219,29 @@ export const GameMainpage: React.FC = () => {
           </div>
         )}
 
-        <Link to="/question-request">
-          <FaWpforms
-            onClick={() => {
-              playClickSound();
-            }}
-            className="question-submit-icon"
-          />
-        </Link>
-        <p className="hover-text question-submit-icon-text">
-          Submit A Question
-        </p>
+        <div className="icon-wrapper">
+          <Link to="/question-request">
+            <FaWpforms
+              onClick={playClickSound}
+              className="question-submit-icon"
+              data-testid="submit-question"
+            />
+          </Link>
+          <p className="hover-text question-submit-icon-text">
+            Submit A Question
+          </p>
+        </div>
 
-        <Link to="/contact">
-          <IoHelp
-            onClick={() => {
-              playClickSound();
-            }}
-            className="help-icon"
-          />
-        </Link>
-        <p className="hover-text help-icon-text">Contact Us</p>
+        <div className="icon-wrapper">
+          <Link to="/contact">
+            <IoHelp
+              onClick={playClickSound}
+              className="help-icon"
+              data-testid="contact-us"
+            />
+          </Link>
+          <p className="hover-text help-icon-text">Contact Us</p>
+        </div>
       </div>
     </motion.div>
   );

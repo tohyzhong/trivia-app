@@ -145,6 +145,7 @@ const SoundSettings: React.FC = () => {
             <button
               className={isOverallMuted ? "muted" : "unmuted"}
               onClick={() => handleMute("overall")}
+              data-testid="overallmute"
             >
               {isOverallMuted ? <GoMute /> : <GoUnmute />}
             </button>
@@ -175,6 +176,7 @@ const SoundSettings: React.FC = () => {
             <button
               className={isBgmMuted ? "muted" : "unmuted"}
               onClick={() => handleMute("bgm")}
+              data-testid="bgmmute"
             >
               {isBgmMuted ? <GoMute /> : <GoUnmute />}
             </button>
@@ -205,6 +207,7 @@ const SoundSettings: React.FC = () => {
             <button
               className={isSfxMuted ? "muted" : "unmuted"}
               onClick={() => handleMute("sfx")}
+              data-testid="sfxmute"
             >
               {isSfxMuted ? <GoMute /> : <GoUnmute />}
             </button>
@@ -237,6 +240,7 @@ const SoundSettings: React.FC = () => {
               checked={profanityEnabled}
               onChange={handleToggleProfanity}
               id="profanity-toggle"
+              data-testid="profanity-toggle"
             />
             <label htmlFor="profanity-toggle">
               {profanityEnabled ? "Enabled" : "Disabled"}
