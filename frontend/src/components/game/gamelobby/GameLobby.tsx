@@ -32,8 +32,8 @@ interface ChatMessage {
 interface GameLobbyProps {
   lobbyId: string;
   lobbySettings: GameSetting;
-  lobbyUsers: { [key: string]: { [key: string]: boolean } };
-  joinRequests: { [key: string]: boolean };
+  lobbyUsers: { [key: string]: { [key: string]: boolean | string } };
+  joinRequests: { [key: string]: { [key: string]: boolean | string } };
   lobbyChat: ChatMessage[];
   profilePictures: { [username: string]: string };
   gameType: string;
@@ -115,6 +115,7 @@ const GameLobby: React.FC<GameLobbyProps> = (props) => {
           <GameUsers
             lobbyId={lobbyId}
             usernames={lobbyUsers}
+            profilePictures={profilePictures}
             joinRequests={joinRequests}
             gameType={gameType}
             handleLeave={handleLeave}

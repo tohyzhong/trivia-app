@@ -272,26 +272,6 @@ router.get("/:username", authenticate, async (req, res) => {
   }
 });
 
-// Retrieve multiple profiles
-router.post("/get-profiles", authenticate, async (req, res) => {
-  try {
-    const { usernames } = req.body;
-    const users = await Profile.find(
-      { username: { $in: usernames } },
-      { _id: 0, username: 1, profilePicture: 1 }
-    );
-    if (!users) {
-      return res.status(404).json({ message: "No profiles found" });
-    }
-    return res
-      .status(200)
-      .json({ message: "Profiles successfully retrieved.", users });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error." });
-  }
-});
-
 // Update user roles
 router.put("/updaterole/:username", authenticate, async (req, res) => {
   const { username } = req.params;
