@@ -65,7 +65,7 @@ const connectMongo = async () => {
   }
 };
 
-connectMongo();
+// connectMongo();
 
 app.use(morgan(":method :url :status :response-time ms"));
 
