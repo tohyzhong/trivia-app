@@ -92,7 +92,7 @@ const MatchHistory: React.FC = () => {
           {matchHistory.map((match, index) => {
             const date = new Date(match.date);
             const parts = date
-              .toLocaleString(undefined, {
+              .toLocaleString("en-GB", {
                 weekday: "short",
                 day: "2-digit",
                 month: "short",
@@ -104,7 +104,7 @@ const MatchHistory: React.FC = () => {
               .replace(/,/g, "")
               .split(" ");
 
-            const formatted = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]}, ${parts[4]} ${parts[5].toUpperCase()}`;
+            const formatted = `${parts[0]}, ${parts[1]} ${parts[2]} ${parts[3]}, ${parts[4]} ${parts[5].toUpperCase()}`;
 
             const isExpanded = expandedIndexes.has(index);
 

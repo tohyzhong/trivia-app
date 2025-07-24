@@ -191,6 +191,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
         })
       )
     );
+    if (settings.categories?.includes("Community")) setCommunitySelected(true);
+    else setCommunitySelected(false);
   }, [settings, gameSettings]);
 
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
