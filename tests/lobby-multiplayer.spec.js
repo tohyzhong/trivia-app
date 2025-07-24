@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { loginViaAPI } from "./utils/login";
 
-test("Multiplayer lobby create + join (link) + reject + set name + join (browse) + approve + settings disabled + settings change + settings update + kick + private lobby + buttons (host only) + update host on leave", async ({
-  browser
-}) => {
+test("Multiplayer lobby create + join (link) + reject\
+      + set name + join (browse) + approve\
+      + settings disabled + settings change + settings update\
+      + message + kick + buttons (host only)\
+      + private lobby + update host on leave", async ({ browser }) => {
   const hostContext = await browser.newContext({
     viewport: { width: 1920, height: 1080 },
     screen: { width: 1920, height: 1080 },
@@ -174,6 +176,32 @@ test("Multiplayer lobby create + join (link) + reject + set name + join (browse)
   await expect(guestPage.locator("p.community-mode-warning")).toHaveText(
     "Note: Community Mode uses a separate question bank built from player contributions. Other categories cannot be selected together with this mode."
   );
+
+  // HOST MESSAGE
+  await hostPage.fill('input[class="chat-input"]', "Host Test Message");
+  await hostPage.click("button.chat-send-button");
+
+  // GUEST MESSAGE
+  await guestPage.fill('input[class="chat-input"]', "Guest Test Message");
+  await guestPage.click("button.chat-send-button");
+
+  // MESSAGE RENDERING
+  await expect(guestPage.locator("span.chat-sender-name")).toContainText([
+    "tohyzhong",
+    "tyz359"
+  ]);
+  await expect(guestPage.locator("span.chat-text")).toContainText([
+    "Host Test Message",
+    "Guest Test Message"
+  ]);
+  await expect(hostPage.locator("span.chat-sender-name")).toContainText([
+    "tohyzhong",
+    "tyz359"
+  ]);
+  await expect(hostPage.locator("span.chat-text")).toContainText([
+    "Host Test Message",
+    "Guest Test Message"
+  ]);
 
   // HOST LEAVES
   await hostPage.click("button.leave-button");
