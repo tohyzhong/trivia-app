@@ -3,9 +3,10 @@ import { loginViaAPI } from "./utils/login";
 
 test("Multiplayer lobby create + join (link) + reject\
       + set name + join (browse) + approve\
-      + settings disabled + settings change + settings update\
-      + message + kick + buttons (host only)\
-      + private lobby + update host on leave", async ({ browser }) => {
+      + buttons (host only) + settings disabled\
+      + settings change + settings update\
+      + message + update host on leave\
+      + kick + private lobby", async ({ browser }) => {
   const hostContext = await browser.newContext({
     viewport: { width: 1920, height: 1080 },
     screen: { width: 1920, height: 1080 },
