@@ -1,9 +1,17 @@
-export async function loginViaAPI(page, username, password) {
+import dotenv from "dotenv";
+dotenv.config();
+
+export async function loginViaAPI(page, userIndex) {
   const res = await page.request.post("http://localhost:8080/api/auth/login", {
     headers: {
       "Content-Type": "application/json"
     },
-    data: { username, password }
+    data:
+      userIndex === 1
+        ? { username: process.env.USER1, password: process.env.PASSWORD1 }
+        : userIndex === 2
+          ? { username: process.env.USER2, password: process.env.PASSWORD2 }
+          : { username: process.env.USER3, password: process.env.PASSWORD3 }
   });
 
   if (!res.ok()) {

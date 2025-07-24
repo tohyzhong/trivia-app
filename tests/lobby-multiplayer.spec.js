@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { loginViaAPI } from "./utils/login";
+import dotenv from "dotenv";
+dotenv.config();
 
 test("Multiplayer lobby create + join (link) + reject\
       + set name + join (browse) + approve\
@@ -36,7 +38,7 @@ test("Multiplayer lobby create + join (link) + reject\
 
   // HOST LOGIN + CREATE LOBBY
   await hostPage.goto("/");
-  await loginViaAPI(hostPage, "tohyzhong", "Password1");
+  await loginViaAPI(hostPage, 1);
   await hostPage.reload();
   await hostPage.click("button.play-button");
   await hostPage.waitForTimeout(2000);
@@ -58,7 +60,7 @@ test("Multiplayer lobby create + join (link) + reject\
 
   // GUEST LOGIN
   await guestPage.goto("/");
-  await loginViaAPI(guestPage, "tyz359", "Password1");
+  await loginViaAPI(guestPage, 2);
   await guestPage.reload();
   await guestPage.click("button.play-button");
   await guestPage.waitForTimeout(2000);
@@ -99,7 +101,7 @@ test("Multiplayer lobby create + join (link) + reject\
 
   // GUEST 2 LOGIN
   await guest2Page.goto("/");
-  await loginViaAPI(guest2Page, "tyznewacc", "Password1");
+  await loginViaAPI(guest2Page, 3);
   await guest2Page.reload();
   await guest2Page.click("button.play-button");
   await guest2Page.waitForTimeout(2000);
@@ -188,16 +190,16 @@ test("Multiplayer lobby create + join (link) + reject\
 
   // MESSAGE RENDERING
   await expect(guestPage.locator("span.chat-sender-name")).toContainText([
-    "tohyzhong",
-    "tyz359"
+    process.env.USER1,
+    process.env.USER2
   ]);
   await expect(guestPage.locator("span.chat-text")).toContainText([
     "Host Test Message",
     "Guest Test Message"
   ]);
   await expect(hostPage.locator("span.chat-sender-name")).toContainText([
-    "tohyzhong",
-    "tyz359"
+    process.env.USER1,
+    process.env.USER2
   ]);
   await expect(hostPage.locator("span.chat-text")).toContainText([
     "Host Test Message",
@@ -208,7 +210,9 @@ test("Multiplayer lobby create + join (link) + reject\
   await hostPage.click("button.leave-button");
 
   // HOST TRANSFERRED TO GUEST
-  await expect(guestPage.getByText("tyz359 (Host)")).toHaveCount(1);
+  await expect(guestPage.getByText(`${process.env.USER2} (Host)`)).toHaveCount(
+    1
+  );
 
   // OLD HOST TRIES TO FIND IN LOBBY BROWSER
   await hostPage.goto("/play");
