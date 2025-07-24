@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function loginViaAPI(page, userIndex) {
+  await page.goto("/");
   const res = await page.request.post("http://localhost:8080/api/auth/login", {
     headers: {
       "Content-Type": "application/json"
@@ -43,4 +44,11 @@ export async function loginViaAPI(page, userIndex) {
   ]);
 
   await page.goto("http://localhost:5173");
+  await page.reload();
+  await page.click("button.play-button");
+  await page.waitForTimeout(2000);
+  let leaveButton = await page.$(".leave-button");
+  if (leaveButton) {
+    await leaveButton.click();
+  }
 }

@@ -191,7 +191,8 @@ const GameSettings: React.FC<GameSettingsProps> = ({
         })
       )
     );
-    if (settings.categories?.includes("Community")) setCommunitySelected(true);
+    if (settings.categories?.includes("Community") || settings.community)
+      setCommunitySelected(true);
     else setCommunitySelected(false);
   }, [settings, gameSettings]);
 
