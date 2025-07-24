@@ -104,7 +104,7 @@ const MatchHistory: React.FC = () => {
               .replace(/,/g, "")
               .split(" ");
 
-            const formatted = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]}, ${parts[4]} ${parts[5]}`;
+            const formatted = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]}, ${parts[4]} ${parts[5].toUpperCase()}`;
 
             const isExpanded = expandedIndexes.has(index);
 

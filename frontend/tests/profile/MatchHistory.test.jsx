@@ -185,8 +185,8 @@ describe("MatchHistory Component", () => {
 
   it("renders answer history dots with correct colors", async () => {
     renderWithRoute("/testuser/matchhistory");
-    await screen.findByText(/Sun, 20 Jul 2025, 12:36 AM/i);
-    const details = screen.getByText(/Sun, 20 Jul 2025, 12:36 AM/i);
+    await screen.findByText(/Sun, Jul 20 2025, 12:36 AM/i);
+    const details = screen.getByText(/Sun, Jul 20 2025, 12:36 AM/i);
     fireEvent.click(details);
 
     const dots = screen.getAllByTitle(/Q\d/);
@@ -206,8 +206,8 @@ describe("MatchHistory Component", () => {
 
   it("renders team answer history if coop mode", async () => {
     renderWithRoute("/testuser/matchhistory");
-    await screen.findByText(/Mon, 21 Jul 2025, 2:42 AM/i);
-    const details = screen.getByText(/Mon, 21 Jul 2025, 2:42 AM/i);
+    await screen.findByText(/Mon, Jul 21 2025, 2:42 AM/i);
+    const details = screen.getByText(/Mon, Jul 21 2025, 2:42 AM/i);
     fireEvent.click(details);
 
     await screen.findByText("Team Answer History:");
@@ -229,8 +229,8 @@ describe("MatchHistory Component", () => {
 
   it("renders player scores with user highlighted", async () => {
     renderWithRoute("/blerargh/matchhistory");
-    await screen.findByText(/Sat, 19 Jul 2025, 10:02 PM/i);
-    const details = screen.getByText(/Sat, 19 Jul 2025, 10:02 PM/i);
+    await screen.findByText(/Sat, Jul 19 2025, 10:02 PM/i);
+    const details = screen.getByText(/Sat, Jul 19 2025, 10:02 PM/i);
     fireEvent.click(details);
 
     await screen.findByText("Answer History:");
