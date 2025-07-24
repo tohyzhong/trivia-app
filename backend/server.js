@@ -117,7 +117,9 @@ server.listen(process.env.PORT, () => {
 // Run scheduled tasks
 runSchedulers();
 
-// Generate sample Classic Questions
-// generateQuestions();
+// Generate sample Classic Questions and Testing Questions
+if (process.env.NODE_ENV === "development") {
+  generateQuestions();
+}
 
 export default app;
