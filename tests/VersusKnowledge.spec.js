@@ -133,6 +133,14 @@ test.describe("Versus Knowledge", () => {
       .fill("Correct Answer")
       .then(() => guestPage.locator("button.confirm-button").click());
 
+    // Check that correct answer revealed
+    await expect(
+      hostPage.locator('.knowledge-question-answer >> text="Correct Answer"')
+    ).toBeVisible();
+    await expect(
+      guestPage.locator('.knowledge-question-answer >> text="Correct Answer"')
+    ).toBeVisible();
+
     // Check Score Display
     const summaryHost = await hostPage
       .locator(".knowledge-score-display")
@@ -182,6 +190,26 @@ test.describe("Versus Knowledge", () => {
     expect(Number.isInteger(firstScore)).toBeTruthy();
     expect(Number.isInteger(secondScore)).toBeTruthy();
     expect(secondScore).toBeLessThan(firstScore);
+
+    // Check Answer History Bar
+    await expect(
+      hostPage.locator(".answer-history-bar .answer-history-item.red")
+    ).toHaveCount(0);
+    await expect(
+      hostPage.locator(".answer-history-bar .answer-history-item.green")
+    ).toHaveCount(2);
+    await expect(
+      hostPage.locator(".answer-history-bar .answer-history-item.grey")
+    ).toHaveCount(1);
+    await expect(
+      guestPage.locator(".answer-history-bar .answer-history-item.red")
+    ).toHaveCount(0);
+    await expect(
+      guestPage.locator(".answer-history-bar .answer-history-item.green")
+    ).toHaveCount(2);
+    await expect(
+      guestPage.locator(".answer-history-bar .answer-history-item.grey")
+    ).toHaveCount(1);
 
     await contextHost.close();
     await contextGuest.close();
