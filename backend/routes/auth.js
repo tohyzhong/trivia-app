@@ -485,28 +485,42 @@ router.get("/verify", async (req, res) => {
       usedAt: new Date()
     });
 
-    const newToken = jwt.sign(
-      {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        verified: true,
-        role: user.role,
-        chatBan: user.chatBan,
-        gameBan: user.gameBan
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    const userToken = req.cookies.token;
 
-    res.cookie("token", newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-    });
+    if (!userToken) {
+      return res.status(200).json({ message: "User verified successfully!" });
+    }
 
-    res.status(200).json({ message: "User verified successfully!" });
+    try {
+      const decoded = jwt.verify(userToken, process.env.JWT_SECRET);
+
+      if (decoded.username === user.username) {
+        const newToken = jwt.sign(
+          {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            verified: true,
+            role: user.role,
+            chatBan: user.chatBan,
+            gameBan: user.gameBan
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
+        );
+
+        res.cookie("token", newToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+        });
+      }
+
+      return res.status(200).json({ message: "User verified successfully!" });
+    } catch (err) {
+      return res.status(200).json({ message: "User verified successfully!" });
+    }
   } catch (err) {
     res
       .status(500)
