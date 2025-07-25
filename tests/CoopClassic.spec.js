@@ -208,6 +208,9 @@ test.describe("Coop Classic", () => {
     await expect(
       hostPage.locator(".answer-history-bar .answer-history-item.grey")
     ).toHaveCount(0);
+    await expect(
+      hostPage.locator(".player-stat-row .player-score")
+    ).toHaveCount(0);
 
     // Check Correct Score
     summaryHost = await hostPage.locator(".score-display").innerText();
@@ -230,5 +233,6 @@ test.describe("Coop Classic", () => {
 
     await contextHost.close();
     await contextGuest.close();
+    await contextGuest2.close();
   });
 });
