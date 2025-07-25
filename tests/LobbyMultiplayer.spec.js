@@ -218,5 +218,9 @@ test.describe("Multiplayer Lobby Functionality Checks", () => {
       hostPage.getByText("You were kicked from the lobby.")
     ).toHaveCount(1);
     await expect(hostPage.getByText("Not Ready")).toHaveCount(0);
+
+    await hostContext.close();
+    await guestContext.close();
+    await guest2Context.close();
   });
 });
