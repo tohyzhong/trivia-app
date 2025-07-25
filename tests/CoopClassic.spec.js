@@ -148,6 +148,12 @@ test.describe("Coop Classic", () => {
       hostPage.locator(".answer-history-bar .answer-history-item.green")
     ).toHaveCount(2);
     await expect(
+      guestPage.locator(".answer-history-bar .answer-history-item.green")
+    ).toHaveCount(2);
+    await expect(
+      guestPage2.locator(".answer-history-bar .answer-history-item.green")
+    ).toHaveCount(2);
+    await expect(
       hostPage.locator(".answer-history-bar .answer-history-item.grey")
     ).toHaveCount(0);
 
