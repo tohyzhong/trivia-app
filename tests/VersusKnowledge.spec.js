@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { loginViaAPI } from "./utils/login";
 
 test.describe("Versus Knowledge", () => {
-  test("Score rendering, answer reveal, hint powerup, back to lobby", async ({
+  test("Score rendering, answer reveal, hint and double score powerup, score summary", async ({
     browser
   }) => {
     const contextHost = await browser.newContext({

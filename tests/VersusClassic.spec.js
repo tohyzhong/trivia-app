@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 test.describe("Versus Classic Game Flow", () => {
-  test("Full game flow with powerups, scores, answer history, and advancing lobby", async ({
+  test("Full game flow with powerups, scores, score summary, answer history, and advancing lobby", async ({
     browser
   }) => {
     const hostContext = await browser.newContext({
