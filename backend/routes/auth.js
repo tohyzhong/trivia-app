@@ -200,10 +200,10 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ error: "No User Found" });
+    if (!user) return res.status(401).json({ error: "No User Found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Wrong Password" });
+    if (!isMatch) return res.status(401).json({ error: "Wrong Password" });
 
     // await Profile.updateOne(
     //   { username },
@@ -311,7 +311,7 @@ router.post("/forgotpassword", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res
-        .status(400)
+        .status(404)
         .json({ error: "No user found with that email address." });
     } else {
       const token = jwt.sign(
