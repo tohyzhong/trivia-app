@@ -158,18 +158,35 @@ router.post(
         previousPasswords: [hashedPassword],
         verified: false,
         chatBan: false,
-        gameBan: false
+        gameBan: false,
+        role: "user"
       });
 
       await Profile.create({
         username,
         profilePicture: "",
-        winRate: 0,
-        correctRate: 0,
-        correctAnswer: 0,
-        totalAnswer: 0,
         currency: 0,
-        matchHistory: []
+        matchHistory: [],
+        powerups: {
+          hintBoosts: 0,
+          addTimes: 0,
+          doublePoints: 0
+        },
+        leaderboardStats: {
+          classic: {
+            solo: {},
+            coop: {},
+            versus: {},
+            overall: {}
+          },
+          knowledge: {
+            solo: {},
+            coop: {},
+            versus: {},
+            overall: {}
+          }
+        },
+        reports: {}
       });
 
       await emailVerificationToken(username, req, res);
