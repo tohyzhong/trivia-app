@@ -1,3 +1,6 @@
 node_modules
 dispatch.yaml
 .env
+**/coverage/
+**/codecov
+**/convert-coverage.mjs
