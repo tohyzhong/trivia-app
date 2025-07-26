@@ -96,6 +96,13 @@ describe("Authentication: Registration", () => {
       password: "Testpass1"
     });
     expect(res.status).toBe(400);
+
+    const res2 = await request.post("/api/auth/register").send({
+      email: "therizzquiz@gmail.com",
+      username: "abcdefghijklmnopqrstuvwxyz",
+      password: "Testpass1"
+    });
+    expect(res2.status).toBe(400);
   });
 });
 
