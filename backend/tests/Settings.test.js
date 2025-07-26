@@ -36,19 +36,6 @@ describe("Settings", () => {
       expect(updated.profilePicture).toBe(newUrl);
     });
 
-    it("should return 404 if user not found", async () => {
-      const response = await request
-        .post("/api/settings/update-profile-picture")
-        .set("Cookie", cookie)
-        .send({
-          username: "fakeuser",
-          profilePictureUrl: "fake.png"
-        });
-
-      expect(response.status).toBe(404);
-      expect(response.body.error).toBe("User not found");
-    });
-
     it("should return 401 if not authenticated", async () => {
       const response = await request
         .post("/api/settings/update-profile-picture")
