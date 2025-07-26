@@ -38,6 +38,9 @@ const generateToken = (userId, action, newEmail = null) => {
 router.post("/update-profile-picture", authenticate, async (req, res) => {
   const { username, profilePictureUrl } = req.body;
 
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
+
   try {
     const user = await Profile.findOneAndUpdate(
       { username },
@@ -58,6 +61,9 @@ router.post("/update-profile-picture", authenticate, async (req, res) => {
 // Change Password
 router.post("/change-password", authenticate, async (req, res) => {
   const { username } = req.body;
+
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
 
   try {
     const user = await User.findOne({ username });
@@ -91,6 +97,9 @@ router.post(
   [body("newEmail").isEmail().withMessage("Invalid email format.")],
   async (req, res) => {
     const { username, newEmail } = req.body;
+
+    if (req.user.username !== username)
+      return res.status(401).json({ message: "Request Unauthorised." });
 
     try {
       const user = await User.findOne({ username });
@@ -135,6 +144,9 @@ router.post(
 // Delete Account
 router.post("/delete-account", authenticate, async (req, res) => {
   const { username } = req.body;
+
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
 
   try {
     const user = await User.findOne({ username });

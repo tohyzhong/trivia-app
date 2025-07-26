@@ -341,7 +341,7 @@ router.get("/matchhistory/:username", authenticate, async (req, res) => {
     );
 
     if (!profile) {
-      return res.status(401).json({ message: "Profile not found." });
+      return res.status(404).json({ message: "Profile not found." });
     }
 
     return res.status(200).json({
@@ -443,7 +443,7 @@ router.post("/report", authenticate, async (req, res) => {
         <p><strong>Total Reports:</strong><br/>${reportCount.join("<br/>")}</p>
         <h3>Chat History:</h3>
         <div style="background-color: #f2f2f2; padding: 12px; border-radius: 6px;">
-          ${chatContent || "<div>(No messages found)</div>"}
+          ${chatContent}
         </div>
       </div>
     `;
@@ -466,7 +466,7 @@ router.post("/report", authenticate, async (req, res) => {
         })}</p>
         <h3>Chat History:</h3>
         <div style="background-color: #f2f2f2; padding: 12px; border-radius: 6px;">
-          ${chatContent || "<div>(No messages found)</div>"}
+          ${chatContent}
         </div>
         <p style="margin-top: 24px; font-style: italic; color: #4caf50;">
           Thank you for keeping our community safe!
