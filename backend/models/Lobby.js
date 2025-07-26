@@ -7,7 +7,14 @@ const lobbySchema = new mongoose.Schema(
     players: { type: mongoose.Schema.Types.Mixed },
     gameType: {
       type: String,
-      enum: ["solo-classic", "solo-knowledge"],
+      enum: [
+        "solo-classic",
+        "solo-knowledge",
+        "coop-classic",
+        "coop-knowledge",
+        "versus-classic",
+        "versus-knowledge"
+      ],
       required: true
     },
     status: {
