@@ -44,7 +44,6 @@ export const createTransport = vi.fn().mockReturnValue({
     const chatHtmlMatch = html.match(
       /<h3>Chat History:<\/h3>\s*<div[^>]*>(.*?)<\/div>\s*<\/div>/s
     );
-
     if (chatHtmlMatch) {
       const chatHtml = chatHtmlMatch[1];
       global.lastReportEmail = {
@@ -54,6 +53,18 @@ export const createTransport = vi.fn().mockReturnValue({
         source,
         chatHtml: chatHtml?.trim()
       };
+    }
+
+    const approveMatch = html.match(
+      /<p>Great news\! Your question has been reviewed and approved by an admin\.<\/p>([\s\S]+)/
+    );
+    if (approveMatch) global.approveText = approveMatch[1];
+
+    const reasonMatch = html.match(
+      /<p>We regret to inform you that your submitted question was not approved by the admin team\.<\/p>([\s\S]+)/
+    );
+    if (reasonMatch) {
+      global.questionText = reasonMatch[1];
     }
 
     return Promise.resolve({ response: "Mock email sent" });
