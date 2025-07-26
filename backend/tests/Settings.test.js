@@ -243,8 +243,6 @@ describe("Settings", () => {
         token
       });
 
-      console.log(res2.body);
-
       expect(res2.status).toBe(200);
       expect(res2.body.message).toBe("Account deleted successfully");
 
