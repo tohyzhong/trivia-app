@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../server.js";
+import User from "../../models/User.js";
 
 export async function registerAndVerifyUser() {
   const userData = {
@@ -16,6 +17,15 @@ export async function registerAndVerifyUser() {
   await request(app)
     .get(`/api/auth/verify?token=${global.verificationToken}`)
     .expect(200);
+
+  await User.findOneAndUpdate(
+    {
+      username: userData.username
+    },
+    {
+      $set: { role: "superadmin" }
+    }
+  );
 
   const loginRes = await request(app)
     .post("/api/auth/login")
