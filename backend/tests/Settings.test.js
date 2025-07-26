@@ -245,7 +245,6 @@ describe("Settings", () => {
 
       expect(res2.status).toBe(200);
       expect(res2.body.message).toBe("Account deleted successfully");
-      // test
 
       const deletedUser = await User.findOne({ username: user.username });
       const deletedProfile = await Profile.findOne({ username: user.username });
