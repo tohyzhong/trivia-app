@@ -178,7 +178,14 @@ const ContactForm = () => {
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                 >
-                  <AiOutlineLoading3Quarters className="loading-icon" />
+                  <AiOutlineLoading3Quarters
+                    className="loading-icon"
+                    style={{
+                      fontSize: "1.2rem",
+                      marginLeft: "5px",
+                      marginRight: "5px"
+                    }}
+                  />
                 </motion.div>
               </>
             )}

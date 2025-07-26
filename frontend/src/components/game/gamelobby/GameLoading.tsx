@@ -15,7 +15,12 @@ const GameLoading: React.FC<Props> = ({ message = "Loading Lobby . . ." }) => {
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
       >
-        <AiOutlineLoading3Quarters className="loading-icon" />
+        <AiOutlineLoading3Quarters
+          className="loading-icon"
+          style={{
+            fontSize: "2.5rem"
+          }}
+        />
       </motion.div>
       <h1>{message}</h1>
     </div>

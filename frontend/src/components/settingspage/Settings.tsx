@@ -355,6 +355,7 @@ const Settings: React.FC = () => {
               <button
                 onClick={handleVerificationEmail}
                 disabled={verificationCooldown > 0 || sendingVerification}
+                style={{ alignItems: "center", height: "auto" }}
               >
                 {verificationCooldown > 0 ? (
                   `Wait ${Math.ceil(verificationCooldown / 1000)}s for Resend`
@@ -372,8 +373,20 @@ const Settings: React.FC = () => {
                             duration: 2,
                             ease: "linear"
                           }}
+                          style={{
+                            alignItems: "center",
+                            display: "flex",
+                            justifyContent: "center"
+                          }}
                         >
-                          <AiOutlineLoading3Quarters className="loading-icon" />
+                          <AiOutlineLoading3Quarters
+                            className="loading-icon"
+                            style={{
+                              fontSize: "1.2rem",
+                              marginLeft: "5px",
+                              marginRight: "5px"
+                            }}
+                          />
                         </motion.div>
                       </>
                     )}
@@ -440,7 +453,14 @@ const Settings: React.FC = () => {
                           ease: "linear"
                         }}
                       >
-                        <AiOutlineLoading3Quarters className="loading-icon" />
+                        <AiOutlineLoading3Quarters
+                          className="loading-icon"
+                          style={{
+                            fontSize: "1.2rem",
+                            marginLeft: "5px",
+                            marginRight: "5px"
+                          }}
+                        />
                       </motion.div>
                     </>
                   )}
@@ -471,7 +491,14 @@ const Settings: React.FC = () => {
                           ease: "linear"
                         }}
                       >
-                        <AiOutlineLoading3Quarters className="loading-icon" />
+                        <AiOutlineLoading3Quarters
+                          className="loading-icon"
+                          style={{
+                            fontSize: "1.2rem",
+                            marginLeft: "5px",
+                            marginRight: "5px"
+                          }}
+                        />
                       </motion.div>
                     </>
                   )}
@@ -502,7 +529,14 @@ const Settings: React.FC = () => {
                           ease: "linear"
                         }}
                       >
-                        <AiOutlineLoading3Quarters className="loading-icon" />
+                        <AiOutlineLoading3Quarters
+                          className="loading-icon"
+                          style={{
+                            fontSize: "1.2rem",
+                            marginLeft: "5px",
+                            marginRight: "5px"
+                          }}
+                        />
                       </motion.div>
                     </>
                   )}

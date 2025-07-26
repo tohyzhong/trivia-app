@@ -110,7 +110,7 @@
 
 .loading-icon {
   color: white;
-  font-size: 2rem;
+  font-size: 1.2rem !important;
 }
 
 .profile-image {
