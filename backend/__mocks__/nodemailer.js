@@ -29,6 +29,33 @@ export const createTransport = vi.fn().mockReturnValue({
       global.deleteAccountToken = deleteMatch[1];
     }
 
+    const reportedUser = html.match(
+      /<strong>Reported User:<\/strong>\s*(.*?)<\/p>/
+    )?.[1];
+    const reporter = html.match(
+      /<strong>Reporter:<\/strong>\s*(.*?)<\/p>/
+    )?.[1];
+    const reasons = html.match(/<strong>Reasons:<\/strong>\s*(.*?)<\/p>/)?.[1];
+    const source = html.match(/<strong>Source:<\/strong>\s*(.*?)<\/p>/)?.[1];
+    const chatHtmls = html.match(
+      /<h3>Chat History:<\/h3>[\s\S]*?<div[^>]*>([\s\S]*?)<\/div>/
+    );
+
+    const chatHtmlMatch = html.match(
+      /<h3>Chat History:<\/h3>\s*<div[^>]*>(.*?)<\/div>\s*<\/div>/s
+    );
+
+    if (chatHtmlMatch) {
+      const chatHtml = chatHtmlMatch[1];
+      global.lastReportEmail = {
+        reportedUser,
+        reporter,
+        reasons,
+        source,
+        chatHtml: chatHtml?.trim()
+      };
+    }
+
     return Promise.resolve({ response: "Mock email sent" });
   })
 });
