@@ -1,5 +1,5 @@
 # trivia-app  
-**Team ID:** `<7444>`  
+**Team ID:** `7444`  
 **Team Name:** *Sigma Squad*  
 - Si Wen Xuan, Terry  
 - Toh Yi Zhong  
