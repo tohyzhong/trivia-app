@@ -2,8 +2,8 @@
   "scripts": {
     "setup": "npm i --legacy-peer-deps && cd frontend && npm i --legacy-peer-deps && cd ../backend && npm i",
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
-    "test": "npm run test --prefix frontend",
-    "test:ui": "npm run test:ui --prefix frontend",
+    "test": "npm run test --prefix frontend && npm run test --prefix backend",
+    "test:ui": "npm run test:ui --prefix frontend && npm run test:ui --prefix backend",
     "test:pw": "npx playwright test",
     "test:pw:headed": "npx playwright test --headed",
     "test:pw:ui": "npx playwright test --ui",
