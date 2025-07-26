@@ -1,9 +1,9 @@
-import { registerAndVerifyUser } from "./helpers/authFlow";
+import { registerAndVerifyUser } from "./helpers/authFlow.js";
 import { beforeAll, describe, expect, it } from "vitest";
 import bcrypt from "bcryptjs";
 import Profile from "../models/Profile.js";
 import User from "../models/User.js";
-import Friend from "../models/Friend";
+import Friend from "../models/Friend.js";
 import Lobby from "../models/Lobby.js";
 
 let cookie;

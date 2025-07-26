@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from "vitest";
-import { registerAndVerifyUser } from "./helpers/authFlow";
+import { registerAndVerifyUser } from "./helpers/authFlow.js";
 import ClassicQuestion from "../models/ClassicQuestion.js";
 import User from "../models/User.js";
 import Profile from "../models/Profile.js";

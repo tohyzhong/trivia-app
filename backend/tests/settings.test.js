@@ -1,4 +1,4 @@
-import { registerAndVerifyUser } from "./helpers/authFlow";
+import { registerAndVerifyUser } from "./helpers/authFlow.js";
 import { beforeAll, describe, expect, it } from "vitest";
 import Profile from "../models/Profile.js";
 import User from "../models/User.js";
