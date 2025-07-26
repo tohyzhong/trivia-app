@@ -1,9 +1,11 @@
 vi.mock("nodemailer");
+vi.mock("../socket.js");
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import supertest from "supertest";
 import app from "../server.js";
 import jwt from "jsonwebtoken";
+import { vi } from "vitest";
 
 global.request = null;
 global.mongoServer = null;
