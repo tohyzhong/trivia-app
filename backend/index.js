@@ -4,7 +4,6 @@ import { initSocket } from "./socket.js";
 import runSchedulers from "./utils/tasks.js";
 import generateQuestions from "./utils/questionbank.js";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const server = http.createServer(app);
