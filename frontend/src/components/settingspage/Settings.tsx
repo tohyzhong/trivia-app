@@ -18,10 +18,6 @@ interface UserProfile {
   gameBan: boolean;
 }
 
-const isValidImageUrl = (url: string): boolean => {
-  return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
-};
-
 const Settings: React.FC = () => {
   const stateUser = useSelector((state: RootState) => state.user);
   const username = stateUser.username || "";
@@ -30,6 +26,7 @@ const Settings: React.FC = () => {
   const [user, setUserLocal] = useState<UserProfile | null>(null);
   const count = useRef(0);
 
+  const [isValidImage, setIsValidImage] = useState<boolean | null>(null);
   const [sendingVerification, setSendingVerification] =
     useState<boolean>(false);
   const [sendingPassword, setSendingPassword] = useState<boolean>(false);
@@ -80,9 +77,21 @@ const Settings: React.FC = () => {
   const [newProfilePictureUrl, setNewProfilePictureUrl] = useState<string>("");
   const [newEmail, setNewEmail] = useState<string>("");
 
+  useEffect(() => {
+    if (!newProfilePictureUrl.trim()) {
+      setIsValidImage(null);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => setIsValidImage(true);
+    img.onerror = () => setIsValidImage(false);
+    img.src = newProfilePictureUrl;
+  }, [newProfilePictureUrl]);
+
   // Handle profile picture change
   const handleProfilePictureChange = async () => {
-    if (!isValidImageUrl(newProfilePictureUrl)) {
+    if (!isValidImage) {
       dispatch(
         setError({
           errorMessage: "Please enter a valid image URL",
@@ -409,7 +418,7 @@ const Settings: React.FC = () => {
             <button onClick={handleProfilePictureChange}>
               Update Profile Picture
             </button>
-            {newProfilePictureUrl && isValidImageUrl(newProfilePictureUrl) ? (
+            {newProfilePictureUrl && isValidImage ? (
               <div className="image-preview">
                 <img
                   src={newProfilePictureUrl}
@@ -417,9 +426,9 @@ const Settings: React.FC = () => {
                   style={{ maxWidth: "300px", marginTop: "10px" }}
                 />
               </div>
-            ) : newProfilePictureUrl ? (
+            ) : newProfilePictureUrl && isValidImage === false ? (
               <p style={{ color: "red" }}>
-                ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
+                ⚠️ Could not load image from provided URL.
               </p>
             ) : null}
           </div>

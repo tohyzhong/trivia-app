@@ -131,6 +131,19 @@ describe("Settings Component", () => {
   // Profile Picture
   describe("Profile Picture", () => {
     it("submits profile picture update successfully", async () => {
+      global.Image = class {
+        constructor() {
+          this.onload = null;
+          this.onerror = null;
+        }
+
+        set src(_url) {
+          if (this.onload) {
+            setTimeout(() => this.onload(), 0);
+          }
+        }
+      };
+
       global.fetch
         .mockResolvedValueOnce({
           ok: true,
@@ -159,8 +172,19 @@ describe("Settings Component", () => {
 
       fireEvent.change(
         screen.getByPlaceholderText(/Enter new profile picture URL/i),
-        { target: { value: "memepicture.jpg" } }
+        {
+          target: {
+            value:
+              "https://www.dictionary.com/e/wp-content/uploads/2018/03/thisisfine-1.jpg"
+          }
+        }
       );
+
+      await waitFor(() => {
+        const preview = screen.getByAltText("Preview");
+        expect(preview).toBeInTheDocument();
+      });
+
       fireEvent.click(screen.getByText(/Update Profile Picture/i));
 
       await waitFor(() => {
@@ -175,17 +199,32 @@ describe("Settings Component", () => {
     });
 
     it("invalid profile picture", async () => {
+      global.Image = class {
+        constructor() {
+          this.onload = null;
+          this.onerror = null;
+        }
+
+        set src(_url) {
+          if (this.onerror) {
+            setTimeout(() => this.onerror(), 0);
+          }
+        }
+      };
+
       renderComponent();
-      await waitFor(() => {
-        expect(
-          screen.getByPlaceholderText(/Enter new profile picture URL/i)
-        ).toBeInTheDocument();
-      });
+      await screen.findByPlaceholderText(/Enter new profile picture URL/i);
 
       fireEvent.change(
         screen.getByPlaceholderText(/Enter new profile picture URL/i),
         { target: { value: "fail" } }
       );
+
+      await waitFor(() => {
+        const preview = screen.queryByAltText("Preview");
+        expect(preview).not.toBeInTheDocument();
+      });
+
       fireEvent.click(screen.getByText(/Update Profile Picture/i));
 
       await waitFor(() => {
@@ -200,6 +239,19 @@ describe("Settings Component", () => {
     });
 
     it("handles failed profile picture update from server", async () => {
+      global.Image = class {
+        constructor() {
+          this.onload = null;
+          this.onerror = null;
+        }
+
+        set src(_url) {
+          if (this.onload) {
+            setTimeout(() => this.onload(), 0);
+          }
+        }
+      };
+
       global.fetch
         .mockResolvedValueOnce({
           ok: true,
@@ -230,6 +282,12 @@ describe("Settings Component", () => {
         screen.getByPlaceholderText(/Enter new profile picture URL/i),
         { target: { value: "test.jpg" } }
       );
+
+      await waitFor(() => {
+        const preview = screen.getByAltText("Preview");
+        expect(preview).toBeInTheDocument();
+      });
+
       fireEvent.click(screen.getByText(/Update Profile Picture/i));
 
       await waitFor(() => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import "../../styles/questionsubmissionform.css";
@@ -6,12 +6,9 @@ import { setError } from "../../redux/errorSlice";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const isValidImageUrl = (url: string): boolean => {
-  return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
-};
-
 const KnowledgeQuestionSubmissionForm: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
+  const [isValidImage, setIsValidImage] = useState<boolean | null>(null);
   const [answer, setAnswer] = useState<string>("");
   const [difficulty, setDifficulty] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,11 +17,21 @@ const KnowledgeQuestionSubmissionForm: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const username = user.username;
 
+  useEffect(() => {
+    if (!question.trim()) {
+      setIsValidImage(null);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => setIsValidImage(true);
+    img.onerror = () => setIsValidImage(false);
+    img.src = question;
+  }, [question]);
+
   const validateForm = (): string | null => {
     if (!question.trim()) return "Question is required.";
-    const parts = question.split(".");
-    if (!["jpg", "jpeg", "png"].includes(parts[parts.length - 1]))
-      return "Please provide a valid image URL";
+    if (!isValidImage) return "Please provide a valid image URL";
 
     if (!answer.trim()) return "Answer is required";
     if (difficulty < 1 || difficulty > 5)
@@ -104,7 +111,7 @@ const KnowledgeQuestionSubmissionForm: React.FC = () => {
             onChange={(e) => setQuestion(e.target.value)}
             required
           />
-          {question && isValidImageUrl(question) ? (
+          {question && isValidImage ? (
             <div className="image-preview">
               <img
                 src={question}
@@ -112,9 +119,9 @@ const KnowledgeQuestionSubmissionForm: React.FC = () => {
                 style={{ maxWidth: "300px", marginTop: "10px" }}
               />
             </div>
-          ) : question ? (
+          ) : question && isValidImage === false ? (
             <p style={{ color: "red" }}>
-              ⚠️ Must be a valid image URL ending in .jpg, .png, etc.
+              ⚠️ Could not load image from provided URL.
             </p>
           ) : null}
 

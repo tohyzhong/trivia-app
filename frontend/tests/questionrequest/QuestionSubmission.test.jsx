@@ -219,6 +219,19 @@ describe("KnowledgeQuestionSubmissionForm", () => {
     });
 
     it("prompts 'Please provide a valid image URL' when question is invalid URL", async () => {
+      global.Image = class {
+        constructor() {
+          this.onload = null;
+          this.onerror = null;
+        }
+
+        set src(_url) {
+          if (this.onerror) {
+            setTimeout(() => this.onerror(), 0);
+          }
+        }
+      };
+
       renderWithProviders(<KnowledgeQuestionSubmissionForm />);
       fireEvent.change(screen.getByLabelText("Question: (Image URL)"), {
         target: { value: "invalid-url" }
@@ -238,9 +251,40 @@ describe("KnowledgeQuestionSubmissionForm", () => {
     });
 
     it("prompts 'Answer is required' when question valid but answer empty", async () => {
+      global.Image = class {
+        constructor() {
+          this.onload = null;
+          this.onerror = null;
+        }
+
+        set src(_url) {
+          if (this.onload) {
+            setTimeout(() => this.onload(), 0);
+          }
+        }
+      };
+
       renderWithProviders(<KnowledgeQuestionSubmissionForm />);
+      global.Image = class {
+        constructor() {
+          this.onload = null;
+          this.onerror = null;
+        }
+
+        set src(_url) {
+          if (this.onload) {
+            setTimeout(() => this.onload(), 0);
+          }
+        }
+      };
+
       fireEvent.change(screen.getByLabelText("Question: (Image URL)"), {
         target: { value: "image.jpg" }
+      });
+
+      await waitFor(() => {
+        const preview = screen.getByAltText("Preview");
+        expect(preview).toBeInTheDocument();
       });
 
       fireEvent.click(screen.getByText("Submit Question"));
@@ -265,6 +309,11 @@ describe("KnowledgeQuestionSubmissionForm", () => {
         target: { value: 0 }
       });
 
+      await waitFor(() => {
+        const preview = screen.getByAltText("Preview");
+        expect(preview).toBeInTheDocument();
+      });
+
       fireEvent.click(screen.getByText("Submit Question"));
 
       await waitFor(() => {
@@ -277,6 +326,19 @@ describe("KnowledgeQuestionSubmissionForm", () => {
   });
 
   it("submits valid knowledge question", async () => {
+    global.Image = class {
+      constructor() {
+        this.onload = null;
+        this.onerror = null;
+      }
+
+      set src(_url) {
+        if (this.onload) {
+          setTimeout(() => this.onload(), 0);
+        }
+      }
+    };
+
     global.fetch = vi.fn().mockResolvedValueOnce({ ok: true });
 
     renderWithProviders(<KnowledgeQuestionSubmissionForm />);
@@ -289,6 +351,11 @@ describe("KnowledgeQuestionSubmissionForm", () => {
     });
     fireEvent.change(screen.getByLabelText("Difficulty (1-5):"), {
       target: { value: 2 }
+    });
+
+    await waitFor(() => {
+      const preview = screen.getByAltText("Preview");
+      expect(preview).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByText("Submit Question"));
