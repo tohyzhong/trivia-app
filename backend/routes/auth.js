@@ -158,18 +158,35 @@ router.post(
         previousPasswords: [hashedPassword],
         verified: false,
         chatBan: false,
-        gameBan: false
+        gameBan: false,
+        role: "user"
       });
 
       await Profile.create({
         username,
         profilePicture: "",
-        winRate: 0,
-        correctRate: 0,
-        correctAnswer: 0,
-        totalAnswer: 0,
         currency: 0,
-        matchHistory: []
+        matchHistory: [],
+        powerups: {
+          hintBoosts: 0,
+          addTimes: 0,
+          doublePoints: 0
+        },
+        leaderboardStats: {
+          classic: {
+            solo: {},
+            coop: {},
+            versus: {},
+            overall: {}
+          },
+          knowledge: {
+            solo: {},
+            coop: {},
+            versus: {},
+            overall: {}
+          }
+        },
+        reports: {}
       });
 
       await emailVerificationToken(username, req, res);
@@ -200,10 +217,10 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ error: "No User Found" });
+    if (!user) return res.status(401).json({ error: "No User Found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Wrong Password" });
+    if (!isMatch) return res.status(401).json({ error: "Wrong Password" });
 
     // await Profile.updateOne(
     //   { username },
@@ -311,7 +328,7 @@ router.post("/forgotpassword", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res
-        .status(400)
+        .status(404)
         .json({ error: "No user found with that email address." });
     } else {
       const token = jwt.sign(
@@ -485,28 +502,42 @@ router.get("/verify", async (req, res) => {
       usedAt: new Date()
     });
 
-    const newToken = jwt.sign(
-      {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        verified: true,
-        role: user.role,
-        chatBan: user.chatBan,
-        gameBan: user.gameBan
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    const userToken = req.cookies.token;
 
-    res.cookie("token", newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-    });
+    if (!userToken) {
+      return res.status(200).json({ message: "User verified successfully!" });
+    }
 
-    res.status(200).json({ message: "User verified successfully!" });
+    try {
+      const decoded = jwt.verify(userToken, process.env.JWT_SECRET);
+
+      if (decoded.username === user.username) {
+        const newToken = jwt.sign(
+          {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            verified: true,
+            role: user.role,
+            chatBan: user.chatBan,
+            gameBan: user.gameBan
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
+        );
+
+        res.cookie("token", newToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+        });
+      }
+
+      return res.status(200).json({ message: "User verified successfully!" });
+    } catch (err) {
+      return res.status(200).json({ message: "User verified successfully!" });
+    }
   } catch (err) {
     res
       .status(500)

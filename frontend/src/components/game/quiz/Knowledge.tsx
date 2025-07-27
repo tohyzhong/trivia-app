@@ -53,6 +53,9 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
   const loggedInUser = useSelector((state: RootState) => state.user.username);
   const currentQuestionRef = useRef(currentQuestion);
   const dispatch = useDispatch();
+  const answerHistory = teamStates
+    ? teamStates["teamAnswerHistory"]
+    : playerStates[loggedInUser]?.answerHistory || [];
 
   // Input handlers
   const [answerInput, setAnswerInput] = useState<string>(
@@ -209,6 +212,25 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
     setShowAnswer(true);
   };
 
+  const renderAnswerHistory = () => {
+    const recentAnswers = Object.keys(answerHistory)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .slice(-5);
+
+    return recentAnswers.map((questionId) => {
+      const status = teamStates
+        ? answerHistory[questionId][0]
+        : answerHistory[questionId];
+
+      let color = "grey";
+      if (status === "correct") color = "green";
+      else if (status === "wrong") color = "red";
+      return (
+        <div key={questionId} className={`answer-history-item ${color}`} />
+      );
+    });
+  };
+
   return (
     <div className="knowledge-question-display">
       {showAnswer && (
@@ -253,9 +275,26 @@ const Knowledge: React.FC<KnowledgeQuestionProps> = ({
         style={!answerRevealed ? { width: "95%", maxWidth: "95%" } : {}}
       >
         <div className="knowledge-question-header">
-          <p className="knowledge-question-progress">
-            Question {currentQuestion} / {totalQuestions}
-          </p>
+          <div
+            className="question-number-answer-history"
+            style={{
+              width: "33%",
+              alignItems: "center",
+              justifyContent: "center",
+              justifyItems: "center",
+              display: "flex",
+              textAlign: "left",
+              paddingLeft: "23px",
+              position: "relative"
+            }}
+          >
+            <p style={{ width: "100%" }}>
+              Question {currentQuestion} / {totalQuestions}
+            </p>
+            <div className="answer-history-bar" style={{ paddingLeft: "23px" }}>
+              {renderAnswerHistory()}
+            </div>
+          </div>
           <div className="knowledge-question-answer">
             {answerRevealed ? (
               <>

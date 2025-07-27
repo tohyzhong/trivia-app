@@ -265,7 +265,14 @@ const Profile: React.FC<ProfileProps> = ({ user1 }) => {
                             ease: "linear"
                           }}
                         >
-                          <AiOutlineLoading3Quarters className="loading-icon" />
+                          <AiOutlineLoading3Quarters
+                            className="loading-icon"
+                            style={{
+                              fontSize: "1.2rem",
+                              marginLeft: "5px",
+                              marginRight: "5px"
+                            }}
+                          />
                         </motion.div>
                       </>
                     )}

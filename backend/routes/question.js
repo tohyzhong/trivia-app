@@ -8,6 +8,10 @@ import authenticate from "./authMiddleware.js";
 const router = express.Router();
 
 router.get("/fetch-classic", authenticate, async (req, res) => {
+  if (!req.user.role.includes("admin"))
+    return res
+      .status(403)
+      .json({ message: "You are not authorised to view this page." });
   try {
     const result = await ClassicQuestion.aggregate([
       {
@@ -32,6 +36,11 @@ router.get("/fetch-classic", authenticate, async (req, res) => {
 });
 
 router.get("/fetch-knowledge", authenticate, async (req, res) => {
+  if (!req.user.role.includes("admin"))
+    return res
+      .status(403)
+      .json({ message: "You are not authorised to view this page." });
+
   try {
     const result = await KnowledgeQuestion.aggregate([
       {
@@ -55,6 +64,10 @@ router.get("/fetch-knowledge", authenticate, async (req, res) => {
 
 router.get("/search-classic", authenticate, async (req, res) => {
   const { searchQuery } = req.query;
+  if (!req.user.role.includes("admin"))
+    return res
+      .status(403)
+      .json({ message: "You are not authorised to view this page." });
 
   try {
     const regex = new RegExp(searchQuery, "i");
@@ -64,7 +77,8 @@ router.get("/search-classic", authenticate, async (req, res) => {
         {
           $or: [
             { question: { $regex: regex } },
-            { options: { $elemMatch: { $regex: regex } } }
+            { options: { $elemMatch: { $regex: regex } } },
+            { createdBy: { $regex: regex } }
           ]
         },
         {
@@ -85,6 +99,10 @@ router.get("/search-classic", authenticate, async (req, res) => {
 
 router.get("/search-knowledge", authenticate, async (req, res) => {
   const { searchQuery } = req.query;
+  if (!req.user.role.includes("admin"))
+    return res
+      .status(403)
+      .json({ message: "You are not authorised to view this page." });
 
   try {
     const regex = new RegExp(searchQuery, "i");

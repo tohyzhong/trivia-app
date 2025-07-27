@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../redux/store";
@@ -59,19 +59,18 @@ const LobbyHandler: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [joined, setJoined] = useState(false);
   const hasManuallyLeftRef = useRef(false);
-  const location = useLocation();
 
   // Details needed for lobby display
   const [users, setUsers] = useState<{
-    [key: string]: { [key: string]: boolean };
+    [key: string]: { [key: string]: boolean | string };
   }>(null);
   const [host, setHost] = useState<string>("");
   const [gameType, setGameType] = useState<string>("");
   const [gameSettings, setGameSettings] = useState<GameSetting>(null);
   const [gameChat, setGameChat] = useState<ChatMessage[]>(null);
-  const [joinRequests, setJoinRequests] = useState<{ [key: string]: boolean }>(
-    null
-  );
+  const [joinRequests, setJoinRequests] = useState<{
+    [key: string]: { [key: string]: boolean | string };
+  }>(null);
 
   // Details needed for quiz display
   const [gameState, setGameState] = useState<GameState>(null);
@@ -188,16 +187,6 @@ const LobbyHandler: React.FC = () => {
 
   // Handle access check and connection to lobby
   const checkAccess = async () => {
-    if (
-      location.state?.players &&
-      location.state?.host &&
-      location.state?.profilePictures
-    ) {
-      setUsers(location.state.players);
-      setHost(location.state.host);
-      setProfilePictures(location.state.profilePictures);
-    }
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/lobby/connect/${lobbyId}`,

@@ -69,13 +69,10 @@ const JoinLobbyHandler: React.FC = () => {
 
     requestJoin();
 
-    socket.emit("joinLobby", lobbyId);
-
     socket.on("kickUser", () => navigate("/play"));
     socket.on("rejectUser", () => navigate("/play"));
 
     return () => {
-      socket.emit("leaveLobby", lobbyId);
       socket.off("kickUser");
       socket.off("rejectUser");
     };

@@ -111,7 +111,7 @@ const FriendsList: React.FC = () => {
     try {
       // Remove incoming friend relation
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/friends/${friendUsername}/remove`,
+        `${import.meta.env.VITE_API_URL}/api/friends/${loggedInUser}/remove`,
         {
           method: "PUT",
           headers: {
@@ -119,7 +119,7 @@ const FriendsList: React.FC = () => {
           },
           credentials: "include",
           body: JSON.stringify({
-            friendUsername: loggedInUser
+            friendUsername
           })
         }
       );

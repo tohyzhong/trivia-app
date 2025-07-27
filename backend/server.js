@@ -3,8 +3,6 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import http from "http";
-import { initSocket } from "./socket.js";
 
 import authRoutes from "./routes/auth.js";
 import profileRoutes from "./routes/profile.js";
@@ -17,11 +15,10 @@ import leaderboardRoutes from "./routes/leaderboard.js";
 import shopRoutes from "./routes/shop.js";
 
 import morgan from "morgan";
-import runSchedulers from "./utils/tasks.js";
-
 dotenv.config();
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  "http://localhost:5173",
   "https://console.cron-job.org"
 ];
 
@@ -48,12 +45,9 @@ app.use(
   })
 );
 
-const server = http.createServer(app);
-initSocket(server);
-
 let isConnected = false;
 
-const connectMongo = async () => {
+export const connectMongo = async () => {
   if (isConnected) {
     console.log("MongoDB already connected");
     return;
@@ -74,8 +68,6 @@ const connectMongo = async () => {
     process.exit(1);
   }
 };
-
-connectMongo();
 
 app.use(morgan(":method :url :status :response-time ms"));
 
@@ -111,14 +103,5 @@ app.get("/cron-endpoint", (req, res) => {
   console.log("Cron job triggered:", new Date().toISOString());
   res.status(200).send("OK");
 });
-
-// Connection
-server.listen(8080, () => {
-  // uncomment for local production testing
-  console.log(`Server is running on port 8080`);
-});
-
-// Run scheduled tasks
-runSchedulers();
 
 export default app;

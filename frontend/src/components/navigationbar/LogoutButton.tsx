@@ -24,10 +24,11 @@ const LogoutButton: React.FC = () => {
         window.location.reload();
       } else {
         const data = await res.json();
-        console.error("Logout failed:", data.message || "An error occurred");
+        console.error("Logout failed:", data?.message || "An error occurred");
         dispatch(
           setError({
-            errorMessage: "Logout failed: " + data.message,
+            errorMessage:
+              "Logout failed: " + (data?.message || "An error occurred"),
             success: false
           })
         );

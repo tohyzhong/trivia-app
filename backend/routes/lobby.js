@@ -1922,10 +1922,7 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
             overallStats.overall.totalMatches++;
             color = "lose";
 
-            if (
-              parseInt(ranks[username].charAt(0)) <=
-              usernamesToUpdate.length / 2
-            ) {
+            if (parseInt(ranks[username]) <= usernamesToUpdate.length / 2) {
               modeStats.overall.wonMatches++;
               overallStats.overall.wonMatches++;
               color = "win";
@@ -1951,13 +1948,12 @@ router.post("/advancelobby/:lobbyId", authenticate, async (req, res) => {
           if (gameMode === "versus") {
             modeStats.Community.totalMatches++;
             overallStats.Community.totalMatches++;
+            color = "lose";
 
-            if (
-              parseInt(ranks[username].charAt(0)) <=
-              usernamesToUpdate.length / 2
-            ) {
+            if (parseInt(ranks[username]) <= usernamesToUpdate.length / 2) {
               modeStats.Community.wonMatches++;
               overallStats.Community.wonMatches++;
+              color = "win";
             }
           }
         }
