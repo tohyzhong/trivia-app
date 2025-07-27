@@ -61,12 +61,21 @@ const AdminApprovalDashboard: React.FC = () => {
     null
   );
   const [showRejectPopup, setShowRejectPopup] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
   const [pendingRejectId, setPendingRejectId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [approvingIds, setApprovingIds] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [updatingIds, setUpdatingIds] = useState<{ [key: string]: boolean }>(
+    {}
+  );
   const [rejectingIds, setRejectingIds] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [deletingIds, setDeletingIds] = useState<{ [key: string]: boolean }>(
     {}
   );
   const [selectedCategories, setSelectedCategories] = useState<{
@@ -80,6 +89,30 @@ const AdminApprovalDashboard: React.FC = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<
     ClassicQuestion | KnowledgeQuestion | null
   >(null);
+  const [editModeQuestionId, setEditModeQuestionId] = useState<string | null>(
+    null
+  );
+  const [editedQuestionData, setEditedQuestionData] = useState<
+    Partial<ClassicQuestion | KnowledgeQuestion>
+  >({});
+  const [isValidImage, setIsValidImage] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setIsValidImage(null);
+    if (
+      !editedQuestionData ||
+      !editedQuestionData?.question ||
+      !editedQuestionData?.question?.trim()
+    ) {
+      setIsValidImage(null);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => setIsValidImage(true);
+    img.onerror = () => setIsValidImage(false);
+    img.src = editedQuestionData.question;
+  }, [editedQuestionData.question]);
 
   // Fetching questions that are not approved, and categories for admin to select
   useEffect(() => {
@@ -101,11 +134,12 @@ const AdminApprovalDashboard: React.FC = () => {
           throw new Error("Failed to fetch initial questions and categories");
         }
         const data = await response.json();
-        if (currentMode === "Classic") setClassicQuestions(data.questions);
-        else setKnowledgeQuestions(data.questions);
-        setCategories(
-          data.categories.filter((cat: string) => cat !== "Community")
-        );
+        if (currentMode === "Classic") {
+          setClassicQuestions(data.questions);
+          setCategories(
+            data.categories.filter((cat: string) => cat !== "Community")
+          );
+        } else setKnowledgeQuestions(data.questions);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       } finally {
@@ -161,6 +195,303 @@ const AdminApprovalDashboard: React.FC = () => {
     }
   };
 
+  const handleSaveEdit = async (questionId: string) => {
+    const mode = selectedQuestion?.type === "classic" ? "classic" : "knowledge";
+    const category =
+      selectedCategories[questionId] === "Other"
+        ? manualCategories[questionId]?.trim()
+        : selectedCategories[questionId];
+
+    if (editedQuestionData.question === "") {
+      dispatch(
+        setError({
+          errorMessage: "Question is required.",
+          success: false
+        })
+      );
+      return;
+    }
+
+    if (mode === "classic") {
+      if (!category) {
+        dispatch(
+          setError({
+            errorMessage: "Please select a category.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if ((editedQuestionData as ClassicQuestion).explanation === "") {
+        dispatch(
+          setError({
+            errorMessage: "Explanation is required for classic questions.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      const correctOption = editedQuestionData.correctOption as number;
+      if (!isFinite(correctOption)) {
+        dispatch(
+          setError({
+            errorMessage: "Please select a correct option.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if (correctOption > 4 || correctOption < 1) {
+        dispatch(
+          setError({
+            errorMessage: "Correct option must be between 1 and 4.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if (
+        editedQuestionData.difficulty > 5 ||
+        editedQuestionData.difficulty < 1
+      ) {
+        dispatch(
+          setError({
+            errorMessage: "Difficulty must be between 1 and 5.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if (
+        editedQuestionData.question.match(
+          /^\[Contributed by [^\]]+\]\s*(.*)/
+        ) &&
+        !editedQuestionData.question.match(
+          /^\[Contributed by [^\]]+\]\s*(.*)/
+        )?.[1]
+      ) {
+        dispatch(
+          setError({
+            errorMessage: "Question is required.",
+            success: false
+          })
+        );
+        return;
+      }
+    }
+
+    if (mode === "knowledge") {
+      if (!editedQuestionData.question.trim()) {
+        dispatch(
+          setError({
+            errorMessage: "Question is required.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if (!(editedQuestionData.correctOption as string).trim()) {
+        dispatch(
+          setError({
+            errorMessage: "Correct answer is required.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if (
+        editedQuestionData.difficulty < 1 ||
+        editedQuestionData.difficulty > 5
+      ) {
+        dispatch(
+          setError({
+            errorMessage: "Difficulty must be between 1 and 5.",
+            success: false
+          })
+        );
+        return;
+      }
+
+      if (!isValidImage) {
+        dispatch(
+          setError({
+            errorMessage: "Please provide a valid image.",
+            success: false
+          })
+        );
+        return;
+      }
+    }
+
+    try {
+      setUpdatingIds((prev) => ({ ...prev, [questionId]: true }));
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/questions/update-${mode}/${questionId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ...selectedQuestion,
+            ...editedQuestionData,
+            ...(mode === "classic" ? { category } : {})
+          })
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Update failed:", err);
+        dispatch(setError({ errorMessage: String(err), success: false }));
+      }
+
+      if (
+        selectedQuestion.approved === undefined ||
+        selectedQuestion.approved
+      ) {
+        // Modify in Search
+        setSearchResults((prev) =>
+          prev.map((q) =>
+            q._id === questionId
+              ? {
+                  ...selectedQuestion,
+                  ...editedQuestionData,
+                  ...(mode === "classic" ? { category } : {})
+                }
+              : q
+          )
+        );
+      } else {
+        // Modify in Unapproved Questions
+        if (selectedQuestion.type === "classic") {
+          setClassicQuestions((prev) =>
+            prev.map((q) =>
+              q._id === questionId
+                ? {
+                    ...(selectedQuestion as ClassicQuestion),
+                    ...(editedQuestionData as ClassicQuestion),
+                    category
+                  }
+                : q
+            )
+          );
+        } else {
+          setKnowledgeQuestions((prev) =>
+            prev.map((q) =>
+              q._id === questionId
+                ? {
+                    ...(selectedQuestion as KnowledgeQuestion),
+                    ...(editedQuestionData as KnowledgeQuestion)
+                  }
+                : q
+            )
+          );
+        }
+      }
+
+      // Modify in Preview
+      setSelectedQuestion({
+        ...selectedQuestion,
+        ...editedQuestionData,
+        ...(mode === "classic" ? { category } : {})
+      } as ClassicQuestion | KnowledgeQuestion);
+
+      dispatch(
+        setError({ errorMessage: "Saved successfully!", success: true })
+      );
+      setEditModeQuestionId(null);
+      setEditedQuestionData({});
+    } catch (err) {
+      console.error(err);
+      dispatch(setError({ errorMessage: "Failed to save.", success: false }));
+    } finally {
+      setUpdatingIds((prev) => {
+        const updated = { ...prev };
+        delete updated[questionId];
+        return updated;
+      });
+    }
+  };
+
+  const handleDelete = (questionId: string) => {
+    setPendingDeleteId(questionId);
+    setDeleteReason("");
+    setShowDeletePopup(true);
+  };
+
+  const sendDeletion = async (questionId: string, deleteReason: string) => {
+    setRejectingIds((prev) => ({ ...prev, [questionId]: true }));
+    setDeletingIds((prev) => ({ ...prev, [questionId]: true }));
+    const mode = selectedQuestion?.type === "classic" ? "classic" : "knowledge";
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/questions/delete-${mode.toLowerCase()}/${questionId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason: deleteReason })
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Update failed:", err);
+      }
+
+      if (
+        selectedQuestion.approved === undefined ||
+        selectedQuestion.approved
+      ) {
+        setSearchResults(
+          (prev) =>
+            prev.filter((q) => q._id !== questionId) as
+              | KnowledgeQuestion[]
+              | ClassicQuestion[]
+        );
+      } else {
+        {
+          if (selectedQuestion.type === "classic") {
+            setClassicQuestions((prev) =>
+              prev.filter((q) => q._id !== questionId)
+            );
+          } else {
+            setKnowledgeQuestions((prev) =>
+              prev.filter((q) => q._id !== questionId)
+            );
+          }
+        }
+      }
+
+      dispatch(
+        setError({ errorMessage: "Deleted successfully!", success: true })
+      );
+      setSelectedQuestion(null);
+    } catch (err) {
+      console.error(err);
+      dispatch(setError({ errorMessage: "Delete failed.", success: false }));
+    } finally {
+      setDeletingIds((prev) => {
+        const updated = { ...prev };
+        delete updated[questionId];
+        return updated;
+      });
+      setRejectingIds((prev) => {
+        const updated = { ...prev };
+        delete updated[questionId];
+        return updated;
+      });
+    }
+  };
+
   const handleQuestionClick = (
     question: ClassicQuestion | KnowledgeQuestion
   ) => {
@@ -170,57 +501,435 @@ const AdminApprovalDashboard: React.FC = () => {
   };
 
   const generateQuestionDisplay = () => {
-    if (selectedQuestion.type === "classic") {
+    const isEditing =
+      selectedQuestion && editModeQuestionId === selectedQuestion._id;
+
+    if (selectedQuestion?.type === "classic") {
+      const q = selectedQuestion;
+      const formData = isEditing ? editedQuestionData : q;
+
+      const handleFieldChange = (field: string, value: any) => {
+        setEditedQuestionData((prev) => ({ ...prev, [field]: value }));
+      };
+
       return (
         <div className="question-details-request">
           <h3>Question Details</h3>
-          <p className="question-text-request">
-            <strong>Question:</strong> {selectedQuestion.question}
-          </p>
-          <p className="category-text-request">
-            <strong>Category:</strong> {selectedQuestion.category}
-          </p>
-          <p className="difficulty-text-request">
-            <strong>Difficulty:</strong> {selectedQuestion.difficulty}
-          </p>
-          <p className="options-label-request">
-            <strong>Options:</strong>
-          </p>
-          <ul className="options-list-request">
-            {selectedQuestion.options.map((option: string, index: number) => (
-              <li key={index}>{option}</li>
-            ))}
-          </ul>
-          <p className="correct-option-request">
-            <strong>Correct Option:</strong>{" "}
-            {selectedQuestion.options[selectedQuestion.correctOption - 1]}
-          </p>
-          <p className="correct-option-request">
-            <strong>Explanation:</strong> {selectedQuestion.explanation}
-          </p>
+
+          {isEditing ? (
+            <>
+              <label>
+                <strong>Question:</strong>
+              </label>
+              {(() => {
+                const prefixMatch = formData.question.match(
+                  /^\[Contributed by [^\]]+\]\s*/
+                );
+                const prefix = prefixMatch ? prefixMatch[0] : "";
+                const editablePart = formData.question.replace(prefix, "");
+
+                return (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {prefix && (
+                      <span
+                        style={{
+                          backgroundColor: "#f0f0f0",
+                          padding: "4px 6px",
+                          color: "#888",
+                          fontStyle: "italic"
+                        }}
+                      >
+                        {prefix}
+                      </span>
+                    )}
+                    <textarea
+                      value={editablePart}
+                      required={true}
+                      onChange={(e) =>
+                        handleFieldChange("question", prefix + e.target.value)
+                      }
+                    />
+                  </div>
+                );
+              })()}
+
+              <label>
+                <strong>Category:</strong>
+              </label>
+              <select
+                value={selectedCategories[q._id] || ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleCategoryChange(q._id, val);
+                }}
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+                <option value="Other">Other</option>
+              </select>
+
+              {selectedCategories[q._id] === "Other" && (
+                <>
+                  <input
+                    type="text"
+                    required={true}
+                    placeholder="Please Enter a Category"
+                    style={{ marginTop: "10px" }}
+                    value={manualCategories[q._id] || ""}
+                    onChange={(e) =>
+                      setManualCategories((prev) => ({
+                        ...prev,
+                        [q._id]: e.target.value
+                      }))
+                    }
+                  />
+                </>
+              )}
+
+              <label>
+                <strong>Difficulty (1-5):</strong>
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={5}
+                required={true}
+                value={formData.difficulty}
+                onChange={(e) =>
+                  handleFieldChange("difficulty", Number(e.target.value))
+                }
+              />
+
+              <label>
+                <strong>Options:</strong>
+              </label>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px"
+                }}
+              >
+                {(formData as ClassicQuestion).options?.map((opt, idx) => (
+                  <input
+                    type="text"
+                    key={idx}
+                    value={opt}
+                    required={true}
+                    onChange={(e) => {
+                      const updatedOptions = [
+                        ...(formData as ClassicQuestion).options!
+                      ];
+                      updatedOptions[idx] = e.target.value;
+                      handleFieldChange("options", updatedOptions);
+                    }}
+                  />
+                ))}
+              </div>
+
+              <label>
+                <strong>Correct Option (1-based index):</strong>
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={4}
+                required={true}
+                value={formData.correctOption}
+                onChange={(e) =>
+                  handleFieldChange("correctOption", Number(e.target.value))
+                }
+              />
+
+              <label>
+                <strong>Explanation:</strong>
+              </label>
+              <textarea
+                value={(formData as ClassicQuestion).explanation || ""}
+                required={true}
+                onChange={(e) =>
+                  handleFieldChange("explanation", e.target.value)
+                }
+              />
+
+              <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+                <button
+                  className="approve-button loading-button"
+                  onClick={() => handleSaveEdit(q._id)}
+                  disabled={!!updatingIds[q._id]}
+                >
+                  {updatingIds[q._id] ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear"
+                      }}
+                      className="loading-icon-wrapper"
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  ) : (
+                    "Save"
+                  )}
+                </button>
+
+                <button
+                  className="reject-button"
+                  onClick={() => {
+                    setEditModeQuestionId(null);
+                    setEditedQuestionData({});
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <label>
+                <strong>Question:</strong>
+              </label>{" "}
+              {selectedQuestion.question}
+              <label>
+                <strong>Category:</strong>
+              </label>{" "}
+              {selectedQuestion.category}
+              <label>
+                <strong>Difficulty:</strong>
+              </label>{" "}
+              {selectedQuestion.difficulty}
+              <label>
+                <strong>Options:</strong>
+              </label>
+              <ul className="options-list-request">
+                {selectedQuestion.options.map(
+                  (option: string, index: number) => (
+                    <li key={index}>{option}</li>
+                  )
+                )}
+              </ul>
+              <label>
+                <strong>Correct Option:</strong>{" "}
+                {selectedQuestion.options[selectedQuestion.correctOption - 1]}
+              </label>
+              <label>
+                <strong>Explanation:</strong> {selectedQuestion.explanation}
+              </label>
+              <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+                <button
+                  className="approve-button"
+                  onClick={() => {
+                    setEditModeQuestionId(q._id);
+                    setEditedQuestionData({ ...q });
+                    setSelectedCategories((prev) => ({
+                      ...prev,
+                      [q._id]: q.category || ""
+                    }));
+                  }}
+                >
+                  ✏️ Edit
+                </button>
+                <button
+                  className="reject-button loading-button"
+                  onClick={() => handleDelete(q._id)}
+                  disabled={!!deletingIds[q._id]}
+                >
+                  {deletingIds[q._id] ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear"
+                      }}
+                      className="loading-icon-wrapper"
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  ) : (
+                    "🗑️ Delete"
+                  )}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       );
-    } else if (selectedQuestion.type === "knowledge") {
+    } else {
+      const isEditing = editModeQuestionId === selectedQuestion._id;
+
       return (
-        <div className="question-details-request">
+        <div key={selectedQuestion._id} className="question-details-request">
           <h3>Question Details</h3>
-          <p className="question-text-request">
-            <strong>Image:</strong>
-            <img
-              src={selectedQuestion.question}
-              style={{ display: "block", marginTop: "10px", height: "300px" }}
-            />
-          </p>
-          <p className="difficulty-text-request">
-            <strong>Difficulty:</strong> {selectedQuestion.difficulty}
-          </p>
-          <p className="options-label-request">
-            <strong>Answer:</strong> {selectedQuestion.correctOption}
-          </p>
-          {selectedQuestion.createdBy && (
-            <p className="options-label-request">
-              <strong>Contributor:</strong> {selectedQuestion.createdBy}
-            </p>
+
+          {isEditing ? (
+            <>
+              <label>
+                <strong>Image URL: </strong>
+              </label>
+
+              <input
+                type="text"
+                value={editedQuestionData.question ?? ""}
+                onChange={(e) =>
+                  setEditedQuestionData((prev) => ({
+                    ...prev,
+                    question: e.target.value
+                  }))
+                }
+              />
+
+              <img
+                src={editedQuestionData.question ?? ""}
+                alt="Preview"
+                style={{
+                  display: "block",
+                  marginTop: "10px",
+                  height: "300px"
+                }}
+              />
+
+              <label>
+                <strong>Difficulty:</strong>
+              </label>
+              <input
+                min={1}
+                max={5}
+                required={true}
+                type="number"
+                value={editedQuestionData.difficulty ?? ""}
+                onChange={(e) =>
+                  setEditedQuestionData(
+                    (prev: KnowledgeQuestion) =>
+                      ({
+                        ...prev,
+                        difficulty: parseInt(e.target.value)
+                      }) as KnowledgeQuestion
+                  )
+                }
+              />
+
+              <label>
+                <strong>Answer: </strong>
+              </label>
+              <input
+                type="text"
+                value={editedQuestionData.correctOption ?? ""}
+                onChange={(e) =>
+                  setEditedQuestionData((prev: KnowledgeQuestion) => ({
+                    ...prev,
+                    correctOption: e.target.value
+                  }))
+                }
+              />
+
+              <div
+                className="action-buttons"
+                style={{ display: "flex", gap: "10px", marginTop: "20px" }}
+              >
+                <button
+                  className="approve-button loading-button"
+                  onClick={() => handleSaveEdit(editModeQuestionId)}
+                  disabled={!!updatingIds[editModeQuestionId]}
+                >
+                  {updatingIds[editModeQuestionId] ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear"
+                      }}
+                      className="loading-icon-wrapper"
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  ) : (
+                    "Save"
+                  )}
+                </button>
+                <button
+                  className="reject-button"
+                  onClick={() => setEditModeQuestionId(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <label>
+                <strong>Image:</strong>
+              </label>
+              <img
+                src={selectedQuestion.question}
+                style={{
+                  display: "block",
+                  marginTop: "10px",
+                  height: "300px"
+                }}
+              />
+
+              <label>
+                <strong>Difficulty:</strong> {selectedQuestion.difficulty}
+              </label>
+
+              <label>
+                <strong>Answer:</strong> {selectedQuestion.correctOption}
+              </label>
+
+              {selectedQuestion.createdBy && (
+                <label>
+                  <strong>Contributor:</strong> {selectedQuestion.createdBy}
+                </label>
+              )}
+
+              <div
+                className="action-buttons"
+                style={{ display: "flex", gap: "10px", marginTop: "20px" }}
+              >
+                <button
+                  className="approve-button"
+                  onClick={() => {
+                    setEditModeQuestionId(selectedQuestion._id);
+                    setEditedQuestionData({
+                      question: selectedQuestion.question,
+                      difficulty: selectedQuestion.difficulty,
+                      correctOption: selectedQuestion.correctOption
+                    });
+                  }}
+                >
+                  ✏️ Edit
+                </button>
+                <button
+                  className="reject-button loading-button"
+                  onClick={() => handleDelete(selectedQuestion._id)}
+                  disabled={!!deletingIds[selectedQuestion._id]}
+                >
+                  {deletingIds[selectedQuestion._id] ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear"
+                      }}
+                      className="loading-icon-wrapper"
+                    >
+                      <AiOutlineLoading3Quarters className="loading-icon" />
+                    </motion.div>
+                  ) : (
+                    "🗑️ Delete"
+                  )}
+                </button>
+              </div>
+            </>
           )}
         </div>
       );
@@ -612,7 +1321,7 @@ const AdminApprovalDashboard: React.FC = () => {
         />
 
         <div className="search-results">
-          {isLoading && <p>Loading...</p>}
+          {isLoading && <h1 style={{ color: "black" }}>Loading...</h1>}
           <ul className="search-results-list">
             {searchResults.map((result) => (
               <li
@@ -712,6 +1421,47 @@ const AdminApprovalDashboard: React.FC = () => {
                     onClick={() => {
                       setShowRejectPopup(false);
                       setPendingRejectId(null);
+                    }}
+                    className="approve-button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showDeletePopup && pendingDeleteId && (
+            <div className="manual-category-popup-overlay">
+              <div className="manual-category-popup">
+                <h3>Reason for Deletion</h3>
+                <textarea
+                  value={deleteReason}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  placeholder="Optional: Add a brief explanation"
+                  style={{
+                    width: "100%",
+                    minHeight: "100px",
+                    padding: "10px",
+                    fontSize: "14px"
+                  }}
+                />
+                <div className="popup-actions">
+                  <button
+                    onClick={() => {
+                      sendDeletion(pendingDeleteId, deleteReason);
+                      setShowDeletePopup(false);
+                      setPendingDeleteId(null);
+                    }}
+                    className="reject-button"
+                    data-testid="reject-button"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDeletePopup(false);
+                      setPendingDeleteId(null);
                     }}
                     className="approve-button"
                   >
