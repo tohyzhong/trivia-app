@@ -607,20 +607,29 @@ const AdminApprovalDashboard: React.FC = () => {
               <label>
                 <strong>Options:</strong>
               </label>
-              {(formData as ClassicQuestion).options?.map((opt, idx) => (
-                <input
-                  key={idx}
-                  value={opt}
-                  required={true}
-                  onChange={(e) => {
-                    const updatedOptions = [
-                      ...(formData as ClassicQuestion).options!
-                    ];
-                    updatedOptions[idx] = e.target.value;
-                    handleFieldChange("options", updatedOptions);
-                  }}
-                />
-              ))}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px"
+                }}
+              >
+                {(formData as ClassicQuestion).options?.map((opt, idx) => (
+                  <input
+                    type="text"
+                    key={idx}
+                    value={opt}
+                    required={true}
+                    onChange={(e) => {
+                      const updatedOptions = [
+                        ...(formData as ClassicQuestion).options!
+                      ];
+                      updatedOptions[idx] = e.target.value;
+                      handleFieldChange("options", updatedOptions);
+                    }}
+                  />
+                ))}
+              </div>
 
               <label>
                 <strong>Correct Option (1-based index):</strong>
@@ -763,17 +772,19 @@ const AdminApprovalDashboard: React.FC = () => {
             <>
               <label>
                 <strong>Image URL: </strong>
-
-                <input
-                  value={editedQuestionData.question ?? ""}
-                  onChange={(e) =>
-                    setEditedQuestionData((prev) => ({
-                      ...prev,
-                      question: e.target.value
-                    }))
-                  }
-                />
               </label>
+
+              <input
+                type="text"
+                value={editedQuestionData.question ?? ""}
+                onChange={(e) =>
+                  setEditedQuestionData((prev) => ({
+                    ...prev,
+                    question: e.target.value
+                  }))
+                }
+              />
+
               <img
                 src={editedQuestionData.question ?? ""}
                 alt="Preview"
@@ -806,16 +817,17 @@ const AdminApprovalDashboard: React.FC = () => {
 
               <label>
                 <strong>Answer: </strong>
-                <input
-                  value={editedQuestionData.correctOption ?? ""}
-                  onChange={(e) =>
-                    setEditedQuestionData((prev: KnowledgeQuestion) => ({
-                      ...prev,
-                      correctOption: e.target.value
-                    }))
-                  }
-                />
               </label>
+              <input
+                type="text"
+                value={editedQuestionData.correctOption ?? ""}
+                onChange={(e) =>
+                  setEditedQuestionData((prev: KnowledgeQuestion) => ({
+                    ...prev,
+                    correctOption: e.target.value
+                  }))
+                }
+              />
 
               <div
                 className="action-buttons"
@@ -1309,7 +1321,7 @@ const AdminApprovalDashboard: React.FC = () => {
         />
 
         <div className="search-results">
-          {isLoading && <p>Loading...</p>}
+          {isLoading && <h1 style={{ color: "black" }}>Loading...</h1>}
           <ul className="search-results-list">
             {searchResults.map((result) => (
               <li
