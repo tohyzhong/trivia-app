@@ -7,6 +7,12 @@ import authenticate from "./authMiddleware.js";
 
 const router = express.Router();
 
+const getModelByType = (type) => {
+  if (type === "classic") return ClassicQuestion;
+  if (type === "knowledge") return KnowledgeQuestion;
+  throw new Error("Invalid type");
+};
+
 router.get("/fetch-classic", authenticate, async (req, res) => {
   if (!req.user.role.includes("admin"))
     return res
@@ -414,6 +420,205 @@ router.delete(
     }
   }
 );
+
+router.delete("/delete-:type/:questionId", authenticate, async (req, res) => {
+  const { type, questionId } = req.params;
+  const { reason } = req.body;
+  const { role } = req.user;
+
+  if (!role.includes("admin")) {
+    return res
+      .status(403)
+      .json({ message: "You do not have permission to delete questions." });
+  }
+
+  try {
+    let Model;
+    if (type === "classic") {
+      Model = ClassicQuestion;
+    } else if (type === "knowledge") {
+      Model = KnowledgeQuestion;
+    } else {
+      return res.status(400).json({ message: "Invalid question type." });
+    }
+
+    const result = await Model.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(questionId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "username",
+          as: "userInfo"
+        }
+      },
+      { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } }
+    ]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Question not found." });
+    }
+
+    const question = result[0];
+    const user = question.userInfo || null;
+
+    if (user) {
+      const subject = "[The Rizz Quiz] Your question was deleted";
+      const html =
+        type === "classic"
+          ? `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+          <h2 style="color: #dc3545;">Your question was deleted</h2>
+          <p>Hi <strong>${user.username}</strong>,</p>
+          <p>We regret to inform you that your submitted question was deleted by an admin.</p>
+          <h4>Question:</h4>
+          <p>${question.question}</p>
+          <p><strong>Correct Answer:</strong> ${question.correctOption}</p>
+          ${
+            reason?.trim()
+              ? `<h4>Reason:</h4><p style="background-color: #f8f8f8; padding: 10px; border-left: 4px solid #dc3545;">${reason}</p>`
+              : ""
+          }
+          <p>If you'd like, you may revise and resubmit a new question.</p>
+          <p style="color: #888;">– The Rizz Quiz Admin</p>
+        </div>`
+          : `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+          <h2 style="color: #dc3545;">Your meme question was deleted</h2>
+          <p>Hi <strong>${user.username}</strong>,</p>
+          <p>We regret to inform you that your meme question was deleted by an admin.</p>
+          <p><strong>Meme Name:</strong> ${question.correctOption}</p>
+          <p><img src="${question.question}" alt="Meme Image" style="max-width: 150px; height: auto; border-radius: 8px;" /></p>
+          ${
+            reason?.trim()
+              ? `<h4>Reason:</h4><p style="background-color: #f8f8f8; padding: 10px; border-left: 4px solid #dc3545;">${reason}</p>`
+              : ""
+          }
+          <p>Feel free to improve and submit a new one anytime.</p>
+          <p style="color: #888;">– The Rizz Quiz Admin</p>
+        </div>`;
+      await sendEmail(user.email, subject, "", html);
+    }
+
+    await Model.findByIdAndDelete(questionId);
+
+    res.status(200).json({ message: "Question deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the question." });
+  }
+});
+
+router.put("/update-:type/:questionId", authenticate, async (req, res) => {
+  const { type, questionId } = req.params;
+  const { role } = req.user;
+  const { question, correctOption, options, difficulty, category } = req.body;
+
+  if (!role.includes("admin")) {
+    return res
+      .status(403)
+      .send("You do not have permission to update questions.");
+  }
+
+  if (typeof difficulty !== "number" || difficulty < 1 || difficulty > 5) {
+    return res
+      .status(400)
+      .send("Please enter a valid difficulty between 1 and 5 (inclusive)");
+  }
+
+  try {
+    let Model;
+    if (type === "classic") {
+      if (!category || typeof category !== "string") {
+        return res
+          .status(400)
+          .send("Category is required for classic questions.");
+      }
+      Model = ClassicQuestion;
+    } else if (type === "knowledge") {
+      Model = KnowledgeQuestion;
+    } else {
+      return res.status(400).send("Invalid question type.");
+    }
+
+    const result = await Model.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(questionId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "username",
+          as: "userInfo"
+        }
+      },
+      { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } }
+    ]);
+
+    if (result.length === 0) {
+      return res.status(404).send("Question not found.");
+    }
+
+    const questionDoc = result[0];
+    const user = questionDoc.userInfo || null;
+
+    const updateFields = {
+      question,
+      correctOption,
+      options,
+      difficulty
+    };
+
+    if (type === "classic") updateFields.category = category;
+
+    const updated = await Model.findByIdAndUpdate(
+      questionId,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (user) {
+      const subject = "[The Rizz Quiz] Your question was edited by an admin";
+      const html =
+        type === "classic"
+          ? `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+              <h2 style="color: #ffc107;">Your question was modified</h2>
+              <p>Hi <strong>${user.username}</strong>,</p>
+              <p>An admin has made changes to your submitted question:</p>
+              <h4>Updated Question:</h4>
+              <ul>
+                <li><strong>Question:</strong> ${updated.question}</li>
+                <li><strong>Correct Option:</strong> ${updated.correctOption}</li>
+                <li><strong>Category:</strong> ${updated.category}</li>
+                <li><strong>Difficulty:</strong> ${updated.difficulty}</li>
+              </ul>
+              <p>Thanks for contributing to The Rizz Quiz!</p>
+            </div>
+          `
+          : `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+              <h2 style="color: #ffc107;">Your question was modified</h2>
+              <p>Hi <strong>${user.username}</strong>,</p>
+              <p>An admin has made changes to your submitted meme question:</p>
+              <ul>
+                <li><strong>Meme Name:</strong> ${updated.correctOption}</li>
+                <li><img src="${updated.question}" alt="Meme Image" style="max-width: 150px; height: auto; border-radius: 8px;" /></li>
+                <li><strong>Difficulty:</strong> ${updated.difficulty}</li>
+              </ul>
+              <p>Thanks for contributing to The Rizz Quiz!</p>
+            </div>
+          `;
+      await sendEmail(user.email, subject, "", html);
+    }
+
+    res.status(200).json({ message: "Question updated successfully" });
+  } catch (error) {
+    console.error("Error updating question:", error);
+    res.status(500).send("An error occurred while updating the question.");
+  }
+});
 
 router.post("/request", authenticate, async (req, res) => {
   const {

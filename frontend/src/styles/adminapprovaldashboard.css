@@ -53,15 +53,15 @@ body {
   background-color: #f0f0f0;
 }
 
-.question-details-request {
+/* .question-details-request {
   background-color: #f9f9f9;
   padding: 20px;
   margin: 24px 0;
   border-radius: 8px;
   border: 1px solid #ddd;
-}
+} */
 
-.question-details-request h3 {
+/* .question-details-request h3 {
   margin-bottom: 16px;
   color: #333;
   font-size: 20px;
@@ -81,6 +81,87 @@ body {
   padding-left: 20px;
   margin: 0 0 10px;
   list-style-type: disc;
+} */
+
+.question-details-request {
+  padding: 16px;
+  background-color: #fdfdfd;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-width: 800px;
+}
+
+.question-details-request label {
+  display: block;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.question-details-request input[type="text"],
+.question-details-request input[type="number"],
+.question-details-request textarea,
+.question-details-request select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.question-details-request input[type="text"]:focus,
+.question-details-request input[type="number"]:focus,
+.question-details-request textarea:focus,
+.question-details-request select:focus {
+  border-color: #6aafe6;
+  outline: none;
+}
+
+.question-details-request textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.question-details-request .action-buttons button {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.question-details-request .approve-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+}
+
+.question-details-request .reject-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+.question-details-request .approve-button:hover {
+  background-color: #45a045;
+}
+
+.question-details-request .reject-button:hover {
+  background-color: #d73833;
+}
+
+.question-details-request .disabled-prefix {
+  background-color: #f0f0f0;
+  color: #888;
+  padding: 4px 6px;
+  font-style: italic;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  pointer-events: none;
+  user-select: none;
 }
 
 .unapproved-questions h3 {
