@@ -2,7 +2,6 @@ import app, { connectMongo } from "./server.js";
 import http from "http";
 import { initSocket } from "./socket.js";
 import runSchedulers from "./utils/tasks.js";
-import generateQuestions from "./utils/questionbank.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -15,8 +14,4 @@ connectMongo().then(() => {
   });
 
   runSchedulers();
-
-  if (process.env.NODE_ENV === "development") {
-    generateQuestions();
-  }
 });
