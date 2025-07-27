@@ -196,8 +196,6 @@ const AdminApprovalDashboard: React.FC = () => {
   };
 
   const handleSaveEdit = async (questionId: string) => {
-    setUpdatingIds((prev) => ({ ...prev, [questionId]: true }));
-
     const mode = selectedQuestion?.type === "classic" ? "classic" : "knowledge";
     const category =
       selectedCategories[questionId] === "Other"
@@ -333,6 +331,7 @@ const AdminApprovalDashboard: React.FC = () => {
     }
 
     try {
+      setUpdatingIds((prev) => ({ ...prev, [questionId]: true }));
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/questions/update-${mode}/${questionId}`,
         {
