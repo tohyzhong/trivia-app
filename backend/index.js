@@ -11,7 +11,7 @@ const server = http.createServer(app);
 initSocket(server);
 
 connectMongo().then(() => {
-  server.listen(process.env.PORT, () => {
+  server.listen(8080, "0.0.0.0", () => {
     console.info(`Server is running on port ${process.env.PORT}`);
   });
 
