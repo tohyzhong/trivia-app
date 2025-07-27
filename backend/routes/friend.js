@@ -103,6 +103,9 @@ router.put("/:username/add", authenticate, async (req, res) => {
   const { username } = req.params;
   const { friendUsername } = req.body;
 
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
+
   if (username === friendUsername) {
     return res
       .status(400)
@@ -134,6 +137,9 @@ router.put("/:username/add", authenticate, async (req, res) => {
 router.put("/:username/remove", authenticate, async (req, res) => {
   const { username } = req.params;
   const { friendUsername } = req.body;
+
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
 
   try {
     const result = await Friend.deleteMany({

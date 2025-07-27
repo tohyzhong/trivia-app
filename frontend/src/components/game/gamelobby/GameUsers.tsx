@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../../assets/default-avatar.jpg";
 
 import { playClickSound } from "../../../utils/soundManager";
@@ -9,68 +8,32 @@ import { setError } from "../../../redux/errorSlice";
 import { FaExclamation } from "react-icons/fa";
 import ReportUser from "./ReportUser";
 
-interface User {
-  username: string;
-  profilePicture: string;
-}
-
 interface GameUsersProps {
   lobbyId: string;
-  usernames: { [key: string]: { [key: string]: boolean } };
-  joinRequests: { [key: string]: boolean };
+  usernames: { [key: string]: { [key: string]: boolean | string } };
+  profilePictures: { [key: string]: string };
+  joinRequests: { [key: string]: { [key: string]: boolean | string } };
   gameType: string;
   handleLeave: () => void;
   host?: string;
 }
 
 const GameUsers: React.FC<GameUsersProps> = (props) => {
-  const { lobbyId, usernames, joinRequests, gameType, handleLeave, host } =
-    props;
+  const {
+    lobbyId,
+    usernames,
+    profilePictures,
+    joinRequests,
+    gameType,
+    handleLeave,
+    host
+  } = props;
   const loggedInUser = useSelector((state: RootState) => state.user.username);
-  const [users, setUsers] = useState<User[]>([]);
 
   const alreadyIn = Object.keys(usernames || {});
 
   // Render all users and avatars
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const renderUsers = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/profile/get-profiles`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            usernames: Object.keys(usernames).concat(
-              Object.keys(joinRequests || {})
-            )
-          })
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setUsers(data.users);
-      } else {
-        throw new Error();
-      }
-    } catch (error) {
-      console.error(error);
-      navigate("/");
-      dispatch(
-        setError({
-          errorMessage:
-            "Error loading lobby. A report has been sent to the admins",
-          success: false
-        })
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (usernames) renderUsers();
-  }, [usernames, joinRequests]);
 
   // Ready button
   const handleReady = async () => {
@@ -197,28 +160,35 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
       )}
 
       <div className="game-lobby-users-list">
-        {users.length > 0 &&
-          users.map((user, index) => (
+        {[
+          ...Object.keys(usernames ?? {}),
+          ...Object.keys(joinRequests ?? {})
+        ].map((username, index) => {
+          const profilePic =
+            profilePictures?.[username] ||
+            joinRequests?.[username]?.profilePicture ||
+            defaultAvatar;
+          const isReady = usernames[username]?.ready || false;
+          const isPending = !alreadyIn.includes(username);
+          return (
             <ul
-              key={user.username + index}
+              key={username + index}
               className={
-                !alreadyIn.includes(user.username)
+                isPending
                   ? "game-lobby-user-pending-approval"
                   : "game-lobby-user"
               }
             >
               <img
-                src={user.profilePicture || defaultAvatar}
-                alt={user.username + "'s Profile Picture"}
+                src={String(profilePic)}
+                alt={username + "'s Profile Picture"}
               />
               <h3 className="username-lobby">
-                {user.username === host ? host + " (Host)" : user.username}
-                {user.username !== loggedInUser && (
+                {username === host ? host + " (Host)" : username}
+                {username !== loggedInUser && (
                   <span
                     className="report-button"
-                    onClick={() => {
-                      handleReport(user.username);
-                    }}
+                    onClick={() => handleReport(username)}
                     title="Report User"
                     style={{ cursor: "pointer", marginLeft: "10px" }}
                   >
@@ -230,21 +200,13 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                 )}
               </h3>
 
-              {!alreadyIn.includes(user.username) ? (
-                <></>
-              ) : (
-                <h3
-                  className={
-                    usernames[user.username]?.ready
-                      ? "state-ready"
-                      : "state-notready"
-                  }
-                >
-                  {usernames[user.username]?.ready ? "Ready" : "Not Ready"}
+              {!isPending && (
+                <h3 className={isReady ? "state-ready" : "state-notready"}>
+                  {isReady ? "Ready" : "Not Ready"}
                 </h3>
               )}
 
-              {loggedInUser === host && !alreadyIn.includes(user.username) && (
+              {loggedInUser === host && isPending && (
                 <>
                   <button
                     className="approve-join"
@@ -257,12 +219,11 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                             headers: { "Content-Type": "application/json" },
                             credentials: "include",
                             body: JSON.stringify({
-                              usernameToApprove: user.username,
+                              usernameToApprove: username,
                               gameType: gameType
                             })
                           }
                         );
-
                         const data = await res.json();
                         if (!res.ok) {
                           throw new Error(data.message);
@@ -296,7 +257,7 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                           headers: { "Content-Type": "application/json" },
                           credentials: "include",
                           body: JSON.stringify({
-                            usernameToKick: user.username,
+                            usernameToKick: username,
                             isRejection: true
                           })
                         }
@@ -308,31 +269,30 @@ const GameUsers: React.FC<GameUsersProps> = (props) => {
                 </>
               )}
 
-              {loggedInUser === host &&
-                user.username !== host &&
-                alreadyIn.includes(user.username) && (
-                  <button
-                    className="kick-user"
-                    onClick={async () => {
-                      await fetch(
-                        `${import.meta.env.VITE_API_URL}/api/lobby/kick/${lobbyId}`,
-                        {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          credentials: "include",
-                          body: JSON.stringify({
-                            usernameToKick: user.username,
-                            isRejection: false
-                          })
-                        }
-                      );
-                    }}
-                  >
-                    Kick
-                  </button>
-                )}
+              {loggedInUser === host && username !== host && !isPending && (
+                <button
+                  className="kick-user"
+                  onClick={async () => {
+                    await fetch(
+                      `${import.meta.env.VITE_API_URL}/api/lobby/kick/${lobbyId}`,
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({
+                          usernameToKick: username,
+                          isRejection: false
+                        })
+                      }
+                    );
+                  }}
+                >
+                  Kick
+                </button>
+              )}
             </ul>
-          ))}
+          );
+        })}
       </div>
       <div className="game-lobby-buttons">
         <button className="leave-button" onClick={handleLeaveLocal}>

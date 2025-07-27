@@ -11,7 +11,7 @@ const QuestionRequestRoutes: React.FC = () => {
       <Route path="/admin-dashboard" element={<AdminApprovalDashboard />} />
       <Route path="/classic" element={<ClassicQuestionSubmissionForm />} />
       <Route path="/knowledge" element={<KnowledgeQuestionSubmissionForm />} />
-      <Route path="/" element={<QuestionTypeSelection />} />
+      <Route path="/*" element={<QuestionTypeSelection />} />
     </Routes>
   );
 };

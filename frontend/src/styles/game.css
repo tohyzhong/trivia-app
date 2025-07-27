@@ -115,6 +115,10 @@
   transition: opacity 0.3s;
 }
 
+.icon-wrapper:hover .hover-text {
+  opacity: 1;
+}
+
 .help-icon {
   position: fixed;
   bottom: 20px;

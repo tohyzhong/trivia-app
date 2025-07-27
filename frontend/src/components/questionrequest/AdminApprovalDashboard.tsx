@@ -195,6 +195,9 @@ const AdminApprovalDashboard: React.FC = () => {
             <strong>Correct Option:</strong>{" "}
             {selectedQuestion.options[selectedQuestion.correctOption - 1]}
           </p>
+          <p className="correct-option-request">
+            <strong>Explanation:</strong> {selectedQuestion.explanation}
+          </p>
         </div>
       );
     } else if (selectedQuestion.type === "knowledge") {
@@ -661,6 +664,7 @@ const AdminApprovalDashboard: React.FC = () => {
                       sendApproval(pendingApprovalId, value);
                     }}
                     className="approve-button"
+                    data-testid="approve-button"
                   >
                     Approve
                   </button>
@@ -700,6 +704,7 @@ const AdminApprovalDashboard: React.FC = () => {
                       setPendingRejectId(null);
                     }}
                     className="reject-button"
+                    data-testid="reject-button"
                   >
                     Reject
                   </button>

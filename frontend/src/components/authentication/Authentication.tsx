@@ -10,6 +10,7 @@ const Authentication: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/forgotpassword" element={<PasswordReset />} />
+      <Route path="/*" element={<LoginPage />} />
     </Routes>
   );
 };

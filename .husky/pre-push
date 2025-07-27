@@ -1,0 +1,58 @@
+#!/bin/sh
+set -e
+
+REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+
+if [ -z "$REMOTE_BRANCH" ]; then
+  echo "No remote tracking branch found. Skipping pre-push checks."
+  exit 0
+fi
+
+CHANGED_FILES=$(git diff --name-only "$REMOTE_BRANCH" HEAD)
+
+FRONTEND_CHANGED=0
+BACKEND_TESTS=""
+
+for file in $CHANGED_FILES; do
+  case "$file" in
+    frontend/*)
+      FRONTEND_CHANGED=1
+      ;;
+    backend/*)
+      if echo "$file" | grep -qE '\.test\.[jt]s$'; then
+        BACKEND_TESTS="$BACKEND_TESTS $file"
+      else
+        filename=$(basename "$file" | sed -E 's/\.[jt]s$//')
+        test_file="backend/tests/${filename}.test.js"
+        if [ -f "$test_file" ]; then
+          BACKEND_TESTS="$BACKEND_TESTS $test_file"
+        fi
+      fi
+      ;;
+  esac
+done
+
+EXIT_CODE=0
+
+if [ $FRONTEND_CHANGED -eq 1 ]; then
+  echo "Running all frontend tests..."
+  cd frontend
+  npm run test || EXIT_CODE=$?
+  cd ..
+fi
+
+if [ -n "$BACKEND_TESTS" ]; then
+  REL_BACKEND_TESTS=$(echo $BACKEND_TESTS | sed 's#backend/##g')
+  echo "Running backend tests: $REL_BACKEND_TESTS"
+  cd backend
+  npm run test -- $REL_BACKEND_TESTS || EXIT_CODE=$?
+  cd ..
+fi
+
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "Tests failed. Push aborted."
+  exit $EXIT_CODE
+else
+  echo "All tests passed. Proceeding with push."
+  exit 0
+fi

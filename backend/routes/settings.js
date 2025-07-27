@@ -38,6 +38,9 @@ const generateToken = (userId, action, newEmail = null) => {
 router.post("/update-profile-picture", authenticate, async (req, res) => {
   const { username, profilePictureUrl } = req.body;
 
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
+
   try {
     const user = await Profile.findOneAndUpdate(
       { username },
@@ -58,6 +61,9 @@ router.post("/update-profile-picture", authenticate, async (req, res) => {
 // Change Password
 router.post("/change-password", authenticate, async (req, res) => {
   const { username } = req.body;
+
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
 
   try {
     const user = await User.findOne({ username });
@@ -91,6 +97,9 @@ router.post(
   [body("newEmail").isEmail().withMessage("Invalid email format.")],
   async (req, res) => {
     const { username, newEmail } = req.body;
+
+    if (req.user.username !== username)
+      return res.status(401).json({ message: "Request Unauthorised." });
 
     try {
       const user = await User.findOne({ username });
@@ -135,6 +144,9 @@ router.post(
 // Delete Account
 router.post("/delete-account", authenticate, async (req, res) => {
   const { username } = req.body;
+
+  if (req.user.username !== username)
+    return res.status(401).json({ message: "Request Unauthorised." });
 
   try {
     const user = await User.findOne({ username });
@@ -216,7 +228,13 @@ router.post("/verify-action", async (req, res) => {
 
       await user.save();
 
-      res.json({ message: "Password changed successfully" });
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+      });
+
+      res.status(200).json({ message: "Password changed successfully" });
     } else {
       // Save used token to prevent reuse
       await UsedToken.create({
@@ -236,28 +254,47 @@ router.post("/verify-action", async (req, res) => {
           user.email = newEmail;
           await user.save();
 
-          const newToken = jwt.sign(
-            {
-              id: user._id,
-              username: user.username,
-              email: newEmail,
-              verified: user.verified,
-              chatBan: user.chatBan,
-              gameBan: user.gameBan
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "24h" }
-          );
+          const userToken = req.cookies.token;
 
-          res.cookie("token", newToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-          });
+          if (!userToken) {
+            return res
+              .status(200)
+              .json({ message: "User verified successfully!" });
+          }
 
-          res.json({ message: "Email changed successfully" });
-          break;
+          try {
+            const decoded = jwt.verify(userToken, process.env.JWT_SECRET);
+
+            if (decoded.username === user.username) {
+              const newToken = jwt.sign(
+                {
+                  id: user._id,
+                  username: user.username,
+                  email: newEmail,
+                  verified: user.verified,
+                  chatBan: user.chatBan,
+                  gameBan: user.gameBan
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: "24h" }
+              );
+
+              res.cookie("token", newToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite:
+                  process.env.NODE_ENV === "production" ? "none" : "lax",
+                expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+              });
+            }
+            return res
+              .status(200)
+              .json({ message: "Email changed successfully" });
+          } catch (err) {
+            return res
+              .status(200)
+              .json({ message: "Email changed successfully" });
+          }
         case "delete-account":
           await Promise.all([
             User.findByIdAndDelete(decoded.userId),
@@ -266,6 +303,12 @@ router.post("/verify-action", async (req, res) => {
               $or: [{ from: user.username }, { to: user.username }]
             })
           ]);
+
+          res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+          });
 
           res.json({ message: "Account deleted successfully" });
           break;

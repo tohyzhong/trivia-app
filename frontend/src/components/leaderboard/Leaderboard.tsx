@@ -102,6 +102,7 @@ const Leaderboard: React.FC = () => {
             setIsSoundPopupOpen(true);
           }}
           className="sound-settings-icon"
+          data-testid="game-settings-icon"
         />
         <p className="hover-text-2 sound-settings-icon-text">Game Settings</p>
 

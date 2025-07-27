@@ -17,6 +17,17 @@ export default defineConfig({
     }
   },
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    css: true,
+    coverage: {
+      provider: "c8", // use c8 coverage provider
+      reporter: ["text", "json", "html"], // generate text, json and html reports
+      reportsDirectory: "./coverage",
+      exclude: ["node_modules/", "test/"] // customize exclude as needed
+    }
+  },
   server: {
     proxy: {
       "/api": "http://localhost:8080"

@@ -3,8 +3,6 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import http from "http";
-import { initSocket } from "./socket.js";
 
 import authRoutes from "./routes/auth.js";
 import profileRoutes from "./routes/profile.js";
@@ -17,10 +15,12 @@ import leaderboardRoutes from "./routes/leaderboard.js";
 import shopRoutes from "./routes/shop.js";
 
 import morgan from "morgan";
-import runSchedulers from "./utils/tasks.js";
-import generateQuestions from "./utils/questionbank.js";
-
 dotenv.config();
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "https://console.cron-job.org"
+];
 
 const app = express();
 app.use((req, res, next) => {
@@ -33,17 +33,21 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
   })
 );
 
-const server = http.createServer(app);
-initSocket(server);
-
 let isConnected = false;
 
-const connectMongo = async () => {
+export const connectMongo = async () => {
   if (isConnected) {
     console.log("MongoDB already connected");
     return;
@@ -64,8 +68,6 @@ const connectMongo = async () => {
     process.exit(1);
   }
 };
-
-connectMongo();
 
 app.use(morgan(":method :url :status :response-time ms"));
 
@@ -95,17 +97,5 @@ app.use("/api/leaderboard", leaderboardRoutes);
 
 // Shop
 app.use("/api/shop", shopRoutes);
-
-// Connection
-server.listen(process.env.PORT, () => {
-  // uncomment for local production testing
-  console.info(`Server is running on port ${process.env.PORT}`);
-});
-
-// Run scheduled tasks
-runSchedulers();
-
-// Generate sample Classic Questions
-// generateQuestions();
 
 export default app;

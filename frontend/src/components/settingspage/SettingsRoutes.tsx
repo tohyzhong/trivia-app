@@ -6,8 +6,8 @@ import Settings from "./Settings";
 const SettingsRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Settings />} />
       <Route path="/verify-action" element={<SettingsActions />} />
+      <Route path="/*" element={<Settings />} />
     </Routes>
   );
 };

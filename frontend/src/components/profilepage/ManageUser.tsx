@@ -361,11 +361,12 @@ const ManageUser: React.FC = () => {
                   type="text"
                   value={chatBanReason}
                   onChange={(e) => setChatBanReason(e.target.value)}
-                  placeholder={`Enter a reason for ${user.chatBan ? "un" : ""}banning ${user.username}`}
+                  placeholder={`Enter a reason for chat ${user.chatBan ? "un" : ""}banning ${user.username}`}
                 />
                 <button
                   className={`${user.chatBan ? "unban-button" : "ban-button"} ${chatBanSending && "disabled"}`}
                   onClick={handleChatBan}
+                  style={{ height: "auto" }}
                 >
                   Chat {user.chatBan ? "Unb" : "B"}an {user.username}
                   {chatBanSending && (
@@ -380,7 +381,14 @@ const ManageUser: React.FC = () => {
                           ease: "linear"
                         }}
                       >
-                        <AiOutlineLoading3Quarters className="loading-icon" />
+                        <AiOutlineLoading3Quarters
+                          className="loading-icon"
+                          style={{
+                            fontSize: "1.2rem",
+                            marginLeft: "5px",
+                            marginRight: "5px"
+                          }}
+                        />
                       </motion.div>
                     </>
                   )}
@@ -393,11 +401,12 @@ const ManageUser: React.FC = () => {
                   type="text"
                   value={gameBanReason}
                   onChange={(e) => setGameBanReason(e.target.value)}
-                  placeholder={`Enter a reason for ${user.gameBan ? "un" : ""}banning ${user.username}`}
+                  placeholder={`Enter a reason for game ${user.gameBan ? "un" : ""}banning ${user.username}`}
                 />
                 <button
                   className={`${user.gameBan ? "unban-button" : "ban-button"} ${gameBanSending && "disabled"}`}
                   onClick={handleGameBan}
+                  style={{ height: "auto" }}
                 >
                   Game {user.gameBan ? "Unb" : "B"}an {user.username}
                   {gameBanSending && (
@@ -412,7 +421,14 @@ const ManageUser: React.FC = () => {
                           ease: "linear"
                         }}
                       >
-                        <AiOutlineLoading3Quarters className="loading-icon" />
+                        <AiOutlineLoading3Quarters
+                          className="loading-icon"
+                          style={{
+                            fontSize: "1.2rem",
+                            marginLeft: "5px",
+                            marginRight: "5px"
+                          }}
+                        />
                       </motion.div>
                     </>
                   )}

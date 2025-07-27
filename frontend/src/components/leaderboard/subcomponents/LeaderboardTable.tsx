@@ -279,15 +279,6 @@ const LeaderboardTable: React.FC<Props> = ({ gameFormat, mode, category }) => {
       : category === "Overall" || category === "Community"
         ? [
             {
-              headerName: "Matches",
-              field: "totalMatches",
-              flex: 0.6,
-              sortable: true,
-              resizable: false,
-              sortingOrder: ["desc"] as SortDirection[]
-            },
-
-            {
               headerName: "Score",
               field: "score",
               flex: 0.6,
