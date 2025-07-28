@@ -466,8 +466,7 @@ router.post("/requestjoin/:lobbyId", authenticate, async (req, res) => {
           [`joinRequests.${username}`]: {
             profilePicture: userData.profile.profilePicture || "",
             chatBan: userData.chatBan || false
-          },
-          lastActivity: new Date()
+          }
         }
       },
       {
