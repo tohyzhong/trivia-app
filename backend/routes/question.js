@@ -473,7 +473,7 @@ router.delete("/delete-:type/:questionId", authenticate, async (req, res) => {
           <p>We regret to inform you that your submitted question was deleted by an admin.</p>
           <h4>Question:</h4>
           <p>${question.question}</p>
-          <p><strong>Correct Answer:</strong> ${question.correctOption}</p>
+          <p><strong>Correct Answer:</strong> ${question.options[question.correctOption - 1]}</p>
           ${
             reason?.trim()
               ? `<h4>Reason:</h4><p style="background-color: #f8f8f8; padding: 10px; border-left: 4px solid #dc3545;">${reason}</p>`
@@ -590,9 +590,10 @@ router.put("/update-:type/:questionId", authenticate, async (req, res) => {
               <h4>Updated Question:</h4>
               <ul>
                 <li><strong>Question:</strong> ${updated.question}</li>
-                <li><strong>Correct Option:</strong> ${updated.correctOption}</li>
+                <li><strong>Correct Option:</strong> ${updated.options[updated.correctOption - 1]}</li>
                 <li><strong>Category:</strong> ${updated.category}</li>
                 <li><strong>Difficulty:</strong> ${updated.difficulty}</li>
+                <li><strong>Explanation:</strong> ${updated.explanation}</li>
               </ul>
               <p>Thanks for contributing to The Rizz Quiz!</p>
             </div>
